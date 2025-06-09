@@ -1,15 +1,22 @@
 ﻿using AssetManagementBase;
+using Geranium.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended.Screens;
+using MonoGame.Extended.Screens.Transitions;
 using Myra;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
-using Nabunassar.Interface.Menu;
+using Nabunassar.Desktops.Menu;
+using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
+using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
+using Nabunassar.Screens;
+using Nabunassar.Screens.LoadingScreens;
 using System.Reflection;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -74,6 +81,9 @@ namespace Nabunassar
             // fixing framerate
             this.IsFixedTimeStep = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
+
+            ScreenManager = new MonoGame.Extended.Screens.ScreenManager();
+            this.Components.Add(this.ScreenManager);
         }
 
         protected virtual void GraphicsDeviceManagerInitialization()
@@ -183,28 +193,55 @@ namespace Nabunassar
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
+
             base.Initialize();
+        }
+
+        public void SwitchScreen<TScreen>(Transition transition = default)
+            where TScreen : BaseGameScreen
+        {
+            var screen = typeof(TScreen).New(this).As<BaseGameScreen>();
+
+            if (transition == default)
+                transition = new FadeTransition(GraphicsDevice, Color.Black);
+
+            if (DesktopWidget != null)
+                DesktopWidget.Dispose();
+
+            DesktopWidget = screen.GetWidget();
+            DesktopWidget.LoadContent();
+            Desktop.Root = DesktopWidget.Load();
+
+            ScreenManager.LoadScreen(screen, transition);
         }
 
         protected override void LoadContent()
         {
             ResourceLoader = new ResourceLoader(this);
             base.Content = new NabunassarContentManager(this, ResourceLoader);
+            SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
+
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-
             Desktop = new Desktop();
-            Desktop.Root = new MainMenu(this);
+
+            SwitchScreen<MainMenuScreen>();
 
             base.LoadContent();
+        }
+
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            Desktop.Render();
 
             base.Draw(gameTime);
+
+            //Desktop.Render();
         }
     }
 }

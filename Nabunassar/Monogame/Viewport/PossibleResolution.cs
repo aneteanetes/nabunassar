@@ -1,4 +1,6 @@
-﻿namespace Nabunassar.Monogame.Viewport
+﻿using Microsoft.Xna.Framework;
+
+namespace Nabunassar.Monogame.Viewport
 {
     public class PossibleResolution
     {
@@ -40,5 +42,7 @@
         }
 
         public override string ToString() => $"{Width}x{Height}";
+
+        public static implicit operator Rectangle(PossibleResolution res) => new Rectangle(0, 0, res.Width, res.Height);
     }
 }

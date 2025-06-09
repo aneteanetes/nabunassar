@@ -1,8 +1,16 @@
-﻿using LiteDB;
+﻿using Assimp.Unmanaged;
+using LiteDB;
+using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Content.Pipeline.Tiled;
+using MonoGame.Extended.Content.Tiled;
+using MonoGame.Extended.Particles.Profiles;
 using Nabunassar.Monogame.Settings;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Reflection;
+using System.Xml.Serialization;
 
 namespace Nabunassar.Content.Compiler
 {
@@ -134,7 +142,7 @@ namespace Nabunassar.Content.Compiler
                 {
                     Path = formattedPath,
                     LastWriteTime = lastTime,
-                    Data = File.ReadAllBytes(filePath)
+                    Data = GetData(filePath)
                 };
                 db.Insert(newResource);
 
@@ -146,7 +154,7 @@ namespace Nabunassar.Content.Compiler
                 if (res.LastWriteTime.ToString() != lastTime.ToString())
                 {
                     var dataResource = db.Find(x => x.Path == formattedPath).FirstOrDefault();
-                    dataResource.Data = File.ReadAllBytes(filePath);
+                    dataResource.Data = GetData(filePath);
                     dataResource.LastWriteTime = lastTime;
                     db.Update(dataResource);
 
@@ -154,6 +162,11 @@ namespace Nabunassar.Content.Compiler
                         Console.WriteLine($"Resource {formattedPath} was updated!");
                 }
             }
+        }
+
+        private byte[] GetData(string filePath)
+        {
+            return File.ReadAllBytes(filePath);
         }
 
         private string FormatPathForDB(string filePath)
