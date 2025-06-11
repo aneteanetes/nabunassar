@@ -5,6 +5,7 @@ using MonoGame.Extended;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Resources;
+using Nabunassar.Screens.Abstract;
 
 namespace Nabunassar.Screens
 {
@@ -34,7 +35,7 @@ namespace Nabunassar.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(new Color(16, 139, 204));
+            Game.GraphicsDevice.Clear(Color.Black);
 
             var sb = Game.BeginDraw();
             sb.Draw(background, Game.Resolution, new Rectangle(0, 0, 2560, 1440), Color.White);

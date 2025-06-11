@@ -23,6 +23,7 @@ namespace Nabunassar.Tiled.Map
                 height = map.GetTagAttrInteger(nameof(height)),
                 tilewidth = map.GetTagAttrInteger(nameof(tilewidth)),
                 tileheight = map.GetTagAttrInteger(nameof(tileheight)),
+                infinite = map.GetTagAttrInteger(nameof(infinite)) == 1 ? true : false
             };
 
             foreach (var xmlTileSet in map.Elements("tileset"))
@@ -46,7 +47,10 @@ namespace Nabunassar.Tiled.Map
                     .ToList();
 
                 if (tileSet.Tiles.Count == 0)
+                {
                     tileSet.Autotiled = true;
+                    tileSet.image = "Assets/Tilesets/" + Path.GetFileName(xmlTileSet.Element("image").GetTagAttrString("source"));
+                }
 
                 tiledMap.Tilesets.Add(tileSet);
             }
@@ -92,9 +96,11 @@ namespace Nabunassar.Tiled.Map
                         }
                     }
 
+                    tobj.Position = new Vector2((int)tobj.x, (int)tobj.y - 16);
+
                     if (tobj.gid != 0)
                     {
-                        tobj.file = tiledMap.TileFileNameByGid(tobj.gid);
+                        tobj.Tileset = tiledMap.GetTileset(tobj.gid);
                     }
 
                     var props = objtag.Element("properties");
@@ -131,7 +137,10 @@ namespace Nabunassar.Tiled.Map
                         }
                     }
 
-                    tiledMap.Objects.Add(tobj);
+                    if (tobj.objectgroup == "NPC")
+                        tiledMap.NPCs.Add(tobj);
+                    else
+                        tiledMap.Objects.Add(tobj);
                 }
             }
         }
@@ -173,6 +182,10 @@ namespace Nabunassar.Tiled.Map
                 var iY = 0;
                 foreach (var gidHASHED in gids)
                 {
+                    // for saving position
+                    //if (gidHASHED == 0)
+                    //    continue;
+
                     // Read out the flags
                     bool flipped_horizontally = (gidHASHED & FLIPPED_HORIZONTALLY_FLAG) != 0;
                     bool flipped_vertically = (gidHASHED & FLIPPED_VERTICALLY_FLAG) != 0;
@@ -180,9 +193,9 @@ namespace Nabunassar.Tiled.Map
 
                     var gid = gidHASHED & ~(FLIPPED_HORIZONTALLY_FLAG | FLIPPED_VERTICALLY_FLAG | FLIPPED_DIAGONALLY_FLAG);
 
-                    var coords = tiledMap.ParseCoordinates(gid);
+                    var coords = tiledMap.ParseCoordinates((int)gid);
 
-                    layer.Tiles.Add(new TiledPolygon(gid)
+                    layer.Tiles.Add(new TiledPolygon((int)gid)
                     {
                         FileName = tiledMap.TileFileNameByGid(gid),
                         FlippedDiagonally = flipped_diagonally,
@@ -191,7 +204,8 @@ namespace Nabunassar.Tiled.Map
                         Layer = layer,
                         TileOffsetX = coords.X,
                         TileOffsetY = coords.Y,
-                        Position = new Point(iX, iY)
+                        Position = new Vector2(iX, iY),
+                        Tileset = gid ==0 ? null : tiledMap.GetTileset((int)gid)
                     });
 
                     iX++;
@@ -211,6 +225,8 @@ namespace Nabunassar.Tiled.Map
             }
         }
 
+        public bool infinite { get; set; }
+
         public int width { get; set; }
 
         public int height { get; set; }
@@ -221,15 +237,26 @@ namespace Nabunassar.Tiled.Map
 
         public List<TiledObject> Objects { get; set; } = new List<TiledObject>();
 
+        public List<TiledObject> NPCs { get; set; } = new List<TiledObject>();
+
         public List<TiledTileset> Tilesets { get; set; } = new List<TiledTileset>();
 
-        private Point ParseCoordinates(uint gid)
+        private Point ParseCoordinates(int gid)
         {
-            var tileset = Tilesets.FirstOrDefault(x => x.TileGids.Contains(gid));
+            var tileset = Tilesets.FirstOrDefault(x => x.IsContainsGid(gid));
             if (tileset != null)
                 return tileset.Coords(gid);
 
             return Point.Zero;
+        }
+
+        private TiledTileset GetTileset(int gid)
+        {
+            var tileset = Tilesets.FirstOrDefault(x => x.IsContainsGid(gid));
+            if (tileset != null)
+                return tileset;
+
+            throw new FileNotFoundException("Gid from unknown tileset!");
         }
 
         private string TileFileNameByGid(uint gid)

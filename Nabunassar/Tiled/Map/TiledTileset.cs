@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGame.Extended.Graphics;
 using System.Diagnostics;
 
 namespace Nabunassar.Tiled.Map
@@ -23,7 +24,7 @@ namespace Nabunassar.Tiled.Map
         /// </summary>
         public bool Autotiled { get; set; }
 
-        public Point Coords(uint gid)
+        public Point Coords(int gid)
         {
             if (gid == 0)
                 return Point.Zero;
@@ -34,7 +35,7 @@ namespace Nabunassar.Tiled.Map
                 {
                     // x == 0
                     // y == gid/32
-                    return new Point(0, (int)gid / tileheight);
+                    return new Point(0, gid / tileheight);
                 }
                 var y = gid / tileheight;
 
@@ -42,14 +43,14 @@ namespace Nabunassar.Tiled.Map
 
                 var x = gid - integerGid - 1;
 
-                return new Point((int)x, (int)y);
+                return new Point(x, y);
             }
             return Point.Zero;
         }
 
         public int TileIndexFrom => firstgid;
 
-        public int TiledIndexTo => firstgid + tilecount;
+        public int TiledIndexTo => firstgid + tilecount-1;
 
         private uint[] _tileids;
         public uint[] TileGids
@@ -77,6 +78,21 @@ namespace Nabunassar.Tiled.Map
             }
         }
 
+        public bool IsContainsGid(int gid)
+        {
+            return gid >= TileIndexFrom && gid <= TiledIndexTo;
+        }
+
+        private List<int> _tileIndexes;
+        public int GetAtlasId(int gid)
+        {
+            if (_tileIndexes == null)
+                _tileIndexes = Enumerable.Range(firstgid, tilecount).ToList();
+            return _tileIndexes.IndexOf(gid);
+        }
+
         public List<TiledTile> Tiles { get; set; } = new List<TiledTile>();
+
+        public Texture2DAtlas TextureAtlas { get; set; }
     }
 }

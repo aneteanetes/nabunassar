@@ -1,4 +1,4 @@
-﻿namespace Nabunassar.Monogame
+﻿namespace Nabunassar.Monogame.Interfaces
 {
     internal interface ILoadable : IDisposable
     {

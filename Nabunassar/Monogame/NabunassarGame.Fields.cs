@@ -1,19 +1,35 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Desktops;
+using Nabunassar.Entities;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
-using System.Numerics;
+using Nabunassar.Struct;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
-	{
+    {
+        public GameState GameState { get; private set; }
+
+        public Vector2 _worldPosition;
+        public Vector2 _mousePosition;
+
+        private bool isDrawFPS = false;
+        private bool isDrawCoords = false;
+
+        public FrameCounter FrameCounter;
+
+        public ECS.ESCWorld World { get; private set; }
+
+        private OrthographicCamera _camera;
+
         public Desktop Desktop = null;
 
         public ScreenWidget DesktopWidget= null;    
@@ -31,7 +47,7 @@ namespace Nabunassar
 
         public PossibleResolution Resolution { get; set; }
 
-        public static Matrix4x4 ResolutionScaleMatrix { get; set; }
+        public static System.Numerics.Matrix4x4 ResolutionScaleMatrix { get; set; }
         public static Action<PossibleResolution> ChangeResolution { get; set; }
 
         public bool _isControlsBlocked { get; set; }

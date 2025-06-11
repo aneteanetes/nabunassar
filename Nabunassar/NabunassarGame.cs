@@ -4,19 +4,28 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended;
+using MonoGame.Extended.ECS;
+using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
+using MonoGame.Extended.ViewportAdapters;
 using Myra;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
+using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
+using Nabunassar.ECS;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
+using Nabunassar.Resources;
 using Nabunassar.Screens;
+using Nabunassar.Screens.Abstract;
 using Nabunassar.Screens.LoadingScreens;
+using Nabunassar.Struct;
 using System.Reflection;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -193,6 +202,10 @@ namespace Nabunassar
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
+            _camera = new OrthographicCamera(viewportAdapter);
+
+            World = new ESCWorld();
 
             base.Initialize();
         }
@@ -215,8 +228,22 @@ namespace Nabunassar
             ScreenManager.LoadScreen(screen, transition);
         }
 
+        public void SwitchDesktop(ScreenWidget widget=null)
+        {
+            if (widget != null)
+            {
+                widget.LoadContent();
+                Desktop.Root = widget.Load();
+            }
+            else
+            {
+                Desktop.Root = null;
+            }
+        }
+
         protected override void LoadContent()
         {
+            FrameCounter = new FrameCounter();
             ResourceLoader = new ResourceLoader(this);
             base.Content = new NabunassarContentManager(this, ResourceLoader);
             SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
@@ -235,13 +262,104 @@ namespace Nabunassar
             base.UnloadContent();
         }
 
+        private Vector2 GetMovementDirection()
+        {
+            var movementDirection = Vector2.Zero;
+            var state = Keyboard.GetState();
+            if (state.IsKeyDown(Keys.Up))
+            {
+                movementDirection += Vector2.UnitY;
+            }
+            if (state.IsKeyDown(Keys.Down))
+            {
+                movementDirection -= Vector2.UnitY;
+            }
+            if (state.IsKeyDown(Keys.Right))
+            {
+                movementDirection -= Vector2.UnitX;
+            }
+            if (state.IsKeyDown(Keys.Left))
+            {
+                movementDirection += Vector2.UnitX;
+            }
+            return movementDirection;
+        }
+        
+        // Add this to the Game1.cs file
+        private void AdjustZoom()
+        {
+            var state = Keyboard.GetState();
+            var keyboardState = KeyboardExtended.GetState();
+            float zoomPerTick = 0.001f;
+            if (keyboardState.IsShiftDown() && state.IsKeyDown(Keys.Z))
+            {
+                _camera.ZoomIn(zoomPerTick);
+            }
+            if (keyboardState.IsShiftDown() && state.IsKeyDown(Keys.X))
+            {
+                _camera.ZoomOut(zoomPerTick);
+            }
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            FrameCounter.Update(deltaTime);
+
+            const float movementSpeed = 200;
+            _camera.Move(GetMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
+
+            var mouseState = Mouse.GetState();
+            _mousePosition = new Vector2(mouseState.X,mouseState.Y);
+            _worldPosition = _camera.ScreenToWorld(_mousePosition);
+
+            KeyboardExtended.Update();
+            var keyboardState = KeyboardExtended.GetState();
+
+            if(keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.F)) 
+                isDrawFPS = !isDrawFPS;
+
+            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
+                isDrawCoords = !isDrawCoords;
+
+            AdjustZoom();
+
+            World.LoadContent();
+            World.Update(gameTime);
+
+            base.Update(gameTime);
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
 
-            //Desktop.Render();
+            if (isDrawFPS)
+                DrawFPS();
+
+            if(isDrawCoords)
+                DrawPositions();
+        }
+
+        public void DrawFPS()
+        {
+            var sb = BeginDraw(false);
+
+            sb.DrawText(Fonts.Retron, 30, FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
+
+            sb.End();
+        }
+
+        public void DrawPositions()
+        {
+            var sb = BeginDraw(false);
+
+            sb.DrawText(Fonts.Retron, 20, "World: " + _worldPosition.ToString(), new Vector2(50, Resolution.Height - 125), Color.PeachPuff);
+            sb.DrawText(Fonts.Retron, 20, "Display: " + _mousePosition.ToString(), new Vector2(50, Resolution.Height - 100), Color.AntiqueWhite);
+
+            sb.End();
         }
     }
 }

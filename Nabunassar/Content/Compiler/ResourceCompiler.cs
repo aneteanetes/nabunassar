@@ -1,16 +1,8 @@
-﻿using Assimp.Unmanaged;
-using LiteDB;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Content.Pipeline.Tiled;
-using MonoGame.Extended.Content.Tiled;
-using MonoGame.Extended.Particles.Profiles;
+﻿using LiteDB;
 using Nabunassar.Monogame.Settings;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Reflection;
-using System.Xml.Serialization;
 
 namespace Nabunassar.Content.Compiler
 {

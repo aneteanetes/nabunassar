@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGame.Extended.Graphics;
 
 namespace Nabunassar.Tiled.Map
 {
     public class TiledPolygon
     {
-        public TiledPolygon(uint gid) => Gid = gid;
+        public TiledPolygon(int gid) => Gid = gid;
 
-        public uint Gid { get; set; }
+        public int Gid { get; set; }
 
         public string FileName { get; set; }
 
@@ -20,8 +21,10 @@ namespace Nabunassar.Tiled.Map
 
         public int TileOffsetY { get; set; }
 
-        public Point Position { get; set; } = Point.Zero;
+        public Vector2 Position { get; set; } = Vector2.Zero;
 
         public TiledLayer Layer { get; set; }
+
+        public TiledTileset Tileset { get; set; }
     }
 }

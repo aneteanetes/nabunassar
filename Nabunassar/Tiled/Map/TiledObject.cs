@@ -9,7 +9,7 @@ namespace Nabunassar.Tiled.Map
     {
         public int id { get; set; }
 
-        public uint gid { get; set; }
+        public int gid { get; set; }
 
         public string file { get; set; }
 
@@ -20,6 +20,8 @@ namespace Nabunassar.Tiled.Map
         public int width { get; set; }
 
         public int height { get; set; }
+
+        public Vector2 Position { get; set; }
 
         public bool collide => Properties?.FirstOrDefault(x => x.name == "collide")?.value == "true";
 
@@ -37,6 +39,8 @@ namespace Nabunassar.Tiled.Map
         }
 
         public Point[] Polygon { get; set; } = new Point[0];
+
+        public TiledTileset Tileset { get; set; }
 
     }
 

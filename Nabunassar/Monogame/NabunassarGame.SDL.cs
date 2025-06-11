@@ -43,6 +43,7 @@ namespace Nabunassar
 				return;
 			}
 
+
 			var entrydll = Assembly.GetExecutingAssembly().Location;
 			var root = Path.GetDirectoryName(entrydll);
 #warning SDL runtime platform check

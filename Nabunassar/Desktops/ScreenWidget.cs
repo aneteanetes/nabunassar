@@ -1,5 +1,6 @@
 ﻿using Myra.Graphics2D.UI;
 using Nabunassar.Monogame;
+using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar.Desktops
 {
