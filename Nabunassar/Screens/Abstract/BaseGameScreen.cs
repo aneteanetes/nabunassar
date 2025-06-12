@@ -25,7 +25,8 @@ namespace Nabunassar.Screens.Abstract
 
         public override void Draw(GameTime gameTime)
         {
-            Game.World.Draw(gameTime, Game.BeginDraw());
+            Game.World.Draw(gameTime);
+            //Game.World.Draw(gameTime, Game.BeginDraw());
             Game.Desktop.Render();
         }
     }

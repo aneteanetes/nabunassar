@@ -1,4 +1,4 @@
-﻿namespace Nabunassar.Entities
+﻿namespace Nabunassar.Entities.Data
 {
     internal class GameState
     {

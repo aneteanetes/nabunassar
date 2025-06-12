@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
@@ -26,6 +27,7 @@ using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
+using Nabunassar.Systems;
 using System.Reflection;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -33,6 +35,8 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame : Game
     {
+        public static NabunassarGame Game { get; private set; }
+
         public NabunassarGame(GameSettings settings)
         {
             settings.PathBin = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -189,6 +193,7 @@ namespace Nabunassar
 
         protected override void Initialize()
         {
+            Game = this;
             this.Window.Title = Settings.GameTitle;
 
             //Window.TextInput += OnTextInput;
@@ -205,7 +210,16 @@ namespace Nabunassar
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
             _camera = new OrthographicCamera(viewportAdapter);
 
-            World = new ESCWorld();
+            //World = new ESCWorld();
+            Random = new FastRandom();
+            CollisionComponent = new CollisionComponent(new RectangleF(0, 0, Resolution.Width, Resolution.Height));
+
+            World = new WorldBuilder()
+                .AddSystem(new PlayerControllSystem(this))
+                .AddSystem(new RenderSystem(this))
+                .Build();
+
+            EntityFactory=new Entities.EntityFactory(this);
 
             base.Initialize();
         }
@@ -304,7 +318,7 @@ namespace Nabunassar
         protected override void Update(GameTime gameTime)
         {
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            FrameCounter.Update(deltaTime);
+            FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
 
             const float movementSpeed = 200;
             _camera.Move(GetMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
@@ -324,8 +338,10 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            World.LoadContent();
-            World.Update(gameTime);
+            //World.LoadContent();
+            World.Update(gameTime); 
+            
+            CollisionComponent.Update(gameTime);
 
             base.Update(gameTime);
         }

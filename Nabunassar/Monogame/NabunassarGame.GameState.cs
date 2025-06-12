@@ -1,5 +1,6 @@
-﻿using Nabunassar.Components.GameMap;
+﻿using Microsoft.Xna.Framework;
 using Nabunassar.Entities;
+using Nabunassar.Entities.Data;
 
 namespace Nabunassar
 {
@@ -9,15 +10,13 @@ namespace Nabunassar
         {
             GameState = new GameState();
             GameState.Party = new Party();
-            GameState.Party.Characters.Add(new Character()
+            var character = new Character()
             {
                 Tileset = "player.png"
-            });
+            };
+            GameState.Party.Characters.Add(character);
 
-            World.Add(new PlayerComponent(this, GameState.Party)
-            {
-                Position=new Microsoft.Xna.Framework.Vector2(700,930)
-            });
+            EntityFactory.CreateCharacter(character, new Vector2(700, 930));
         }
     }
 }

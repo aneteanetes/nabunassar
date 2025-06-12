@@ -115,7 +115,7 @@
     <property name="ObjectType" value="wall"/>
    </properties>
   </object>
-  <object id="16" gid="997" x="304" y="96" width="16" height="16">
+  <object id="16" gid="997" x="304" y="112" width="16" height="16">
    <properties>
     <property name="ObjectType" value="wall"/>
    </properties>

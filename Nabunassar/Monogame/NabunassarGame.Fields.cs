@@ -1,11 +1,14 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
 using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
+using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Desktops;
 using Nabunassar.Entities;
+using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
@@ -16,6 +19,10 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public CollisionComponent CollisionComponent { get; private set; }
+
+        public FastRandom Random { get; private set; }
+
         public GameState GameState { get; private set; }
 
         public Vector2 _worldPosition;
@@ -26,7 +33,12 @@ namespace Nabunassar
 
         public FrameCounter FrameCounter;
 
-        public ECS.ESCWorld World { get; private set; }
+        //public ECS.ESCWorld World { get; private set; }
+
+        public EntityFactory EntityFactory { get; set; }
+
+        public World World { get; private set; }
+
 
         private OrthographicCamera _camera;
 
