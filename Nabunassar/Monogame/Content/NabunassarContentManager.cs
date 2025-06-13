@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Content;
 using Nabunassar.Tiled.Map;
+using Newtonsoft.Json;
 using System.IO;
 
 namespace Nabunassar.Monogame.Content
@@ -11,6 +12,7 @@ namespace Nabunassar.Monogame.Content
     internal class NabunassarContentManager : ContentManager
     {
         private ResourceLoader _resourceLoader;
+        private JsonSerializer _jsonSerializer;
         NabunassarGame _game;
 
         private Dictionary<string, FontSystem> _fonts = new();
@@ -19,9 +21,11 @@ namespace Nabunassar.Monogame.Content
         {
             _game = game;
             _resourceLoader = resourceLoader;
+            _jsonSerializer = JsonSerializer.CreateDefault();
         }
 
         private bool disposed => this.GetPropValue<bool>("disposed");
+
 
         public override T Load<T>(string assetName)
         {
@@ -38,6 +42,16 @@ namespace Nabunassar.Monogame.Content
                 var stream = OpenStream(assetName);
                 var map = TiledMap.Load(stream);
                 return map.As<T>();
+            }
+
+            if (assetName.EndsWith(".json"))
+            {
+                var stream = OpenStream(assetName);
+                using (var sr = new StreamReader(stream))
+                using (var jsonTextReader = new JsonTextReader(sr))
+                {
+                    return _jsonSerializer.Deserialize<T>(jsonTextReader);
+                }
             }
 
             return base.Load<T>(assetName);

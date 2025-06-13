@@ -91,6 +91,12 @@ namespace Nabunassar.Tiled.Map
             return _tileIndexes.IndexOf(gid);
         }
 
+        public Dictionary<string,string> GetTileProperties(int gid)
+        {
+            var tileInfo = Tiles.FirstOrDefault(x=>x.Id == gid);
+            return tileInfo == null ? ([]) : tileInfo.Properties;
+        }
+
         public List<TiledTile> Tiles { get; set; } = new List<TiledTile>();
 
         public Texture2DAtlas TextureAtlas { get; set; }

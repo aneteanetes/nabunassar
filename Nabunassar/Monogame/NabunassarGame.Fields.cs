@@ -13,12 +13,15 @@ using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public DataBase DataBase { get; set; }
+
         public CollisionComponent CollisionComponent { get; private set; }
 
         public FastRandom Random { get; private set; }
@@ -40,7 +43,7 @@ namespace Nabunassar
         public World World { get; private set; }
 
 
-        private OrthographicCamera _camera;
+        public OrthographicCamera Camera { get; private set; }
 
         public Desktop Desktop = null;
 

@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using Nabunassar.Entities.Data;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
@@ -16,8 +16,6 @@ namespace Nabunassar.Systems
         ComponentMapper<PlayerComponent> _playerComponentMapper;
         ComponentMapper<RenderComponent> _renderComponentMapper;
         ComponentMapper<CollisionsComponent> _collisionComponentMapper;
-
-        private bool animationPlayed = true;
 
         public PlayerControllSystem(NabunassarGame game) : base(Aspect.All(typeof(PlayerComponent)))
         {
@@ -43,25 +41,24 @@ namespace Nabunassar.Systems
 
                 float x = 0, y = 0;
 
-                if (animationPlayed)
+                if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.S))
                 {
-                    if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.S))
-                    {
-                        y += player.Character.Speed;
-                    }
-                    if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
-                    {
-                        y -= player.Character.Speed;
-                    }
-                    if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.A))
-                    {
-                        x -= player.Character.Speed;
-                    }
-                    if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D))
-                    {
-                        x += player.Character.Speed;
-                    }
+                    y += player.Character.Speed;
                 }
+                if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.W))
+                {
+                    y -= player.Character.Speed;
+                }
+                if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.A))
+                {
+                    x -= player.Character.Speed;
+                }
+                if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D))
+                {
+                    x += player.Character.Speed;
+                }
+
+                MoveBounds(state, player, bound);
 
                 var newPos = new Vector2(render.Position.X + x, render.Position.Y + y);
 
@@ -89,7 +86,9 @@ namespace Nabunassar.Systems
                             ? SpriteEffects.FlipHorizontally
                             : SpriteEffects.None;
 
+                        render.PrevPosition = render.Position;
                         render.Position = newPos;
+                        bound.PrevBoundPosition = bound.Bounds.Position;
                         bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + x, bound.Bounds.Position.Y + y);
                     }
                     else if (animatedSprite.CurrentAnimation != "idle")
@@ -98,8 +97,30 @@ namespace Nabunassar.Systems
                     }
                 }
 
-                player.Character.Speed = Character.DefaultSpeed;
-            }            
+                player.Character.SetDirtSpeed();
+            }
+        }
+
+        private static void MoveBounds(KeyboardStateExtended state, PlayerComponent player, CollisionsComponent bound)
+        {
+            //return;
+
+            if (state.IsKeyDown(Keys.Up))
+            {
+                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y + player.Character.Speed);
+            }
+            if (state.IsKeyDown(Keys.Down))
+            {
+                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y - player.Character.Speed);
+            }
+            if (state.IsKeyDown(Keys.Left))
+            {
+                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X - player.Character.Speed, bound.Bounds.Position.Y);
+            }
+            if (state.IsKeyDown(Keys.Right))
+            {
+                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + player.Character.Speed, bound.Bounds.Position.Y);
+            }
         }
     }
 }

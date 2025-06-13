@@ -47,8 +47,11 @@ namespace Nabunassar.ECS
             var sb = _game.BeginDraw();
             foreach (var entityId in ActiveEntities)
             {
+                if (this.GetEntity(entityId).Get<PlayerComponent>() != null)
+                    Console.WriteLine();
+
                 var render = _renderMapper.Get(entityId);
-                sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
+                sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
 
                 if (isDrawBounds)
                 {

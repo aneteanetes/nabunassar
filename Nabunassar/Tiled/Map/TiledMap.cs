@@ -1,5 +1,6 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace Nabunassar.Tiled.Map
@@ -39,18 +40,26 @@ namespace Nabunassar.Tiled.Map
 
                 tileSet.Tiles = xmlTileSet
                     .Elements("tile")
-                    .Select(x => new TiledTile()
+                    .Select(x =>
                     {
-                        Id = x.GetTagAttrInteger("id"),
-                        File = ResourceFile(x.Element("image").GetTagAttrString("source"))
+                        var tile = new TiledTile()
+                        {
+                            Id = x.GetTagAttrInteger("id")
+                        };
+
+                        foreach (var prop in x.Element("properties").Elements("property"))
+                        {
+                            tile.Properties[prop.GetTagAttrString("name")] = prop.GetTagAttrString("value");
+                        }
+
+                        return tile;
                     })
                     .ToList();
 
-                if (tileSet.Tiles.Count == 0)
-                {
-                    tileSet.Autotiled = true;
-                    tileSet.image = "Assets/Tilesets/" + Path.GetFileName(xmlTileSet.Element("image").GetTagAttrString("source"));
-                }
+
+                tileSet.Autotiled = true;
+                tileSet.image = "Assets/Tilesets/" + Path.GetFileName(xmlTileSet.Element("image").GetTagAttrString("source"));
+
 
                 tiledMap.Tilesets.Add(tileSet);
             }
@@ -195,7 +204,7 @@ namespace Nabunassar.Tiled.Map
 
                     var coords = tiledMap.ParseCoordinates((int)gid);
 
-                    layer.Tiles.Add(new TiledPolygon((int)gid)
+                    var polygon = new TiledPolygon((int)gid)
                     {
                         FileName = tiledMap.TileFileNameByGid(gid),
                         FlippedDiagonally = flipped_diagonally,
@@ -204,9 +213,14 @@ namespace Nabunassar.Tiled.Map
                         Layer = layer,
                         TileOffsetX = coords.X,
                         TileOffsetY = coords.Y,
-                        Position = new Vector2(iX, iY),
-                        Tileset = gid ==0 ? null : tiledMap.GetTileset((int)gid)
-                    });
+                        Position = new Vector2(iX*16, iY*16),
+                        Tileset = gid == 0 ? null : tiledMap.GetTileset((int)gid)
+                    };
+
+                    layer.Tiles.Add(polygon);
+
+                    if (gid != 0)
+                        polygon.Properties = polygon.Tileset.GetTileProperties(polygon.Gid-1);
 
                     iX++;
                     if (iX > layer.width - 1)
@@ -269,9 +283,12 @@ namespace Nabunassar.Tiled.Map
             if (tileset.Autotiled)
                 return tileset.name;
 
-            return tileset.Tiles
-                .FirstOrDefault(x => x.Id == Math.Abs(gid - tileset.firstgid))
-                ?.File;
+
+            return null;
+#warning tileset tile filename
+            //return tileset.Tiles
+            //    .FirstOrDefault(x => x.Id == Math.Abs(gid - tileset.firstgid))
+            //    ?.File;
         }
 
         public List<TiledLayer> Layers { get; set; } = new List<TiledLayer>();

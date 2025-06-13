@@ -23,29 +23,35 @@ namespace Nabunassar.Entities
             _world = game.World;
         }
 
-        private static Vector2 StandartScale => Vector2.One * TileSizeMultiplier;
+        //private static Vector2 StandartScale => Vector2.One * TileSizeMultiplier;
+        private static int PersonBoundsXOffset = 3;
+        private static int PersonBoundsYOffset = 14;
+        private static Vector2 PersonBoundsSize = new Vector2(10, 10);
 
         public Entity CreateTile(TiledPolygon polygon)
         {
-            var entity = _world.CreateEntity();
+            var entity = CreateEntity("tile "+polygon.Gid);
 
             var id = polygon.Tileset.GetAtlasId(polygon.Gid);
             var _sprite = polygon.Tileset.TextureAtlas.CreateSprite(id);
-            var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height) * TileBoundsSizeMultiplier;
-            var position = (polygon.Position * 16) * TileSizeMultiplier;
-            var render = new RenderComponent(_sprite, position, 0, StandartScale);
+            var size = new Vector2(_sprite.TextureRegion.Width-1, _sprite.TextureRegion.Height-1);
+            var position = polygon.Position;
+            var render = new RenderComponent(_sprite, position, 0);
             entity.Attach(render);
 
-            var bounds = new RectangleF(position, size * 0.9f);
+            var bounds = new RectangleF(position, size);
             var collision = CreateCollisionComponent(bounds, ObjectType.Ground, entity);
             entity.Attach(collision);
+
+            var tileComp = new TileComponent(polygon);
+            entity.Attach(tileComp);
 
             return entity;
         }
 
         public Entity CreateNPC(TiledObject _object)
         {
-            var entity = _world.CreateEntity();
+            var entity = CreateEntity("npc "+_object.gid);
 
             var id = _object.Tileset.GetAtlasId(_object.gid);
             SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
@@ -71,10 +77,14 @@ namespace Nabunassar.Entities
 
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
-            var position = _object.Position * TileSizeMultiplier;
-            position = new Vector2(position.X, position.Y - 9 * TileSizeMultiplier);
+            var position = _object.Position;
+            position = new Vector2(position.X, position.Y - 9);
 
-            var render = new RenderComponent(_sprite, position, 0, StandartScale);
+            var bounds = new RectangleF(new Vector2(position.X + PersonBoundsXOffset, position.Y + PersonBoundsYOffset), PersonBoundsSize);
+            var collision = CreateCollisionComponent(bounds, ObjectType.NPC, entity);
+            entity.Attach(collision);
+
+            var render = new RenderComponent(_sprite, position, 0);
             entity.Attach(render);
 
             return entity;
@@ -82,7 +92,7 @@ namespace Nabunassar.Entities
 
         public Entity CreateCharacter(Character character, Vector2 position)
         {
-            var entity = _world.CreateEntity();
+            var entity = CreateEntity("player");
             var size = new Vector2(16, 24) * TileSizeMultiplier;
 
 
@@ -113,10 +123,10 @@ namespace Nabunassar.Entities
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
 
-            var render = new RenderComponent(_sprite, position, 0, StandartScale);
+            var render = new RenderComponent(_sprite, position, 0);
             entity.Attach(render);
 
-            var bounds = new RectangleF(new Vector2(position.X + 1, position.Y + 32), new Vector2(15 - 2, 15) * TileSizeMultiplier);
+            var bounds = new RectangleF(new Vector2(position.X + PersonBoundsXOffset, position.Y + PersonBoundsYOffset), PersonBoundsSize);
             var collision = CreateCollisionComponent(bounds, ObjectType.Player, entity, character.OnCollision);
             entity.Attach(collision);
 
@@ -128,14 +138,14 @@ namespace Nabunassar.Entities
 
         public Entity CreateObject(TiledObject _object)
         {
-            var entity = _world.CreateEntity();
+            var entity = CreateEntity("obj "+_object.gid);
 
             var id = _object.Tileset.GetAtlasId(_object.gid);
             var _sprite = _object.Tileset.TextureAtlas.CreateSprite(id);
-            var position = _object.Position * TileSizeMultiplier;
-            var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height) * TileBoundsSizeMultiplier;
+            var position = _object.Position;
+            var size = new Vector2(_sprite.TextureRegion.Width-1, _sprite.TextureRegion.Height-1);
 
-            var render = new RenderComponent(_sprite, position, 0, StandartScale);
+            var render = new RenderComponent(_sprite, position, 0);
             entity.Attach(render);
 
             var bounds = new RectangleF(position, size);
@@ -145,12 +155,21 @@ namespace Nabunassar.Entities
             return entity;
         }
 
-        private CollisionsComponent CreateCollisionComponent(IShapeF bounds, ObjectType objectType, Entity host, CollisionEventHandler onCollision = null)
+        private CollisionsComponent CreateCollisionComponent(RectangleF bounds, ObjectType objectType, Entity host, CollisionEventHandler onCollision = null)
         {
-            var component = new CollisionsComponent(bounds, objectType, host, onCollision);
+            var component = new CollisionsComponent(_game, bounds, objectType, host, onCollision);
             _game.CollisionComponent.Insert(component);
 
             return component;
+        }
+
+        private Entity CreateEntity(string descriptor=null)
+        {
+            var entity = _world.CreateEntity();
+
+            entity.Attach(new DescriptorComponent(descriptor));
+
+            return entity;
         }
     }
 }

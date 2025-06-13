@@ -5,6 +5,41 @@
  </properties>
  <tileset firstgid="1" name="colored" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
   <image source="../../../../../../../../Desktop/kenney_1-bit-pack/Tilesheet/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
+  <tile id="1">
+   <properties>
+    <property name="GroundType" value="Road"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="GroundType" value="Road"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="GroundType" value="Road"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="GorundType" value="Road"/>
+   </properties>
+  </tile>
+  <tile id="5">
+   <properties>
+    <property name="GroundType" value="Grass"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="GroundType" value="Grass"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="GroundType" value="Grass"/>
+   </properties>
+  </tile>
  </tileset>
  <tileset firstgid="1079" name="virgil" tilewidth="16" tileheight="24" tilecount="12" columns="4">
   <image source="../Tilesets/virgil.png" trans="000000" width="64" height="72"/>
@@ -14,12 +49,12 @@
 801,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,802,803,
 850,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,0,852,
 850,0,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,852,
-850,0,8,8,8,3,3,0,0,0,0,0,0,0,0,0,0,3,0,2,2,2,2,2,0,0,0,3,0,852,
-850,0,8,7,8,0,3,8,0,0,3,0,0,0,7,0,0,3,0,2,2,2,2,2,0,0,0,3,0,852,
-850,0,0,3,0,0,3,3,0,0,3,0,0,0,0,0,0,3,3,2,2,2,2,2,0,0,0,3,0,852,
-850,0,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,0,2,2,2,2,2,0,0,0,3,0,852,
-850,0,3,0,0,3,3,3,0,0,0,0,0,0,0,0,0,3,0,2,2,2,2,2,0,0,0,3,0,852,
-850,0,3,0,0,3,0,0,0,0,0,0,0,0,0,0,0,3,8,2,2,2,2,2,0,0,0,3,0,852,
+850,0,8,8,8,3,3,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,852,
+850,0,8,7,8,0,3,8,0,0,3,0,0,0,7,0,0,3,0,0,2,2,2,0,0,0,0,3,0,852,
+850,0,0,3,0,0,3,3,0,0,3,0,0,0,0,0,0,3,3,2,2,2,2,0,0,0,0,3,0,852,
+850,0,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,0,0,2,2,2,0,0,0,0,3,0,852,
+850,0,3,0,0,3,3,3,0,0,0,0,0,0,0,0,0,3,0,0,2,2,2,0,0,0,0,3,0,852,
+850,0,3,0,0,3,0,0,0,0,0,0,0,0,0,0,0,3,8,0,0,0,0,0,0,0,0,3,0,852,
 850,0,3,0,0,3,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,852,
 850,0,3,0,7,3,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,3,0,852,
 850,0,3,0,7,3,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,7,0,0,0,0,0,3,0,852,

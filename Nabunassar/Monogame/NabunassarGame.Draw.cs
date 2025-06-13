@@ -7,7 +7,7 @@ namespace Nabunassar
     {
         public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true)
         {
-            var transformMatrix = _camera.GetViewMatrix();
+            var transformMatrix = Camera.GetViewMatrix();
             this.SpriteBatch.Begin(isCameraDependant ? transformMatrix : null);
             var sb = this.SpriteBatch.GetSpriteBatch(samplerState, alphaBlend, isTransformMatrix);
             return sb;

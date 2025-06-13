@@ -1,11 +1,13 @@
 ﻿using AssetManagementBase;
 using Geranium.Reflection;
+using info.lundin.math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
@@ -25,9 +27,11 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Screens.Game;
 using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
+using System.Collections.Generic;
 using System.Reflection;
 using Point = Microsoft.Xna.Framework.Point;
 
@@ -208,9 +212,10 @@ namespace Nabunassar
             graphics.ApplyChanges();
 
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
-            _camera = new OrthographicCamera(viewportAdapter);
+            Camera = new OrthographicCamera(viewportAdapter);
 
-            //World = new ESCWorld();
+            DataBase=new DataBase(this);
+
             Random = new FastRandom();
             CollisionComponent = new CollisionComponent(new RectangleF(0, 0, Resolution.Width, Resolution.Height));
 
@@ -276,23 +281,23 @@ namespace Nabunassar
             base.UnloadContent();
         }
 
-        private Vector2 GetMovementDirection()
+        private Vector2 MoveCamera()
         {
             var movementDirection = Vector2.Zero;
-            var state = Keyboard.GetState();
-            if (state.IsKeyDown(Keys.Up))
+            var state = KeyboardExtended.GetState();
+            if (state.IsControlDown() && state.IsKeyDown(Keys.Up))
             {
                 movementDirection += Vector2.UnitY;
             }
-            if (state.IsKeyDown(Keys.Down))
+            if (state.IsControlDown() && state.IsKeyDown(Keys.Down))
             {
                 movementDirection -= Vector2.UnitY;
             }
-            if (state.IsKeyDown(Keys.Right))
+            if (state.IsControlDown() && state.IsKeyDown(Keys.Right))
             {
                 movementDirection -= Vector2.UnitX;
             }
-            if (state.IsKeyDown(Keys.Left))
+            if (state.IsControlDown() && state.IsKeyDown(Keys.Left))
             {
                 movementDirection += Vector2.UnitX;
             }
@@ -307,11 +312,11 @@ namespace Nabunassar
             float zoomPerTick = 0.001f;
             if (keyboardState.IsShiftDown() && state.IsKeyDown(Keys.Z))
             {
-                _camera.ZoomIn(zoomPerTick);
+                Camera.ZoomIn(zoomPerTick);
             }
             if (keyboardState.IsShiftDown() && state.IsKeyDown(Keys.X))
             {
-                _camera.ZoomOut(zoomPerTick);
+                Camera.ZoomOut(zoomPerTick);
             }
         }
 
@@ -321,11 +326,11 @@ namespace Nabunassar
             FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
 
             const float movementSpeed = 200;
-            _camera.Move(GetMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
+            Camera.Move(MoveCamera() * movementSpeed * gameTime.GetElapsedSeconds());
 
             var mouseState = Mouse.GetState();
             _mousePosition = new Vector2(mouseState.X,mouseState.Y);
-            _worldPosition = _camera.ScreenToWorld(_mousePosition);
+            _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
             KeyboardExtended.Update();
             var keyboardState = KeyboardExtended.GetState();
@@ -338,13 +343,47 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            //World.LoadContent();
             World.Update(gameTime); 
             
             CollisionComponent.Update(gameTime);
 
             base.Update(gameTime);
         }
+
+        //private void CollisionComponentUpdate(GameTime gameTime)
+        //{
+        //    var _layers = CollisionComponent.GetPropValue<Dictionary<string, Layer>>("_layers");
+        //    var _layerCollision = CollisionComponent.GetPropValue<HashSet<(Layer, Layer)>>("_layerCollision");
+
+        //    foreach (Layer value in _layers.Values)
+        //    {
+        //        value.Reset();
+        //    }
+
+        //    foreach (var (layer, layer2) in _layerCollision)
+        //    {
+        //        foreach (ICollisionActor item in layer.Space)
+        //        {
+        //            foreach (ICollisionActor item2 in layer2.Space.Query(item.Bounds.BoundingRectangle))
+        //            {
+        //                if (item != item2 && item.Bounds.Intersects(item2.Bounds))
+        //                {
+        //                    Vector2 vector = CalculatePenetrationVector(item.Bounds, item2.Bounds);
+        //                    item.OnCollision(new CollisionEventArgs
+        //                    {
+        //                        Other = item2,
+        //                        PenetrationVector = vector
+        //                    });
+        //                    item2.OnCollision(new CollisionEventArgs
+        //                    {
+        //                        Other = item,
+        //                        PenetrationVector = -vector
+        //                    });
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         protected override void Draw(GameTime gameTime)
         {
@@ -372,8 +411,8 @@ namespace Nabunassar
         {
             var sb = BeginDraw(false);
 
-            sb.DrawText(Fonts.Retron, 20, "World: " + _worldPosition.ToString(), new Vector2(50, Resolution.Height - 125), Color.PeachPuff);
-            sb.DrawText(Fonts.Retron, 20, "Display: " + _mousePosition.ToString(), new Vector2(50, Resolution.Height - 100), Color.AntiqueWhite);
+            sb.DrawText(Fonts.Retron, 20, "World: " + _worldPosition.ToString(), new Vector2(50, 100), Color.PeachPuff);
+            sb.DrawText(Fonts.Retron, 20, "Display: " + _mousePosition.ToString(), new Vector2(50, 125), Color.AntiqueWhite);
 
             sb.End();
         }

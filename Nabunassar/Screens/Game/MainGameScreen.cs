@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using MonoGame.Extended.Screens;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Resources;
@@ -25,6 +26,11 @@ namespace Nabunassar.Screens.Game
 
         public override void LoadContent()
         {
+            Game.Camera.Zoom = 4;
+            Game.Camera.Origin = new Vector2(0, 0);
+            Game.Camera.Position = new Vector2(0, 0);
+
+
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
 
             foreach (var tileset in _tiledMap.Tilesets)
