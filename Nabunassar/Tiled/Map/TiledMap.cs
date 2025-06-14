@@ -47,9 +47,27 @@ namespace Nabunassar.Tiled.Map
                             Id = x.GetTagAttrInteger("id")
                         };
 
-                        foreach (var prop in x.Element("properties").Elements("property"))
+                        var isPropertiesExists = x.Element("properties");
+                        if (isPropertiesExists != null)
                         {
-                            tile.Properties[prop.GetTagAttrString("name")] = prop.GetTagAttrString("value");
+                            foreach (var prop in x.Element("properties").Elements("property"))
+                            {
+                                tile.Properties[prop.GetTagAttrString("name")] = prop.GetTagAttrString("value");
+                            }
+                        }
+
+                        var bounds = x.Element("objectgroup");
+                        if(bounds != null)
+                        {
+                            foreach (var bound in bounds.Elements("object"))
+                            {
+                                tile.Bounds.Add(new MonoGame.Extended.RectangleF(
+                                    bound.GetTagAttrFloatRound("x"),
+                                    bound.GetTagAttrFloatRound("y"),
+                                    bound.GetTagAttrFloatRound("width"),
+                                    bound.GetTagAttrFloatRound("height")
+                                    ));
+                            }
                         }
 
                         return tile;

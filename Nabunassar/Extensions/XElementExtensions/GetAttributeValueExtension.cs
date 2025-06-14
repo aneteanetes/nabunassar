@@ -18,6 +18,13 @@ namespace Nabunassar
             return value;
         }
 
+        public static int GetTagAttrFloatRound(this XElement xElement, string attr)
+        {
+            double.TryParse(xElement.Attribute(attr).Value.Replace(".",","), out var value);
+
+            return (int)Math.Round(value);
+        }
+
         public static string GetTagAttrString(this XElement xElement, string attr)
         {
             return xElement.Attribute(attr).Value;

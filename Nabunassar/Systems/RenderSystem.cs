@@ -37,7 +37,7 @@ namespace Nabunassar.ECS
             foreach (var entityId in ActiveEntities)
             {
                 var render = _renderMapper.Get(entityId);
-                if (render.Sprite is AnimatedSprite animatedSprite)
+                if (render!=null && render.Sprite is AnimatedSprite animatedSprite)
                     animatedSprite.Update(gameTime);
             }
         }
@@ -51,7 +51,8 @@ namespace Nabunassar.ECS
                     Console.WriteLine();
 
                 var render = _renderMapper.Get(entityId);
-                sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
+                if (render != null)
+                    sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
 
                 if (isDrawBounds)
                 {
@@ -60,6 +61,8 @@ namespace Nabunassar.ECS
                         sb.DrawRectangle(collisions.Bounds.As<RectangleF>(), Color.Red);
                 }
             }
+
+            //sb.End();
         }
     }
 }

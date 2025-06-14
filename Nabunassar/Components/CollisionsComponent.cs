@@ -26,8 +26,11 @@ namespace Nabunassar.Components
 
         private CollisionEventHandler _onCollistion;
 
-        public CollisionsComponent(NabunassarGame game, RectangleF bounds, ObjectType objType, Entity entity, CollisionEventHandler onCollistion=null)
+        public string LayerName { get; private set; } = null;
+
+        public CollisionsComponent(NabunassarGame game, RectangleF bounds, ObjectType objType, Entity entity,string layer=null, CollisionEventHandler onCollistion=null)
         {
+            LayerName = layer;
             Entity = entity;
             ObjectType = objType;
             Bounds = bounds;
@@ -40,7 +43,7 @@ namespace Nabunassar.Components
                 var height = (int)bounds.Height;
                 var texture = new Texture2D(game.GraphicsDevice, width, height);
                 var data = new Color[key];
-                Array.Fill(data,Color.Black);
+                Array.Fill(data,Color.White);
                 texture.SetData(data);
                 BoundsData = data;
                 TextureWidth = texture.Width;
@@ -49,12 +52,15 @@ namespace Nabunassar.Components
 
         public void OnCollision(CollisionEventArgs collisionInfo)
         {
+            if (_onCollistion == null)
+                return;
+
             var otherCollision = collisionInfo.Other.As<CollisionsComponent>();
 
             var thisDesc = Entity.Get<DescriptorComponent>();
             var otherDesc = otherCollision.Entity.Get<DescriptorComponent>();
 
-            _onCollistion?.Invoke(collisionInfo,this.Entity,otherCollision.Entity);
+            _onCollistion.Invoke(collisionInfo,this.Entity,otherCollision.Entity);
         }
     }
 

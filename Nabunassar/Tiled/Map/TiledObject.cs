@@ -2,6 +2,7 @@
 
 using Geranium.Reflection;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended;
 
 namespace Nabunassar.Tiled.Map
 {
@@ -37,6 +38,27 @@ namespace Nabunassar.Tiled.Map
 
             return Convert.ChangeType(p.value, typeof(T)).As<T>();
         }
+
+        public bool IsHaveBounds()
+        {
+            var tile = GetTile();
+
+            if(tile == null) 
+                return false;
+
+            return tile.Bounds.Count != 0;
+        }
+
+        public List<RectangleF> GetBounds()
+        {
+            if (!IsHaveBounds())
+                return [];
+
+            var tile = GetTile();
+            return tile.Bounds;
+        }
+
+        public TiledTile GetTile() => Tileset.Tiles.FirstOrDefault(x => x.Id == this.gid-1);
 
         public Point[] Polygon { get; set; } = new Point[0];
 

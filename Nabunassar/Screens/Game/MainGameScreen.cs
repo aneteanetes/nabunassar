@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
+using Nabunassar.Components;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Resources;
@@ -64,7 +65,7 @@ namespace Nabunassar.Screens.Game
             //_tiledMapRenderer = new TiledMapRenderer(Game, _tiledMap);
             //_tiledMapRenderer.LoadContent();
 
-            Game.InitializeGameState();
+            Game.RunGameState();
         }
 
         public override void UnloadContent()
@@ -97,15 +98,15 @@ namespace Nabunassar.Screens.Game
 
         public override void Draw(GameTime gameTime)
         {
-            var sb = Game.BeginDraw();
-            //_tiledMapRenderer.Draw(gameTime, sb);
-            sb.End();
+            //var sb = Game.BeginDraw();
+            ////_tiledMapRenderer.Draw(gameTime, sb);
+            //sb.End();
 
-            sb = Game.BeginDraw(false);
+            //sb = Game.BeginDraw(false);
 
-            sb.DrawText(Fonts.Retron,30, Game.FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
+            //sb.DrawText(Fonts.Retron,30, Game.FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
 
-            sb.End();
+            //sb.End();
 
 
             base.Draw(gameTime);

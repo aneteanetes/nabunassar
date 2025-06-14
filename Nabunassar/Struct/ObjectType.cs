@@ -11,6 +11,7 @@ namespace Nabunassar.Struct
         Ground,
         Object,
         NPC,
-        Player
+        Player,
+        Cursor
     }
 }

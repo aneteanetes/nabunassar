@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
+using System.Diagnostics;
 
 namespace Nabunassar
 {
@@ -19,11 +20,11 @@ namespace Nabunassar
             var bBounds = player.Bounds.As<RectangleF>();
 
             // Calculate the intersecting rectangle
-            int x1 = (int)Math.Floor(Math.Max(aBounds.X, bBounds.X));
-            int x2 = (int)Math.Floor(Math.Min(aBounds.X + aBounds.Width, bBounds.X + bBounds.Width));
+            int x1 = (int)Math.Ceiling(Math.Max(aBounds.X, bBounds.X));
+            int x2 = (int)Math.Ceiling(Math.Min(aBounds.X + aBounds.Width, bBounds.X + bBounds.Width));
 
-            int y1 = (int)Math.Floor(Math.Max(aBounds.Y, bBounds.Y));
-            int y2 = (int)Math.Floor(Math.Min(aBounds.Y + aBounds.Height, bBounds.Y + bBounds.Height));
+            int y1 = (int)Math.Ceiling(Math.Max(aBounds.Y, bBounds.Y));
+            int y2 = (int)Math.Ceiling(Math.Min(aBounds.Y + aBounds.Height, bBounds.Y + bBounds.Height));
 
             // For each single pixel in the intersecting rectangle
             for (int y = y1; y < y2; ++y)
@@ -31,11 +32,27 @@ namespace Nabunassar
                 for (int x = x1; x < x2; ++x)
                 {
                     // Get the color from each texture
-                    Color colorA = bitsA[(x - (int)Math.Floor(aBounds.X)) + (y - (int)Math.Floor(aBounds.Y)) * wall.Sprite.TextureRegion.Width];
-                    Color colorB = bitsB[(x - (int)Math.Floor(bBounds.X)) + (y - (int)Math.Floor(bBounds.Y)) * (int)bBounds.Width];
-
-                    if (colorA.A != 0 && colorB.A != 0) // If both colors are not transparent (the alpha channel is not 0), then there is a collision
+                    try
                     {
+                        var idxA = (x - (int)Math.Floor(aBounds.X)) + (y - (int)Math.Floor(aBounds.Y)) * wall.Sprite.TextureRegion.Width;
+                        if (idxA >= bitsA.Length)
+                            return true;
+
+                        var idxB = (x - (int)Math.Floor(bBounds.X)) + (y - (int)Math.Floor(bBounds.Y)) * (int)bBounds.Width;
+                        if (idxB >= bitsB.Length)
+                            return true;
+
+                        Color colorA = bitsA[idxA];
+                        Color colorB = bitsB[idxB];
+
+                        if (colorA.A != 0 && colorB.A != 0) // If both colors are not transparent (the alpha channel is not 0), then there is a collision
+                        {
+                            return true;
+                        }
+                    }
+                    catch (IndexOutOfRangeException ex)
+                    {
+                        Debugger.Break();
                         return true;
                     }
                 }

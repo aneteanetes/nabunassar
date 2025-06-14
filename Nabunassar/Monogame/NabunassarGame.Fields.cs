@@ -1,7 +1,7 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
+using Monogame.Extended;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
@@ -22,7 +22,7 @@ namespace Nabunassar
     {
         public DataBase DataBase { get; set; }
 
-        public CollisionComponent CollisionComponent { get; private set; }
+        public CustomCollisionComponent CollisionComponent { get; private set; }
 
         public FastRandom Random { get; private set; }
 

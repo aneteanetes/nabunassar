@@ -1,7 +1,4 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
+﻿using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Struct;
@@ -33,12 +30,10 @@ namespace Nabunassar.Entities.Data
 
         public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity other)
         {
-            var hostCollision = host.Get<CollisionsComponent>();
-            var renderHost = host.Get<RenderComponent>();
-            var renderOther = other.Get<RenderComponent>();
-            var desc = host.Get<DescriptorComponent>();
-
             var otherCollision = other.Get<CollisionsComponent>();
+
+            if (otherCollision.ObjectType == ObjectType.Cursor)
+                return;
 
             if (otherCollision.ObjectType == ObjectType.Ground)
             {
@@ -49,33 +44,17 @@ namespace Nabunassar.Entities.Data
                     Speed = _game.DataBase.GetGroundTypeSpeed(groudType);
                 }
             }
-            else if (renderOther.IsIntersects(hostCollision))
+            else
             {
-                var normilizedVector = NormalizePenetrationVector(collisionInfo.PenetrationVector);
+                var hostCollision = host.Get<CollisionsComponent>();
+                hostCollision.Bounds.Position -= collisionInfo.PenetrationVector *2;
 
-                //boundsComp.Bounds.Position -= normilizedVector;
-                hostCollision.Bounds.Position = hostCollision.PrevBoundPosition - normilizedVector;
-                //renderHost.Position -= normilizedVector;
-                renderHost.Position = renderHost.PrevPosition - normilizedVector;
+                var renderHost = host.Get<RenderComponent>();
+                renderHost.Position -= collisionInfo.PenetrationVector *2;
 
+                //hostCollision.Bounds.Position = hostCollision.PrevBoundPosition;
+                //renderHost.Position = renderHost.PrevPosition;
             }
-        }
-
-        private Vector2 NormalizePenetrationVector(Vector2 vector)
-        {
-            if(vector.X>0)
-                vector.X = .015f;
-
-            if(vector.Y>0)
-                vector.Y = .015f;
-
-            if (vector.X < 0)
-                vector.X = -.015f;
-
-            if(vector.Y<0)
-                vector.Y = -.015f;
-
-            return vector;
         }
     }
 }

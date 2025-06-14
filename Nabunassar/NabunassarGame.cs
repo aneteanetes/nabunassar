@@ -5,9 +5,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Monogame.Extended;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Collisions.Layers;
+using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
@@ -217,11 +219,24 @@ namespace Nabunassar
             DataBase=new DataBase(this);
 
             Random = new FastRandom();
-            CollisionComponent = new CollisionComponent(new RectangleF(0, 0, Resolution.Width, Resolution.Height));
+            var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
+            CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
+
+            var objectsLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
+            CollisionComponent.Add("objects", objectsLayer);
+
+            var groundLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
+            CollisionComponent.Add("ground", groundLayer);
+
+            var cursorLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
+            CollisionComponent.Add("cursor", cursorLayer);
+
+            CollisionComponent.AddCollisionBetweenLayer(cursorLayer, objectsLayer);
 
             World = new WorldBuilder()
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new RenderSystem(this))
+                .AddSystem(new CursorSystem(this))
                 .Build();
 
             EntityFactory=new Entities.EntityFactory(this);
@@ -270,6 +285,8 @@ namespace Nabunassar
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             Desktop = new Desktop();
+
+            Game.InitializeGameState();
 
             SwitchScreen<MainMenuScreen>();
 
@@ -322,6 +339,9 @@ namespace Nabunassar
 
         protected override void Update(GameTime gameTime)
         {
+            MouseExtended.Update();
+            KeyboardExtended.Update();
+
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
 
@@ -332,10 +352,9 @@ namespace Nabunassar
             _mousePosition = new Vector2(mouseState.X,mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
-            KeyboardExtended.Update();
             var keyboardState = KeyboardExtended.GetState();
 
-            if(keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.F)) 
+            if(keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X)) 
                 isDrawFPS = !isDrawFPS;
 
             if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
@@ -343,47 +362,12 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            World.Update(gameTime); 
-            
+            World.Update(gameTime);
+
             CollisionComponent.Update(gameTime);
 
             base.Update(gameTime);
         }
-
-        //private void CollisionComponentUpdate(GameTime gameTime)
-        //{
-        //    var _layers = CollisionComponent.GetPropValue<Dictionary<string, Layer>>("_layers");
-        //    var _layerCollision = CollisionComponent.GetPropValue<HashSet<(Layer, Layer)>>("_layerCollision");
-
-        //    foreach (Layer value in _layers.Values)
-        //    {
-        //        value.Reset();
-        //    }
-
-        //    foreach (var (layer, layer2) in _layerCollision)
-        //    {
-        //        foreach (ICollisionActor item in layer.Space)
-        //        {
-        //            foreach (ICollisionActor item2 in layer2.Space.Query(item.Bounds.BoundingRectangle))
-        //            {
-        //                if (item != item2 && item.Bounds.Intersects(item2.Bounds))
-        //                {
-        //                    Vector2 vector = CalculatePenetrationVector(item.Bounds, item2.Bounds);
-        //                    item.OnCollision(new CollisionEventArgs
-        //                    {
-        //                        Other = item2,
-        //                        PenetrationVector = vector
-        //                    });
-        //                    item2.OnCollision(new CollisionEventArgs
-        //                    {
-        //                        Other = item,
-        //                        PenetrationVector = -vector
-        //                    });
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
         protected override void Draw(GameTime gameTime)
         {
@@ -391,10 +375,12 @@ namespace Nabunassar
 
             base.Draw(gameTime);
 
+            SpriteBatch.End();
+
             if (isDrawFPS)
                 DrawFPS();
 
-            if(isDrawCoords)
+            if (isDrawCoords)
                 DrawPositions();
         }
 
