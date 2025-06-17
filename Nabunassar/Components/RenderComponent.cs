@@ -1,11 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended.Graphics;
+﻿using MonoGame.Extended.Graphics;
 
 namespace Nabunassar.Components
 {
-    internal class RenderComponent
+    internal class RenderComponent : PositionComponent
     {
-        public RenderComponent(Sprite sprite, Vector2 position, float rotation)
+        public RenderComponent(NabunassarGame game, Sprite sprite, Vector2 position, float rotation):base(game)
         {
             Sprite = sprite;
             Position = position;
@@ -20,8 +19,6 @@ namespace Nabunassar.Components
         public Color[] Data { get; private set; }
 
         public Sprite Sprite { get; set; }
-
-        public Vector2 Position { get; set; }
 
         public float Rotation { get; set; }
     }

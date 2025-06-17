@@ -1,13 +1,8 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
-using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
 {
@@ -15,8 +10,8 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         ComponentMapper<PlayerComponent> _playerComponentMapper;
-        ComponentMapper<RenderComponent> _renderComponentMapper;
-        ComponentMapper<CollisionsComponent> _collisionComponentMapper;
+        ComponentMapper<MoveComponent> _moveComponentMapper;
+        ComponentMapper<BoundsComponent> _boundComponentMapper;
 
         public PlayerControllSystem(NabunassarGame game) : base(Aspect.All(typeof(PlayerComponent)))
         {
@@ -26,8 +21,8 @@ namespace Nabunassar.Systems
         public override void Initialize(IComponentMapperService mapperService)
         {
             _playerComponentMapper = mapperService.GetMapper<PlayerComponent>();
-            _renderComponentMapper = mapperService.GetMapper<RenderComponent>();
-            _collisionComponentMapper = mapperService.GetMapper<CollisionsComponent>();
+            _moveComponentMapper = mapperService.GetMapper<MoveComponent>();
+            _boundComponentMapper = mapperService.GetMapper<BoundsComponent>();
         }
 
         public override void Update(GameTime gameTime)
@@ -37,94 +32,34 @@ namespace Nabunassar.Systems
             foreach (var entityId in ActiveEntities)
             {
                 var player = _playerComponentMapper.Get(entityId);
-                var render = _renderComponentMapper.Get(entityId);
-                var bound = _collisionComponentMapper.Get(entityId);
+                var bounds = _boundComponentMapper.Get(entityId);
+                var moving = _moveComponentMapper.Get(entityId);
 
-                bool moved = false;
-                float x = 0, y = 0;
+                Vector2 moveVector = Vector2.Zero;
 
                 if (state.IsKeyDown(Keys.S))
                 {
-                    y += 1;
-                    moved = true;
+                    moveVector.Y += 1;
                 }
                 if (state.IsKeyDown(Keys.W))
                 {
-                    y -= 1;
-                    moved = true;
+                    moveVector.Y -= 1;
                 }
                 if (state.IsKeyDown(Keys.A))
                 {
-                    x -= 1;
-                    moved = true;
+                    moveVector.X -= 1;
                 }
                 if (state.IsKeyDown(Keys.D))
                 {
-                    x += 1;
-                    moved = true;
+                    moveVector.X += 1;
                 }
 
-                MoveBounds(state, player, bound);
-
-                var animatedSprite = render.Sprite.As<AnimatedSprite>();
-
-                if (moved && (x!=0 || y!=0))
-                {
-                    var speedVector = new Vector2(x, y);
-                    speedVector.Normalize();
-                    speedVector *= player.Character.Speed;
-
-                    var newPos = new Vector2(render.Position.X + speedVector.X, render.Position.Y + speedVector.Y);
-
-
-                    if (animatedSprite.CurrentAnimation != "run")
-                    {
-                        animatedSprite.SetAnimation("run");
-                    }
-
-                    var dir = render.Position.DetectDirection(newPos);
-                    var newDir = dir;
-                    if (dir.Is(Direction.Left))
-                    {
-                        newDir = Direction.Left;
-                    }
-                    else if (dir.Is(Direction.Right))
-                    {
-                        newDir = Direction.Right;
-                    }
-                    else
-                    {
-                        newDir = player.Character.ViewDirection;
-                    }
-
-                    if (dir.OneOf([Direction.UpLeft, Direction.UpRight, Direction.DownLeft, Direction.DownRight]))
-                    {
-
-                    }
-
-                    player.Character.ViewDirection = newDir;
-
-                    animatedSprite.Effect = player.Character.ViewDirection == Direction.Left
-                        ? SpriteEffects.FlipHorizontally
-                        : SpriteEffects.None;
-
-                    //render.PrevPosition = render.Position;
-                    render.Position = newPos;
-
-                    bound.PrevBoundPosition = bound.Bounds.Position;
-                    bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + speedVector.X, bound.Bounds.Position.Y + speedVector.Y);
-
-                }
-                else if (animatedSprite.CurrentAnimation != "idle")
-                {
-                    animatedSprite.SetAnimation("idle");
-                }
-
-                player.Character.SetDirtSpeed();
+                if (moveVector != Vector2.Zero)
+                    moving.MoveToDirection(bounds.Position, moveVector);
             }
         }
 
-        private static void MoveBounds(KeyboardStateExtended state, PlayerComponent player, CollisionsComponent bound)
+        private static void MoveBounds(KeyboardStateExtended state, PlayerComponent player, BoundsComponent bound)
         {
             //return;
 

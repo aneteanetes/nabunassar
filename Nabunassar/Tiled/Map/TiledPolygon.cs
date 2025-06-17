@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Nabunassar.Tiled.Map
 {
-    public class TiledPolygon
+    public class TiledPolygon : TiledBase
     {
         public TiledPolygon(int gid) => Gid = gid;
 
@@ -26,24 +26,5 @@ namespace Nabunassar.Tiled.Map
         public TiledLayer Layer { get; set; }
 
         public TiledTileset Tileset { get; set; }
-
-        public Dictionary<string,string> Properties { get; set; }
-
-        public T GetPropopertyValue<T>(string propName)
-        {
-            if (Properties.ContainsKey(propName))
-            {
-                var p = Properties[propName];
-                if (typeof(T).IsEnum)
-                {
-                    return Enum.Parse(typeof(T), p, true).As<T>();
-                }
-                else
-                {
-                    return Convert.ChangeType(p, typeof(T)).As<T>();
-                }
-            }
-            return default;
-        }
     }
 }

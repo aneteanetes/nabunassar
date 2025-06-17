@@ -8,10 +8,14 @@ namespace Nabunassar.Struct
 {
     internal enum ObjectType
     {
+        Door,
+        Tree,
+        Wall,
         Ground,
         Object,
         NPC,
         Player,
-        Cursor
+        Cursor,
+        Pathing
     }
 }

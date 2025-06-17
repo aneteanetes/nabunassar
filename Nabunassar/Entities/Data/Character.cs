@@ -8,6 +8,8 @@ namespace Nabunassar.Entities.Data
     internal class Character
     {
         private NabunassarGame _game;
+        
+        public Entity Entity { get; set; }
 
         public Character(NabunassarGame game)
         {
@@ -30,31 +32,7 @@ namespace Nabunassar.Entities.Data
 
         public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity other)
         {
-            var otherCollision = other.Get<CollisionsComponent>();
-
-            if (otherCollision.ObjectType == ObjectType.Cursor)
-                return;
-
-            if (otherCollision.ObjectType == ObjectType.Ground)
-            {
-                var tileComp = other.Get<TileComponent>();
-                if (tileComp != null)
-                {
-                    var groudType = tileComp.Polygon.GetPropopertyValue<GroundType>(nameof(GroundType));
-                    Speed = _game.DataBase.GetGroundTypeSpeed(groudType);
-                }
-            }
-            else
-            {
-                var hostCollision = host.Get<CollisionsComponent>();
-                hostCollision.Bounds.Position -= collisionInfo.PenetrationVector *2;
-
-                var renderHost = host.Get<RenderComponent>();
-                renderHost.Position -= collisionInfo.PenetrationVector *2;
-
-                //hostCollision.Bounds.Position = hostCollision.PrevBoundPosition;
-                //renderHost.Position = renderHost.PrevPosition;
-            }
+            
         }
     }
 }

@@ -80,8 +80,8 @@ namespace Monogame.Extended
                 var collisions = secondLayer.Space.Query(actor.Bounds.BoundingRectangle);
                     foreach (var other in collisions)
                     {
-                        var a = actor.As<CollisionsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
-                        var b = other.As<CollisionsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
+                        var a = actor.As<BoundsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
+                        var b = other.As<BoundsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
 
                         if (actor != other && actor.Bounds.Intersects(other.Bounds))
                         {

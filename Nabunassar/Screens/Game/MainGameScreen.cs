@@ -1,12 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using MonoGame.Extended.Screens;
 using Nabunassar.Components;
+using Nabunassar.Components.Inactive;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
-using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Tiled.Map;
 
@@ -30,7 +28,6 @@ namespace Nabunassar.Screens.Game
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
-
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
 
@@ -61,27 +58,17 @@ namespace Nabunassar.Screens.Game
             {
                 Game.EntityFactory.CreateNPC(mapObject);
             }
-
-            //_tiledMapRenderer = new TiledMapRenderer(Game, _tiledMap);
-            //_tiledMapRenderer.LoadContent();
-
+            
             Game.RunGameState();
-        }
-
-        public override void UnloadContent()
-        {
-            //_tiledMapRenderer.UnloadContent();
         }
 
         private bool isEsc = false;
 
         public override void Update(GameTime gameTime)
         {
-            //_tiledMapRenderer.Update(gameTime);
+            var keyboardState = KeyboardExtended.GetState();
 
-            var state = KeyboardExtended.GetState();
-
-            if(state.WasKeyPressed( Microsoft.Xna.Framework.Input.Keys.Escape ))
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 if (!isEsc)
                 {
@@ -94,22 +81,6 @@ namespace Nabunassar.Screens.Game
                     Game.SwitchDesktop();
                 }
             }
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            //var sb = Game.BeginDraw();
-            ////_tiledMapRenderer.Draw(gameTime, sb);
-            //sb.End();
-
-            //sb = Game.BeginDraw(false);
-
-            //sb.DrawText(Fonts.Retron,30, Game.FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
-
-            //sb.End();
-
-
-            base.Draw(gameTime);
         }
     }
 }

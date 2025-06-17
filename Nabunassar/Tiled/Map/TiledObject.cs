@@ -6,7 +6,7 @@ using MonoGame.Extended;
 
 namespace Nabunassar.Tiled.Map
 {
-    public class TiledObject
+    public class TiledObject : TiledBase
     {
         public int id { get; set; }
 
@@ -24,20 +24,9 @@ namespace Nabunassar.Tiled.Map
 
         public Vector2 Position { get; set; }
 
-        public bool collide => Properties?.FirstOrDefault(x => x.name == "collide")?.value == "true";
+        public bool collide => Properties["collide"] == "true";
 
         public string objectgroup { get; set; }
-
-        public List<TiledObjectProperty> Properties { get; set; } = new List<TiledObjectProperty>();
-
-        public T GetPropValue<T>(string propName)
-        {
-            var p = Properties.FirstOrDefault(x => x.name.ToLower() == propName.ToLower());
-            if (p == null)
-                return default;
-
-            return Convert.ChangeType(p.value, typeof(T)).As<T>();
-        }
 
         public bool IsHaveBounds()
         {
@@ -58,7 +47,7 @@ namespace Nabunassar.Tiled.Map
             return tile.Bounds;
         }
 
-        public TiledTile GetTile() => Tileset.Tiles.FirstOrDefault(x => x.Id == this.gid-1);
+        public TiledTile GetTile() => Tileset?.Tiles?.FirstOrDefault(x => x.Id == this.gid-1);
 
         public Point[] Polygon { get; set; } = new Point[0];
 

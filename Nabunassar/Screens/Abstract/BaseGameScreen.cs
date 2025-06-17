@@ -1,11 +1,9 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Nabunassar.Desktops;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.SpriteBatch;
-using Nabunassar.Resources;
 
 namespace Nabunassar.Screens.Abstract
 {
@@ -26,6 +24,8 @@ namespace Nabunassar.Screens.Abstract
         public override void Draw(GameTime gameTime)
         {
             Game.World.Draw(gameTime);
+
+            Game.SpriteBatch.End();
             //Game.World.Draw(gameTime, Game.BeginDraw());
             Game.Desktop.Render();
         }

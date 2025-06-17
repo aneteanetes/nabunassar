@@ -1,13 +1,13 @@
-﻿using AssetManagementBase;
+﻿global using Microsoft.Xna.Framework;
+global using Point = Microsoft.Xna.Framework.Point;
+
+using AssetManagementBase;
 using Geranium.Reflection;
-using info.lundin.math;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Monogame.Extended;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.ECS;
@@ -20,7 +20,6 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
 using Nabunassar.Desktops;
-using Nabunassar.Desktops.Menu;
 using Nabunassar.ECS;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
@@ -29,13 +28,9 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
-using Nabunassar.Screens.Game;
-using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
-using System.Collections.Generic;
 using System.Reflection;
-using Point = Microsoft.Xna.Framework.Point;
 
 namespace Nabunassar
 {
@@ -237,6 +232,8 @@ namespace Nabunassar
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new RenderSystem(this))
                 .AddSystem(new CursorSystem(this))
+                .AddSystem(new MoveSystem(this))
+                //.AddSystem(new PathfindingSystem(this))
                 .Build();
 
             EntityFactory=new Entities.EntityFactory(this);
@@ -339,6 +336,9 @@ namespace Nabunassar
 
         protected override void Update(GameTime gameTime)
         {
+            if (!IsActive)
+                return;
+
             MouseExtended.Update();
             KeyboardExtended.Update();
 
@@ -371,6 +371,9 @@ namespace Nabunassar
 
         protected override void Draw(GameTime gameTime)
         {
+            if (!IsActive)
+                return;
+
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);

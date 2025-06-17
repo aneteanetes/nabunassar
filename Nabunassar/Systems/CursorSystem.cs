@@ -11,7 +11,7 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         ComponentMapper<CursorComponent> _cursorComponentMapper;
-        ComponentMapper<CollisionsComponent> _collisionComponentMapper;
+        ComponentMapper<BoundsComponent> _collisionComponentMapper;
 
         public CursorSystem(NabunassarGame game) : base(Aspect.All(typeof(CursorComponent)))
         {
@@ -21,7 +21,7 @@ namespace Nabunassar.Systems
         public override void Initialize(IComponentMapperService mapperService)
         {
             _cursorComponentMapper = mapperService.GetMapper<CursorComponent>();
-            _collisionComponentMapper = mapperService.GetMapper<CollisionsComponent>();
+            _collisionComponentMapper = mapperService.GetMapper<BoundsComponent>();
         }
 
         public override void Update(GameTime gameTime)

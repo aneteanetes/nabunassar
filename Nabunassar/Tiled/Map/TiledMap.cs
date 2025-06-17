@@ -135,16 +135,7 @@ namespace Nabunassar.Tiled.Map
                     {
                         foreach (var xmlprop in props.Elements())
                         {
-                            var p = new TiledObjectProperty();
-                            foreach (var tiledObjProp in tiledObjProps)
-                            {
-                                var attr = xmlprop.Attribute(tiledObjProp.Name);
-                                if (attr != null)
-                                {
-                                    p.SetPropValue(tiledObjProp.Name, attr.Value);
-                                }
-                            }
-                            tobj.Properties.Add(p);
+                            tobj.Properties[xmlprop.GetTagAttrString("name")] = xmlprop.GetTagAttrString("value");
                         }
                     }
 
