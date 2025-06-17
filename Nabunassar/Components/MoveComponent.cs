@@ -1,4 +1,5 @@
-﻿using Nabunassar.Components.Abstract;
+﻿using MonoGame.Extended;
+using Nabunassar.Components.Abstract;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Components
@@ -10,6 +11,8 @@ namespace Nabunassar.Components
             MoveSpeed = game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
         }
 
+        public Ray2 Ray2 { get; set; }
+
         public Vector2 TargetPosition { get; set; } = Vector2.Zero;
 
         public Direction MoveDirection { get; set; } = Direction.Idle;
@@ -20,16 +23,19 @@ namespace Nabunassar.Components
         {
             TargetPosition = new Vector2(from.X + moveSpeedVector.X, from.Y + moveSpeedVector.Y);
             MoveDirection = Vector2.Zero.DetectDirection(moveSpeedVector);
+            Ray2 = default;
         }
 
         public void MoveToPosition(Vector2 from, Vector2 positionToMoving)
         {
             TargetPosition = positionToMoving;
-            MoveDirection = Vector2.Zero.DetectDirection(positionToMoving);
+            MoveDirection = from.DetectDirection(positionToMoving);
+            Ray2 = new Ray2(from, positionToMoving);
         }
 
         public void Stop()
         {
+            Ray2 = default;
             MoveDirection = Direction.Idle;
             TargetPosition = Vector2.Zero;
         }
@@ -39,6 +45,6 @@ namespace Nabunassar.Components
             MoveSpeed = Game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
         }
 
-        public bool IsMoving() => MoveDirection != Direction.Idle;
+        public bool IsMoving() => MoveDirection != Direction.Idle || Ray2 != default;
     }
 }

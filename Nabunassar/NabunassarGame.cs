@@ -233,6 +233,7 @@ namespace Nabunassar
                 .AddSystem(new RenderSystem(this))
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new MoveSystem(this))
+                .AddSystem(new BoundRenderPositionSystem())
                 //.AddSystem(new PathfindingSystem(this))
                 .Build();
 
@@ -349,16 +350,19 @@ namespace Nabunassar
             Camera.Move(MoveCamera() * movementSpeed * gameTime.GetElapsedSeconds());
 
             var mouseState = Mouse.GetState();
-            _mousePosition = new Vector2(mouseState.X,mouseState.Y);
+            _mousePosition = new Vector2(mouseState.X, mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
             var keyboardState = KeyboardExtended.GetState();
 
-            if(keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X)) 
+            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
                 isDrawFPS = !isDrawFPS;
 
             if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
                 isDrawCoords = !isDrawCoords;
+
+            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
+                IsDrawBounds = !IsDrawBounds;
 
             AdjustZoom();
 

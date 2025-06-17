@@ -1,4 +1,5 @@
-﻿using Geranium.Reflection;
+﻿using FontStashSharp;
+using Geranium.Reflection;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
@@ -12,8 +13,9 @@ namespace Nabunassar.Components
 
         public override Vector2 Position { get => Bounds.Position; set => Bounds.Position = value; }
 
-        public Entity Entity { get; private set; }
+        public override Vector2 Origin { get => new Vector2(Position.X + Bounds.BoundingRectangle.Size.Width / 2, Position.Y + Bounds.BoundingRectangle.Size.Height / 2); set { } }
 
+        public Entity Entity { get; private set; }
         public ObjectType ObjectType { get; private set; }
 
         private CollisionEventHandler _onCollistion;

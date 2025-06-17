@@ -11,7 +11,7 @@ namespace Nabunassar.Components
 
         public virtual Vector2 Position { get; set; }
 
-        public Vector2 Origin { get; set; }
+        public virtual Vector2 Origin { get; set; }
 
         public virtual void SetPosition(Vector2 position)
         {

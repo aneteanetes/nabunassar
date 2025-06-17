@@ -11,7 +11,7 @@ using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
 {
-    internal class MoveSystem : EntityUpdateSystem
+    internal class MoveSystem : EntityUpdateSystem, IDrawSystem
     {
         NabunassarGame _game;
         ComponentMapper<MoveComponent> _moveComponentMapper;
@@ -43,44 +43,58 @@ namespace Nabunassar.Systems
 
                 if (move.IsMoving())
                 {
-                    var speedVector = move.TargetPosition.NormalizedCopy();
-                    speedVector *= move.MoveSpeed;
-
                     float xOffset = 0;
                     float yOffset = 0;
 
-                    switch (move.MoveDirection)
+                    var renderNewPos = Vector2.Zero;
+                    var boundNewPos = Vector2.Zero;
+
+                    if (move.Ray2 == default)
                     {
-                        case Direction.Up:
-                            yOffset-=move.MoveSpeed;
-                            break;
-                        case Direction.Down:
-                            yOffset += move.MoveSpeed;
-                            break;
-                        case Direction.Left:
-                            xOffset -= move.MoveSpeed;
-                            break;
-                        case Direction.Right:
-                            xOffset += move.MoveSpeed;
-                            break;
-                        case Direction.UpLeft:
-                            yOffset -= move.MoveSpeed;
-                            xOffset -= move.MoveSpeed;
-                            break;
-                        case Direction.UpRight:
-                            yOffset -= move.MoveSpeed;
-                            xOffset += move.MoveSpeed;
-                            break;
-                        case Direction.DownLeft:
-                            yOffset += move.MoveSpeed;
-                            xOffset -= move.MoveSpeed;
-                            break;
-                        case Direction.DownRight:
-                            yOffset += move.MoveSpeed;
-                            xOffset += move.MoveSpeed;
-                            break;
-                        default:
-                            break;
+                        switch (move.MoveDirection)
+                        {
+                            case Direction.Up:
+                                yOffset -= move.MoveSpeed;
+                                break;
+                            case Direction.Down:
+                                yOffset += move.MoveSpeed;
+                                break;
+                            case Direction.Left:
+                                xOffset -= move.MoveSpeed;
+                                break;
+                            case Direction.Right:
+                                xOffset += move.MoveSpeed;
+                                break;
+                            case Direction.UpLeft:
+                                yOffset -= move.MoveSpeed;
+                                xOffset -= move.MoveSpeed;
+                                break;
+                            case Direction.UpRight:
+                                yOffset -= move.MoveSpeed;
+                                xOffset += move.MoveSpeed;
+                                break;
+                            case Direction.DownLeft:
+                                yOffset += move.MoveSpeed;
+                                xOffset -= move.MoveSpeed;
+                                break;
+                            case Direction.DownRight:
+                                yOffset += move.MoveSpeed;
+                                xOffset += move.MoveSpeed;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        renderNewPos = new Vector2(render.Position.X + xOffset, render.Position.Y + yOffset);
+                        boundNewPos = new Vector2(bound.Position.X + xOffset, bound.Position.Y + yOffset);
+                    }
+                    else
+                    {
+                        var boundT = move.MoveSpeed / Vector2.Distance(bound.Position, move.Ray2.Direction);
+
+                        renderNewPos = Vector2.Lerp(render.Position, move.Ray2.Direction, boundT);
+
+                        boundNewPos = Vector2.Lerp(bound.Position, move.Ray2.Direction, boundT);
                     }
 
                     //reset speed after changing position
@@ -107,8 +121,8 @@ namespace Nabunassar.Systems
                     }
 
                     // setting position
-                    render.SetPosition(render.Position.X + xOffset, render.Position.Y + yOffset);
-                    bound.SetPosition(bound.Position.X + xOffset, bound.Position.Y + yOffset);
+                    render.SetPosition(renderNewPos);
+                    bound.SetPosition(boundNewPos);
 
                 }
                 else if (animatedSprite!=null && animatedSprite.CurrentAnimation!="idle")
@@ -137,6 +151,20 @@ namespace Nabunassar.Systems
             if (state.IsKeyDown(Keys.Right))
             {
                 bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + player.Character.Speed, bound.Bounds.Position.Y);
+            }
+        }
+
+        public void Draw(GameTime gameTime)
+        {
+            foreach (var entityId in ActiveEntities)
+            {
+                var move = _moveComponentMapper.Get(entityId);
+                var ray = move.Ray2;
+                if(ray!=default && _game.IsDrawBounds)
+                {
+                    var sb = _game.BeginDraw();
+                    sb.DrawLine(ray.Position, ray.Direction, Color.Red, 1);
+                }
             }
         }
     }

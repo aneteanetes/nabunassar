@@ -27,7 +27,8 @@ namespace Nabunassar.Systems
 
         public override void Update(GameTime gameTime)
         {
-            var state = KeyboardExtended.GetState();
+            var keyboard = KeyboardExtended.GetState();
+            var mouse = MouseExtended.GetState();
 
             foreach (var entityId in ActiveEntities)
             {
@@ -37,25 +38,31 @@ namespace Nabunassar.Systems
 
                 Vector2 moveVector = Vector2.Zero;
 
-                if (state.IsKeyDown(Keys.S))
+                if (keyboard.IsKeyDown(Keys.S))
                 {
                     moveVector.Y += 1;
                 }
-                if (state.IsKeyDown(Keys.W))
+                if (keyboard.IsKeyDown(Keys.W))
                 {
                     moveVector.Y -= 1;
                 }
-                if (state.IsKeyDown(Keys.A))
+                if (keyboard.IsKeyDown(Keys.A))
                 {
                     moveVector.X -= 1;
                 }
-                if (state.IsKeyDown(Keys.D))
+                if (keyboard.IsKeyDown(Keys.D))
                 {
                     moveVector.X += 1;
                 }
 
                 if (moveVector != Vector2.Zero)
                     moving.MoveToDirection(bounds.Position, moveVector);
+
+                if (mouse.WasButtonPressed(MouseButton.Left))
+                {
+                    var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
+                    moving.MoveToPosition(bounds.Origin, targetPosition);
+                }
             }
         }
 

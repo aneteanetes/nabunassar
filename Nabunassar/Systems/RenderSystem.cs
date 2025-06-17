@@ -31,8 +31,6 @@ namespace Nabunassar.ECS
         public void Update(GameTime gameTime)
         {
             var keyboardState = KeyboardExtended.GetState();
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
-                isDrawBounds = !isDrawBounds;
 
             foreach (var entityId in ActiveEntities)
             {
@@ -54,7 +52,7 @@ namespace Nabunassar.ECS
                 if (render != null)
                     sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
 
-                if (isDrawBounds)
+                if (_game.IsDrawBounds)
                 {
                     var collisions = _collistionsMapper.Get(entityId);
                     if (collisions != null)

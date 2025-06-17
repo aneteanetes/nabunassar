@@ -117,6 +117,9 @@ namespace Nabunassar.Entities
             character.Entity = entity;
             var size = new Vector2(16, 24) * TileSizeMultiplier;
 
+            var boundRender = new BoundRenderPositionComponent();
+            boundRender.RenderOffset = new Vector2(PersonBoundsYOffset,PersonBoundsYOffset);
+            entity.Attach(boundRender);
 
             var name = "SpriteSheet_" + character.Name;
             var texture = _game.Content.Load<Texture2D>("Assets/Tilesets/" + character.Tileset);

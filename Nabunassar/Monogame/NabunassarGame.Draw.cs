@@ -5,6 +5,8 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public bool IsDrawBounds { get; internal set; }
+
         public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true)
         {
             var transformMatrix = Camera.GetViewMatrix();

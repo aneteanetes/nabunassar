@@ -189,6 +189,19 @@ namespace Nabunassar
             return dirX | dirY;
         }
 
+        public static Vector2 ToDirectionVector(this Direction direction) => direction switch
+        {
+            Direction.Up => new Vector2(0, -1),
+            Direction.Down => new Vector2(0, 1),
+            Direction.Left => new Vector2(-1, 0),
+            Direction.Right => new Vector2(1, 0),
+            Direction.UpLeft => new Vector2(-1, -1),
+            Direction.UpRight => new Vector2(1, -1),
+            Direction.DownLeft => new Vector2(-1, 1),
+            Direction.DownRight => new Vector2(1, 1),
+            _ => Vector2.Zero,
+        };
+
         private static bool Compare(bool isLess, double a, double b, double accuracy)
         {
             var diff = Math.Abs(a - b);
