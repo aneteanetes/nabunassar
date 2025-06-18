@@ -1,8 +1,10 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
+using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Components
@@ -22,6 +24,8 @@ namespace Nabunassar.Components
 
         public string LayerName { get; private set; } = null;
 
+        public Texture2D BoundSprite { get; private set; }
+
         public BoundsComponent(NabunassarGame game, RectangleF bounds, ObjectType objType, Entity entity,string layer=null, CollisionEventHandler onCollistion=null):base(game)
         {
             LayerName = layer;
@@ -29,6 +33,7 @@ namespace Nabunassar.Components
             ObjectType = objType;
             Bounds = bounds;
             _onCollistion = onCollistion;
+
         }
 
         public void OnCollision(CollisionEventArgs collisionInfo)

@@ -1,6 +1,4 @@
 ﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
@@ -14,6 +12,7 @@ namespace Nabunassar.ECS
     {
         private ComponentMapper<BoundsComponent> _collistionsMapper;
         private ComponentMapper<RenderComponent> _renderMapper;
+        private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private bool isDrawBounds = false;
         private NabunassarGame _game;
 
@@ -26,6 +25,7 @@ namespace Nabunassar.ECS
         {
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _collistionsMapper = mapperService.GetMapper<BoundsComponent>();
+            _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
         }
 
         public void Update(GameTime gameTime)
@@ -43,14 +43,19 @@ namespace Nabunassar.ECS
         public override void Draw(GameTime gameTime)
         {
             var sb = _game.BeginDraw();
+
             foreach (var entityId in ActiveEntities)
             {
+                var descriptor = _descriptorMapper.Get(entityId);
+
                 if (this.GetEntity(entityId).Get<PlayerComponent>() != null)
                     Console.WriteLine();
 
                 var render = _renderMapper.Get(entityId);
-                if (render != null)
+                if (render != null && render.Sprite.IsVisible)
+                {
                     sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
+                }
 
                 if (_game.IsDrawBounds)
                 {
@@ -62,8 +67,6 @@ namespace Nabunassar.ECS
                     }
                 }
             }
-
-            //sb.End();
         }
     }
 }

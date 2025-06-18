@@ -234,7 +234,7 @@ namespace Nabunassar
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new MoveSystem(this))
                 .AddSystem(new BoundRenderPositionSystem())
-                //.AddSystem(new PathfindingSystem(this))
+                .AddSystem(new MouseControlSystem(this))
                 .Build();
 
             EntityFactory=new Entities.EntityFactory(this);
@@ -284,9 +284,9 @@ namespace Nabunassar
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             Desktop = new Desktop();
 
-            Game.InitializeGameState();
-
             SwitchScreen<MainMenuScreen>();
+
+            Game.InitializeGameState();
 
             base.LoadContent();
         }

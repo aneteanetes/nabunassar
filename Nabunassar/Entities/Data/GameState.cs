@@ -9,12 +9,8 @@ namespace Nabunassar.Entities.Data
     {
         public Party Party { get; set; }
 
-        public Character ActiveCharacter => Party.Characters.FirstOrDefault();
+        public Character ActiveCharacter => Party?.Characters?.FirstOrDefault();
 
         public Cursor Cursor { get; set; } = new();
-
-        //public LambdaGridView<bool> Walkability { get; set; }
-
-        //public Grid RoyToyGrid { get; set; }
     }
 }

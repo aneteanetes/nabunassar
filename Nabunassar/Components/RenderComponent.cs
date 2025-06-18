@@ -14,6 +14,8 @@ namespace Nabunassar.Components
             sprite.TextureRegion.Texture.GetData(0, new Rectangle(sprite.TextureRegion.X, sprite.TextureRegion.Y, sprite.TextureRegion.Width, sprite.TextureRegion.Height), Data, 0, Data.Length);
         }
 
+        public bool IsScaled { get; set; } = true;
+
         public Vector2 PrevPosition { get; set; }
 
         public Color[] Data { get; private set; }

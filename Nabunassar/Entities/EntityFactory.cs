@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
@@ -7,7 +8,10 @@ using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using Roy_T.AStar.Primitives;
 using SharpFont;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Nabunassar.Entities
 {
@@ -32,12 +36,16 @@ namespace Nabunassar.Entities
         public Entity CreateCursor()
         {
             var entity = CreateEntity("cursor");
+            var cursor = _game.GameState.Cursor;
 
-            _game.GameState.Cursor.Entity = entity;
+            cursor.Entity = entity;
 
             var cursorImg = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0028.png");
             var mouseCursor = MouseCursor.FromTexture2D(cursorImg, 0, 0);
-            Mouse.SetCursor(mouseCursor);
+            
+            cursor.DefineCursor("cursor",mouseCursor);
+
+
 
             var pos = Mouse.GetState().Position;
 
@@ -45,6 +53,38 @@ namespace Nabunassar.Entities
 
             var collision = CreateCollisionComponent(new RectangleF(pos.X, pos.Y, 4, 4), ObjectType.Cursor, entity,"cursor", _game.GameState.Cursor.OnCollision);
             entity.Attach(collision);
+
+            var name = "cursorspritesheet";
+            var texture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/cursor_tilemap_packed.png");
+            var atlas = Texture2DAtlas.Create(name+"atlas", texture, 16, 16);
+            SpriteSheet spriteSheet = new SpriteSheet(name, atlas);
+
+            spriteSheet.DefineAnimation("cursor", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(1, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(2, TimeSpan.FromSeconds(0.2));
+            });
+
+            spriteSheet.DefineAnimation("busy", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(189, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(190, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(191, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(192, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(196, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(195, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(193, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(194, TimeSpan.FromSeconds(0.2));
+            });
+
+            cursor.SpriteSheet = spriteSheet;
+
+            cursor.Animations.Add(spriteSheet.GetAnimation("busy"));
+
+            var _sprite = new AnimatedSprite(spriteSheet, "cursor");
+            cursor.AnimatedSprite = _sprite;
 
             return entity;
         }

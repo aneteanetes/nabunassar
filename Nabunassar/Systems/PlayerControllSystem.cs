@@ -62,6 +62,8 @@ namespace Nabunassar.Systems
                 {
                     var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
                     moving.MoveToPosition(bounds.Origin, targetPosition);
+
+
                 }
             }
         }
