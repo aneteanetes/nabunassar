@@ -23,5 +23,12 @@ namespace Nabunassar
 
             EntityFactory.CreateCharacter(character, new Vector2(175, 230));
         }
+
+        public void ChangeGameActive()
+        {
+            IsGameActive = !IsGameActive;
+            if (!IsGameActive)
+                GameState.Cursor.SetCursor("cursor");
+        }
     }
 }

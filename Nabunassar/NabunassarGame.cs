@@ -366,9 +366,11 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            World.Update(gameTime);
-
-            CollisionComponent.Update(gameTime);
+            if (IsGameActive)
+            {
+                World.Update(gameTime);
+                CollisionComponent.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }

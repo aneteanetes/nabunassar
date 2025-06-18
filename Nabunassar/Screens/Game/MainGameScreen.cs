@@ -74,11 +74,13 @@ namespace Nabunassar.Screens.Game
                 {
                     isEsc = true;
                     Game.SwitchDesktop(new MainMenu(Game));
+                    Game.ChangeGameActive();
                 }
                 else
                 {
                     isEsc = false;
                     Game.SwitchDesktop();
+                    Game.ChangeGameActive();
                 }
             }
         }

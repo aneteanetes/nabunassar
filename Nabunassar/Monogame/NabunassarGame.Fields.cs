@@ -20,6 +20,8 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public bool IsGameActive { get; set; } = true;
+
         public DataBase DataBase { get; set; }
 
         public CustomCollisionComponent CollisionComponent { get; private set; }
