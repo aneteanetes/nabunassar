@@ -233,7 +233,6 @@ namespace Nabunassar
                 .AddSystem(new RenderSystem(this))
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new MoveSystem(this))
-                .AddSystem(new BoundRenderPositionSystem())
                 .AddSystem(new MouseControlSystem(this))
                 .Build();
 

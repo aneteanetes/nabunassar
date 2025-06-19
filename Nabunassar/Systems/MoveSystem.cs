@@ -15,10 +15,10 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         ComponentMapper<MoveComponent> _moveComponentMapper;
-        ComponentMapper<RenderComponent> _renderComponentMapper;
-        ComponentMapper<BoundsComponent> _collisionComponentMapper;
+        ComponentMapper<PositionComponent> _positionComponentMapper;
+        ComponentMapper<BoundsComponent> _boundComponentMapper;
 
-        public MoveSystem(NabunassarGame game) : base(Aspect.All(typeof(MoveComponent),typeof(RenderComponent)))
+        public MoveSystem(NabunassarGame game) : base(Aspect.One(typeof(MoveComponent), typeof(PositionComponent)))
         {
             _game = game;
         }
@@ -26,8 +26,8 @@ namespace Nabunassar.Systems
         public override void Initialize(IComponentMapperService mapperService)
         {
             _moveComponentMapper = mapperService.GetMapper<MoveComponent>();
-            _renderComponentMapper = mapperService.GetMapper<RenderComponent>();
-            _collisionComponentMapper = mapperService.GetMapper<BoundsComponent>();
+            _positionComponentMapper = mapperService.GetMapper<PositionComponent>();
+            _boundComponentMapper = mapperService.GetMapper<BoundsComponent>();
         }
 
         public override void Update(GameTime gameTime)
@@ -35,11 +35,7 @@ namespace Nabunassar.Systems
             foreach (var entityId in ActiveEntities)
             {
                 var move = _moveComponentMapper.Get(entityId);
-                var render = _renderComponentMapper.Get(entityId);
-                var bound = _collisionComponentMapper.Get(entityId);
-
-                var sprite = render.Sprite;
-                var animatedSprite = sprite.As<AnimatedSprite>();
+                var position = _positionComponentMapper.Get(entityId) ?? _boundComponentMapper.Get(entityId);
 
                 if (move.IsMoving())
                 {
@@ -47,7 +43,7 @@ namespace Nabunassar.Systems
                     float yOffset = 0;
 
                     var renderNewPos = Vector2.Zero;
-                    var boundNewPos = Vector2.Zero;
+                    var newPos = Vector2.Zero;
 
                     if (move.Ray2 == default)
                     {
@@ -85,72 +81,27 @@ namespace Nabunassar.Systems
                                 break;
                         }
 
-                        renderNewPos = new Vector2(render.Position.X + xOffset, render.Position.Y + yOffset);
-                        boundNewPos = new Vector2(bound.Position.X + xOffset, bound.Position.Y + yOffset);
+                        newPos = new Vector2(position.Position.X + xOffset, position.Position.Y + yOffset);
                     }
                     else
                     {
-                        var boundT = move.MoveSpeed / Vector2.Distance(bound.Position, move.Ray2.Direction);
-
-                        renderNewPos = Vector2.Lerp(render.Position, move.Ray2.Direction, boundT);
-
-                        boundNewPos = Vector2.Lerp(bound.Position, move.Ray2.Direction, boundT);
+                        var boundT = move.MoveSpeed / Vector2.Distance(position.Position, move.Ray2.Direction);
+                        newPos = Vector2.Lerp(position.Position, move.Ray2.Direction, boundT);
                     }
 
                     //reset speed after changing position
                     move.ResetMoveSpeed();
 
-                    //set sprite face view
-                    if (move.MoveDirection.OneOf([Direction.Left, Direction.LeftUp, Direction.LeftDown]))
-                    {
-                        sprite.Effect = SpriteEffects.FlipHorizontally;
-                    }
-                    else if (move.MoveDirection.OneOf([Direction.Right, Direction.RightUp, Direction.RightDown]))
-                    {
-                        sprite.Effect = SpriteEffects.None;
-                    }
-                    if (animatedSprite != null && animatedSprite.CurrentAnimation != "run")
-                    {
-                        animatedSprite.SetAnimation("run");
-                    }
-
-                    // reset moving if position reached
-                    if (bound.Bounds.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
+                    // reset moving if position reached //new RectangleF(position.Position,position.BoundsComponent.Bounds.BoundingRectangle.Size)
+                    if (position.BoundsComponent.Bounds.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
                     {
                         move.Stop();
                     }
 
                     // setting position
-                    render.SetPosition(renderNewPos);
-                    bound.SetPosition(boundNewPos);
+                    position.SetPosition(newPos);
 
                 }
-                else if (animatedSprite!=null && animatedSprite.CurrentAnimation!="idle")
-                {
-                    animatedSprite.SetAnimation("idle");
-                }
-            }
-        }
-
-        private static void MoveBounds(KeyboardStateExtended state, PlayerComponent player, BoundsComponent bound)
-        {
-            //return;
-
-            if (state.IsKeyDown(Keys.Up))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y + player.Character.Speed);
-            }
-            if (state.IsKeyDown(Keys.Down))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y - player.Character.Speed);
-            }
-            if (state.IsKeyDown(Keys.Left))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X - player.Character.Speed, bound.Bounds.Position.Y);
-            }
-            if (state.IsKeyDown(Keys.Right))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + player.Character.Speed, bound.Bounds.Position.Y);
             }
         }
 

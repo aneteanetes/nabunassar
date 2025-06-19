@@ -11,11 +11,11 @@ namespace Nabunassar.Components
 {
     internal class BoundsComponent : PositionComponent, ICollisionActor
     {
-        public IShapeF Bounds { get; private set; }
+        private IShapeF _bounds;
 
-        public override Vector2 Position { get => Bounds.Position; set => Bounds.Position = value; }
+        public IShapeF Bounds => new RectangleF(Position, _bounds.BoundingRectangle.Size);
 
-        public override Vector2 Origin { get => new Vector2(Position.X + Bounds.BoundingRectangle.Size.Width / 2, Position.Y + Bounds.BoundingRectangle.Size.Height / 2); set { } }
+        public override Vector2 Origin { get => new Vector2(Position.X + Bounds.BoundingRectangle.Size.Width / 2, Position.Y + Bounds.BoundingRectangle.Size.Height / 2); }
 
         public Entity Entity { get; private set; }
         public ObjectType ObjectType { get; private set; }
@@ -26,14 +26,14 @@ namespace Nabunassar.Components
 
         public Texture2D BoundSprite { get; private set; }
 
-        public BoundsComponent(NabunassarGame game, RectangleF bounds, ObjectType objType, Entity entity,string layer=null, CollisionEventHandler onCollistion=null):base(game)
+        public BoundsComponent(NabunassarGame game, RectangleF bounds, ObjectType objType, Entity entity,string layer=null, CollisionEventHandler onCollistion=null, PositionComponent parent=null):base(game,parent)
         {
             LayerName = layer;
             Entity = entity;
             ObjectType = objType;
-            Bounds = bounds;
+            _bounds = bounds;
+            Position = bounds.Position;
             _onCollistion = onCollistion;
-
         }
 
         public void OnCollision(CollisionEventArgs collisionInfo)
@@ -70,10 +70,12 @@ namespace Nabunassar.Components
             else
             {
                 var hostCollision = host.Get<BoundsComponent>();
-                var renderHost = host.Get<RenderComponent>();
+                //var renderHost = host.Get<RenderComponent>();
 
                 hostCollision.Position -= collisionInfo.PenetrationVector * 2;
-                renderHost.Position -= collisionInfo.PenetrationVector * 2;
+
+                //if (renderHost != null)
+                //    renderHost.Position -= collisionInfo.PenetrationVector * 2;
             }
         }
     }

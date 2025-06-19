@@ -5,6 +5,7 @@ using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
+using static Assimp.Metadata;
 
 namespace Nabunassar.ECS
 {
@@ -13,7 +14,6 @@ namespace Nabunassar.ECS
         private ComponentMapper<BoundsComponent> _collistionsMapper;
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
-        private bool isDrawBounds = false;
         private NabunassarGame _game;
 
         public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(BoundsComponent)))
@@ -40,26 +40,33 @@ namespace Nabunassar.ECS
             }
         }
 
+        private int i;
+
         public override void Draw(GameTime gameTime)
         {
             var sb = _game.BeginDraw();
 
-            foreach (var entityId in ActiveEntities)
+            var entities = ActiveEntities.Select(GetEntity).OrderBy(x => x.Get<OrderComponent>().Order).ToList();
+
+            foreach (var entity in entities)
             {
-                var descriptor = _descriptorMapper.Get(entityId);
+                var descriptor = _descriptorMapper.Get(entity);
 
-                if (this.GetEntity(entityId).Get<PlayerComponent>() != null)
-                    Console.WriteLine();
+                if (descriptor.Name.Contains("hero"))
+                { }
 
-                var render = _renderMapper.Get(entityId);
+                var render = _renderMapper.Get(entity);
                 if (render != null && render.Sprite.IsVisible)
                 {
-                    sb.Draw(render.Sprite, render.Position, render.Rotation, Vector2.One);
+                    sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
                 }
+            }
 
+            foreach (var entity in entities)
+            {
                 if (_game.IsDrawBounds)
                 {
-                    var collisions = _collistionsMapper.Get(entityId);
+                    var collisions = _collistionsMapper.Get(entity);
                     if (collisions != null)
                     {
                         var color = collisions.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;

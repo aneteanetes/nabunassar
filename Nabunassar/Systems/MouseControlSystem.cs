@@ -66,13 +66,12 @@ namespace Nabunassar.Systems
 
             var mouse = MouseExtended.GetState();
 
-            var character = _game.GameState.ActiveCharacter;
-            if (character == null)
+            var party = _game.GameState.Party;
+            if (party == null)
                 return;
 
-
-            var playerMoving = character.Entity.Get<MoveComponent>();
-            if (playerMoving.IsMoving())
+            var partyMoving = party.Entity.Get<MoveComponent>();
+            if (partyMoving.IsMoving())
             {
                 if (animatedSprite.CurrentAnimation != "busy")
                 {

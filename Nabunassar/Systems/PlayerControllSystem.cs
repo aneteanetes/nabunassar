@@ -1,28 +1,33 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
+using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
+using Nabunassar.Entities.Data;
+using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
 {
     internal class PlayerControllSystem : EntityUpdateSystem
     {
         NabunassarGame _game;
-        ComponentMapper<PlayerComponent> _playerComponentMapper;
+        ComponentMapper<Party> _partyComponentMapper;
         ComponentMapper<MoveComponent> _moveComponentMapper;
-        ComponentMapper<BoundsComponent> _boundComponentMapper;
+        ComponentMapper<BoundsComponent> _boundsComponentMapper;
 
-        public PlayerControllSystem(NabunassarGame game) : base(Aspect.All(typeof(PlayerComponent)))
+        public PlayerControllSystem(NabunassarGame game) : base(Aspect.One(typeof(Party)))
         {
             _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            _playerComponentMapper = mapperService.GetMapper<PlayerComponent>();
+            _partyComponentMapper = mapperService.GetMapper<Party>();
             _moveComponentMapper = mapperService.GetMapper<MoveComponent>();
-            _boundComponentMapper = mapperService.GetMapper<BoundsComponent>();
+            _boundsComponentMapper = mapperService.GetMapper<BoundsComponent>();
         }
 
         public override void Update(GameTime gameTime)
@@ -32,11 +37,14 @@ namespace Nabunassar.Systems
 
             foreach (var entityId in ActiveEntities)
             {
-                var player = _playerComponentMapper.Get(entityId);
-                var bounds = _boundComponentMapper.Get(entityId);
-                var moving = _moveComponentMapper.Get(entityId);
+                var party = _partyComponentMapper.Get(entityId);
+                var bounds = _boundsComponentMapper.Get(entityId);
+                var move = _moveComponentMapper.Get(entityId);
 
                 Vector2 moveVector = Vector2.Zero;
+
+                if (keyboard.IsKeyDown(Keys.Space))
+                    move.Stop();
 
                 if (keyboard.IsKeyDown(Keys.S))
                 {
@@ -56,37 +64,74 @@ namespace Nabunassar.Systems
                 }
 
                 if (moveVector != Vector2.Zero)
-                    moving.MoveToDirection(bounds.Position, moveVector);
+                    move.MoveToDirection(bounds.Position, moveVector * move.MoveSpeed);
 
                 if (mouse.WasButtonPressed(MouseButton.Left))
                 {
                     var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
-                    moving.MoveToPosition(bounds.Origin, targetPosition);
 
+                    void MovePartyInternal()
+                    {
+                        move.MoveToPosition(bounds.BoundsComponent.Origin, targetPosition);
 
+                        var dirComp = move.DirectionEntity.Get<RenderComponent>();
+                        dirComp.Sprite.IsVisible = true;
+                        dirComp.Position = targetPosition;
+                    }
+
+                    if (move.IsMoving())
+                    {
+                        var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
+                        if (targetRectangle.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
+                        {
+                            move.Stop();
+                        }
+                        else
+                        {
+                            MovePartyInternal();
+                        }
+                    }
+                    else
+                    {
+                        MovePartyInternal();
+                    }
                 }
-            }
-        }
 
-        private static void MoveBounds(KeyboardStateExtended state, PlayerComponent player, BoundsComponent bound)
-        {
-            //return;
+                if (move.IsMoving())
+                {
+                    foreach (var hero in party)
+                    {
+                        var animatedSprite = hero.Entity.Get<AnimatedSprite>();
 
-            if (state.IsKeyDown(Keys.Up))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y + player.Character.Speed);
-            }
-            if (state.IsKeyDown(Keys.Down))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X, bound.Bounds.Position.Y - player.Character.Speed);
-            }
-            if (state.IsKeyDown(Keys.Left))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X - player.Character.Speed, bound.Bounds.Position.Y);
-            }
-            if (state.IsKeyDown(Keys.Right))
-            {
-                bound.Bounds.Position = new Vector2(bound.Bounds.Position.X + player.Character.Speed, bound.Bounds.Position.Y);
+                        //set sprite face view
+                        if (move.MoveDirection.OneOf([Direction.Left, Direction.LeftUp, Direction.LeftDown]))
+                        {
+                            animatedSprite.Effect = SpriteEffects.FlipHorizontally;
+                            //party.Rotate(Direction.Left);
+                        }
+                        else if (move.MoveDirection.OneOf([Direction.Right, Direction.RightUp, Direction.RightDown]))
+                        {
+                            animatedSprite.Effect = SpriteEffects.None;
+                            //party.Rotate(Direction.Right);
+                        }
+
+                        if (animatedSprite != null && animatedSprite.CurrentAnimation != "run")
+                        {
+                            animatedSprite.SetAnimation("run");
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var hero in party)
+                    {
+                        var animatedSprite = hero.Entity.Get<AnimatedSprite>();
+                        if (animatedSprite.CurrentAnimation != "idle")
+                        {
+                            animatedSprite.SetAnimation("idle");
+                        }
+                    }
+                }
             }
         }
     }

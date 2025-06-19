@@ -1,17 +1,27 @@
-﻿using MonoGame.Extended;
-using Nabunassar.Components.Abstract;
+﻿using Nabunassar.Components.Abstract;
 
 namespace Nabunassar.Components
 {
     internal class PositionComponent : BaseComponent
     {
-        public PositionComponent(NabunassarGame game) : base(game)
+        public PositionComponent(NabunassarGame game, PositionComponent parent=null) : base(game)
         {
+            Parent = parent;
         }
 
-        public virtual Vector2 Position { get; set; }
+        public PositionComponent Parent { get; set; }
 
-        public virtual Vector2 Origin { get; set; }
+        public BoundsComponent BoundsComponent { get; set; }
+
+        private Vector2 _position;
+
+        public virtual Vector2 Position
+        {
+            get => Parent == null ? _position : _position + Parent.Position;
+            set => _position = value;
+        }
+
+        public virtual Vector2 Origin => new Vector2(Position.X + 32, Position.Y);
 
         public virtual void SetPosition(Vector2 position)
         {

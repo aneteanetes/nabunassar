@@ -1,5 +1,7 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Shapes;
+using MonoGame.Extended.Tiled;
 using System.Diagnostics;
 using System.Xml.Linq;
 
@@ -125,10 +127,6 @@ namespace Nabunassar.Tiled.Map
 
                     tobj.Position = new Vector2((int)tobj.x, (int)tobj.y - 16);
 
-                    if (tobj.gid != 0)
-                    {
-                        tobj.Tileset = tiledMap.GetTileset(tobj.gid);
-                    }
 
                     var props = objtag.Element("properties");
                     if (props != default)
@@ -137,6 +135,16 @@ namespace Nabunassar.Tiled.Map
                         {
                             tobj.Properties[xmlprop.GetTagAttrString("name")] = xmlprop.GetTagAttrString("value");
                         }
+                    }
+
+                    if (tobj.gid != 0)
+                    {
+                        tobj.Tileset = tiledMap.GetTileset(tobj.gid);
+
+                        tobj.Tileset.GetTileProperties(tobj.gid - 1).ForEach(prop =>
+                        {
+                            tobj.Properties.Add(prop.Key, prop.Value);
+                        });
                     }
 
                     var xmlPolygon = objtag.Element("polygon");

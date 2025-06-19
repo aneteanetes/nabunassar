@@ -1,5 +1,4 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
@@ -8,10 +7,7 @@ using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
-using Roy_T.AStar.Primitives;
-using SharpFont;
-using System.Linq.Expressions;
-using System.Reflection;
+using static Assimp.Metadata;
 
 namespace Nabunassar.Entities
 {
@@ -21,6 +17,7 @@ namespace Nabunassar.Entities
         NabunassarGame _game;
         public const float TileSizeMultiplier = 3.99f;
         public const float TileBoundsSizeMultiplier = 3.8f;
+        private Texture2DAtlas _cursorAtlas;
 
         public EntityFactory(NabunassarGame game)
         {
@@ -51,13 +48,13 @@ namespace Nabunassar.Entities
 
             entity.Attach(new CursorComponent(_game.GameState.Cursor));
 
-            var collision = CreateCollisionComponent(new RectangleF(pos.X, pos.Y, 4, 4), ObjectType.Cursor, entity,"cursor", _game.GameState.Cursor.OnCollision);
+            var collision = CreateBoundComponent(new RectangleF(pos.X, pos.Y, 4, 4), ObjectType.Cursor, entity,"cursor", _game.GameState.Cursor.OnCollision);
             entity.Attach(collision);
 
             var name = "cursorspritesheet";
             var texture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/cursor_tilemap_packed.png");
-            var atlas = Texture2DAtlas.Create(name+"atlas", texture, 16, 16);
-            SpriteSheet spriteSheet = new SpriteSheet(name, atlas);
+            _cursorAtlas = Texture2DAtlas.Create(name+"atlas", texture, 16, 16);
+            SpriteSheet spriteSheet = new SpriteSheet(name, _cursorAtlas);
 
             spriteSheet.DefineAnimation("cursor", builder =>
             {
@@ -101,7 +98,7 @@ namespace Nabunassar.Entities
             entity.Attach(render);
 
             var bounds = new RectangleF(position, size);
-            var collision = CreateCollisionComponent(bounds, ObjectType.Ground, entity, "ground");
+            var collision = CreateBoundComponent(bounds, ObjectType.Ground, entity, "ground");
             entity.Attach(collision);
 
             var tileComp = new TileComponent(polygon);
@@ -112,7 +109,9 @@ namespace Nabunassar.Entities
 
         public Entity CreateNPC(TiledObject _object)
         {
-            var entity = CreateEntity("npc "+_object.gid);
+            var entity = CreateEntity("npc "+_object.gid,2);
+
+            entity.Attach(new AnimatedPerson());
 
             var id = _object.Tileset.GetAtlasId(_object.gid);
             SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
@@ -137,68 +136,112 @@ namespace Nabunassar.Entities
             });
 
 
-            var _sprite = new AnimatedSprite(spriteSheet, "idle");
+            var animatedSprite = new AnimatedSprite(spriteSheet, "idle");
+            entity.Attach(animatedSprite);
+
             var position = _object.Position;
             position = new Vector2(position.X, position.Y - 9);
 
             var bounds = new RectangleF(new Vector2(position.X + PersonBoundsXOffset, position.Y + PersonBoundsYOffset), PersonBoundsSize);
-            var collision = CreateCollisionComponent(bounds, ObjectType.NPC, entity,"objects");
+            var collision = CreateBoundComponent(bounds, ObjectType.NPC, entity,"objects");
             entity.Attach(collision);
 
-            var render = new RenderComponent(_game, _sprite, position, 0);
+            var render = new RenderComponent(_game, animatedSprite, position, 0);
             entity.Attach(render);
 
             return entity;
         }
 
-        public Entity CreateCharacter(Character character, Vector2 position)
+        public Entity CreateParty(Party party, Vector2 position)
         {
-            var entity = CreateEntity("player");
-            character.Entity = entity;
+            var partyEntity = CreateEntity("party");
+            partyEntity.Attach(party);
+            party.Entity = partyEntity;
+
+            var bounds = new RectangleF(position, new Vector2(18, 8));
+            var bound = CreateBoundComponent(bounds, ObjectType.Player, partyEntity, null, party.OnCollision);
+            partyEntity.Attach(bound);
+
+            var x = -8;
+            var y = -12;
+            var i = 4;
+            foreach (var hero in party)
+            {
+                CreateHero(hero, new Vector2(x, y), bound, i);
+                x += 6;
+                i--;
+            }
+
+            var directionEntity = CreateEntity("direction entity",20);
+
+            var moveComp = new MoveComponent(this._game);
+            partyEntity.Attach(moveComp);
+            party.Move = moveComp;
+
+            var directionMoveComponent = new DirectionMoveComponent();
+
+            directionEntity.Attach(directionMoveComponent);
+
+            var directionMoveCompSpriteSheet = new SpriteSheet(nameof(directionMoveComponent), _cursorAtlas);
+            directionMoveCompSpriteSheet.DefineAnimation("moving", builder =>
+            {
+                builder.IsLooping(true)
+                    .AddFrame(57 - 2, TimeSpan.FromSeconds(0.2))
+                    .AddFrame(56 - 2, TimeSpan.FromSeconds(0.2));
+            });
+            var directionSprite = new AnimatedSprite(directionMoveCompSpriteSheet, "moving");
+            directionSprite.IsVisible = false;
+
+            var directionRender = new RenderComponent(_game, directionSprite, Vector2.Zero, 0);
+            directionRender.Scale = Vector2.One * 0.5f;
+            directionEntity.Attach(directionRender);
+
+            moveComp.DirectionEntity = directionEntity;
+
+            return partyEntity;
+        }
+
+        public Entity CreateHero(Hero hero, Vector2 personalPosition, PositionComponent parent, int order)
+        {
+            var entity = CreateEntity("hero" + personalPosition.X, 3 + order);
+            hero.Entity = entity;
             var size = new Vector2(16, 24) * TileSizeMultiplier;
+
+            entity.Attach(new AnimatedPerson());
 
             var boundRender = new BoundRenderPositionComponent();
             boundRender.RenderOffset = new Vector2(PersonBoundsYOffset,PersonBoundsYOffset);
             entity.Attach(boundRender);
 
-            var name = "SpriteSheet_" + character.Name;
-            var texture = _game.Content.Load<Texture2D>("Assets/Tilesets/" + character.Tileset);
+            var name = "SpriteSheet_" + hero.Name;
+            var texture = _game.Content.Load<Texture2D>("Assets/Tilesets/" + hero.Tileset);
             var atlas = Texture2DAtlas.Create(name + Guid.NewGuid().ToString(), texture, 16, 24);
-            SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + character.Name, atlas);
+            SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + hero.Name, atlas);
 
             spriteSheet.DefineAnimation("idle", builder =>
             {
                 builder.IsLooping(true)
-                       .AddFrame(regionIndex: 4, duration: TimeSpan.FromSeconds(0.2))
-                       .AddFrame(5, TimeSpan.FromSeconds(0.2))
-                       .AddFrame(6, TimeSpan.FromSeconds(0.2))
-                       .AddFrame(7, TimeSpan.FromSeconds(0.2));
+                       .AddFrame(7, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(8, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(9, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(10, TimeSpan.FromSeconds(0.2));
             });
 
 
             spriteSheet.DefineAnimation("run", builder =>
             {
                 builder.IsLooping(true)
-                       .AddFrame(regionIndex: 8, duration: TimeSpan.FromSeconds(0.1))
-                       .AddFrame(9, TimeSpan.FromSeconds(0.1))
-                       .AddFrame(10, TimeSpan.FromSeconds(0.1))
-                       .AddFrame(11, TimeSpan.FromSeconds(0.1));
+                       .AddFrame(14, TimeSpan.FromSeconds(0.1))
+                       .AddFrame(15, TimeSpan.FromSeconds(0.1))
+                       .AddFrame(16, TimeSpan.FromSeconds(0.1))
+                       .AddFrame(17, TimeSpan.FromSeconds(0.1));
             });
 
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
-            var render = new RenderComponent(_game, _sprite, position, 0);
+            var render = new RenderComponent(_game, _sprite, personalPosition, 0,parent);
             entity.Attach(render);
-
-            var bounds = new RectangleF(new Vector2(position.X + PersonBoundsXOffset, position.Y + PersonBoundsYOffset), PersonBoundsSize);
-            var collision = CreateCollisionComponent(bounds, ObjectType.Player, entity,null, character.OnCollision);
-            entity.Attach(collision);
-
-            var charComp = new PlayerComponent(this._game, character);
-            entity.Attach(charComp);
-
-            var moveComp = new MoveComponent(this._game);
-            entity.Attach(moveComp);
+            entity.Attach(_sprite);
 
             return entity;
         }
@@ -218,7 +261,9 @@ namespace Nabunassar.Entities
                 descriptor = $"obj {_object.gid}";
             }
 
-            var entity = CreateEntity(descriptor);
+            var isHalfed = _object.GetPropopertyValue<bool>("IsHalfed");
+
+            var entity = CreateEntity(descriptor, isHalfed ? 10 : 1);
             var position = _object.Position;
             Vector2 size = Vector2.Zero;
 
@@ -229,8 +274,21 @@ namespace Nabunassar.Entities
                 var _sprite = _object.Tileset.TextureAtlas.CreateSprite(id);
                 size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
 
+                _sprite.TextureRegion = new Texture2DRegion(_sprite.TextureRegion.Texture, new Rectangle(_sprite.TextureRegion.X, _sprite.TextureRegion.Y, 16, isHalfed ? 8 : 16));
                 var render = new RenderComponent(_game,_sprite, position, 0);
                 entity.Attach(render);
+
+                if (isHalfed)
+                {
+                    var entityDownpart = CreateEntity(descriptor + "downpart", 1);
+                    var spriteDownPart = new Sprite(_sprite.TextureRegion.Texture)
+                    {
+                        TextureRegion = new Texture2DRegion(_sprite.TextureRegion.Texture, new Rectangle(_sprite.TextureRegion.X, _sprite.TextureRegion.Y + 8, 16, 8))
+                    };
+                    var renderDownPart = new RenderComponent(_game, spriteDownPart, new Vector2(position.X, position.Y + 8), 0);
+
+                    entityDownpart.Attach(renderDownPart);
+                }
 
             }
             else
@@ -251,7 +309,7 @@ namespace Nabunassar.Entities
                     var bounds = new RectangleF(boundPosition, boundSize);
 
                     var dummyEntity = CreateEntity($"obj {_object.gid} bound({i})");
-                    var collisions = CreateCollisionComponent(bounds, ObjectType.Object, dummyEntity, "objects");
+                    var collisions = CreateBoundComponent(bounds, ObjectType.Object, dummyEntity, "objects");
                     dummyEntity.Attach(collisions);
                     i++;
                 }
@@ -259,26 +317,28 @@ namespace Nabunassar.Entities
             else
             {
                 var bounds = new RectangleF(position, size);
-                var collisions = CreateCollisionComponent(bounds, ObjectType.Object, entity, "objects");
+                var collisions = CreateBoundComponent(bounds, ObjectType.Object, entity, "objects");
                 entity.Attach(collisions);
             }
 
             return entity;
         }
 
-        private BoundsComponent CreateCollisionComponent(RectangleF bounds, ObjectType objectType, Entity host,string layer=null, CollisionEventHandler onCollision = null)
+        private BoundsComponent CreateBoundComponent(RectangleF bounds, ObjectType objectType, Entity host,string layer=null, CollisionEventHandler onCollision = null, PositionComponent parent=null)
         {
-            var component = new BoundsComponent(_game, bounds, objectType, host,layer, onCollision);
+            var component = new BoundsComponent(_game, bounds, objectType, host,layer, onCollision,parent);
+            component.BoundsComponent = component;
             _game.CollisionComponent.Insert(component);
 
             return component;
         }
 
-        private Entity CreateEntity(string descriptor=null)
+        private Entity CreateEntity(string descriptor=null, int order=0)
         {
             var entity = _world.CreateEntity();
 
             entity.Attach(new DescriptorComponent(descriptor));
+            entity.Attach(new OrderComponent(order));
 
             return entity;
         }

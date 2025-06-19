@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Nabunassar.Entities;
+﻿using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 
 namespace Nabunassar
@@ -14,14 +13,16 @@ namespace Nabunassar
 
         public void RunGameState()
         {
-            GameState.Party = new Party();
-            var character = new Entities.Data.Character(this)
-            {
-                Tileset = "player.png"
-            };
-            GameState.Party.Characters.Add(character);
+            var party = GameState.Party = new Party(this);
 
-            EntityFactory.CreateCharacter(character, new Vector2(175, 230));
+            party.First = new Hero(this) { Tileset = "warrior.png" };
+            party.Second = new Hero(this) { Tileset = "rogue.png" };
+            party.Third = new Hero(this) { Tileset = "wizard.png" };
+            party.Fourth = new Hero(this) { Tileset = "priest.png" };
+
+            var pos = new Vector2(175, 230);
+
+            EntityFactory.CreateParty(GameState.Party, pos);
         }
 
         public void ChangeGameActive()

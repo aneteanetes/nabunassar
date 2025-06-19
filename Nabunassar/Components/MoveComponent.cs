@@ -1,4 +1,5 @@
 ﻿using MonoGame.Extended;
+using MonoGame.Extended.ECS;
 using Nabunassar.Components.Abstract;
 using Nabunassar.Struct;
 
@@ -10,6 +11,8 @@ namespace Nabunassar.Components
         {
             MoveSpeed = game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
         }
+
+        public Entity DirectionEntity { get; set; }
 
         public Ray2 Ray2 { get; set; }
 
@@ -38,6 +41,12 @@ namespace Nabunassar.Components
             Ray2 = default;
             MoveDirection = Direction.Idle;
             TargetPosition = Vector2.Zero;
+
+            if (DirectionEntity != null)
+            {
+                var dirRender = DirectionEntity.Get<RenderComponent>();
+                dirRender.Sprite.IsVisible = false;
+            }
         }
 
         public void ResetMoveSpeed()

@@ -41,6 +41,9 @@
    </properties>
   </tile>
   <tile id="51">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4" y="6" width="8" height="5"/>
     <object id="2" x="6.96875" y="0.90625" width="2.03125" height="14.0313"/>
@@ -49,6 +52,9 @@
    </objectgroup>
   </tile>
   <tile id="52">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="8" width="14" height="4"/>
     <object id="2" x="2" y="6" width="13" height="2"/>
@@ -62,6 +68,9 @@
    </objectgroup>
   </tile>
   <tile id="53">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4.03125" y="4.03125" width="7.96875" height="8.96875"/>
     <object id="2" x="3.03125" y="6.03125" width="9.96875" height="5.9375"/>
@@ -71,6 +80,9 @@
    </objectgroup>
   </tile>
   <tile id="54">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.96875" y="9" width="2.09375" height="5.9375"/>
     <object id="2" x="5.96875" y="10.9688" width="4" height="1"/>
@@ -81,6 +93,9 @@
    </objectgroup>
   </tile>
   <tile id="101">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="2" y="8.03125" width="4.96875" height="4.9375"/>
     <object id="2" x="3.96875" y="12.9688" width="1" height="1.96875"/>
@@ -96,6 +111,9 @@
    </objectgroup>
   </tile>
   <tile id="102">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.03125" y="14" width="3.9375" height="1.03125"/>
     <object id="3" x="3.96875" y="1.96875" width="7.96875" height="8.96875"/>
@@ -108,23 +126,35 @@
    </objectgroup>
   </tile>
   <tile id="653">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="7">
     <object id="21" x="1" y="1" width="7" height="14"/>
     <object id="24" x="8" y="1" width="7" height="7"/>
    </objectgroup>
   </tile>
   <tile id="654">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="1" width="14" height="7"/>
    </objectgroup>
   </tile>
   <tile id="655">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="8" y="1" width="6.96875" height="13.9688"/>
     <object id="2" x="0.9375" y="0.96875" width="7" height="7"/>
    </objectgroup>
   </tile>
   <tile id="690">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="2.03125" y="4.9375" width="12" height="8"/>
     <object id="2" x="3" y="3.96875" width="9.96875" height="9.96875"/>
@@ -132,48 +162,75 @@
    </objectgroup>
   </tile>
   <tile id="702">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.9375" y="0.96875" width="7.03125" height="14.0625"/>
    </objectgroup>
   </tile>
   <tile id="704">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="8" y="0.9375" width="7" height="14"/>
    </objectgroup>
   </tile>
   <tile id="751">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="1" width="7" height="13.9688"/>
     <object id="2" x="8.09375" y="8" width="6.90625" height="7"/>
    </objectgroup>
   </tile>
   <tile id="752">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="7.96875" width="14.9375" height="7.0625"/>
    </objectgroup>
   </tile>
   <tile id="753">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="8" y="1" width="6.96875" height="13.9688"/>
     <object id="2" x="1" y="7.96875" width="6.96875" height="7"/>
    </objectgroup>
   </tile>
   <tile id="839">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="0.96875" width="14.0313" height="14.0625"/>
    </objectgroup>
   </tile>
   <tile id="843">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1.03125" y="1" width="14" height="14.0001"/>
    </objectgroup>
   </tile>
   <tile id="893">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.96875" y="1.03125" width="14.0625" height="13.9063"/>
    </objectgroup>
   </tile>
   <tile id="947">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="6.03125" width="4.0625" height="8.875"/>
     <object id="2" x="5.96875" y="0.96875" width="8.96875" height="5.90625"/>
@@ -184,11 +241,17 @@
    </objectgroup>
   </tile>
   <tile id="948">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.96875" y="0.96875" width="14.1563" height="6"/>
    </objectgroup>
   </tile>
   <tile id="949">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.96875" y="0.96875" width="9" height="5.96875"/>
     <object id="2" x="11" y="5.96875" width="3.9375" height="8.96875"/>
@@ -199,6 +262,9 @@
    </objectgroup>
   </tile>
   <tile id="986">
+   <properties>
+    <property name="IsHalfed" type="bool" value="true"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1.03125" y="6.90625" width="13.9375" height="8.09375"/>
     <object id="3" x="1.90625" y="5.9375" width="12.0625" height="0.9375"/>
@@ -210,16 +276,25 @@
    </objectgroup>
   </tile>
   <tile id="996">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.9375" y="1" width="4.03125" height="13.9688"/>
    </objectgroup>
   </tile>
   <tile id="998">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="10.9375" y="0.96875" width="4.03125" height="14.0313"/>
    </objectgroup>
   </tile>
   <tile id="1045">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.03125" y="8.96875" width="8.9375" height="5.9375"/>
     <object id="2" x="0.96875" y="0.96875" width="4" height="8.96875"/>
@@ -229,11 +304,17 @@
    </objectgroup>
   </tile>
   <tile id="1046">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="9" width="14" height="5.96875"/>
    </objectgroup>
   </tile>
   <tile id="1047">
+   <properties>
+    <property name="IsHalfed" type="bool" value="false"/>
+   </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="11.0313" y="1" width="4" height="8.9375"/>
     <object id="2" x="1" y="9.03125" width="9" height="5.875"/>
