@@ -9,6 +9,8 @@ namespace Nabunassar.Entities.Data
         
         public Entity Entity { get; set; }
 
+        public GameObject GameObject { get; set; }
+
         public Hero(NabunassarGame game)
         {
             _game = game;
@@ -21,10 +23,6 @@ namespace Nabunassar.Entities.Data
             get => Entity.Get<OrderComponent>().Order;
             set => Entity.Get<OrderComponent>().Order = value;
         }
-
-        public PositionComponent Position => Entity.Get<PositionComponent>();
-
-        public MoveComponent Move => Entity.Get<MoveComponent>();
 
         public string Name { get; set; } = Guid.NewGuid().ToString();
     }

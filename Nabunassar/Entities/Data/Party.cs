@@ -12,9 +12,11 @@ namespace Nabunassar.Entities.Data
     {
         public Entity Entity { get; set; }
 
-        public MoveComponent Move { get; set; }
+        public GameObject GameObject { get; set; }
 
         public Direction ViewDirection { get; set; } = Direction.Right;
+
+        public RenderComponent DirectionRender { get; internal set; }
 
         public Party(NabunassarGame game)
         {
@@ -24,7 +26,24 @@ namespace Nabunassar.Entities.Data
             Fourth = new Hero(game);
         }
 
-        public void Rotate(Direction direction)
+        public void RecalculateOrder()
+        {
+
+        }
+
+        public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity other)
+        {
+
+        }
+
+        public void Select(QuadPosition position)
+        {
+            var current = this[position];
+            while (First != current)
+                Rotate();
+        }
+
+        public void Rotate()
         {
             var first = First;
             var firstOrder = first.Order;
@@ -38,83 +57,101 @@ namespace Nabunassar.Entities.Data
             var fourth = Fourth;
             var fourthOrder = fourth.Order;
 
-            if (direction == Direction.Left)
+            First = second;
+            First.Order = firstOrder;
+
+            Second = third;
+            Second.Order = secondOrder;
+
+            Third = fourth;
+            Third.Order = thirdOrder;
+
+            Fourth = first;
+            Fourth.Order = fourthOrder;
+
+            if (ViewDirection == Direction.Left)
             {
-                First = second;
-                Second = third;
-                Third = fourth;
-                Fourth = first;
-
+                SetPositionOnAllPartyLeft();
             }
-            else if (direction == Direction.Right)
+
+            if (ViewDirection == Direction.Right)
             {
-                First = fourth;
-                Second = first;
-                Third = second;
-                Fourth = third;
+                SetPositionOnAllPartyRight();
             }
         }
 
-        public void RecalculateOrder()
+        internal void SetPositionOnAllPartyLeft()
         {
-
+            SetPositionOn(First, QuadPosition.First);
+            SetPositionOn(Second, QuadPosition.Second);
+            SetPositionOn(Third, QuadPosition.Thrid);
+            SetPositionOn(Fourth, QuadPosition.Fourth);
         }
 
-        public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity other)
+        internal void SetPositionOnAllPartyRight()
         {
-
-        }
-
-        private void ChangeOrder(Direction direction)
-        {
-            var firstOrder = First.Order;
-            var secondOrder = Second.Order;
-            var thirdOrder = Third.Order;
-            var fourthOrder = Fourth.Order;
-
-            //if (direction == Direction.Left)
-            //{
-            //    First = second;
-            //    Second = third;
-            //    Third = fourth;
-            //    Fourth = first;
-
-            //}
-            //else if (direction == Direction.Right)
-            //{
-            //    First = fourth;
-            //    Second = first;
-            //    Third = second;
-            //    Fourth = third;
-            //}
+            SetPositionOn(First, QuadPosition.Fourth);
+            SetPositionOn(Second, QuadPosition.Thrid);
+            SetPositionOn(Third, QuadPosition.Second);
+            SetPositionOn(Fourth, QuadPosition.First);
         }
 
         internal void ChangeDirection(Direction direction)
         {
-            var heroMove = First.Move;
+            var gameobject = First.GameObject;
 
-            if (!heroMove.IsMoving && ViewDirection != direction)
+            if (!gameobject.IsMoving)
             {
-                ViewDirection = direction;
+                if (ViewDirection != direction)
+                {
+                    ViewDirection = direction;
 
-                var origin = First.Move.Position.BoundsComponent.Origin;
+                    if (ViewDirection == Direction.Left)
+                    {
+                        SetPositionOnAllPartyLeft();
+                    }
 
-                var shift = 28;
-
-                var x = direction == Direction.Left ? origin.X - shift : origin.X + shift;
-
-                First.Move.MoveToPosition(First.Move.Position.BoundsComponent.Origin, new Vector2(x, origin.Y));
+                    if (ViewDirection == Direction.Right)
+                    {
+                        SetPositionOnAllPartyRight();
+                    }
+                }
             }
         }
 
-        internal void OnMoving(Vector2 position, Direction direction)
+        private void SetPositionOn(Hero hero, QuadPosition position)
+        {
+            var y = -12;
+            switch (position)
+            {
+                case QuadPosition.First:
+                    hero.GameObject.SetAbsolutePosition(-8,y);
+                    break;
+                case QuadPosition.Second:
+                    hero.GameObject.SetAbsolutePosition(-2, y);
+                    break;
+                case QuadPosition.Thrid:
+                    hero.GameObject.SetAbsolutePosition(4, y);
+                    break;
+                case QuadPosition.Fourth:
+                    hero.GameObject.SetAbsolutePosition(10, y);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        internal void OnMoving(Vector2 prev, Vector2 next)
         {
             return;
+            var diff = prev - next;
+            var direction = prev.DetectDirection(next);
+
             foreach (var hero in this)
             {
-                if (hero.Move.IsMoving)
+                if (hero.GameObject.IsMoving)
                 {
-                    var ray = hero.Move.Ray2;
+                    var ray = hero.GameObject.Ray2;
 
                     float xFrom = ray.Position.X;
                     float yFrom = ray.Position.Y;
@@ -124,51 +161,59 @@ namespace Nabunassar.Entities.Data
 
                     void Up()
                     {
-                        //yFrom = yFrom - position.Y;
-                        yFrom = yTo - position.Y;
+                        yFrom -=diff.Y;
+                        yTo -=diff.Y;
                     }
 
                     void Down()
                     {
-                        //yFrom = yFrom + position.Y;
-                        yFrom = yTo + position.Y;
+                        yFrom += diff.Y;
+                        yTo += diff.Y;
                     }
 
                     void Left()
                     {
-                        xFrom = position.X-xFrom;
-                        xTo = position.X-xTo;
+                        xFrom -= diff.X;
+                        xTo -= diff.X;
                     }
 
                     void Right()
                     {
-                        //xFrom = xFrom + position.X;
-                        xTo = xTo + position.X;
+                        xFrom += diff.X;
+                        xTo += diff.X;
                     }
 
                     switch (direction)
                     {
-                        case Direction.Up: Up();
+                        case Direction.Up:
+                            Up();
                             break;
-                        case Direction.Down: Down();
+                        case Direction.Down:
+                            Down();
                             break;
-                        case Direction.Left: Left();
+                        case Direction.Left:
+                            Left();
                             break;
-                        case Direction.Right: Right();
+                        case Direction.Right:
+                            Right();
                             break;
-                        case Direction.UpLeft: Up(); Left();
+                        case Direction.UpLeft:
+                            Up(); Left();
                             break;
-                        case Direction.UpRight: Up(); Right();
+                        case Direction.UpRight:
+                            Up(); Right();
                             break;
-                        case Direction.DownLeft: Down(); Left();
+                        case Direction.DownLeft:
+                            Down(); Left();
                             break;
-                        case Direction.DownRight: Down(); Right();
+                        case Direction.DownRight:
+                            Down(); Right();
                             break;
                         default:
                             break;
                     }
 
-                    hero.Move.Ray2 = new Ray2(new Vector2(xFrom,yFrom),new Vector2(xTo,yTo));
+                    hero.GameObject.Ray2 = new Ray2(new Vector2(xFrom, yFrom), new Vector2(xTo, yTo));
                 }
             }
         }

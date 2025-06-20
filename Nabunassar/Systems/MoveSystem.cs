@@ -9,30 +9,25 @@ namespace Nabunassar.Systems
     internal class MoveSystem : EntityUpdateSystem, IDrawSystem
     {
         NabunassarGame _game;
-        ComponentMapper<MoveComponent> _moveComponentMapper;
-        ComponentMapper<PositionComponent> _positionComponentMapper;
-        ComponentMapper<BoundsComponent> _boundComponentMapper;
+        ComponentMapper<GameObject> _gameObjectComponentMapper;
 
-        public MoveSystem(NabunassarGame game) : base(Aspect.One(typeof(MoveComponent), typeof(PositionComponent)))
+        public MoveSystem(NabunassarGame game) : base(Aspect.All(typeof(GameObject),typeof(MoveableComponent)))
         {
             _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            _moveComponentMapper = mapperService.GetMapper<MoveComponent>();
-            _positionComponentMapper = mapperService.GetMapper<PositionComponent>();
-            _boundComponentMapper = mapperService.GetMapper<BoundsComponent>();
+            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
         }
 
         public override void Update(GameTime gameTime)
         {
             foreach (var entityId in ActiveEntities)
             {
-                var move = _moveComponentMapper.Get(entityId);
-                var position = _positionComponentMapper.Get(entityId) ?? _boundComponentMapper.Get(entityId);
+                var gameobject = _gameObjectComponentMapper.Get(entityId);
 
-                if (move.IsMoving)
+                if (gameobject.IsMoving)
                 {
                     float xOffset = 0;
                     float yOffset = 0;
@@ -40,64 +35,69 @@ namespace Nabunassar.Systems
                     var renderNewPos = Vector2.Zero;
                     var newPos = Vector2.Zero;
 
-                    var moveDirection = move.MoveDirection;
+                    var moveDirection = gameobject.MoveDirection;
 
-                    if (move.Ray2 == default)
+                    if (gameobject.Ray2 == default)
                     {
                         switch (moveDirection)
                         {
                             case Direction.Up:
-                                yOffset -= move.MoveSpeed;
+                                yOffset -= gameobject.MoveSpeed;
                                 break;
                             case Direction.Down:
-                                yOffset += move.MoveSpeed;
+                                yOffset += gameobject.MoveSpeed;
                                 break;
                             case Direction.Left:
-                                xOffset -= move.MoveSpeed;
+                                xOffset -= gameobject.MoveSpeed;
                                 break;
                             case Direction.Right:
-                                xOffset += move.MoveSpeed;
+                                xOffset += gameobject.MoveSpeed;
                                 break;
                             case Direction.UpLeft:
-                                yOffset -= move.MoveSpeed;
-                                xOffset -= move.MoveSpeed;
+                                yOffset -= gameobject.MoveSpeed;
+                                xOffset -= gameobject.MoveSpeed;
                                 break;
                             case Direction.UpRight:
-                                yOffset -= move.MoveSpeed;
-                                xOffset += move.MoveSpeed;
+                                yOffset -= gameobject.MoveSpeed;
+                                xOffset += gameobject.MoveSpeed;
                                 break;
                             case Direction.DownLeft:
-                                yOffset += move.MoveSpeed;
-                                xOffset -= move.MoveSpeed;
+                                yOffset += gameobject.MoveSpeed;
+                                xOffset -= gameobject.MoveSpeed;
                                 break;
                             case Direction.DownRight:
-                                yOffset += move.MoveSpeed;
-                                xOffset += move.MoveSpeed;
+                                yOffset += gameobject.MoveSpeed;
+                                xOffset += gameobject.MoveSpeed;
                                 break;
                             default:
                                 break;
                         }
 
-                        newPos = new Vector2(position.Position.X + xOffset, position.Position.Y + yOffset);
+                        newPos = new Vector2(gameobject.Position.X + xOffset, gameobject.Position.Y + yOffset);
                     }
                     else
                     {
-                        var boundT = move.MoveSpeed / Vector2.Distance(position.Position, move.Ray2.Direction);
-                        newPos = Vector2.Lerp(position.Position, move.Ray2.Direction, boundT);
+                        var boundT = gameobject.MoveSpeed / Vector2.Distance(gameobject.Position, gameobject.Ray2.Direction);
+                        newPos = Vector2.Lerp(gameobject.Position, gameobject.Ray2.Direction, boundT);
                     }
 
                     //reset speed after changing position
-                    move.ResetMoveSpeed();
+                    gameobject.ResetMoveSpeed();
 
                     // reset moving if position reached //new RectangleF(position.Position,position.BoundsComponent.Bounds.BoundingRectangle.Size)
-                    if (position.BoundsComponent.Bounds.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
+                    if (gameobject.Bounds.Intersects(new RectangleF(gameobject.TargetPosition, new SizeF(1, 1))))
                     {
-                        move.Stop();
+                        gameobject.StopMove();
                     }
 
                     // setting position
-                    position.SetPosition(newPos);
-                    move.OnMoving?.Invoke(newPos, moveDirection);
+                    gameobject.OnMoving?.Invoke(gameobject.Position, newPos);
+                    gameobject.SetPosition(newPos);
+
+                    if (gameobject.Position.RoundNew() == gameobject.Ray2.Direction.RoundNew())
+                    {
+                        gameobject.StopMove();
+                    }
 
                 }
             }
@@ -107,8 +107,8 @@ namespace Nabunassar.Systems
         {
             foreach (var entityId in ActiveEntities)
             {
-                var move = _moveComponentMapper.Get(entityId);
-                var ray = move.Ray2;
+                var gameobject = _gameObjectComponentMapper.Get(entityId);
+                var ray = gameobject.Ray2;
                 if(ray!=default && _game.IsDrawBounds)
                 {
                     var sb = _game.BeginDraw();

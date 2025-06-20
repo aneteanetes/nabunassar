@@ -1,7 +1,7 @@
 ﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework;
 using Monogame.Extended;
 using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;

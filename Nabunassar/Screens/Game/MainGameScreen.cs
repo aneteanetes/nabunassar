@@ -6,6 +6,7 @@ using Nabunassar.Components.Inactive;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 
 namespace Nabunassar.Screens.Game
@@ -40,7 +41,8 @@ namespace Nabunassar.Screens.Game
 
             foreach (var _layer in _tiledMap.Layers)
             {
-                foreach (var tile in _layer.Tiles)
+                var sorted = _layer.Tiles.OrderBy(x => x.GetPropopertyValue<GroundType>(nameof(GroundType))).ToList();
+                foreach (var tile in sorted) // slower ground put last
                 {
                     if (tile.Gid == 0)
                         continue;

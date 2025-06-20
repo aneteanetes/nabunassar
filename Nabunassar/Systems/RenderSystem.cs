@@ -11,13 +11,12 @@ namespace Nabunassar.ECS
 {
     internal class RenderSystem : EntityDrawSystem, IUpdateSystem
     {
-        private ComponentMapper<BoundsComponent> _collistionsMapper;
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
-        private ComponentMapper<PositionComponent> _positionMapper;
+        private ComponentMapper<GameObject> _gameObjectMapper;
         private NabunassarGame _game;
 
-        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(BoundsComponent), typeof(PositionComponent)))
+        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(GameObject)))
         {
             _game = game;
         }
@@ -25,9 +24,8 @@ namespace Nabunassar.ECS
         public override void Initialize(IComponentMapperService mapperService)
         {
             _renderMapper = mapperService.GetMapper<RenderComponent>();
-            _collistionsMapper = mapperService.GetMapper<BoundsComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
-            _positionMapper = mapperService.GetMapper<PositionComponent>();
+            _gameObjectMapper = mapperService.GetMapper<GameObject>();
         }
 
         public void Update(GameTime gameTime)
@@ -68,17 +66,21 @@ namespace Nabunassar.ECS
             {
                 if (_game.IsDrawBounds)
                 {
-                    var collisions = _collistionsMapper.Get(entity);
-                    if (collisions != null)
+                    var gameObj = _gameObjectMapper.Get(entity);
+                    if (gameObj != null && gameObj.Bounds != default)
                     {
-                        var color = collisions.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;
-                        sb.DrawRectangle(collisions.Bounds.As<RectangleF>(), color);
-                    }
+                        var color = gameObj.BoundsColor;
 
-                    var positionBounds = _positionMapper.Get(entity);
-                    if(positionBounds!=null && positionBounds.BoundsComponent != null)
-                    {
-                        sb.DrawRectangle(positionBounds.BoundsComponent.Bounds.As<RectangleF>(), Color.Green);
+                        if (color == default)
+                        {
+                            color = gameObj.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;
+                        }
+                        else
+                        {
+                            //debug
+                        }
+
+                        sb.DrawRectangle(gameObj.Bounds.As<RectangleF>(), color);
                     }
                 }
             }

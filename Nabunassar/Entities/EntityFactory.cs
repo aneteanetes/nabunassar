@@ -48,8 +48,11 @@ namespace Nabunassar.Entities
 
             entity.Attach(new CursorComponent(game.GameState.Cursor));
 
-            var collision = CreateBoundComponent(new RectangleF(pos.X, pos.Y, 4, 4), ObjectType.Cursor, entity,"cursor", game.GameState.Cursor.OnCollision);
-            entity.Attach(collision);
+            var cursorBounds = new RectangleF(0, 0, 4, 4);
+
+            var gameObj = new GameObject(game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, "cursor", cursor.OnCollision) { Name = "cursor" };
+            AddCollistion(gameObj);
+            entity.Attach(gameObj);
 
             var name = "cursorspritesheet";
             var texture = game.Content.Load<Texture2D>("Assets/Images/Cursors/cursor_tilemap_packed.png");
@@ -88,7 +91,8 @@ namespace Nabunassar.Entities
 
         public Entity CreateTile(TiledPolygon polygon)
         {
-            var entity = CreateEntity("tile "+polygon.Gid);
+            var descriptor = "tile " + polygon.Gid;
+            var entity = CreateEntity(descriptor);
 
             var id = polygon.Tileset.GetAtlasId(polygon.Gid);
             var _sprite = polygon.Tileset.TextureAtlas.CreateSprite(id);
@@ -97,9 +101,12 @@ namespace Nabunassar.Entities
             var render = new RenderComponent(game, _sprite, position, 0);
             entity.Attach(render);
 
-            var bounds = new RectangleF(position, size);
-            var collision = CreateBoundComponent(bounds, ObjectType.Ground, entity, "ground");
-            entity.Attach(collision);
+            var bounds = new RectangleF(Vector2.Zero, size);
+
+            var gameObject = new GameObject(game, position, ObjectType.Ground, entity, bounds, "ground") { Name = descriptor };
+            entity.Attach(gameObject);
+
+            AddCollistion(gameObject);
 
             var tileComp = new TileComponent(polygon);
             entity.Attach(tileComp);
@@ -109,7 +116,8 @@ namespace Nabunassar.Entities
 
         public Entity CreateNPC(TiledObject _object)
         {
-            var entity = CreateEntity("npc "+_object.gid,2);
+            var descriptor = "npc " + _object.gid;
+            var entity = CreateEntity(descriptor,2);
 
             entity.Attach(new AnimatedPerson());
 
@@ -142,9 +150,12 @@ namespace Nabunassar.Entities
             var position = _object.Position;
             position = new Vector2(position.X, position.Y - 9);
 
-            var bounds = new RectangleF(new Vector2(position.X + PersonBoundsXOffset, position.Y + PersonBoundsYOffset), PersonBoundsSize);
-            var collision = CreateBoundComponent(bounds, ObjectType.NPC, entity,"objects");
-            entity.Attach(collision);
+            var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), PersonBoundsSize);
+
+
+            var gameObject = new GameObject(game, position, ObjectType.NPC, entity, bounds, "ground") { Name = descriptor };
+            AddCollistion(gameObject);
+            entity.Attach(gameObject);
 
             var render = new RenderComponent(game, animatedSprite, position, 0);
             entity.Attach(render);
@@ -154,33 +165,30 @@ namespace Nabunassar.Entities
 
         public Entity CreateParty(Party party, Vector2 position)
         {
-            var partyEntity = CreateEntity("party");
+            var descriptor = "party";
+            var partyEntity = CreateEntity(descriptor);
             partyEntity.Attach(party);
             party.Entity = partyEntity;
 
-            var bounds = new RectangleF(position, new Vector2(18, 8));
-            var bound = CreateBoundComponent(bounds, ObjectType.Player, partyEntity, null, party.OnCollision);
-            partyEntity.Attach(bound);
+            var bounds = new RectangleF(Vector2.Zero, new Vector2(18, 8));
+
+            var gameObject = new GameObject(game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
+            partyEntity.Attach(gameObject);
+            AddCollistion(gameObject);
 
             var x = -8;
             var y = -12;
             var i = 1;
             foreach (var hero in party.Reverse())
             {
-                CreateHero(hero, new Vector2(x, y), bound, i);
+                CreateHero(hero, new Vector2(x, y), gameObject, i);
                 x += 6;
                 i++;
             }
 
+            gameObject.OnMoving = party.OnMoving;
+
             var directionEntity = CreateEntity("direction entity",20);
-
-            var moveComp = new MoveComponent(this.game);
-            moveComp.Position = bound;
-            partyEntity.Attach(moveComp);
-            party.Move = moveComp;
-
-            moveComp.OnMoving = party.OnMoving;
-
             var directionMoveComponent = new DirectionMoveComponent();
             directionEntity.Attach(directionMoveComponent);
 
@@ -198,14 +206,18 @@ namespace Nabunassar.Entities
             directionRender.Scale = Vector2.One * 0.5f;
             directionEntity.Attach(directionRender);
 
-            moveComp.DirectionEntity = directionEntity;
+            party.DirectionRender = directionRender;
+            gameObject.OnStopMove += () => directionSprite.IsVisible = false;
+
+            //moveComp.DirectionEntity = directionEntity;
 
             return partyEntity;
         }
 
-        public Entity CreateHero(Hero hero, Vector2 personalPosition, PositionComponent parent, int order)
+        public Entity CreateHero(Hero hero, Vector2 personalPosition, GameObject parent, int order)
         {
-            var entity = CreateEntity("hero" + personalPosition.X, 3 + order);
+            var descriptor = "hero" + personalPosition.X;
+            var entity = CreateEntity(descriptor, 3 + order);
             hero.Entity = entity;
             var size = new Vector2(16, 24) * TileSizeMultiplier;
 
@@ -235,22 +247,21 @@ namespace Nabunassar.Entities
                        .AddFrame(17, TimeSpan.FromSeconds(0.1));
             });
 
-            var position = new PositionComponent(game, parent)
-            {
-                Position = personalPosition
+            var bounds = new RectangleF(4, 18, 8, 6);
+
+            var gameObject = new GameObject(game, personalPosition, ObjectType.Hero, entity, bounds, parent: parent,isMoveable:true) { 
+                Name = descriptor,
+                BoundsColor = Color.Green
             };
-            position.BoundsComponent = new BoundsComponent(game, new RectangleF(4, 18, 8, 6), ObjectType.Dummy, entity, parent: position);
-            entity.Attach(position);
+            gameObject.RecalculatePosition();
+            entity.Attach(gameObject);
+            hero.GameObject = gameObject;
 
-
-            var localMoving = new MoveComponent(game);
-            localMoving.IsCustomSpeed = true;
-            localMoving.MoveSpeed = .01f;
-            localMoving.Position = position;
-            entity.Attach(localMoving);
+            gameObject.IsCustomSpeed = true;
+            gameObject.MoveSpeed = .01f;
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
-            var render = new RenderComponent(game, _sprite, Vector2.Zero, 0, position);
+            var render = new RenderComponent(game, _sprite, Vector2.Zero, 0, gameObject);
             entity.Attach(render);
             entity.Attach(_sprite);
 
@@ -308,40 +319,41 @@ namespace Nabunassar.Entities
                 position.Y += 16;
             }
 
-            var haveBounds = _object.IsHaveBounds();
+            var gameObject = new GameObject(game, position, objType, entity, layer: "objects") { Name = descriptor };
+            entity.Attach(gameObject);
 
-            if (haveBounds)
+            var isHaveBounds = _object.IsHaveBounds();
+            if (isHaveBounds)
             {
                 var i = 0;
                 foreach (var bound in _object.GetBounds())
                 {
-                    var boundPosition = new Vector2(position.X + bound.X, position.Y + bound.Y);
+                    var gameObjectPosition = new Vector2(position.X + bound.X, position.Y + bound.Y);
+                    var boundPosition = new Vector2(bound.X, bound.Y);
                     var boundSize = new SizeF(bound.Width, bound.Height);
-                    var bounds = new RectangleF(boundPosition, boundSize);
+                    var bounds = new RectangleF(Vector2.Zero, boundSize);
 
-                    var dummyEntity = CreateEntity($"obj {_object.gid} bound({i})");
-                    var collisions = CreateBoundComponent(bounds, ObjectType.Object, dummyEntity, "objects");
-                    dummyEntity.Attach(collisions);
+                    var dummyDiscriptor = $"obj {_object.gid} bound({i})";
+                    var dummyEntity = CreateEntity(dummyDiscriptor);
+                    var complexCollision = new GameObject(game, gameObjectPosition, ObjectType.Object,dummyEntity,bounds,"objects") { Name = dummyDiscriptor };
+                    dummyEntity.Attach(complexCollision);
+                    AddCollistion(complexCollision);
                     i++;
                 }
             }
             else
             {
-                var bounds = new RectangleF(position, size);
-                var collisions = CreateBoundComponent(bounds, ObjectType.Object, entity, "objects");
-                entity.Attach(collisions);
+                gameObject.Bounds = new RectangleF(Vector2.Zero, size);
+                gameObject.Position = gameObject.Position;
+                AddCollistion(gameObject);
             }
 
             return entity;
         }
 
-        private BoundsComponent CreateBoundComponent(RectangleF bounds, ObjectType objectType, Entity host,string layer=null, CollisionEventHandler onCollision = null, PositionComponent parent=null)
+        private void AddCollistion(GameObject gameObject)
         {
-            var component = new BoundsComponent(game, bounds, objectType, host,layer, onCollision,parent);
-            component.BoundsComponent = component;
-            game.CollisionComponent.Insert(component);
-
-            return component;
+            game.CollisionComponent.Insert(gameObject);
         }
 
         private Entity CreateEntity(string descriptor=null, int order=0)

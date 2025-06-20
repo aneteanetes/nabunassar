@@ -4,6 +4,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
+using Nabunassar;
 using Nabunassar.Components;
 using System.Data;
 using System.Diagnostics;
@@ -80,8 +81,8 @@ namespace Monogame.Extended
                 var collisions = secondLayer.Space.Query(actor.Bounds.BoundingRectangle);
                     foreach (var other in collisions)
                     {
-                        var a = actor.As<BoundsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
-                        var b = other.As<BoundsComponent>()?.Entity?.Get<DescriptorComponent>().Name;
+                        //var a = actor.As<GameObject>()?.Entity?.Get<DescriptorComponent>().Name;
+                        //var b = other.As<GameObject>()?.Entity?.Get<DescriptorComponent>().Name;
 
                         if (actor != other && actor.Bounds.Intersects(other.Bounds))
                         {

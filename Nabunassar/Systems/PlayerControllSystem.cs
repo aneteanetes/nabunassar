@@ -7,6 +7,7 @@ using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
@@ -15,8 +16,7 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         ComponentMapper<Party> _partyComponentMapper;
-        ComponentMapper<MoveComponent> _moveComponentMapper;
-        ComponentMapper<BoundsComponent> _boundsComponentMapper;
+        ComponentMapper<GameObject> _gameObjectComponentMapper;
 
         public PlayerControllSystem(NabunassarGame game) : base(Aspect.One(typeof(Party)))
         {
@@ -26,8 +26,7 @@ namespace Nabunassar.Systems
         public override void Initialize(IComponentMapperService mapperService)
         {
             _partyComponentMapper = mapperService.GetMapper<Party>();
-            _moveComponentMapper = mapperService.GetMapper<MoveComponent>();
-            _boundsComponentMapper = mapperService.GetMapper<BoundsComponent>();
+            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
         }
 
         public override void Update(GameTime gameTime)
@@ -38,13 +37,27 @@ namespace Nabunassar.Systems
             foreach (var entityId in ActiveEntities)
             {
                 var party = _partyComponentMapper.Get(entityId);
-                var bounds = _boundsComponentMapper.Get(entityId);
-                var move = _moveComponentMapper.Get(entityId);
+                var gameobj = _gameObjectComponentMapper.Get(entityId);
 
                 Vector2 moveVector = Vector2.Zero;
 
+                if (keyboard.WasKeyPressed(Keys.Tab))
+                    party.Rotate();
+
+                if (keyboard.WasKeyPressed(Keys.D1))
+                    party.Select(QuadPosition.First);
+
+                if (keyboard.WasKeyPressed(Keys.D2))
+                    party.Select(QuadPosition.Second);
+
+                if (keyboard.WasKeyPressed(Keys.D3))
+                    party.Select(QuadPosition.Thrid);
+
+                if (keyboard.WasKeyPressed(Keys.D4))
+                    party.Select(QuadPosition.Fourth);
+
                 if (keyboard.IsKeyDown(Keys.Space))
-                    move.Stop();
+                    gameobj.StopMove();
 
                 if (keyboard.IsKeyDown(Keys.S))
                 {
@@ -64,7 +77,7 @@ namespace Nabunassar.Systems
                 }
 
                 if (moveVector != Vector2.Zero)
-                    move.MoveToDirection(bounds.Position, moveVector * move.MoveSpeed);
+                    gameobj.MoveToDirection(gameobj.Position, moveVector * gameobj.MoveSpeed);
 
                 if (mouse.WasButtonPressed(MouseButton.Left))
                 {
@@ -72,19 +85,19 @@ namespace Nabunassar.Systems
 
                     void MovePartyInternal()
                     {
-                        move.MoveToPosition(bounds.BoundsComponent.Origin, targetPosition);
+                        gameobj.MoveToPosition(gameobj.Position, targetPosition);
 
-                        var dirComp = move.DirectionEntity.Get<RenderComponent>();
+                        var dirComp = party.DirectionRender;
                         dirComp.Sprite.IsVisible = true;
                         dirComp.Position = targetPosition;
                     }
 
-                    if (move.IsMoving)
+                    if (gameobj.IsMoving)
                     {
                         var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
-                        if (targetRectangle.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
+                        if (targetRectangle.Intersects(new RectangleF(gameobj.TargetPosition, new SizeF(1, 1))))
                         {
-                            move.Stop();
+                            gameobj.StopMove();
                         }
                         else
                         {
@@ -97,19 +110,19 @@ namespace Nabunassar.Systems
                     }
                 }
 
-                if (move.IsMoving)
+                if (gameobj.IsMoving)
                 {
                     foreach (var hero in party)
                     {
                         var animatedSprite = hero.Entity.Get<AnimatedSprite>();
 
                         //set sprite face view
-                        if (move.MoveDirection.OneOf([Direction.Left, Direction.LeftUp, Direction.LeftDown]))
+                        if (gameobj.MoveDirection.OneOf([Direction.Left, Direction.LeftUp, Direction.LeftDown]))
                         {
                             animatedSprite.Effect = SpriteEffects.FlipHorizontally;
                             party.ChangeDirection(Direction.Left);
                         }
-                        else if (move.MoveDirection.OneOf([Direction.Right, Direction.RightUp, Direction.RightDown]))
+                        else if (gameobj.MoveDirection.OneOf([Direction.Right, Direction.RightUp, Direction.RightDown]))
                         {
                             animatedSprite.Effect = SpriteEffects.None;
                             party.ChangeDirection(Direction.Right);

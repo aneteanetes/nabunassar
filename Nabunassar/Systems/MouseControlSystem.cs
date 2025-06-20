@@ -12,7 +12,7 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         Dictionary<string, Dictionary<int, MouseCursor>> CursorMap = new();
-        ComponentMapper<BoundsComponent> _boundsComponentMapper;
+        ComponentMapper<GameObject> _gameObjectComponentMapper;
 
         public MouseControlSystem(NabunassarGame game) : base(Aspect.All(typeof(CursorComponent)))
         {
@@ -23,7 +23,7 @@ namespace Nabunassar.Systems
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            _boundsComponentMapper = mapperService.GetMapper<BoundsComponent>();
+            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
         }
 
         private void Initialize()
@@ -64,7 +64,7 @@ namespace Nabunassar.Systems
 
             foreach (var entityId in ActiveEntities)
             {
-                var bounds = _boundsComponentMapper.Get(entityId);
+                var bounds = _gameObjectComponentMapper.Get(entityId);
                 var mousePos = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
                 bounds.SetPosition(mousePos);
             }
@@ -79,8 +79,8 @@ namespace Nabunassar.Systems
             if (party == null)
                 return;
 
-            var partyMoving = party.Entity.Get<MoveComponent>();
-            if (partyMoving.IsMoving)
+            var partyGameObject = party.Entity.Get<GameObject>();
+            if (partyGameObject.IsMoving)
             {
                 if (animatedSprite.CurrentAnimation != "busy")
                 {

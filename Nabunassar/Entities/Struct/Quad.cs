@@ -53,5 +53,17 @@ namespace Nabunassar.Entities.Struct
                 }
             }
         }
+
+        public T this[QuadPosition quadPosition]
+        {
+            get => quadPosition switch
+            {
+                QuadPosition.First => First,
+                QuadPosition.Second => Second,
+                QuadPosition.Thrid => Third,
+                QuadPosition.Fourth => Fourth,
+                _ => First,
+            };
+        }
     }
 }

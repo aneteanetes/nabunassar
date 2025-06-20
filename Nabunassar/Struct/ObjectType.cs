@@ -17,6 +17,8 @@ namespace Nabunassar.Struct
         Player,
         Cursor,
         Pathing,
-        Dummy
+        Dummy,
+        Hero,
+        Sprite
     }
 }
