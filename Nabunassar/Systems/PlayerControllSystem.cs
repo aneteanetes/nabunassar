@@ -81,32 +81,37 @@ namespace Nabunassar.Systems
 
                 if (mouse.WasButtonPressed(MouseButton.Left))
                 {
-                    var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
-
-                    void MovePartyInternal()
+                    if (_game.IsCanMoveByMouse)
                     {
-                        gameobj.MoveToPosition(gameobj.Position, targetPosition);
+                        _game.GameState.Log("moved party by mouse click");
 
-                        var dirComp = party.DirectionRender;
-                        dirComp.Sprite.IsVisible = true;
-                        dirComp.Position = targetPosition;
-                    }
+                        var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
 
-                    if (gameobj.IsMoving)
-                    {
-                        var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
-                        if (targetRectangle.Intersects(new RectangleF(gameobj.TargetPosition, new SizeF(1, 1))))
+                        void MovePartyInternal()
                         {
-                            gameobj.StopMove();
+                            gameobj.MoveToPosition(gameobj.Position, targetPosition);
+
+                            var dirComp = party.DirectionRender;
+                            dirComp.Sprite.IsVisible = true;
+                            dirComp.Position = targetPosition;
+                        }
+
+                        if (gameobj.IsMoving)
+                        {
+                            var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
+                            if (targetRectangle.Intersects(new RectangleF(gameobj.TargetPosition, new SizeF(1, 1))))
+                            {
+                                gameobj.StopMove();
+                            }
+                            else
+                            {
+                                MovePartyInternal();
+                            }
                         }
                         else
                         {
                             MovePartyInternal();
                         }
-                    }
-                    else
-                    {
-                        MovePartyInternal();
                     }
                 }
 

@@ -23,6 +23,9 @@ namespace Nabunassar.Desktops
         {
             _widget = InitWidget();
 
+            _widget.MouseEntered += _widget_MouseEntered;
+            _widget.MouseLeft += _widget_MouseLeft;
+
             //var entity = Game.EntityFactory.CreateEntity();
             //var position = new Vector2(_widget.Left, _widget.Top);
             //GameObject = new GameObject(Game, position, Struct.ObjectType.Interface, entity, new RectangleF(Vector2.Zero, new SizeF(_widget.Width ?? 0f, _widget.Height ?? 0f)), "objects");
@@ -30,12 +33,24 @@ namespace Nabunassar.Desktops
 
             ////Game.EntityFactory.AddCollistion(GameObject);
 
-            //OnDispose += () =>
-            //{
-            //    Game.World.DestroyEntity(entity);
-            //};
+            OnDispose += () =>
+            {
+                _widget.MouseEntered -= _widget_MouseEntered;
+                _widget.MouseLeft -= _widget_MouseLeft;
+                Game.IsCanMoveByMouse = true;
+            };
 
             return _widget;
+        }
+
+        private void _widget_MouseLeft(object sender, EventArgs e)
+        {
+            Game.IsCanMoveByMouse = true;
+        }
+
+        private void _widget_MouseEntered(object sender, EventArgs e)
+        {
+            Game.IsCanMoveByMouse = false;
         }
 
         public virtual void LoadContent() { }

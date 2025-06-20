@@ -20,6 +20,8 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public bool IsCanMoveByMouse { get; internal set; } = true;
+
         public bool IsGameActive { get; set; } = true;
 
         public DataBase DataBase { get; set; }

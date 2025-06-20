@@ -10,7 +10,7 @@ namespace Nabunassar.Desktops
 
         protected override Widget InitWidget()
         {
-            return new Panel();
+            return new Panel() { Width = 1, Height = 1 };
         }
     }
 }

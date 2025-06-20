@@ -4,6 +4,7 @@ using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
+using Roy_T.AStar.Primitives;
 using System.Collections.Generic;
 
 namespace Nabunassar.Entities.Data
@@ -18,17 +19,15 @@ namespace Nabunassar.Entities.Data
 
         public RenderComponent DirectionRender { get; internal set; }
 
+        private NabunassarGame _game;
+
         public Party(NabunassarGame game)
         {
+            _game = game;
             First = new Hero(game);
             Second = new Hero(game);
             Third = new Hero(game);
             Fourth = new Hero(game);
-        }
-
-        public void RecalculateOrder()
-        {
-
         }
 
         public void OnCollision(CollisionEventArgs collisionInfo, GameObject host, GameObject other)
@@ -38,6 +37,8 @@ namespace Nabunassar.Entities.Data
 
         public void Select(QuadPosition position)
         {
+            _game.GameState.Log($"Select hero at {position} position");
+
             var current = this[position];
             while (First != current)
                 Rotate();
@@ -45,6 +46,8 @@ namespace Nabunassar.Entities.Data
 
         public void Rotate()
         {
+            _game.GameState.Log($"Rotate party");
+
             var first = First;
             var firstOrder = first.Order;
 
