@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Nabunassar;
-using Nabunassar.Content.Compiler;
 using Nabunassar.Monogame.Settings;
 
 var config = new ConfigurationBuilder()

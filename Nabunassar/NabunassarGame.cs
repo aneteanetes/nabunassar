@@ -1,5 +1,6 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
+global using GameObject = Nabunassar.Components.GameObject;
 
 using AssetManagementBase;
 using Geranium.Reflection;
@@ -242,6 +243,8 @@ namespace Nabunassar
             base.Initialize();
         }
 
+        private GameObject _myraGameObject;
+
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
         {
@@ -256,6 +259,7 @@ namespace Nabunassar
             DesktopWidget = screen.GetWidget();
             DesktopWidget.LoadContent();
             Desktop.Root = DesktopWidget.Load();
+            _myraGameObject = DesktopWidget.GameObject;
 
             ScreenManager.LoadScreen(screen, transition);
         }
@@ -266,6 +270,7 @@ namespace Nabunassar
             {
                 widget.LoadContent();
                 Desktop.Root = widget.Load();
+                _myraGameObject = widget.GameObject;
             }
             else
             {
@@ -339,6 +344,14 @@ namespace Nabunassar
         {
             if (!IsActive)
                 return;
+
+            //if (Desktop.Root != default && _myraGameObject!=default && _myraGameObject.Bounds.BoundingRectangle.Width==0)
+            //{
+            //    _myraGameObject.Bounds = new RectangleF(_myraGameObject.Bounds.Position, new SizeF(Desktop.Root.ActualBounds.Width, Desktop.Root.ActualBounds.Height));
+
+            //    if (_myraGameObject.Bounds.BoundingRectangle.Width != 0)
+            //        EntityFactory.AddCollistion(_myraGameObject);
+            //}
 
             MouseExtended.Update();
             KeyboardExtended.Update();

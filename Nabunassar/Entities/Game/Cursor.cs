@@ -7,7 +7,7 @@ namespace Nabunassar.Entities.Game
 {
     internal class Cursor
     {
-        public Entity Entity { get; set; }
+        public GameObject FocusedGameObject { get; set; }
 
         public SpriteSheet SpriteSheet { get; set; }
 
@@ -15,9 +15,9 @@ namespace Nabunassar.Entities.Game
 
         public List<SpriteSheetAnimation> Animations { get; set; } = new();
 
-        public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity another)
+        public void OnCollision(CollisionEventArgs collisionInfo, GameObject host, GameObject another)
         {
-            Entity = another;
+            FocusedGameObject = another;
         }
 
         public static Dictionary<string, MouseCursor> Cursors = new();

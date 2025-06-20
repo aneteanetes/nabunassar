@@ -52,7 +52,7 @@ namespace Nabunassar.ECS
             {
                 var descriptor = _descriptorMapper.Get(entity);
 
-                if (descriptor.Name.Contains("hero"))
+                if (descriptor.Name?.Contains("hero") ?? false)
                 { }
 
                 var render = _renderMapper.Get(entity);

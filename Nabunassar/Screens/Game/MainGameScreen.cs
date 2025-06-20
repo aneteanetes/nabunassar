@@ -4,6 +4,7 @@ using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.Components.Inactive;
 using Nabunassar.Desktops;
+using Nabunassar.Desktops.Debug;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
@@ -66,6 +67,8 @@ namespace Nabunassar.Screens.Game
 
         private bool isEsc = false;
 
+        private bool logWindow = false;
+
         public override void Update(GameTime gameTime)
         {
             var keyboardState = KeyboardExtended.GetState();
@@ -84,6 +87,16 @@ namespace Nabunassar.Screens.Game
                     Game.SwitchDesktop();
                     Game.ChangeGameActive();
                 }
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
+            {
+                if (!logWindow)
+                    Game.SwitchDesktop(new LogWindow(Game));
+                else
+                    Game.SwitchDesktop();
+
+                logWindow = !logWindow;
             }
         }
     }

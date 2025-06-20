@@ -31,7 +31,7 @@ namespace Nabunassar.Entities.Data
 
         }
 
-        public void OnCollision(CollisionEventArgs collisionInfo, Entity host, Entity other)
+        public void OnCollision(CollisionEventArgs collisionInfo, GameObject host, GameObject other)
         {
 
         }

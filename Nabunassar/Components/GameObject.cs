@@ -160,22 +160,21 @@ namespace Nabunassar.Components
             if (_onCollistion == null)
                 return;
 
-            var otherCollision = collisionInfo.Other.As<GameObject>();
-            if (otherCollision.ObjectType == ObjectType.Cursor)
+            var otherObj = collisionInfo.Other.As<GameObject>();
+            if (otherObj.ObjectType == ObjectType.Cursor)
                 return;
 
-            var thisDesc = Entity.Get<DescriptorComponent>();
-            var otherDesc = otherCollision.Entity.Get<DescriptorComponent>();
+            var thisObj = Entity.Get<GameObject>();
 
-            _onCollistion.Invoke(collisionInfo, this.Entity, otherCollision.Entity);
+            _onCollistion.Invoke(collisionInfo, thisObj, otherObj);
 
             if (this.ObjectType == ObjectType.Cursor)
                 return;
 
             var host = this.Entity;
-            var other = otherCollision.Entity;
+            var other = otherObj.Entity;
 
-            if (otherCollision.ObjectType == ObjectType.Ground)
+            if (otherObj.ObjectType == ObjectType.Ground)
             {
                 var tileComp = other.Get<TileComponent>();
                 if (tileComp != null)
@@ -226,7 +225,7 @@ namespace Nabunassar.Components
         public MovingEventHandler OnMoving { get; set; }
     }
 
-    public delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, Entity host, Entity another);
+    internal delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, GameObject host, GameObject another);
 
     public delegate void MovingEventHandler(Vector2 prev, Vector2 next);
 }

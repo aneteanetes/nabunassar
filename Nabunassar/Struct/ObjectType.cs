@@ -19,6 +19,7 @@ namespace Nabunassar.Struct
         Pathing,
         Dummy,
         Hero,
-        Sprite
+        Sprite,
+        Interface
     }
 }

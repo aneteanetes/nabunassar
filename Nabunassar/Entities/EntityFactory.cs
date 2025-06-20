@@ -35,7 +35,7 @@ namespace Nabunassar.Entities
             var entity = CreateEntity("cursor");
             var cursor = game.GameState.Cursor;
 
-            cursor.Entity = entity;
+            cursor.FocusedGameObject = null;
 
             var cursorImg = game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0028.png");
             var mouseCursor = MouseCursor.FromTexture2D(cursorImg, 0, 0);
@@ -351,12 +351,12 @@ namespace Nabunassar.Entities
             return entity;
         }
 
-        private void AddCollistion(GameObject gameObject)
+        public void AddCollistion(GameObject gameObject)
         {
             game.CollisionComponent.Insert(gameObject);
         }
 
-        private Entity CreateEntity(string descriptor=null, int order=0)
+        public Entity CreateEntity(string descriptor=null, int order=0)
         {
             var entity = _world.CreateEntity();
 
