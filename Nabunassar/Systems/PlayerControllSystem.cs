@@ -79,7 +79,7 @@ namespace Nabunassar.Systems
                         dirComp.Position = targetPosition;
                     }
 
-                    if (move.IsMoving())
+                    if (move.IsMoving)
                     {
                         var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
                         if (targetRectangle.Intersects(new RectangleF(move.TargetPosition, new SizeF(1, 1))))
@@ -97,7 +97,7 @@ namespace Nabunassar.Systems
                     }
                 }
 
-                if (move.IsMoving())
+                if (move.IsMoving)
                 {
                     foreach (var hero in party)
                     {
@@ -107,12 +107,12 @@ namespace Nabunassar.Systems
                         if (move.MoveDirection.OneOf([Direction.Left, Direction.LeftUp, Direction.LeftDown]))
                         {
                             animatedSprite.Effect = SpriteEffects.FlipHorizontally;
-                            //party.Rotate(Direction.Left);
+                            party.ChangeDirection(Direction.Left);
                         }
                         else if (move.MoveDirection.OneOf([Direction.Right, Direction.RightUp, Direction.RightDown]))
                         {
                             animatedSprite.Effect = SpriteEffects.None;
-                            //party.Rotate(Direction.Right);
+                            party.ChangeDirection(Direction.Right);
                         }
 
                         if (animatedSprite != null && animatedSprite.CurrentAnimation != "run")

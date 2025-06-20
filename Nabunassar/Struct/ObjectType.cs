@@ -16,6 +16,7 @@ namespace Nabunassar.Struct
         NPC,
         Player,
         Cursor,
-        Pathing
+        Pathing,
+        Dummy
     }
 }

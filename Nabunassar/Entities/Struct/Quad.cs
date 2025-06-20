@@ -20,6 +20,14 @@ namespace Nabunassar.Entities.Struct
             yield return Fourth;
         }
 
+        public virtual IEnumerable<T> Reverse()
+        {
+            yield return Fourth;
+            yield return Third;
+            yield return Second;
+            yield return First;
+        }
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public T this[int key]

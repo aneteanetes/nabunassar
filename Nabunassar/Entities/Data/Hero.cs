@@ -22,6 +22,10 @@ namespace Nabunassar.Entities.Data
             set => Entity.Get<OrderComponent>().Order = value;
         }
 
+        public PositionComponent Position => Entity.Get<PositionComponent>();
+
+        public MoveComponent Move => Entity.Get<MoveComponent>();
+
         public string Name { get; set; } = Guid.NewGuid().ToString();
     }
 }

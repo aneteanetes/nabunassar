@@ -25,6 +25,11 @@ namespace Nabunassar.Components
 
         public virtual void SetPosition(Vector2 position)
         {
+            if (Parent != null)
+            {
+                position = position-Parent.Position;
+            }
+
             Position = position;
         }
 

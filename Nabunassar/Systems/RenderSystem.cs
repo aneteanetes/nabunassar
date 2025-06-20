@@ -14,9 +14,10 @@ namespace Nabunassar.ECS
         private ComponentMapper<BoundsComponent> _collistionsMapper;
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
+        private ComponentMapper<PositionComponent> _positionMapper;
         private NabunassarGame _game;
 
-        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(BoundsComponent)))
+        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(BoundsComponent), typeof(PositionComponent)))
         {
             _game = game;
         }
@@ -26,6 +27,7 @@ namespace Nabunassar.ECS
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _collistionsMapper = mapperService.GetMapper<BoundsComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
+            _positionMapper = mapperService.GetMapper<PositionComponent>();
         }
 
         public void Update(GameTime gameTime)
@@ -71,6 +73,12 @@ namespace Nabunassar.ECS
                     {
                         var color = collisions.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;
                         sb.DrawRectangle(collisions.Bounds.As<RectangleF>(), color);
+                    }
+
+                    var positionBounds = _positionMapper.Get(entity);
+                    if(positionBounds!=null && positionBounds.BoundsComponent != null)
+                    {
+                        sb.DrawRectangle(positionBounds.BoundsComponent.Bounds.As<RectangleF>(), Color.Green);
                     }
                 }
             }

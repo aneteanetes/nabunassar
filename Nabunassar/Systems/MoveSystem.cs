@@ -1,11 +1,6 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
+﻿using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
-using MonoGame.Extended.Graphics;
-using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.Struct;
 
@@ -37,7 +32,7 @@ namespace Nabunassar.Systems
                 var move = _moveComponentMapper.Get(entityId);
                 var position = _positionComponentMapper.Get(entityId) ?? _boundComponentMapper.Get(entityId);
 
-                if (move.IsMoving())
+                if (move.IsMoving)
                 {
                     float xOffset = 0;
                     float yOffset = 0;
@@ -45,9 +40,11 @@ namespace Nabunassar.Systems
                     var renderNewPos = Vector2.Zero;
                     var newPos = Vector2.Zero;
 
+                    var moveDirection = move.MoveDirection;
+
                     if (move.Ray2 == default)
                     {
-                        switch (move.MoveDirection)
+                        switch (moveDirection)
                         {
                             case Direction.Up:
                                 yOffset -= move.MoveSpeed;
@@ -100,6 +97,7 @@ namespace Nabunassar.Systems
 
                     // setting position
                     position.SetPosition(newPos);
+                    move.OnMoving?.Invoke(newPos, moveDirection);
 
                 }
             }
@@ -114,7 +112,7 @@ namespace Nabunassar.Systems
                 if(ray!=default && _game.IsDrawBounds)
                 {
                     var sb = _game.BeginDraw();
-                    sb.DrawLine(ray.Position, ray.Direction, Color.Red, 1);
+                    sb.DrawLine(ray.Position, ray.Direction, Color.Yellow, 1);
                 }
             }
         }

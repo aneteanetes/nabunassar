@@ -12,6 +12,8 @@ namespace Nabunassar.Components
             MoveSpeed = game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
         }
 
+        public PositionComponent Position { get; set; }
+
         public Entity DirectionEntity { get; set; }
 
         public Ray2 Ray2 { get; set; }
@@ -20,7 +22,11 @@ namespace Nabunassar.Components
 
         public Direction MoveDirection { get; set; } = Direction.Idle;
 
+        public Direction PreviousMoveDirection {  get; set; } = Direction.Idle;
+
         public float MoveSpeed { get; set; } = 0f;
+
+        public bool IsCustomSpeed { get; set; } = false;
 
         public void MoveToDirection(Vector2 from, Vector2 moveSpeedVector)
         {
@@ -38,6 +44,8 @@ namespace Nabunassar.Components
 
         public void Stop()
         {
+            PreviousMoveDirection = MoveDirection;
+
             Ray2 = default;
             MoveDirection = Direction.Idle;
             TargetPosition = Vector2.Zero;
@@ -51,9 +59,12 @@ namespace Nabunassar.Components
 
         public void ResetMoveSpeed()
         {
-            MoveSpeed = Game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
+            if (!IsCustomSpeed)
+                MoveSpeed = Game.DataBase.GetGroundTypeSpeed(GroundType.Dirt);
         }
 
-        public bool IsMoving() => MoveDirection != Direction.Idle || Ray2 != default;
+        public Action<Vector2,Direction> OnMoving { get; set; } = (pos,dir) => { };
+
+        public bool IsMoving => MoveDirection != Direction.Idle || Ray2 != default;
     }
 }
