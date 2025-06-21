@@ -33,6 +33,7 @@ using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
 using System.Reflection;
+using FontStashSharp;
 
 namespace Nabunassar
 {
@@ -199,8 +200,6 @@ namespace Nabunassar
             Game = this;
             this.Window.Title = Settings.GameTitle;
 
-            //Window.TextInput += OnTextInput;
-
             SetMonitor(Settings.MonitorIndex);
 
             var state = GamePad.GetState(0);
@@ -280,6 +279,10 @@ namespace Nabunassar
 
         protected override void LoadContent()
         {
+            var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
+            var y = SelectedMonitorBounds.h / 2 - Settings.HeightPixel / 2;
+            Window.Position = new Microsoft.Xna.Framework.Point(x, y);
+
             FrameCounter = new FrameCounter();
             ResourceLoader = new ResourceLoader(this);
             base.Content = new NabunassarContentManager(this, ResourceLoader);

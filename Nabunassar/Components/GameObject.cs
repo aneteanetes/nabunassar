@@ -25,11 +25,17 @@ namespace Nabunassar.Components
 
         public Entity Entity { get; private set; }
 
+        public GameObject GameableObject => Entity == default ? this : Entity.Get<GameObject>();
+
         public ObjectType ObjectType { get; private set; }
 
         public string LayerName { get; private set; } = null;
 
         private CollisionEventHandler _onCollistion;
+
+        public Action NoCollision { get;set; }
+
+        public bool IsRegisterNoCollision { get; set; }
 
         public Vector2 TargetPosition { get; set; } = Vector2.Zero;
 
@@ -188,6 +194,11 @@ namespace Nabunassar.Components
                 var hostCollision = host.Get<GameObject>();
                 hostCollision.Position -= collisionInfo.PenetrationVector * 2;
             }
+        }
+
+        public void OnNoCollision()
+        {
+            NoCollision?.Invoke();
         }
 
         // moving

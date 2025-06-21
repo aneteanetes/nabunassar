@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using Nabunassar.Components;
-using Nabunassar.Components.Inactive;
 using Nabunassar.Desktops;
-using Nabunassar.Desktops.Debug;
 using Nabunassar.Desktops.Menu;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
@@ -91,10 +88,10 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
             {
-                if (!logWindow)
-                    Game.SwitchDesktop(new LogWindow(Game));
-                else
-                    Game.SwitchDesktop();
+                //if (!logWindow)
+                //    Game.SwitchDesktop(new LogWindow(Game));
+                //else
+                //    Game.SwitchDesktop();
 
                 logWindow = !logWindow;
             }

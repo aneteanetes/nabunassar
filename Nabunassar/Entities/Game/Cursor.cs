@@ -31,5 +31,10 @@ namespace Nabunassar.Entities.Game
         {
             Cursors[name] = mouseCursor;
         }
+
+        internal void OnNoCollistion()
+        {
+            FocusedGameObject = default;
+        }
     }
 }

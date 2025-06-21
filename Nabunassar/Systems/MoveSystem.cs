@@ -85,7 +85,7 @@ namespace Nabunassar.Systems
                     gameobject.ResetMoveSpeed();
 
                     // reset moving if position reached //new RectangleF(position.Position,position.BoundsComponent.Bounds.BoundingRectangle.Size)
-                    if (gameobject.Bounds.Intersects(new RectangleF(gameobject.TargetPosition, new SizeF(1, 1))))
+                    if (new RectangleF(gameobject.Position,new SizeF(2,2)).Intersects(new RectangleF(gameobject.TargetPosition, new SizeF(1, 1))))
                     {
                         gameobject.StopMove();
                     }

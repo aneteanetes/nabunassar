@@ -40,8 +40,8 @@ namespace Nabunassar.Entities.Data
             _game.GameState.Log($"Select hero at {position} position");
 
             var current = this[position];
-            while (First != current)
-                Rotate();
+                while (First != current)
+                    Rotate();
         }
 
         public void Rotate()
@@ -128,16 +128,16 @@ namespace Nabunassar.Entities.Data
             switch (position)
             {
                 case QuadPosition.First:
-                    hero.GameObject.SetAbsolutePosition(-8,y);
+                    hero.GameObject.SetAbsolutePosition(-4,y);
                     break;
                 case QuadPosition.Second:
-                    hero.GameObject.SetAbsolutePosition(-2, y);
-                    break;
-                case QuadPosition.Thrid:
                     hero.GameObject.SetAbsolutePosition(4, y);
                     break;
+                case QuadPosition.Thrid:
+                    hero.GameObject.SetAbsolutePosition(12, y);
+                    break;
                 case QuadPosition.Fourth:
-                    hero.GameObject.SetAbsolutePosition(10, y);
+                    hero.GameObject.SetAbsolutePosition(20, y);
                     break;
                 default:
                     break;

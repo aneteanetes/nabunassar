@@ -51,6 +51,8 @@ namespace Nabunassar.Entities
             var cursorBounds = new RectangleF(0, 0, 4, 4);
 
             var gameObj = new GameObject(game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, "cursor", cursor.OnCollision) { Name = "cursor" };
+            gameObj.IsRegisterNoCollision = true;
+            gameObj.NoCollision = cursor.OnNoCollistion;
             AddCollistion(gameObj);
             entity.Attach(gameObj);
 
@@ -153,7 +155,7 @@ namespace Nabunassar.Entities
             var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), PersonBoundsSize);
 
 
-            var gameObject = new GameObject(game, position, ObjectType.NPC, entity, bounds, "ground") { Name = descriptor };
+            var gameObject = new GameObject(game, position, ObjectType.NPC, entity, bounds, "objects") { Name = descriptor };
             AddCollistion(gameObject);
             entity.Attach(gameObject);
 
@@ -170,19 +172,19 @@ namespace Nabunassar.Entities
             partyEntity.Attach(party);
             party.Entity = partyEntity;
 
-            var bounds = new RectangleF(Vector2.Zero, new Vector2(18, 8));
+            var bounds = new RectangleF(new Vector2(4,0), new Vector2(24, 6));
 
             var gameObject = new GameObject(game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
             partyEntity.Attach(gameObject);
             AddCollistion(gameObject);
 
-            var x = -8;
+            var x =-4;
             var y = -12;
             var i = 1;
             foreach (var hero in party.Reverse())
             {
                 CreateHero(hero, new Vector2(x, y), gameObject, i);
-                x += 6;
+                x += 8;
                 i++;
             }
 
@@ -291,7 +293,6 @@ namespace Nabunassar.Entities
 
             if (objType != ObjectType.Pathing)
             {
-
                 var id = _object.Tileset.GetAtlasId(_object.gid);
                 var _sprite = _object.Tileset.TextureAtlas.CreateSprite(id);
                 size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
@@ -335,7 +336,7 @@ namespace Nabunassar.Entities
 
                     var dummyDiscriptor = $"obj {_object.gid} bound({i})";
                     var dummyEntity = CreateEntity(dummyDiscriptor);
-                    var complexCollision = new GameObject(game, gameObjectPosition, ObjectType.Object,dummyEntity,bounds,"objects") { Name = dummyDiscriptor };
+                    var complexCollision = new GameObject(game, gameObjectPosition, ObjectType.Object,entity,bounds,"objects") { Name = dummyDiscriptor };
                     dummyEntity.Attach(complexCollision);
                     AddCollistion(complexCollision);
                     i++;

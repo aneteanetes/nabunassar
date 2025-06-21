@@ -77,15 +77,24 @@ namespace Nabunassar
 			}
 		}
 
+		private SDL_Rect SelectedMonitorBounds;
+
 		private bool SetMonitor(int index)
 		{
+			Point windowPosition = default;
+
 			var bounds = MonitorBounds.ElementAtOrDefault(index);
+			
+			
 			if (MonitorBounds.Count == 1)
 				bounds = MonitorBounds[0];
-			if (bounds.x != 0)
+
+            SelectedMonitorBounds = bounds;
+
+            if (bounds.x != 0)
 			{
 				var isfullscreen = Settings.WindowMode == WindowMode.FullScreenHardware || Settings.WindowMode == WindowMode.FullScreenSoftware;
-				Window.Position = new Point(bounds.x, isfullscreen ? 0 : 50);
+				windowPosition = new Point(bounds.x, isfullscreen ? 0 : 50);
 			}
 
 			var resolution = this.Resolution;
@@ -94,13 +103,15 @@ namespace Nabunassar
 			{
 				if (bounds.w > resolution.Width || bounds.h > resolution.Height)
 				{
-					Window.Position = new Point
+                    windowPosition = new Point
 					{
 						X = bounds.w / 2 - resolution.Width / 2,
 						Y = bounds.h / 2 - resolution.Height / 2
 					};
 				}
 			}
+
+			Window.Position = windowPosition;
 
 			return false;
 		}

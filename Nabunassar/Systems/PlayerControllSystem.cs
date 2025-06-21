@@ -5,7 +5,6 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
@@ -33,6 +32,8 @@ namespace Nabunassar.Systems
         {
             var keyboard = KeyboardExtended.GetState();
             var mouse = MouseExtended.GetState();
+
+            MouseSelect(gameTime, mouse);
 
             foreach (var entityId in ActiveEntities)
             {
@@ -150,6 +151,18 @@ namespace Nabunassar.Systems
                         }
                     }
                 }
+            }
+        }
+
+        private void MouseSelect(GameTime gameTime, MouseStateExtended mouse)
+        {
+            if (mouse.WasButtonPressed(MouseButton.Right))
+            {
+                var cursor = _game.GameState.Cursor;
+                var focusedGameObj = cursor.FocusedGameObject;
+
+                if (focusedGameObj != default)
+                    Console.WriteLine(focusedGameObj.GameableObject.Name);
             }
         }
     }

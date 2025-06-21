@@ -62,6 +62,8 @@ namespace Monogame.Extended
                 AddCollisionBetweenLayer(layer, otherLayer);
         }
 
+        private Dictionary<GameObject, bool> _registerNoCollistion = new();
+
         /// <summary>
         /// Update the collision tree and process collisions.
         /// </summary>
@@ -73,19 +75,29 @@ namespace Monogame.Extended
         public override void Update(GameTime gameTime)
         {
             foreach (var layer in _layers.Values)
+            {
                 layer.Reset();
+            }
+            _registerNoCollistion.Clear();
 
             foreach (var (firstLayer, secondLayer) in _layerCollision)
-            foreach (var actor in firstLayer.Space)
             {
-                var collisions = secondLayer.Space.Query(actor.Bounds.BoundingRectangle);
+                foreach (var actor in firstLayer.Space)
+                {
+                    var gameObject = actor.As<GameObject>();
+                    if (gameObject != default && gameObject.IsRegisterNoCollision)
+                    {
+                        _registerNoCollistion[gameObject] = false;
+                    }
+                    
+                    var collisions = secondLayer.Space.Query(actor.Bounds.BoundingRectangle);
                     foreach (var other in collisions)
                     {
-                        //var a = actor.As<GameObject>()?.Entity?.Get<DescriptorComponent>().Name;
-                        //var b = other.As<GameObject>()?.Entity?.Get<DescriptorComponent>().Name;
-
                         if (actor != other && actor.Bounds.Intersects(other.Bounds))
                         {
+                            if (gameObject != default && _registerNoCollistion.ContainsKey(gameObject))
+                                _registerNoCollistion[gameObject] = true;
+
                             var penetrationVector = CalculatePenetrationVector(actor.Bounds, other.Bounds);
 
                             actor.OnCollision(new CollisionEventArgs
@@ -100,8 +112,10 @@ namespace Monogame.Extended
                             });
                         }
                     }
-
+                }
             }
+
+            _registerNoCollistion.Where(x => !x.Value).ForEach(x => x.Key.OnNoCollision());
         }
 
         /// <summary>
