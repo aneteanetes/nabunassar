@@ -7,11 +7,11 @@ namespace Nabunassar
     {
         public bool IsDrawBounds { get; internal set; }
 
-        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true)
+        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true, Effect effect = default)
         {
             var transformMatrix = Camera.GetViewMatrix();
             this.SpriteBatch.Begin(isCameraDependant ? transformMatrix : null);
-            var sb = this.SpriteBatch.GetSpriteBatch(samplerState, alphaBlend, isTransformMatrix);
+            var sb = this.SpriteBatch.GetSpriteBatch(samplerState, alphaBlend, isTransformMatrix,effect);
             return sb;
         }
     }

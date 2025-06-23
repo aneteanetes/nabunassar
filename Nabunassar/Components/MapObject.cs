@@ -3,17 +3,20 @@ using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components.Abstract;
+using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using System.Diagnostics;
 
 namespace Nabunassar.Components
 {
     [DebuggerDisplay("{Name} {Position}")]
-    internal class GameObject : BaseComponent, ICollisionActor
+    internal class MapObject : BaseComponent, ICollisionActor
     {
         public string Name { get; set; }
 
-        public GameObject Parent { get; set; }
+        public MapObject Parent { get; set; }
+
+        public GameObject GameObject => Entity.Get<GameObject>();
 
         public IShapeF Bounds { get; set; }
 
@@ -24,8 +27,6 @@ namespace Nabunassar.Components
         public Vector2 BoundRelativePosition { get;set; }
 
         public Entity Entity { get; private set; }
-
-        public GameObject GameableObject => Entity == default ? this : Entity.Get<GameObject>();
 
         public ObjectType ObjectType { get; private set; }
 
@@ -82,7 +83,7 @@ namespace Nabunassar.Components
         /// <param name="onCollistion"></param>
         /// <param name="parent"></param>
         /// <param name="isMoveable"></param>
-        public GameObject(NabunassarGame game, Vector2 position, ObjectType objType, Entity entity, RectangleF bounds=default, string layer = null, CollisionEventHandler onCollistion = null, GameObject parent = null, bool isMoveable=false) : base(game)
+        public MapObject(NabunassarGame game, Vector2 position, ObjectType objType, Entity entity, RectangleF bounds=default, string layer = null, CollisionEventHandler onCollistion = null, MapObject parent = null, bool isMoveable=false) : base(game)
         {
             LayerName = layer;
             Parent = parent;
@@ -166,11 +167,11 @@ namespace Nabunassar.Components
             if (_onCollistion == null)
                 return;
 
-            var otherObj = collisionInfo.Other.As<GameObject>();
+            var otherObj = collisionInfo.Other.As<MapObject>();
             if (otherObj.ObjectType == ObjectType.Cursor)
                 return;
 
-            var thisObj = Entity.Get<GameObject>();
+            var thisObj = Entity.Get<MapObject>();
 
             _onCollistion.Invoke(collisionInfo, thisObj, otherObj);
 
@@ -191,7 +192,7 @@ namespace Nabunassar.Components
             }
             else
             {
-                var hostCollision = host.Get<GameObject>();
+                var hostCollision = host.Get<MapObject>();
                 hostCollision.Position -= collisionInfo.PenetrationVector * 2;
             }
         }
@@ -236,7 +237,7 @@ namespace Nabunassar.Components
         public MovingEventHandler OnMoving { get; set; }
     }
 
-    internal delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, GameObject host, GameObject another);
+    internal delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, MapObject host, MapObject another);
 
     public delegate void MovingEventHandler(Vector2 prev, Vector2 next);
 }

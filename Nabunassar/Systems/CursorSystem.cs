@@ -8,7 +8,7 @@ namespace Nabunassar.Systems
     internal class CursorSystem : EntityUpdateSystem
     {
         NabunassarGame _game;
-        ComponentMapper<GameObject> _gameObjectComponentMapper;
+        ComponentMapper<MapObject> _gameObjectComponentMapper;
 
         public CursorSystem(NabunassarGame game) : base(Aspect.All(typeof(CursorComponent)))
         {
@@ -17,7 +17,7 @@ namespace Nabunassar.Systems
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
+            _gameObjectComponentMapper = mapperService.GetMapper<MapObject>();
         }
 
         public override void Update(GameTime gameTime)

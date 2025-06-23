@@ -1,48 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
  <properties>
   <property name="newversion" type="int" value="1"/>
  </properties>
- <tileset firstgid="1" name="colored" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
+ <tileset firstgid="1" name="winter" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
   <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
   <tile id="1">
    <properties>
+    <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
    </properties>
   </tile>
   <tile id="2">
    <properties>
+    <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
    </properties>
   </tile>
   <tile id="3">
    <properties>
+    <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
    </properties>
   </tile>
   <tile id="4">
    <properties>
+    <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GorundType" value="Road"/>
    </properties>
   </tile>
   <tile id="5">
    <properties>
+    <property name="Color" type="color" value="#ff18665a"/>
     <property name="GroundType" value="Grass"/>
    </properties>
   </tile>
   <tile id="6">
    <properties>
+    <property name="Color" type="color" value="#ff18665a"/>
     <property name="GroundType" value="Grass"/>
    </properties>
   </tile>
   <tile id="7">
    <properties>
+    <property name="Color" type="color" value="#ff18665a"/>
     <property name="GroundType" value="Grass"/>
    </properties>
   </tile>
   <tile id="51">
    <properties>
-    <property name="IsHalfed" type="bool" value="false"/>
+    <property name="Color" type="color" value="#ff36bbd9"/>
+    <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4" y="6" width="8" height="5"/>
@@ -53,6 +61,7 @@
   </tile>
   <tile id="52">
    <properties>
+    <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -69,6 +78,7 @@
   </tile>
   <tile id="53">
    <properties>
+    <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -81,6 +91,7 @@
   </tile>
   <tile id="54">
    <properties>
+    <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -94,6 +105,7 @@
   </tile>
   <tile id="101">
    <properties>
+    <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -112,6 +124,7 @@
   </tile>
   <tile id="102">
    <properties>
+    <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -127,6 +140,7 @@
   </tile>
   <tile id="653">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="7">
@@ -136,6 +150,7 @@
   </tile>
   <tile id="654">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -144,6 +159,7 @@
   </tile>
   <tile id="655">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -153,6 +169,7 @@
   </tile>
   <tile id="690">
    <properties>
+    <property name="Color" type="color" value="#ff383f7d"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -163,6 +180,7 @@
   </tile>
   <tile id="702">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -179,6 +197,7 @@
   </tile>
   <tile id="751">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -188,6 +207,7 @@
   </tile>
   <tile id="752">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -196,6 +216,7 @@
   </tile>
   <tile id="753">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -205,6 +226,7 @@
   </tile>
   <tile id="839">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -213,6 +235,7 @@
   </tile>
   <tile id="843">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -221,6 +244,7 @@
   </tile>
   <tile id="893">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -229,6 +253,7 @@
   </tile>
   <tile id="947">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -242,6 +267,7 @@
   </tile>
   <tile id="948">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -250,6 +276,7 @@
   </tile>
   <tile id="949">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -263,6 +290,7 @@
   </tile>
   <tile id="986">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -277,6 +305,7 @@
   </tile>
   <tile id="996">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -285,6 +314,7 @@
   </tile>
   <tile id="998">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -293,6 +323,7 @@
   </tile>
   <tile id="1045">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -305,6 +336,7 @@
   </tile>
   <tile id="1046">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -313,6 +345,7 @@
   </tile>
   <tile id="1047">
    <properties>
+    <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="false"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -326,6 +359,14 @@
  </tileset>
  <tileset firstgid="1079" name="virgil" tilewidth="16" tileheight="24" tilecount="12" columns="4">
   <image source="../Tilesets/virgil.png" trans="000000" width="64" height="72"/>
+ </tileset>
+ <tileset firstgid="1091" name="summer" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
+  <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
+  <tile id="51">
+   <properties>
+    <property name="Color" type="color" value="#ff38d973"/>
+   </properties>
+  </tile>
  </tileset>
  <layer id="1" name="Ground" width="30" height="26">
   <data encoding="csv">

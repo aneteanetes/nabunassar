@@ -32,7 +32,7 @@ namespace Nabunassar.Screens.Game
 
             foreach (var tileset in _tiledMap.Tilesets)
             {
-                var texture = Content.Load<Texture2D>(tileset.image);
+                var texture = Content.Load<Texture2D>(tileset.image.Replace("colored-", ""));
                 var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
                 tileset.TextureAtlas = _atlas;
             }
@@ -51,7 +51,7 @@ namespace Nabunassar.Screens.Game
 
             foreach (var mapObject in _tiledMap.Objects)
             {
-                Game.EntityFactory.CreateObject(mapObject);
+                Game.EntityFactory.CreateTiledObject(mapObject);
             }
 
             foreach (var mapObject in _tiledMap.NPCs)

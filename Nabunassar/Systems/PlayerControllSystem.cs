@@ -5,9 +5,11 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using Nabunassar.Components;
 using Nabunassar.Desktops.UserInterfaces;
 using Nabunassar.Desktops.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 
@@ -17,7 +19,7 @@ namespace Nabunassar.Systems
     {
         NabunassarGame _game;
         ComponentMapper<Party> _partyComponentMapper;
-        ComponentMapper<GameObject> _gameObjectComponentMapper;
+        ComponentMapper<MapObject> _gameObjectComponentMapper;
 
         public PlayerControllSystem(NabunassarGame game) : base(Aspect.One(typeof(Party)))
         {
@@ -27,7 +29,7 @@ namespace Nabunassar.Systems
         public override void Initialize(IComponentMapperService mapperService)
         {
             _partyComponentMapper = mapperService.GetMapper<Party>();
-            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
+            _gameObjectComponentMapper = mapperService.GetMapper<MapObject>();
         }
 
         public override void Update(GameTime gameTime)
@@ -35,9 +37,11 @@ namespace Nabunassar.Systems
             var keyboard = KeyboardExtended.GetState();
             var mouse = MouseExtended.GetState();
 
-            MouseSelect(gameTime, mouse);
+            var somethingHappened = SelectObjectByMouse(gameTime, mouse);
 
-            foreach (var entityId in ActiveEntities)
+            var entityId = ActiveEntities.FirstOrDefault();
+
+            if (entityId != default)
             {
                 var party = _partyComponentMapper.Get(entityId);
                 var gameobj = _gameObjectComponentMapper.Get(entityId);
@@ -82,41 +86,8 @@ namespace Nabunassar.Systems
                 if (moveVector != Vector2.Zero)
                     gameobj.MoveToDirection(gameobj.Position, moveVector * gameobj.MoveSpeed);
 
-                if (mouse.WasButtonPressed(MouseButton.Left))
-                {
-                    if (_game.IsMouseActive)
-                    {
-                        _game.GameState.Log("moved party by mouse click");
-
-                        var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
-
-                        void MovePartyInternal()
-                        {
-                            gameobj.MoveToPosition(gameobj.Position, targetPosition);
-
-                            var dirComp = party.DirectionRender;
-                            dirComp.Sprite.IsVisible = true;
-                            dirComp.Position = targetPosition;
-                        }
-
-                        if (gameobj.IsMoving)
-                        {
-                            var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
-                            if (targetRectangle.Intersects(new RectangleF(gameobj.TargetPosition, new SizeF(1, 1))))
-                            {
-                                gameobj.StopMove();
-                            }
-                            else
-                            {
-                                MovePartyInternal();
-                            }
-                        }
-                        else
-                        {
-                            MovePartyInternal();
-                        }
-                    }
-                }
+                if (!somethingHappened)
+                    MoveByMouse(mouse, party, gameobj);
 
                 if (gameobj.IsMoving)
                 {
@@ -156,25 +127,92 @@ namespace Nabunassar.Systems
             }
         }
 
-        private void MouseSelect(GameTime gameTime, MouseStateExtended mouse)
+        private void MoveByMouse(MouseStateExtended mouse, Party party, MapObject gameobj)
+        {
+            if (mouse.WasButtonPressed(MouseButton.Left))
+            {
+                if (_game.IsMouseActive)
+                {
+                    _game.GameState.Log("moved party by mouse click");
+
+                    var targetPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
+
+                    void MovePartyByMouseInternal()
+                    {
+                        gameobj.MoveToPosition(gameobj.Position, targetPosition);
+
+                        var dirComp = party.DirectionRender;
+                        dirComp.Sprite.IsVisible = true;
+                        dirComp.Position = targetPosition;
+                    }
+
+                    if (gameobj.IsMoving)
+                    {
+                        var targetRectangle = new RectangleF(new Vector2(targetPosition.X - 2, targetPosition.Y - 2), new SizeF(6, 6));
+                        if (targetRectangle.Intersects(new RectangleF(gameobj.TargetPosition, new SizeF(1, 1))))
+                        {
+                            gameobj.StopMove();
+                        }
+                        else
+                        {
+                            MovePartyByMouseInternal();
+                        }
+                    }
+                    else
+                    {
+                        MovePartyByMouseInternal();
+                    }
+                }
+            }
+        }
+
+        private bool IsContextMenuOpened = false;
+        private GameObject _prevFocusedGameObj;
+
+        private bool SelectObjectByMouse(GameTime gameTime, MouseStateExtended mouse)
         {
             if (mouse.WasButtonPressed(MouseButton.Right))
             {
                 var cursor = _game.GameState.Cursor;
                 var focusedGameObj = cursor.FocusedGameObject;
 
+                if (IsContextMenuOpened && _game.IsMouseActive)
+                {
+                    CloseRadialMenu();
+
+                    if (_prevFocusedGameObj == focusedGameObj)
+                        return true;
+                }
+
+                _prevFocusedGameObj = focusedGameObj;
+
                 if (focusedGameObj != default)
                 {
-                    Console.WriteLine(focusedGameObj.GameableObject.Name);
-                    _game.SwitchDesktop(new RadialMenu(_game,new Vector2(mouse.X,mouse.Y)));
+                    IsContextMenuOpened = true;
+                    Console.WriteLine(focusedGameObj.Name);
+                    _game.SwitchDesktop(new RadialMenu(_game,focusedGameObj, new Vector2(mouse.X, mouse.Y)));
+                    return true;
                 }
-                else _game.SwitchDesktop(default);
+                else if (_game.IsMouseActive)
+                {
+                    CloseRadialMenu();
+                    return true;
+                }
             }
 
-            if (mouse.WasButtonPressed(MouseButton.Left) && _game.IsMouseActive)
+            if (mouse.WasButtonPressed(MouseButton.Left) && IsContextMenuOpened && _game.IsMouseActive)
             {
-                _game.SwitchDesktop(default);
+                CloseRadialMenu();
+                return true;
             }
+
+            return false;
+        }
+
+        private void CloseRadialMenu()
+        {
+            IsContextMenuOpened = false;
+            _game.SwitchDesktop(default);
         }
     }
 }

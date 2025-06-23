@@ -8,6 +8,7 @@ namespace Nabunassar.Struct
 {
     internal enum ObjectType
     {
+        None,
         Door,
         Tree,
         Wall,

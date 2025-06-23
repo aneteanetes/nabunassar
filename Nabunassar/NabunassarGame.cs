@@ -1,6 +1,6 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
-global using GameObject = Nabunassar.Components.GameObject;
+global using GoRogueGameObject = GoRogue.GameFramework.GameObject;
 
 using AssetManagementBase;
 using Geranium.Reflection;
@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Monogame.Extended;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.ECS;
@@ -34,6 +33,7 @@ using Nabunassar.Struct;
 using Nabunassar.Systems;
 using System.Reflection;
 using FontStashSharp;
+using Nabunassar.Components;
 
 namespace Nabunassar
 {
@@ -242,7 +242,7 @@ namespace Nabunassar
             base.Initialize();
         }
 
-        private GameObject _myraGameObject;
+        private MapObject _myraGameObject;
 
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
@@ -260,6 +260,24 @@ namespace Nabunassar
             //DesktopWidget.LoadContent();
 
             ScreenManager.LoadScreen(screen, transition);
+        }
+
+        private Container DesktopContainer;
+
+        public void AddDesktopWidget(ScreenWidget widget)
+        {
+            if (Desktop.Root == null)
+                Desktop.Root = new Panel();
+
+            if (widget != default)
+            {
+                widget.Initialize();
+                var ui = widget.Load();
+                Components.Add(widget);
+                DesktopContainer.Widgets.Add(ui);
+                widget.OnDispose += () => DesktopContainer.Widgets.Remove(ui);
+            }
+
         }
 
         public void SwitchDesktop(ScreenWidget widget=null)

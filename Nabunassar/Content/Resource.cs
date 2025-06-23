@@ -44,7 +44,7 @@ namespace Nabunassar.Content
 
         [BsonIgnore]
         [JsonIgnore]
-        public Stream Stream
+        public MemoryStream Stream
         {
             get
             {

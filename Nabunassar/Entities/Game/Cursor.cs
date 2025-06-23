@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Collisions;
-using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
+using Nabunassar.Components;
 
 namespace Nabunassar.Entities.Game
 {
@@ -15,9 +15,9 @@ namespace Nabunassar.Entities.Game
 
         public List<SpriteSheetAnimation> Animations { get; set; } = new();
 
-        public void OnCollision(CollisionEventArgs collisionInfo, GameObject host, GameObject another)
+        public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject another)
         {
-            FocusedGameObject = another;
+            FocusedGameObject = another.GameObject;
         }
 
         public static Dictionary<string, MouseCursor> Cursors = new();

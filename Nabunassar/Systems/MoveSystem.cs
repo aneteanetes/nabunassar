@@ -9,20 +9,23 @@ namespace Nabunassar.Systems
     internal class MoveSystem : EntityUpdateSystem, IDrawSystem
     {
         NabunassarGame _game;
-        ComponentMapper<GameObject> _gameObjectComponentMapper;
+        ComponentMapper<MapObject> _gameObjectComponentMapper;
 
-        public MoveSystem(NabunassarGame game) : base(Aspect.All(typeof(GameObject),typeof(MoveableComponent)))
+        public MoveSystem(NabunassarGame game) : base(Aspect.All(typeof(MapObject),typeof(MoveableComponent)))
         {
             _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            _gameObjectComponentMapper = mapperService.GetMapper<GameObject>();
+            _gameObjectComponentMapper = mapperService.GetMapper<MapObject>();
         }
 
         public override void Update(GameTime gameTime)
         {
+            if (!this.CanUpdate(gameTime, 15))
+                return;
+
             foreach (var entityId in ActiveEntities)
             {
                 var gameobject = _gameObjectComponentMapper.Get(entityId);
@@ -102,6 +105,7 @@ namespace Nabunassar.Systems
                 }
             }
         }
+
 
         public void Draw(GameTime gameTime)
         {

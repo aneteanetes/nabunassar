@@ -54,6 +54,12 @@ namespace Nabunassar.Monogame.Content
                 }
             }
 
+            if(typeof(T) == typeof(Effect))
+            {
+                var stream = OpenStream(assetName).As<MemoryStream>();
+                return new Effect(_game.GraphicsDevice, stream.ToArray()).As<T>();
+            }
+
             return base.Load<T>(assetName);
         }
 

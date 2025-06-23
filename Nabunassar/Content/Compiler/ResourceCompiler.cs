@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Settings;
 using Newtonsoft.Json;
 using System.Diagnostics;

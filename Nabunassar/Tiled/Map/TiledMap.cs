@@ -143,7 +143,11 @@ namespace Nabunassar.Tiled.Map
 
                         tobj.Tileset.GetTileProperties(tobj.gid - 1).ForEach(prop =>
                         {
-                            tobj.Properties.Add(prop.Key, prop.Value);
+                            if (!tobj.Properties.ContainsKey(prop.Key))
+                                tobj.Properties.Add(prop.Key, prop.Value);
+
+                            // overriding property value
+                            tobj.Properties[prop.Key] = prop.Value;
                         });
                     }
 

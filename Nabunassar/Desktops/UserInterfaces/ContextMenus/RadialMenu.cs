@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Animations;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Struct;
+using GameObject = Nabunassar.Entities.Game.GameObject;
 
 namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 {
@@ -11,14 +11,22 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
         const int PanelWidthHeight = 320;
         const int CircleWidthHeight = 64;
+        const int CenterCircleWidthHeight = 140;
 
         private static Texture2D CircleTexture;
         private static Texture2D CircleTextureFocused;
         private static Texture2D IconTexture;
+        private static Texture2D CenterCircleTexture;
         private Vector2 _position= Vector2.Zero;
 
-        public RadialMenu(NabunassarGame game,Vector2 position) : base(game)
+        protected override bool IsMouseActiveOnRootWidget => false;
+
+        private GameObject _gameObject;
+        private Texture2D _gameObjectImage;
+
+        public RadialMenu(NabunassarGame game, GameObject gameObject, Vector2 position) : base(game)
         {
+            _gameObject = gameObject;
             _position = position;
             _position.X -= PanelWidthHeight / 2;
             _position.Y-= PanelWidthHeight / 2;
@@ -28,14 +36,18 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         {
             if (CircleTexture == default)
             {
-                CircleTexture = Content.Load<Texture2D>("Assets/Images/Interface/Circle128.png");
-                CircleTextureFocused = Content.Load<Texture2D>("Assets/Images/Interface/Circle128_f.png");
+                CircleTexture = Content.Load<Texture2D>("Assets/Images/Interface/Circle64.png");
+                CircleTextureFocused = Content.Load<Texture2D>("Assets/Images/Interface/Circle64_f.png");
                 IconTexture = Content.Load<Texture2D>("Assets/Images/Icons/favicon.png");
+                CenterCircleTexture = Content.Load<Texture2D>("Assets/Images/Interface/Circle140.png");
             }
+
+            _gameObjectImage = Content.Load<Texture2D>(_gameObject.Image);
         }
 
         protected override void UnloadContent()
         {
+            _gameObjectImage = null;
             base.UnloadContent();
         }
 
@@ -50,6 +62,31 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             panel.Top = (int)Math.Floor(_position.Y);
             panel.Left = (int)Math.Floor(_position.X);
 
+            var centerCircle = new Image()
+            {
+                Renderable = new TextureRegion(CenterCircleTexture, new Rectangle(0, 0, CenterCircleWidthHeight, CenterCircleWidthHeight)),
+                Width = CenterCircleWidthHeight,
+                Height = CenterCircleWidthHeight
+            };
+            centerCircle.MouseEntered += Btn_MouseEntered;
+            centerCircle.MouseLeft += Btn_MouseLeft;
+            centerCircle.HorizontalAlignment = HorizontalAlignment.Center;
+            centerCircle.VerticalAlignment = VerticalAlignment.Center;
+            panel.Widgets.Add(centerCircle);
+
+            var centerImage = new Image()
+            {
+                Renderable = new TextureRegion(_gameObjectImage, new Rectangle(0, 0, 75, 115)),
+                Width = 75,
+                Height = 115
+            };
+            centerImage.MouseEntered += Btn_MouseEntered;
+            centerImage.MouseLeft += Btn_MouseLeft;
+            centerImage.HorizontalAlignment = HorizontalAlignment.Center;
+            centerImage.VerticalAlignment = VerticalAlignment.Center;
+            panel.Widgets.Add(centerImage);
+
+            CreateCircle(panel, Direction.Idle);
             CreateCircle(panel, Direction.Up);
             CreateCircle(panel, Direction.Down);
             CreateCircle(panel, Direction.Left);
@@ -58,9 +95,6 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             CreateCircle(panel, Direction.UpRight);
             CreateCircle(panel, Direction.DownLeft);
             CreateCircle(panel, Direction.DownRight);
-
-            //panel.HorizontalAlignment = HorizontalAlignment.Center;
-            //panel.VerticalAlignment = VerticalAlignment.Center;
 
             return panel;
         }
@@ -167,6 +201,9 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
                     Height = CircleWidthHeight
                 };
 
+                btn.MouseEntered += Btn_MouseEntered;
+                btn.MouseLeft += Btn_MouseLeft;
+                btn.Click += Btn_Click;
                 btn.FocusedBackground = new TextureRegion(CircleTextureFocused, new Rectangle(0, 0, CircleWidthHeight, CircleWidthHeight));
                 btn.OverBackground = btn.FocusedBackground;
                 btn.PressedBackground = btn.OverBackground;
@@ -185,19 +222,33 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
                 btn.Content = icon;
 
-                var label = new Label();
-                label.Text = direction.ToString();
+                //var label = new Label();
+                //label.Text = direction.ToString();
 
-                label.Left = btn.Left + 5;
-                label.Top = btn.Top + 5;
+                //label.Left = btn.Left + 5;
+                //label.Top = btn.Top + 5;
 
-                panel.Widgets.Add(label);
+                //panel.Widgets.Add(label);
                 panel.Widgets.Add(btn);
 
                 panel.Scale = Vector2.One * .001f;
             }
         }
 
+        private void Btn_MouseLeft(object sender, EventArgs e)
+        {
+            Game.IsMouseActive = true;
+        }
+
+        private void Btn_MouseEntered(object sender, EventArgs e)
+        {
+            Game.IsMouseActive = false;
+        }
+
+        private void Btn_Click(object sender, EventArgs e)
+        {
+            Console.WriteLine("clicked");
+        }
 
         private TimeSpan prev;
         public override void Update(GameTime gameTime)

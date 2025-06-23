@@ -31,6 +31,8 @@ namespace Nabunassar.Monogame.SpriteBatch
             isBegined = true;
         }
 
+        //private SpriteBatchKnowed spriteBatch;
+
         /// <summary>
         /// 
         /// </summary>
@@ -40,20 +42,23 @@ namespace Nabunassar.Monogame.SpriteBatch
         /// <param name="effect">if null then <see cref="NoEffectNameConstant"/> constant</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public SpriteBatchKnowed GetSpriteBatch(SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true/*, IEffect effect = default*/)
+        public SpriteBatchKnowed GetSpriteBatch(SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true, Effect effect = default)
         {
             if (!isBegined)
                 throw new Exception("SpriteBatchManager needs to be Begin() for work with actual resolution matrix!");
 
+            //if (spriteBatch == default)
+            //    spriteBatch = new SpriteBatchKnowed(_game, _game.GraphicsDevice);
+
             if (samplerState == null)
                 samplerState = SamplerState.PointWrap;
 
-            var effectName = "";//effect == null ? NoEffectNameConstant : effect.Name;
+            var effectName = effect == null ? NoEffectNameConstant : effect.Name;
 
             var key = $"{samplerState}{alphaBlend}{isTransformMatrix}{effectName}";
             if (!SpriteBatches.TryGetValue(key, out var spriteBatch))
             {
-                SpriteBatches[key] = spriteBatch = new SpriteBatchKnowed(_game,_graphicsDevice);
+                SpriteBatches[key] = spriteBatch = new SpriteBatchKnowed(_game, _graphicsDevice);
             }
 
             if (!spriteBatch.IsOpened)
@@ -61,10 +66,14 @@ namespace Nabunassar.Monogame.SpriteBatch
                 spriteBatch.Begin(
                     transformMatrix: _resolutionMatrix,
                     samplerState: samplerState,
-                    blendState: alphaBlend ? BlendState.AlphaBlend : BlendState.NonPremultiplied, /*GetBlendState(useLight, alphaBlend, colorInvert),*/
-                    //effect: GetEffect(effectName),
+                    blendState: /*alphaBlend ?*/ BlendState.NonPremultiplied /*: BlendState.NonPremultiplied*/, /*GetBlendState(useLight, alphaBlend, colorInvert),*/
+                    effect: effect,
                     depthStencilState: spriteBatch.DepthStencilState,
                     rasterizerState: antialise);
+            }
+            else
+            {
+                Console.WriteLine("wtf");
             }
 
             return spriteBatch;
@@ -72,6 +81,8 @@ namespace Nabunassar.Monogame.SpriteBatch
 
         public void End()
         {
+            //if (spriteBatch != null)
+            //    spriteBatch.End();
             foreach (var kv in SpriteBatches)
             {
                 if (kv.Value.IsOpened)

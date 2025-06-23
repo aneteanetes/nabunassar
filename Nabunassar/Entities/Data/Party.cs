@@ -13,7 +13,7 @@ namespace Nabunassar.Entities.Data
     {
         public Entity Entity { get; set; }
 
-        public GameObject GameObject { get; set; }
+        public MapObject GameObject { get; set; }
 
         public Direction ViewDirection { get; set; } = Direction.Right;
 
@@ -30,7 +30,7 @@ namespace Nabunassar.Entities.Data
             Fourth = new Hero(game);
         }
 
-        public void OnCollision(CollisionEventArgs collisionInfo, GameObject host, GameObject other)
+        public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject other)
         {
 
         }

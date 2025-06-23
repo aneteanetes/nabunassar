@@ -38,8 +38,10 @@ namespace Nabunassar.Monogame.SpriteBatch
 
         public new void End()
         {
+            if (IsOpened)
+                base.End();
+
             IsOpened = false;
-            base.End();
         }
 
         /// <summary>

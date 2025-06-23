@@ -1,0 +1,23 @@
+[
+  {
+    "ObjectId": 1,
+    "Name": "Tree",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snowtree.png",
+    "ObjectType": "Tree"
+  },
+  {
+    "ObjectId": 2,
+    "Name": "Wall",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/castle1.png",
+    "ObjectType": "Wall"
+  },
+  {
+    "ObjectId": 3,
+    "Name": "Well",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/well.png",
+    "ObjectType": "Object"
+  }
+]

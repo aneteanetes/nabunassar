@@ -56,7 +56,7 @@ namespace Nabunassar.Content
             return db.Exists(x => x.Path == assetName);
         }
 
-        public Stream GetStream(string assetName)
+        public MemoryStream GetStream(string assetName)
         {
             try
             {

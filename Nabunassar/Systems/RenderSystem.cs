@@ -13,10 +13,10 @@ namespace Nabunassar.ECS
     {
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
-        private ComponentMapper<GameObject> _gameObjectMapper;
+        private ComponentMapper<MapObject> _gameObjectMapper;
         private NabunassarGame _game;
 
-        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(GameObject)))
+        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(MapObject)))
         {
             _game = game;
         }
@@ -25,7 +25,7 @@ namespace Nabunassar.ECS
         {
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
-            _gameObjectMapper = mapperService.GetMapper<GameObject>();
+            _gameObjectMapper = mapperService.GetMapper<MapObject>();
         }
 
         public void Update(GameTime gameTime)

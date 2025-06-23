@@ -62,7 +62,7 @@ namespace Monogame.Extended
                 AddCollisionBetweenLayer(layer, otherLayer);
         }
 
-        private Dictionary<GameObject, bool> _registerNoCollistion = new();
+        private Dictionary<MapObject, bool> _registerNoCollistion = new();
 
         /// <summary>
         /// Update the collision tree and process collisions.
@@ -84,7 +84,7 @@ namespace Monogame.Extended
             {
                 foreach (var actor in firstLayer.Space)
                 {
-                    var gameObject = actor.As<GameObject>();
+                    var gameObject = actor.As<MapObject>();
                     if (gameObject != default && gameObject.IsRegisterNoCollision)
                     {
                         _registerNoCollistion[gameObject] = false;

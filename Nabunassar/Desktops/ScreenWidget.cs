@@ -1,5 +1,6 @@
 ﻿using MonoGame.Extended;
 using Myra.Graphics2D.UI;
+using Nabunassar.Components;
 using Nabunassar.Monogame;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Interfaces;
@@ -37,14 +38,19 @@ namespace Nabunassar.Desktops
 
         protected abstract Widget InitWidget();
 
-        public GameObject GameObject { get; private set; }
+        public MapObject GameObject { get; private set; }
+
+        protected virtual bool IsMouseActiveOnRootWidget => true;
 
         public Widget Load()
         {
             _widget = InitWidget();
 
-            _widget.MouseEntered += _widget_MouseEntered;
-            _widget.MouseLeft += _widget_MouseLeft;
+            if (IsMouseActiveOnRootWidget)
+            {
+                _widget.MouseEntered += _widget_MouseEntered;
+                _widget.MouseLeft += _widget_MouseLeft;
+            }
 
             //var entity = Game.EntityFactory.CreateEntity();
             //var position = new Vector2(_widget.Left, _widget.Top);

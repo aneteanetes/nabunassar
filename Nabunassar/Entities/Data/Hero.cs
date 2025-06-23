@@ -9,7 +9,7 @@ namespace Nabunassar.Entities.Data
         
         public Entity Entity { get; set; }
 
-        public GameObject GameObject { get; set; }
+        public MapObject GameObject { get; set; }
 
         public Hero(NabunassarGame game)
         {
