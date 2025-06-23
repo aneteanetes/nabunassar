@@ -5,6 +5,8 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using Nabunassar.Desktops.UserInterfaces;
+using Nabunassar.Desktops.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
@@ -82,7 +84,7 @@ namespace Nabunassar.Systems
 
                 if (mouse.WasButtonPressed(MouseButton.Left))
                 {
-                    if (_game.IsCanMoveByMouse)
+                    if (_game.IsMouseActive)
                     {
                         _game.GameState.Log("moved party by mouse click");
 
@@ -162,7 +164,16 @@ namespace Nabunassar.Systems
                 var focusedGameObj = cursor.FocusedGameObject;
 
                 if (focusedGameObj != default)
+                {
                     Console.WriteLine(focusedGameObj.GameableObject.Name);
+                    _game.SwitchDesktop(new RadialMenu(_game,new Vector2(mouse.X,mouse.Y)));
+                }
+                else _game.SwitchDesktop(default);
+            }
+
+            if (mouse.WasButtonPressed(MouseButton.Left) && _game.IsMouseActive)
+            {
+                _game.SwitchDesktop(default);
             }
         }
     }

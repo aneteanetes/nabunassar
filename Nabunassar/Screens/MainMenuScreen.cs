@@ -2,8 +2,11 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using Myra.Graphics2D.UI;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
+using Nabunassar.Desktops.UserInterfaces;
+using Nabunassar.Desktops.UserInterfaces.ContextMenus;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
 

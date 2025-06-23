@@ -256,9 +256,8 @@ namespace Nabunassar
                 DesktopWidget.Dispose();
 
             DesktopWidget = screen.GetWidget();
-            DesktopWidget.LoadContent();
-            Desktop.Root = DesktopWidget.Load();
-            _myraGameObject = DesktopWidget.GameObject;
+            SwitchDesktop(DesktopWidget);
+            //DesktopWidget.LoadContent();
 
             ScreenManager.LoadScreen(screen, transition);
         }
@@ -267,7 +266,9 @@ namespace Nabunassar
         {
             if (widget != null)
             {
-                widget.LoadContent();
+                widget.Initialize();
+                Components.Add(widget);
+                //widget.LoadContent();
                 Desktop.Root = widget.Load();
                 _myraGameObject = widget.GameObject;
             }

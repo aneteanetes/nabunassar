@@ -1,13 +1,9 @@
-using AssetManagementBase;
 using FontStashSharp;
 using Geranium.Reflection;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Myra;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Nabunassar.Monogame;
 using Nabunassar.Screens.Game;
 
 namespace Nabunassar.Desktops.Menu;
@@ -22,7 +18,7 @@ internal partial class MainMenu : ScreenWidget
     private Texture2D backimgnorm;
     private Texture2D backimgfocus;
 
-    public override void LoadContent()
+    protected override void LoadContent()
     {
         _font = Game.Content.LoadFont("Assets/Fonts/Retron2000.ttf");
         backimgnorm = Game.Content.Load<Texture2D>("Assets/Images/Borders/commonborder.png");
@@ -30,7 +26,7 @@ internal partial class MainMenu : ScreenWidget
         base.LoadContent();
     }
 
-    public override void UnloadContent()
+    protected override void UnloadContent()
     {
         Game.Content.UnloadAssets(["Assets/Images/Borders/commonborder.png", "Assets/Images/Borders/commonborderpressed.png"]);
         base.UnloadContent();

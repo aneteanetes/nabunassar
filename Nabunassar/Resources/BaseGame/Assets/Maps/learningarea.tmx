@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
  <properties>
   <property name="newversion" type="int" value="1"/>
  </properties>
  <tileset firstgid="1" name="colored" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
-  <image source="../../../../../../../../Desktop/kenney_1-bit-pack/Tilesheet/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
+  <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
   <tile id="1">
    <properties>
     <property name="GroundType" value="Road"/>
@@ -674,11 +674,5 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="7" name="Pathing">
-  <object id="144" x="160" y="144" width="48" height="32">
-   <properties>
-    <property name="ObjectType" value="Pathing"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup id="7" name="Pathing"/>
 </map>

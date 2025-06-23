@@ -1,18 +1,38 @@
 ﻿using MonoGame.Extended;
 using Myra.Graphics2D.UI;
 using Nabunassar.Monogame;
+using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar.Desktops
 {
-    internal abstract class ScreenWidget : ILoadable
+    internal abstract class ScreenWidget : IGameComponent, IUpdateable, IDisposable
     {
         protected NabunassarGame Game { get; private set; }
+
+        protected NabunassarContentManager Content => Game.Content;
+
         private Widget _widget;
+
+        public event EventHandler<EventArgs> EnabledChanged;
+        public event EventHandler<EventArgs> UpdateOrderChanged;
+
+        public bool Enabled { get; set; } = true;
+
+        public int UpdateOrder { get; set; } = 0;
 
         public ScreenWidget(NabunassarGame game)
         {
             Game = game;
+        }
+
+        protected virtual void LoadContent() { }
+
+        protected virtual void UnloadContent() { }
+
+        public virtual void Initialize()
+        {
+            LoadContent();
         }
 
         protected abstract Widget InitWidget();
@@ -37,7 +57,7 @@ namespace Nabunassar.Desktops
             {
                 _widget.MouseEntered -= _widget_MouseEntered;
                 _widget.MouseLeft -= _widget_MouseLeft;
-                Game.IsCanMoveByMouse = true;
+                Game.IsMouseActive = true;
             };
 
             return _widget;
@@ -45,26 +65,25 @@ namespace Nabunassar.Desktops
 
         private void _widget_MouseLeft(object sender, EventArgs e)
         {
-            Game.IsCanMoveByMouse = true;
+            Game.IsMouseActive = true;
         }
 
         private void _widget_MouseEntered(object sender, EventArgs e)
         {
-            Game.IsCanMoveByMouse = false;
+            Game.IsMouseActive = false;
         }
-
-        public virtual void LoadContent() { }
-
-        public virtual void UnloadContent() { }
 
         public Action OnDispose { get; set; }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             UnloadContent();
+            Game.Components.Remove(this);
             Game.Desktop.Root = null;
             OnDispose?.Invoke();
             GameObject = null;
         }
+
+        public virtual void Update(GameTime gameTime) { }
     }
 }
