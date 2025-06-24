@@ -26,6 +26,8 @@ namespace Nabunassar.Components
 
         public Vector2 BoundRelativePosition { get;set; }
 
+        public bool IsCollideWithCursor { get; set; }
+
         public Entity Entity { get; private set; }
 
         public ObjectType ObjectType { get; private set; }
@@ -168,7 +170,7 @@ namespace Nabunassar.Components
                 return;
 
             var otherObj = collisionInfo.Other.As<MapObject>();
-            if (otherObj.ObjectType == ObjectType.Cursor)
+            if (!IsCollideWithCursor && otherObj.ObjectType == ObjectType.Cursor)
                 return;
 
             var thisObj = Entity.Get<MapObject>();
@@ -235,6 +237,8 @@ namespace Nabunassar.Components
         public Action OnStopMove { get; set; }
 
         public MovingEventHandler OnMoving { get; set; }
+
+        public Action OnAfterDraw { get; internal set; }
     }
 
     internal delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, MapObject host, MapObject another);

@@ -2,6 +2,7 @@
 using Nabunassar;
 using Nabunassar.Monogame.Settings;
 
+
 var config = new ConfigurationBuilder()
                 .AddJsonFile($"nabunassar.cfg", true)
                 .AddJsonFile($"nabunassar.local.cfg", true)

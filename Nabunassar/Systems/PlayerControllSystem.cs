@@ -37,6 +37,9 @@ namespace Nabunassar.Systems
             var keyboard = KeyboardExtended.GetState();
             var mouse = MouseExtended.GetState();
 
+            if(IsPreventNextMove && !mouse.WasButtonPressed(MouseButton.Left))
+                IsPreventNextMove = false;
+
             var somethingHappened = SelectObjectByMouse(gameTime, mouse);
 
             var entityId = ActiveEntities.FirstOrDefault();
@@ -129,8 +132,14 @@ namespace Nabunassar.Systems
 
         private void MoveByMouse(MouseStateExtended mouse, Party party, MapObject gameobj)
         {
-            if (mouse.WasButtonPressed(MouseButton.Left))
+            if (mouse.WasButtonPressed(MouseButton.Left) || mouse.WasButtonPressed(MouseButton.Right))
             {
+                if(IsPreventNextMove)
+                {
+                    IsPreventNextMove = false;
+                    return;
+                }
+
                 if (_game.IsMouseActive)
                 {
                     _game.GameState.Log("moved party by mouse click");
@@ -166,7 +175,8 @@ namespace Nabunassar.Systems
             }
         }
 
-        private bool IsContextMenuOpened = false;
+        public static bool IsPreventNextMove = false;
+        public static bool IsContextMenuOpened = false;
         private GameObject _prevFocusedGameObj;
 
         private bool SelectObjectByMouse(GameTime gameTime, MouseStateExtended mouse)
@@ -174,7 +184,7 @@ namespace Nabunassar.Systems
             if (mouse.WasButtonPressed(MouseButton.Right))
             {
                 var cursor = _game.GameState.Cursor;
-                var focusedGameObj = cursor.FocusedGameObject;
+                var focusedGameObj = cursor.FocusedMapObject;
 
                 if (IsContextMenuOpened && _game.IsMouseActive)
                 {
@@ -188,6 +198,12 @@ namespace Nabunassar.Systems
 
                 if (focusedGameObj != default)
                 {
+                    if (IsContextMenuOpened)
+                    {
+                        CloseRadialMenu();
+                        return true;
+                    }
+
                     IsContextMenuOpened = true;
                     Console.WriteLine(focusedGameObj.Name);
                     _game.SwitchDesktop(new RadialMenu(_game,focusedGameObj, new Vector2(mouse.X, mouse.Y)));
@@ -196,7 +212,7 @@ namespace Nabunassar.Systems
                 else if (_game.IsMouseActive)
                 {
                     CloseRadialMenu();
-                    return true;
+                    //return true;
                 }
             }
 

@@ -8,7 +8,6 @@ using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
-using static Assimp.Metadata;
 
 namespace Nabunassar.Entities
 {
@@ -31,12 +30,14 @@ namespace Nabunassar.Entities
         private static int PersonBoundsYOffset = 15;
         private static Vector2 PersonBoundsSize = new Vector2(10, 8);
 
+        public Action OnAfterDraw { get; private set; }
+
         public Entity CreateCursor()
         {
             var entity = CreateEntity("cursor");
             var cursor = _game.GameState.Cursor;
 
-            cursor.FocusedGameObject = null;
+            cursor.FocusedMapObject = null;
 
             var cursorImg = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0028.png");
             var mouseCursor = MouseCursor.FromTexture2D(cursorImg, 0, 0);
@@ -123,10 +124,11 @@ namespace Nabunassar.Entities
         {
             var descriptor = "npc " + _object.gid;
             var entity = CreateEntity(descriptor,2);
+            var gameObject = _game.DataBase.GetObject(_object.GetPropopertyValue<int>("ObjectId"));
 
+            entity.Attach(gameObject);
             entity.Attach(new AnimatedPerson());
 
-            var id = _object.Tileset.GetAtlasId(_object.gid);
             SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
 
             spriteSheet.DefineAnimation("idle", builder =>
@@ -158,12 +160,42 @@ namespace Nabunassar.Entities
             var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), PersonBoundsSize);
 
 
-            var gameObject = new MapObject(_game, position, ObjectType.NPC, entity, bounds, "objects") { Name = descriptor };
-            AddCollistion(gameObject);
-            entity.Attach(gameObject);
+            var mapObject = new MapObject(_game, position, ObjectType.NPC, entity, bounds, "objects") { Name = descriptor };
+            AddCollistion(mapObject);
+            entity.Attach(mapObject);
+            gameObject.MapObject = mapObject;
 
             var render = new RenderComponent(_game, animatedSprite, position, 0);
             entity.Attach(render);
+
+            //glow 
+
+            SpriteSheet glowSpriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name+"glow", _object.Tileset.TextureAtlasGlow);
+
+            glowSpriteSheet.DefineAnimation("idle", builder =>
+            {
+                builder.IsLooping(true)
+                       .AddFrame(regionIndex: 4, duration: TimeSpan.FromSeconds(0.2))
+                       .AddFrame(5, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(6, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(7, TimeSpan.FromSeconds(0.2));
+            });
+
+
+            glowSpriteSheet.DefineAnimation("run", builder =>
+            {
+                builder.IsLooping(true)
+                       .AddFrame(regionIndex: 8, duration: TimeSpan.FromSeconds(0.2))
+                       .AddFrame(9, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(10, TimeSpan.FromSeconds(0.2))
+                       .AddFrame(11, TimeSpan.FromSeconds(0.2));
+            });
+
+
+            var glowAnimatedSprite = new AnimatedSprite(glowSpriteSheet, "idle");
+
+            var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite);
+            glowEntity.Attach(glowAnimatedSprite);
 
             return entity;
         }
@@ -278,6 +310,13 @@ namespace Nabunassar.Entities
             var objId = _object.GetPropopertyValue<long>(nameof(GameObject.ObjectId));
             var objType = _object.GetPropopertyValue<ObjectType>(nameof(GameObject.ObjectType));
 
+            GameObject gameObj = null;
+
+            if (objId != default)
+                gameObj = this._game.DataBase.GetObject(objId);
+            else
+                gameObj = this._game.DataBase.GetObject(objType);
+
             var descriptor = "";
 
             if (objType == ObjectType.Pathing)
@@ -292,20 +331,23 @@ namespace Nabunassar.Entities
             var isHalfed = _object.GetPropopertyValue<bool>("IsHalfed");
 
             var entity = CreateEntity(descriptor, isHalfed ? 10 : 1);
+            entity.Attach(gameObj);
+
             var position = _object.Position;
             Vector2 size = Vector2.Zero;
 
             Color color = GetColorFromTile(_object);
 
+            var id = _object.Tileset.GetAtlasId(_object.gid);
+            var _sprite = _object.Tileset.TextureAtlas.CreateSprite(id);
+            size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
+
+            _sprite.TextureRegion = new Texture2DRegion(_sprite.TextureRegion.Texture, new Rectangle(_sprite.TextureRegion.X, _sprite.TextureRegion.Y, 16, isHalfed ? 8 : 16));
+            _sprite.Color = color;
+
             if (objType != ObjectType.Pathing)
             {
-                var id = _object.Tileset.GetAtlasId(_object.gid);
-                var _sprite = _object.Tileset.TextureAtlas.CreateSprite(id);
-                size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
-
-                _sprite.TextureRegion = new Texture2DRegion(_sprite.TextureRegion.Texture, new Rectangle(_sprite.TextureRegion.X, _sprite.TextureRegion.Y, 16, isHalfed ? 8 : 16));
                 var render = new RenderComponent(_game, _sprite, position, 0);
-                _sprite.Color = color;
 
                 entity.Attach(render);
 
@@ -321,7 +363,6 @@ namespace Nabunassar.Entities
 
                     entityDownpart.Attach(renderDownPart);
                 }
-
             }
             else
             {
@@ -329,8 +370,21 @@ namespace Nabunassar.Entities
                 position.Y += 16;
             }
 
-            var gameObjectView = new MapObject(_game, position, objType, entity, layer: "objects") { Name = descriptor };
-            entity.Attach(gameObjectView);
+            if (objType.IsInteractive())
+            {
+                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id));
+            }
+
+            // end glow
+
+            var mapObject = new MapObject(_game, position, objType, entity, layer: "objects")
+            {
+                Name = descriptor
+            };
+            entity.Attach(mapObject);
+
+            if (gameObj != default)
+                gameObj.MapObject = mapObject;
 
             var isHaveBounds = _object.IsHaveBounds();
             if (isHaveBounds)
@@ -345,7 +399,10 @@ namespace Nabunassar.Entities
 
                     var dummyDiscriptor = $"obj {_object.gid} bound({i})";
                     var dummyEntity = CreateEntity(dummyDiscriptor);
-                    var complexCollision = new MapObject(_game, gameObjectPosition, ObjectType.Object, entity, bounds, "objects") { Name = dummyDiscriptor };
+                    var complexCollision = new MapObject(_game, gameObjectPosition, ObjectType.Object, entity, bounds, "objects")
+                    {
+                        Name = dummyDiscriptor
+                    };
                     dummyEntity.Attach(complexCollision);
                     AddCollistion(complexCollision);
                     i++;
@@ -353,26 +410,76 @@ namespace Nabunassar.Entities
             }
             else
             {
-                gameObjectView.Bounds = new RectangleF(Vector2.Zero, size);
-                gameObjectView.Position = gameObjectView.Position;
-                AddCollistion(gameObjectView);
+                mapObject.Bounds = new RectangleF(Vector2.Zero, size);
+                mapObject.Position = mapObject.Position;
+                AddCollistion(mapObject);
             }
 
-            GameObject gameObj = null;
-
-            if (objId != default)
-                gameObj = this._game.DataBase.GetObject(objId);
-            else
-                gameObj = this._game.DataBase.GetObject(objType);
-
-            entity.Attach(gameObj);
 
             return entity;
         }
 
+        private Entity CreateGlowOutline(TiledObject _object, GameObject gameObj, string descriptor, Entity entity, Vector2 position, Sprite glowSprite)
+        {
+            var glowEntity = CreateEntity(descriptor + " glow", -5);
+            var glowRender = new RenderComponent(_game, glowSprite, position, 0);
+            glowSprite.IsVisible = false;
+            glowEntity.Attach(glowRender);
+
+            Cursor.OnObjectFocused += mapObj =>
+            {
+                if (mapObj == gameObj && _game.IsMouseActive)
+                {
+                    glowSprite.IsVisible = true;
+                }
+            };
+
+            Cursor.OnObjectUnfocused += mapObj =>
+            {
+                if (mapObj == gameObj)
+                {
+                    glowSprite.IsVisible = false;
+                }
+            };
+
+            if (false) //glow flickering is disabled
+            {
+                glowSprite.Alpha = .5f;
+
+                var glowFlicker = new FlickeringComponent(1, 2, 100, 0.5, 1);
+                glowFlicker.GameObject = gameObj;
+                glowFlicker.OnChange = value =>
+                {
+                    glowSprite.Alpha = (float)value;
+                };
+                entity.Attach(glowFlicker);
+
+                Cursor.OnObjectFocused += mapObj =>
+                {
+                    if (mapObj == gameObj)
+                    {
+                        glowFlicker.IsActive = true;
+                        glowFlicker.CurrentStep = 0;
+                    }
+                };
+
+                Cursor.OnObjectUnfocused += mapObj =>
+                {
+                    if (mapObj == gameObj)
+                    {
+                        glowFlicker.IsActive = false;
+                    }
+                };
+            }
+
+            return glowEntity;
+        }
+
+        private static Color DefaultColor = "#cfc6b8".AsColor();
+
         private static Color GetColorFromTile(TiledBase _object)
         {
-            var color = Color.White;
+            var color = DefaultColor;
 
             var hexColor = _object.GetPropopertyValue<string>(nameof(Color));
             if (hexColor != default)

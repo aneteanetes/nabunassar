@@ -90,6 +90,12 @@ namespace Nabunassar.Desktops
             GameObject = null;
         }
 
+        public virtual void Close()
+        {
+            Dispose();
+            Game.SwitchDesktop();
+        }
+
         public virtual void Update(GameTime gameTime) { }
     }
 }

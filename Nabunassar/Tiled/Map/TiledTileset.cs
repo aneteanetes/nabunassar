@@ -100,5 +100,7 @@ namespace Nabunassar.Tiled.Map
         public List<TiledTile> Tiles { get; set; } = new List<TiledTile>();
 
         public Texture2DAtlas TextureAtlas { get; set; }
+
+        public Texture2DAtlas TextureAtlasGlow { get; set; }
     }
 }

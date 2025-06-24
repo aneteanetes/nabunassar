@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using Nabunassar.Components;
 using Nabunassar.Desktops;
 using Nabunassar.Desktops.Menu;
+using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
@@ -35,6 +38,16 @@ namespace Nabunassar.Screens.Game
                 var texture = Content.Load<Texture2D>(tileset.image.Replace("colored-", ""));
                 var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
                 tileset.TextureAtlas = _atlas;
+
+                // glow
+                int glowWidth = 1;
+                float intensity = 50;
+                float spread = 0;
+                float totalGlowMultiplier = 1;
+                bool hideTexture = false;
+                var glowTexture = GlowEffect.CreateGlow(texture, Color.Yellow, glowWidth, intensity, spread, totalGlowMultiplier, hideTexture);
+                var _glowAtlas = Texture2DAtlas.Create(tileset.name + "_glow", glowTexture, tileset.tilewidth, tileset.tileheight,margin: 50);
+                tileset.TextureAtlasGlow = _glowAtlas;
             }
 
             foreach (var _layer in _tiledMap.Layers)
@@ -72,17 +85,20 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (!isEsc)
+                if (Game.DesktopWidget == default || Game.DesktopWidget.GetType()==typeof(EmptyScreenWidget) || Game.DesktopWidget.GetType()==typeof(MainMenu))
                 {
-                    isEsc = true;
-                    Game.SwitchDesktop(new MainMenu(Game));
-                    Game.ChangeGameActive();
-                }
-                else
-                {
-                    isEsc = false;
-                    Game.SwitchDesktop();
-                    Game.ChangeGameActive();
+                    if (!isEsc)
+                    {
+                        isEsc = true;
+                        Game.SwitchDesktop(new MainMenu(Game));
+                        Game.ChangeGameActive();
+                    }
+                    else
+                    {
+                        isEsc = false;
+                        Game.SwitchDesktop();
+                        Game.ChangeGameActive();
+                    }
                 }
             }
 

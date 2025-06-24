@@ -6,7 +6,7 @@ namespace Nabunassar.Components
 {
     internal class RenderComponent : MapObject
     {
-        public RenderComponent(NabunassarGame game, Sprite sprite, Vector2 position, float rotation, MapObject parent=null):base(game,position, ObjectType.Sprite,null,parent:parent)
+        public RenderComponent(NabunassarGame game, Sprite sprite, Vector2 position, float rotation=default, MapObject parent=null):base(game,position, ObjectType.Sprite,null,parent:parent)
         {
             Parent = parent;
             Sprite = sprite;

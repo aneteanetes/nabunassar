@@ -8,10 +8,21 @@ namespace Nabunassar
         {
             hexcolor = hexcolor.Replace("#", "");
 
-            var a = int.Parse(hexcolor.Substring(0, 2), NumberStyles.HexNumber);
-            var r = int.Parse(hexcolor.Substring(2, 2), NumberStyles.HexNumber);
-            var g = int.Parse(hexcolor.Substring(4, 2), NumberStyles.HexNumber);
-            var b = int.Parse(hexcolor.Substring(6, 2), NumberStyles.HexNumber);
+            int a=255, r, g, b;
+
+            if (hexcolor.Length > 6)
+            {
+                a = int.Parse(hexcolor.Substring(0, 2), NumberStyles.HexNumber);
+                r = int.Parse(hexcolor.Substring(2, 2), NumberStyles.HexNumber);
+                g = int.Parse(hexcolor.Substring(4, 2), NumberStyles.HexNumber);
+                b = int.Parse(hexcolor.Substring(6, 2), NumberStyles.HexNumber);
+            }
+            else
+            {
+                r = int.Parse(hexcolor.Substring(0, 2), NumberStyles.HexNumber);
+                g = int.Parse(hexcolor.Substring(2, 2), NumberStyles.HexNumber);
+                b = int.Parse(hexcolor.Substring(4, 2), NumberStyles.HexNumber);
+            }
 
             return new Color(r, g, b, a);
         }

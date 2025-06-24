@@ -1,10 +1,10 @@
 [
   {
     "ObjectId": 1,
-    "Name": "Tree",
+    "Name": "Virgil",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/snowtree.png",
-    "ObjectType": "Tree"
+    "Image": "Assets/Images/Objects/virgil.png",
+    "ObjectType": "NPC"
   },
   {
     "ObjectId": 2,
@@ -19,5 +19,12 @@
     "Cursor": "Pointer",
     "Image": "Assets/Images/Objects/well.png",
     "ObjectType": "Object"
+  },
+  {
+    "ObjectId": 4,
+    "Name": "Tree",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snowtree.png",
+    "ObjectType": "Tree"
   }
 ]

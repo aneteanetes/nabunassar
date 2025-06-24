@@ -59,6 +59,8 @@ namespace Nabunassar.ECS
                 if (render != null && render.Sprite.IsVisible)
                 {
                     sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
+                    if (render.OnAfterDraw != default)
+                        render.OnAfterDraw?.Invoke();
                 }
             }
 

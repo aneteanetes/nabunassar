@@ -71,10 +71,6 @@ namespace Nabunassar.Monogame.SpriteBatch
                     depthStencilState: spriteBatch.DepthStencilState,
                     rasterizerState: antialise);
             }
-            else
-            {
-                Console.WriteLine("wtf");
-            }
 
             return spriteBatch;
         }

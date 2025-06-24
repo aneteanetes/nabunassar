@@ -1,7 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Input;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Extensions.OrthographCameraExtensions;
 using Nabunassar.Struct;
+using Nabunassar.Systems;
 using GameObject = Nabunassar.Entities.Game.GameObject;
 
 namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
@@ -13,7 +16,9 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         const int CircleWidthHeight = 64;
         const int CenterCircleWidthHeight = 140;
 
+        private static Dictionary<string, TextureRegion> ActionIcons = new();
         private static Texture2D CircleTexture;
+        private static Texture2D MainTileset;
         private static Texture2D CircleTextureFocused;
         private static Texture2D IconTexture;
         private static Texture2D CenterCircleTexture;
@@ -40,9 +45,13 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
                 CircleTextureFocused = Content.Load<Texture2D>("Assets/Images/Interface/Circle64_f.png");
                 IconTexture = Content.Load<Texture2D>("Assets/Images/Icons/favicon.png");
                 CenterCircleTexture = Content.Load<Texture2D>("Assets/Images/Interface/Circle140.png");
+                MainTileset = Content.Load<Texture2D>("Assets/Tilesets/colored-transparent_packed.png");
+
+                ActionIcons["speak"] = new TextureRegion(MainTileset, new Rectangle(576, 208, 16, 16));
             }
 
-            _gameObjectImage = Content.Load<Texture2D>(_gameObject.Image);
+            if (_gameObject.Image != default)
+                _gameObjectImage = Content.Load<Texture2D>(_gameObject.Image);
         }
 
         protected override void UnloadContent()
@@ -72,11 +81,22 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             centerCircle.MouseLeft += Btn_MouseLeft;
             centerCircle.HorizontalAlignment = HorizontalAlignment.Center;
             centerCircle.VerticalAlignment = VerticalAlignment.Center;
+            centerCircle.TouchDown += CenterCircle_TouchDown;
             panel.Widgets.Add(centerCircle);
+
+            TextureRegion imageRegion = default;
+            if (_gameObjectImage == null)
+            {
+                imageRegion = new TextureRegion(IconTexture, new Rectangle(0, 0, 64, 64));
+            }
+            else
+            {
+                imageRegion = new TextureRegion(_gameObjectImage, new Rectangle(0, 0, 75, 115));
+            }
 
             var centerImage = new Image()
             {
-                Renderable = new TextureRegion(_gameObjectImage, new Rectangle(0, 0, 75, 115)),
+                Renderable = imageRegion,
                 Width = 75,
                 Height = 115
             };
@@ -84,22 +104,60 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             centerImage.MouseLeft += Btn_MouseLeft;
             centerImage.HorizontalAlignment = HorizontalAlignment.Center;
             centerImage.VerticalAlignment = VerticalAlignment.Center;
+            centerImage.TouchDown += CenterCircle_TouchDown;
             panel.Widgets.Add(centerImage);
 
-            CreateCircle(panel, Direction.Idle);
-            CreateCircle(panel, Direction.Up);
-            CreateCircle(panel, Direction.Down);
-            CreateCircle(panel, Direction.Left);
-            CreateCircle(panel, Direction.Right);
-            CreateCircle(panel, Direction.UpLeft);
-            CreateCircle(panel, Direction.UpRight);
-            CreateCircle(panel, Direction.DownLeft);
-            CreateCircle(panel, Direction.DownRight);
+            FillActionsBasedOnObjectType(panel);
+
+            //var icon = new TextureRegion(IconTexture, new Rectangle(0, 0, 1125, 1125));
+            //CreateCircle(panel, Direction.Up, icon);
+            //CreateCircle(panel, Direction.Down, icon);
+            //CreateCircle(panel, Direction.Left, icon);
+            //CreateCircle(panel, Direction.Right, icon);
+            //CreateCircle(panel, Direction.UpLeft, icon);
+            //CreateCircle(panel, Direction.UpRight, icon);
+            //CreateCircle(panel, Direction.DownLeft, icon);
+            //CreateCircle(panel, Direction.DownRight, icon);
 
             return panel;
         }
 
-        private void CreateCircle(Panel panel, Direction direction)
+        private void FillActionsBasedOnObjectType(Panel panel)
+        {
+            switch (_gameObject.ObjectType)
+            {
+                case ObjectType.NPC:
+                    FillNPCActions(panel);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void FillNPCActions(Panel panel)
+        {
+            CreateCircle(panel, Direction.Up, ActionIcons["speak"], TalkWithNPC);
+        }
+
+        private void TalkWithNPC()
+        {
+            Close();
+            Game.SwitchDesktop(new DialogueMenu(Game, _gameObject));
+        }
+
+        private void CenterCircle_TouchDown(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        public override void Close()
+        {
+            PlayerControllSystem.IsContextMenuOpened = false;
+            PlayerControllSystem.IsPreventNextMove = true;
+            base.Close();
+        }
+
+        private void CreateCircle(Panel panel, Direction direction, TextureRegion iconTexture, Action click=default)
         {
             var x = 0;
             var y = 0;
@@ -203,7 +261,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
                 btn.MouseEntered += Btn_MouseEntered;
                 btn.MouseLeft += Btn_MouseLeft;
-                btn.Click += Btn_Click;
+                btn.Click += (s, e) => click?.Invoke();
                 btn.FocusedBackground = new TextureRegion(CircleTextureFocused, new Rectangle(0, 0, CircleWidthHeight, CircleWidthHeight));
                 btn.OverBackground = btn.FocusedBackground;
                 btn.PressedBackground = btn.OverBackground;
@@ -213,7 +271,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
                 var icon =  new Image()
                 {
-                    Renderable = new TextureRegion(IconTexture, new Rectangle(0, 0, 1125, 1125))
+                    Renderable = iconTexture
                 };
                 icon.Width = CircleWidthHeight-CircleWidthHeight/4;
                 icon.Height = CircleWidthHeight - CircleWidthHeight / 4;
@@ -250,10 +308,10 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             Console.WriteLine("clicked");
         }
 
+
         private TimeSpan prev;
         public override void Update(GameTime gameTime)
         {
-            
             if (gameTime.TotalGameTime - prev >= TimeSpan.FromSeconds(1))
             {
                 if (widget.Scale.X<1)

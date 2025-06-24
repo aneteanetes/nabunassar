@@ -34,6 +34,7 @@ using Nabunassar.Systems;
 using System.Reflection;
 using FontStashSharp;
 using Nabunassar.Components;
+using MonoGame;
 
 namespace Nabunassar
 {
@@ -235,6 +236,7 @@ namespace Nabunassar
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new MoveSystem(this))
                 .AddSystem(new MouseControlSystem(this))
+                .AddSystem(new FlickeringSystem(this))
                 .Build();
 
             EntityFactory=new Entities.EntityFactory(this);
@@ -255,9 +257,8 @@ namespace Nabunassar
             if (DesktopWidget != null)
                 DesktopWidget.Dispose();
 
-            DesktopWidget = screen.GetWidget();
-            SwitchDesktop(DesktopWidget);
-            //DesktopWidget.LoadContent();
+            var widget = screen.GetWidget();
+            SwitchDesktop(widget);
 
             ScreenManager.LoadScreen(screen, transition);
         }
@@ -286,12 +287,14 @@ namespace Nabunassar
             {
                 widget.Initialize();
                 Components.Add(widget);
-                //widget.LoadContent();
+                DesktopWidget = widget;
                 Desktop.Root = widget.Load();
                 _myraGameObject = widget.GameObject;
             }
             else
             {
+                DesktopWidget?.Dispose();
+                DesktopWidget = null;
                 Desktop.Root = null;
             }
         }
@@ -314,6 +317,8 @@ namespace Nabunassar
             SwitchScreen<MainMenuScreen>();
 
             Game.InitializeGameState();
+
+            GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
 
             base.LoadContent();
         }

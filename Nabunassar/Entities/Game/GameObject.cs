@@ -1,9 +1,12 @@
-﻿using Nabunassar.Struct;
+﻿using Nabunassar.Components;
+using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Game
 {
     internal class GameObject : IClonable<GameObject>
     {
+        public MapObject MapObject { get; set; }
+
         public long ObjectId { get; set; }
 
         public string Name { get; set; }
