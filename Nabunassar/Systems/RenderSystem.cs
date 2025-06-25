@@ -5,20 +5,18 @@ using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using static Assimp.Metadata;
+using Nabunassar.Systems;
 
 namespace Nabunassar.ECS
 {
-    internal class RenderSystem : EntityDrawSystem, IUpdateSystem
+    internal class RenderSystem : BaseSystem
     {
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private ComponentMapper<MapObject> _gameObjectMapper;
-        private NabunassarGame _game;
 
-        public RenderSystem(NabunassarGame game) : base(Aspect.One(typeof(RenderComponent),typeof(MapObject)))
+        public RenderSystem(NabunassarGame game) : base(game, Aspect.One(typeof(RenderComponent),typeof(MapObject)))
         {
-            _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -28,7 +26,7 @@ namespace Nabunassar.ECS
             _gameObjectMapper = mapperService.GetMapper<MapObject>();
         }
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool sys)
         {
             var keyboardState = KeyboardExtended.GetState();
 
@@ -42,9 +40,9 @@ namespace Nabunassar.ECS
 
         private int i;
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, bool sys)
         {
-            var sb = _game.BeginDraw();
+            var sb = Game.BeginDraw();
 
             var entities = ActiveEntities.Select(GetEntity).OrderBy(x => x.Get<OrderComponent>().Order).ToList();
 
@@ -66,7 +64,7 @@ namespace Nabunassar.ECS
 
             foreach (var entity in entities)
             {
-                if (_game.IsDrawBounds)
+                if (Game.IsDrawBounds)
                 {
                     var gameObj = _gameObjectMapper.Get(entity);
                     if (gameObj != null && gameObj.Bounds != default)

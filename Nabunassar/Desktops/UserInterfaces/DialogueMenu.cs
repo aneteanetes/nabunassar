@@ -2,6 +2,7 @@
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Extensions.OrthographCameraExtensions;
+using Nabunassar.Systems;
 
 namespace Nabunassar.Desktops.UserInterfaces
 {
@@ -16,6 +17,7 @@ namespace Nabunassar.Desktops.UserInterfaces
 
         protected override Widget InitWidget()
         {
+            Game.DisableSystems(typeof(PlayerControllSystem),typeof(FocusSystem));
             Game.ZoomToPoint(_gameObject.MapObject.Position, 4);
 
             return new Panel();
@@ -32,6 +34,12 @@ namespace Nabunassar.Desktops.UserInterfaces
             }
 
             base.Update(gameTime);
+        }
+
+        public override void Close()
+        {
+            Game.EnableSystems();
+            base.Close();
         }
     }
 }

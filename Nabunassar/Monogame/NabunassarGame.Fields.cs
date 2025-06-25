@@ -44,8 +44,7 @@ namespace Nabunassar
 
         public EntityFactory EntityFactory { get; set; }
 
-        public World World { get; private set; }
-
+        public World WorldGame { get; private set; }
 
         public OrthographicCamera Camera { get; private set; }
 

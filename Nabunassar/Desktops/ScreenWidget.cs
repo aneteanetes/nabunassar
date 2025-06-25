@@ -7,7 +7,7 @@ using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar.Desktops
 {
-    internal abstract class ScreenWidget : IGameComponent, IUpdateable, IDisposable
+    internal abstract class ScreenWidget : IGameComponent, IDrawable, IUpdateable, IDisposable
     {
         protected NabunassarGame Game { get; private set; }
 
@@ -17,6 +17,12 @@ namespace Nabunassar.Desktops
 
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
+        public event EventHandler<EventArgs> DrawOrderChanged;
+        public event EventHandler<EventArgs> VisibleChanged;
+
+        public int DrawOrder { get; set; }
+
+        public bool Visible { get; set; } = true;
 
         public bool Enabled { get; set; } = true;
 
@@ -46,24 +52,17 @@ namespace Nabunassar.Desktops
         {
             _widget = InitWidget();
 
-            if (IsMouseActiveOnRootWidget)
-            {
-                _widget.MouseEntered += _widget_MouseEntered;
-                _widget.MouseLeft += _widget_MouseLeft;
-            }
-
-            //var entity = Game.EntityFactory.CreateEntity();
-            //var position = new Vector2(_widget.Left, _widget.Top);
-            //GameObject = new GameObject(Game, position, Struct.ObjectType.Interface, entity, new RectangleF(Vector2.Zero, new SizeF(_widget.Width ?? 0f, _widget.Height ?? 0f)), "objects");
-            //entity.Attach(GameObject);
-
-            ////Game.EntityFactory.AddCollistion(GameObject);
+            //if (IsMouseActiveOnRootWidget)
+            //{
+            //    _widget.MouseEntered += _widget_MouseEntered;
+            //    _widget.MouseLeft += _widget_MouseLeft;
+            //}
 
             OnDispose += () =>
             {
-                _widget.MouseEntered -= _widget_MouseEntered;
-                _widget.MouseLeft -= _widget_MouseLeft;
-                Game.IsMouseActive = true;
+                ////_widget.MouseEntered -= _widget_MouseEntered;
+                ////_widget.MouseLeft -= _widget_MouseLeft;
+                //Game.IsMouseActive = true;
             };
 
             return _widget;
@@ -97,5 +96,7 @@ namespace Nabunassar.Desktops
         }
 
         public virtual void Update(GameTime gameTime) { }
+
+        public virtual void Draw(GameTime gameTime) { }
     }
 }

@@ -216,6 +216,7 @@ namespace Nabunassar
             DataBase=new DataBase(this);
 
             Random = new FastRandom();
+
             var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 
@@ -230,16 +231,7 @@ namespace Nabunassar
 
             CollisionComponent.AddCollisionBetweenLayer(cursorLayer, objectsLayer);
 
-            World = new WorldBuilder()
-                .AddSystem(new PlayerControllSystem(this))
-                .AddSystem(new RenderSystem(this))
-                .AddSystem(new CursorSystem(this))
-                .AddSystem(new MoveSystem(this))
-                .AddSystem(new MouseControlSystem(this))
-                .AddSystem(new FlickeringSystem(this))
-                .Build();
-
-            EntityFactory=new Entities.EntityFactory(this);
+            InitGameWorlds();
 
             base.Initialize();
         }
@@ -408,7 +400,7 @@ namespace Nabunassar
 
             if (IsGameActive)
             {
-                World.Update(gameTime);
+                WorldGame.Update(gameTime);
                 CollisionComponent.Update(gameTime);
             }
 

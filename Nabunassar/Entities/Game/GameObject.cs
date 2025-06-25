@@ -1,10 +1,13 @@
-﻿using Nabunassar.Components;
+﻿using MonoGame.Extended.ECS;
+using Nabunassar.Components;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Game
 {
     internal class GameObject : IClonable<GameObject>
     {
+        public Entity Entity { get; set; }
+
         public MapObject MapObject { get; set; }
 
         public long ObjectId { get; set; }

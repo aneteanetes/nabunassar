@@ -3,7 +3,7 @@
     "ObjectId": 1,
     "Name": "Virgil",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/virgil.png",
+    "Image": "Assets/Images/Objects/virgilcircle.png",
     "ObjectType": "NPC"
   },
   {
@@ -24,7 +24,7 @@
     "ObjectId": 4,
     "Name": "Tree",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/snowtree.png",
+    "Image": "Assets/Images/Objects/snowtree2.png",
     "ObjectType": "Tree"
   }
 ]

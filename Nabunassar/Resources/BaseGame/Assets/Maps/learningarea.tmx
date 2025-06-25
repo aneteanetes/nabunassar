@@ -166,7 +166,7 @@
   </tile>
   <tile id="690">
    <properties>
-    <property name="Color" type="color" value="#ff383f7d"/>
+    <property name="Color" type="color" value="#ff4d58ac"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">

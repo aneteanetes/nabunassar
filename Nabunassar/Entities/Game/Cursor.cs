@@ -9,6 +9,10 @@ namespace Nabunassar.Entities.Game
     {
         public GameObject FocusedMapObject { get; set; }
 
+        public static GameObject ObjectFocused { get; private set; }
+        
+        public static GameObject ObjectUnfocused { get; private set; }
+
         public static Action<GameObject> OnObjectFocused { get; set; } = x => { };
 
         public static Action<GameObject> OnObjectUnfocused { get; set; } = x => { };
@@ -31,19 +35,33 @@ namespace Nabunassar.Entities.Game
             Cursors[name] = mouseCursor;
         }
 
+        public static Queue<FocusEvent> FocusEvents = new();
+
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject another)
         {
             var anotherGameObject = another.GameObject;
+
             if (FocusedMapObject == default)
             {
-                OnObjectFocused?.Invoke(anotherGameObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = true,
+                    Object = anotherGameObject,
+                });
             }
-            else
-
-            if (FocusedMapObject != anotherGameObject)
+            else if (FocusedMapObject != anotherGameObject)
             {
-                OnObjectUnfocused?.Invoke(FocusedMapObject);
-                OnObjectFocused?.Invoke(anotherGameObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = false,
+                    Object = FocusedMapObject,
+                });
+
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = true,
+                    Object = anotherGameObject,
+                });
             }
 
             FocusedMapObject = anotherGameObject;
@@ -52,8 +70,21 @@ namespace Nabunassar.Entities.Game
         internal void OnNoCollistion()
         {
             if (FocusedMapObject != default)
-                OnObjectUnfocused?.Invoke(FocusedMapObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = false,
+                    Object = FocusedMapObject,
+                });
+
             FocusedMapObject = default;
         }
+    }
+
+    internal struct FocusEvent
+    {
+        public GameObject Object { get; set; }
+
+        public bool IsFocused { get; set; }
+
     }
 }

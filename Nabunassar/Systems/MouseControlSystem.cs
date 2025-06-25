@@ -8,15 +8,13 @@ using Nabunassar.Components;
 
 namespace Nabunassar.Systems
 {
-    internal class MouseControlSystem : EntityUpdateSystem
+    internal class MouseControlSystem : BaseSystem
     {
-        NabunassarGame _game;
         Dictionary<string, Dictionary<int, MouseCursor>> CursorMap = new();
         ComponentMapper<MapObject> _gameObjectComponentMapper;
 
-        public MouseControlSystem(NabunassarGame game) : base(Aspect.All(typeof(CursorComponent)))
+        public MouseControlSystem(NabunassarGame game) : base(game, Aspect.All(typeof(CursorComponent)))
         {
-            _game = game;
         }
 
         private bool isInitialized = false;
@@ -28,7 +26,7 @@ namespace Nabunassar.Systems
 
         private void Initialize()
         {
-            var cursor = _game.GameState.Cursor;
+            var cursor = Game.GameState.Cursor;
 
             var map = new Dictionary<int, MouseCursor>();
 
@@ -41,7 +39,7 @@ namespace Nabunassar.Systems
                     var idx = frame.FrameIndex;
                     var region = cursor.SpriteSheet.TextureAtlas[idx];
 
-                    var texture = new Texture2D(_game.GraphicsDevice, 16, 16);
+                    var texture = new Texture2D(Game.GraphicsDevice, 16, 16);
                     Color[] data = new Color[16 * 16];
                     cursor.SpriteSheet.TextureAtlas.Texture.GetData(0, new Rectangle(region.X, region.Y, region.Width, region.Height), data, 0, 16 * 16);
                     texture.SetData(data);
@@ -55,9 +53,9 @@ namespace Nabunassar.Systems
             isInitialized = true;
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool sys)
         {
-            if (_game.GameState?.Cursor == default)
+            if (Game.GameState?.Cursor == default)
                 return;
 
             var mouse = MouseExtended.GetState();
@@ -65,17 +63,17 @@ namespace Nabunassar.Systems
             foreach (var entityId in ActiveEntities)
             {
                 var bounds = _gameObjectComponentMapper.Get(entityId);
-                var mousePos = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
+                var mousePos = Game.Camera.ScreenToWorld(mouse.X, mouse.Y);
                 bounds.SetPosition(mousePos);
             }
 
             if (!isInitialized)
                 Initialize();
 
-            var animatedSprite = _game.GameState.Cursor.AnimatedSprite;
+            var animatedSprite = Game.GameState.Cursor.AnimatedSprite;
             animatedSprite.Update(gameTime);
 
-            var party = _game.GameState.Party;
+            var party = Game.GameState.Party;
             if (party == null)
                 return;
 
@@ -90,7 +88,7 @@ namespace Nabunassar.Systems
             }
             else if (animatedSprite.CurrentAnimation != "cursor")
             {
-                _game.GameState.Cursor.SetCursor("cursor");
+                Game.GameState.Cursor.SetCursor("cursor");
             }
         }
 

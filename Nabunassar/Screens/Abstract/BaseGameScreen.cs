@@ -23,7 +23,7 @@ namespace Nabunassar.Screens.Abstract
 
         public override void Draw(GameTime gameTime)
         {
-            Game.World.Draw(gameTime);
+            Game.WorldGame.Draw(gameTime);
 
             Game.SpriteBatch.End();
             //Game.World.Draw(gameTime, Game.BeginDraw());
