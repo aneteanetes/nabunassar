@@ -38,7 +38,7 @@ namespace Nabunassar.Screens
 
         public override void Draw(GameTime gameTime)
         {
-            Game.GraphicsDevice.Clear(Color.Black);
+            //Game.GraphicsDevice.Clear(Color.Black);
 
             var sb = Game.BeginDraw();
             sb.Draw(background, Game.Resolution, new Rectangle(0, 0, 2560, 1440), Color.White);

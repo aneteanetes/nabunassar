@@ -294,6 +294,8 @@ namespace Monogame.Extended
 
         private static Vector2 PenetrationVector(CircleF circleA, OrientedRectangle orientedRectangleB)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
+
             var rotation = Matrix3x2.CreateRotationZ(orientedRectangleB.Orientation.Rotation);
             var circleCenterInRectangleSpace = rotation.Transform(circleA.Center - orientedRectangleB.Center);
             var circleInRectangleSpace = new CircleF(circleCenterInRectangleSpace, circleA.Radius);
@@ -304,6 +306,8 @@ namespace Monogame.Extended
             var transformedPenetration = inverseRotation.Transform(penetrationVector);
 
             return transformedPenetration;
+
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         private static Vector2 PenetrationVector(RectangleF rect, CircleF circ)

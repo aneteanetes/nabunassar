@@ -18,6 +18,8 @@ namespace Nabunassar
         public Renderable(NabunassarGame game)
         {
             Game = game;
+            EnabledChanged?.Invoke(null,null);
+            UpdateOrderChanged?.Invoke(null, null);
         }
 
         public event EventHandler<EventArgs> EnabledChanged;

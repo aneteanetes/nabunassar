@@ -31,6 +31,10 @@ namespace Nabunassar.Desktops
         public ScreenWidget(NabunassarGame game)
         {
             Game = game;
+            EnabledChanged?.Invoke(null, null);
+            UpdateOrderChanged?.Invoke(null, null);
+            DrawOrderChanged?.Invoke(null, null);
+            VisibleChanged?.Invoke(null, null);
         }
 
         protected virtual void LoadContent() { }

@@ -15,11 +15,13 @@ using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
+using Penumbra;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public PenumbraComponent Penumbra { get; set; }
         public bool IsMouseActive { get; internal set; } = true;
 
         public bool IsGameActive { get; set; } = true;

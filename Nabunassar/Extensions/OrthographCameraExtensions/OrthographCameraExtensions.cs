@@ -1,6 +1,4 @@
-﻿using Assimp;
-
-namespace Nabunassar.Extensions.OrthographCameraExtensions
+﻿namespace Nabunassar.Extensions.OrthographCameraExtensions
 {
     internal static class OrthographCameraExtensions
     {

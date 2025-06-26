@@ -1,15 +1,16 @@
 ﻿using LiteDB;
 using Microsoft.Xna.Framework.Content;
+using Nabunassar.Monogame.Settings;
 
 namespace Nabunassar.Content
 {
     internal class ResourceLoader : IDisposable
     {
-        private NabunassarGame game;
+        private GameSettings _settings;
 
-        public ResourceLoader(NabunassarGame game, string moduleName = null)
+        public ResourceLoader(GameSettings gameSettings, string moduleName = null)
         {
-            this.game = game;
+            this._settings = gameSettings;
 
             if (moduleName != null)
                 ModuleName = moduleName;
@@ -26,7 +27,7 @@ namespace Nabunassar.Content
                 {
                     if (_dataBase == default)
                     {
-                        var dataPath = game.Settings.PathData;
+                        var dataPath = _settings.PathData;
                         if (!Directory.Exists(dataPath))
                         {
                             Directory.CreateDirectory(dataPath);

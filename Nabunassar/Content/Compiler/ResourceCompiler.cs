@@ -1,8 +1,10 @@
 ﻿using LiteDB;
+using MonoGame.Effect;
 using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Settings;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace Nabunassar.Content.Compiler
@@ -110,8 +112,7 @@ namespace Nabunassar.Content.Compiler
                 }
                 catch (Exception ex)
                 {
-                    Debugger.Break();
-                    throw;
+                    throw new Exception("Resource compiling error", ex);
                 }
             }
         }
@@ -159,7 +160,31 @@ namespace Nabunassar.Content.Compiler
 
         private byte[] GetData(string filePath)
         {
+            if(Path.GetExtension(filePath)==".fx")
+            {
+                var shader = GetShaderData(filePath);
+                return shader;
+            }
+
             return File.ReadAllBytes(filePath);
+        }
+
+        private byte[] GetShaderData(string filePath)
+        {
+            var opts = new MonogameEffectCompilerOptions() { Profile = ShaderProfile.OpenGL };
+            var shaderResult = ShaderResult.FromFile(filePath, opts);
+            var effect = EffectObject.CompileEffect(shaderResult, out var log);
+
+            using (var ms = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(ms))
+                    effect.Write(writer, opts);
+
+                if(ms.CanSeek)
+                    ms.Seek(0, SeekOrigin.Begin);
+
+                return ms.ToArray();
+            }
         }
 
         private string FormatPathForDB(string filePath)

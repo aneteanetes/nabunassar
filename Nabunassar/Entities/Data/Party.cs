@@ -1,11 +1,8 @@
-﻿using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
+﻿using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Roy_T.AStar.Primitives;
-using System.Collections.Generic;
 
 namespace Nabunassar.Entities.Data
 {
@@ -141,83 +138,6 @@ namespace Nabunassar.Entities.Data
                     break;
                 default:
                     break;
-            }
-        }
-
-        internal void OnMoving(Vector2 prev, Vector2 next)
-        {
-            return;
-            var diff = prev - next;
-            var direction = prev.DetectDirection(next);
-
-            foreach (var hero in this)
-            {
-                if (hero.GameObject.IsMoving)
-                {
-                    var ray = hero.GameObject.Ray2;
-
-                    float xFrom = ray.Position.X;
-                    float yFrom = ray.Position.Y;
-
-                    float xTo = ray.Direction.X;
-                    float yTo = ray.Direction.Y;
-
-                    void Up()
-                    {
-                        yFrom -=diff.Y;
-                        yTo -=diff.Y;
-                    }
-
-                    void Down()
-                    {
-                        yFrom += diff.Y;
-                        yTo += diff.Y;
-                    }
-
-                    void Left()
-                    {
-                        xFrom -= diff.X;
-                        xTo -= diff.X;
-                    }
-
-                    void Right()
-                    {
-                        xFrom += diff.X;
-                        xTo += diff.X;
-                    }
-
-                    switch (direction)
-                    {
-                        case Direction.Up:
-                            Up();
-                            break;
-                        case Direction.Down:
-                            Down();
-                            break;
-                        case Direction.Left:
-                            Left();
-                            break;
-                        case Direction.Right:
-                            Right();
-                            break;
-                        case Direction.UpLeft:
-                            Up(); Left();
-                            break;
-                        case Direction.UpRight:
-                            Up(); Right();
-                            break;
-                        case Direction.DownLeft:
-                            Down(); Left();
-                            break;
-                        case Direction.DownRight:
-                            Down(); Right();
-                            break;
-                        default:
-                            break;
-                    }
-
-                    hero.GameObject.Ray2 = new Ray2(new Vector2(xFrom, yFrom), new Vector2(xTo, yTo));
-                }
             }
         }
     }

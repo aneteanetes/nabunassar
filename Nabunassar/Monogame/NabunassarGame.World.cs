@@ -17,6 +17,7 @@ namespace Nabunassar
                 .AddSystem(new MoveSystem(this))
                 .AddSystem(new MouseControlSystem(this))
                 .AddSystem(new FocusSystem(this))
+                .AddSystem(new LightSystem(this))
                 .Build();
 
             EntityFactory = new Entities.EntityFactory(this);

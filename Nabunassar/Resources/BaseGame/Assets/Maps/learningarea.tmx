@@ -3,7 +3,7 @@
  <properties>
   <property name="newversion" type="int" value="1"/>
  </properties>
- <tileset firstgid="1" name="winter" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
+ <tileset firstgid="1" name="TilesAndCollisions" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
   <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
   <tile id="1">
    <properties>
@@ -57,6 +57,12 @@
     <object id="2" x="6.96875" y="0.90625" width="2.03125" height="14.0313"/>
     <object id="3" x="4.96875" y="3.96875" width="6.0625" height="7.96875"/>
     <object id="4" x="6" y="1.96875" width="3.96875" height="1.96875"/>
+    <object id="5" x="7.81678" y="1.08944">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0.117777,0.176665 -3.54737,6.06552 -2.54128,10.541 -0.650651,10.541 -0.533096,13.6327 0.887649,13.5149 1.18197,10.5116 2.92494,10.5705 3.57814,5.74162"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="52">
@@ -173,6 +179,12 @@
     <object id="1" x="2.03125" y="4.9375" width="12" height="8"/>
     <object id="2" x="3" y="3.96875" width="9.96875" height="9.96875"/>
     <object id="3" x="4.9375" y="2.90625" width="6.09375" height="12.0625"/>
+    <object id="4" x="2.26721" y="5.47663">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 3.03276,-1.5311 3.0622,-2.17887 8.42105,-2.29665 8.36216,-1.41332 11.3949,0.0883327 11.5421,6.83106 8.4505,8.27383 8.4505,9.12771 2.97387,9.21605 2.88554,8.09717 0.117777,6.97828"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="702">
@@ -229,6 +241,12 @@
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="0.96875" width="14.0313" height="14.0625"/>
+    <object id="2" x="1.20721" y="1.29555">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.0883327,13.456 13.5444,13.5149 13.6032,0"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="843">
@@ -237,7 +255,13 @@
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="1.03125" y="1" width="14" height="14.0001"/>
+    <object id="1" x="0.942917" y="0.970556" width="14" height="14.0001"/>
+    <object id="2" x="-8.88178e-16" y="0.0588885">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.104011,15.8306 15.9483,15.8999 16.0177,0"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="893">
@@ -247,6 +271,12 @@
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.96875" y="1.03125" width="14.0625" height="13.9063"/>
+    <object id="2" x="-0.0588885" y="0.0294442">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.104393,15.8306 16.007,15.8999 16.0765,0"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="947">
@@ -358,12 +388,14 @@
  <tileset firstgid="1079" name="virgil" tilewidth="16" tileheight="24" tilecount="12" columns="4">
   <image source="../Tilesets/virgil.png" trans="000000" width="64" height="72"/>
  </tileset>
- <tileset firstgid="1091" name="summer" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
+ <tileset firstgid="1091" name="Hulls" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
   <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
   <tile id="51">
-   <properties>
-    <property name="Color" type="color" value="#ff38d973"/>
-   </properties>
+   <objectgroup draworder="index" id="3">
+    <object id="2" x="7.80272" y="1.11888">
+     <polygon points="0,0 -3.73942,6.86051 -2.41443,10.7766 -0.76555,10.7766 -0.824439,13.7799 1.14833,13.7505 1.11888,10.806 2.64998,10.7766 4.09275,6.68384"/>
+    </object>
+   </objectgroup>
   </tile>
  </tileset>
  <layer id="1" name="Ground" width="30" height="26">

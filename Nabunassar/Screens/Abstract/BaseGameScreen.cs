@@ -26,6 +26,9 @@ namespace Nabunassar.Screens.Abstract
             Game.WorldGame.Draw(gameTime);
 
             Game.SpriteBatch.End();
+
+            Game.Penumbra.Draw(gameTime);
+
             //Game.World.Draw(gameTime, Game.BeginDraw());
             Game.Desktop.Render();
         }

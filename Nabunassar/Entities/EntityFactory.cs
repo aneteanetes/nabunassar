@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using FontStashSharp;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
@@ -8,6 +9,7 @@ using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using Penumbra;
 
 namespace Nabunassar.Entities
 {
@@ -223,8 +225,6 @@ namespace Nabunassar.Entities
                 i++;
             }
 
-            gameObject.OnMoving = party.OnMoving;
-
             var directionEntity = CreateEntity("direction entity",20);
             var directionMoveComponent = new DirectionMoveComponent();
             directionEntity.Attach(directionMoveComponent);
@@ -245,6 +245,13 @@ namespace Nabunassar.Entities
 
             party.DirectionRender = directionRender;
             gameObject.OnStopMove += () => directionSprite.IsVisible = false;
+
+            var light = new LightComponent(new PointLight
+            {
+                Scale = new Vector2(250f), // Range of the light source (how far the light will travel)
+                ShadowType = ShadowType.Illuminated, // Will not lit hulls themselves
+            });
+            partyEntity.Attach(light);
 
             //moveComp.DirectionEntity = directionEntity;
 
@@ -420,6 +427,19 @@ namespace Nabunassar.Entities
                 AddCollistion(mapObject);
             }
 
+            var isHavePolygons = _object.IsHavePolygons();
+            if (isHavePolygons)
+            {
+                List<Hull> hulls = [];
+                var hullPolugons = _object.GetPolygons().Where(x => x.GetPropopertyValue<ObjectType>("ObjectType") == ObjectType.Hull);
+                foreach (var hullPolygon in hullPolugons)
+                {
+                    hulls.Add(new Hull(hullPolygon.Vertices));
+                }
+
+                entity.Attach(new HullComponent(hulls.ToArray()));
+            }
+
 
             return entity;
         }
@@ -449,35 +469,35 @@ namespace Nabunassar.Entities
             //Cursor.OnObjectFocused
             //    Cursor.OnObjectUnfocused
 
-            if (false) //glow flickering is disabled
-            {
-                glowSprite.Alpha = .5f;
+            //if (false) //glow flickering is disabled
+            //{
+            //    glowSprite.Alpha = .5f;
 
-                var glowFlicker = new FlickeringComponent(1, 2, 100, 0.5, 1);
-                glowFlicker.GameObject = gameObj;
-                glowFlicker.OnChange = value =>
-                {
-                    glowSprite.Alpha = (float)value;
-                };
-                entity.Attach(glowFlicker);
+            //    var glowFlicker = new FlickeringComponent(1, 2, 100, 0.5, 1);
+            //    glowFlicker.GameObject = gameObj;
+            //    glowFlicker.OnChange = value =>
+            //    {
+            //        glowSprite.Alpha = (float)value;
+            //    };
+            //    entity.Attach(glowFlicker);
 
-                Cursor.OnObjectFocused += mapObj =>
-                {
-                    if (mapObj == gameObj)
-                    {
-                        glowFlicker.IsActive = true;
-                        glowFlicker.CurrentStep = 0;
-                    }
-                };
+            //    Cursor.OnObjectFocused += mapObj =>
+            //    {
+            //        if (mapObj == gameObj)
+            //        {
+            //            glowFlicker.IsActive = true;
+            //            glowFlicker.CurrentStep = 0;
+            //        }
+            //    };
 
-                Cursor.OnObjectUnfocused += mapObj =>
-                {
-                    if (mapObj == gameObj)
-                    {
-                        glowFlicker.IsActive = false;
-                    }
-                };
-            }
+            //    Cursor.OnObjectUnfocused += mapObj =>
+            //    {
+            //        if (mapObj == gameObj)
+            //        {
+            //            glowFlicker.IsActive = false;
+            //        }
+            //    };
+            //}
 
             return glowEntity;
         }

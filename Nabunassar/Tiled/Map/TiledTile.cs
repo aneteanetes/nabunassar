@@ -2,12 +2,12 @@
 
 namespace Nabunassar.Tiled.Map
 {
-    public class TiledTile
+    public class TiledTile : TiledBase
     {
         public int Id { get; set; }
 
-        public Dictionary<string, string> Properties { get; set; } = new();
-
         public List<RectangleF> Bounds { get; set; } = new();
+
+        public List<TiledPolygonObject> Polygons { get; set; } = new();
     }
 }

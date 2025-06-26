@@ -27,6 +27,8 @@ namespace Nabunassar.Screens.Game
 
         public override void LoadContent()
         {
+            Game.Penumbra.Visible = true;
+
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
@@ -35,6 +37,9 @@ namespace Nabunassar.Screens.Game
 
             foreach (var tileset in _tiledMap.Tilesets)
             {
+                if (tileset.name == "Hulls")
+                    continue;
+
                 var texture = Content.Load<Texture2D>(tileset.image.Replace("colored-", ""));
                 var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
                 tileset.TextureAtlas = _atlas;

@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Content;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
-using System.IO;
 
 namespace Nabunassar.Monogame.Content
 {
@@ -13,11 +12,11 @@ namespace Nabunassar.Monogame.Content
     {
         private ResourceLoader _resourceLoader;
         private JsonSerializer _jsonSerializer;
-        NabunassarGame _game;
+        Game _game;
 
         private Dictionary<string, FontSystem> _fonts = new();
 
-        public NabunassarContentManager(NabunassarGame game, ResourceLoader resourceLoader) : base(game.Services)
+        public NabunassarContentManager(Game game, ResourceLoader resourceLoader) : base(game.Services)
         {
             _game = game;
             _resourceLoader = resourceLoader;

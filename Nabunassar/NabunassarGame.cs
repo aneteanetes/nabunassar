@@ -1,27 +1,25 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
-global using GoRogueGameObject = GoRogue.GameFramework.GameObject;
-
 using AssetManagementBase;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Monogame.Extended;
+using MonoGame;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
-using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.Extended.ViewportAdapters;
 using Myra;
 using Myra.Graphics2D.UI;
+using Nabunassar.Components;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
 using Nabunassar.Desktops;
-using Nabunassar.ECS;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
@@ -30,11 +28,6 @@ using Nabunassar.Resources;
 using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
-using Nabunassar.Systems;
-using System.Reflection;
-using FontStashSharp;
-using Nabunassar.Components;
-using MonoGame;
 
 namespace Nabunassar
 {
@@ -44,13 +37,8 @@ namespace Nabunassar
 
         public NabunassarGame(GameSettings settings)
         {
-            settings.PathBin = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            settings.PathRepository = Directory.GetParent(settings.PathProject).ToString();
-            settings.PathData = Path.Combine(settings.PathBin, "Data");
-
-#if DEBUG
-            ResourceCompiler.Compile(settings);
-#endif
+            if (!settings.IsInitialized)
+                throw new Exception("Settings is not initialized!");
 
             Settings = settings;
 
@@ -68,7 +56,7 @@ namespace Nabunassar
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SDL cant be inited in release mode, TODO: dev build");
+                Console.WriteLine($"SDL cant be inited in release mode, TODO: dev build, ex:{ex}");
             }
 
             GraphicsDeviceManagerInitialization();
@@ -255,7 +243,7 @@ namespace Nabunassar
             ScreenManager.LoadScreen(screen, transition);
         }
 
-        private Container DesktopContainer;
+        //private Container DesktopContainer;
 
         public void AddDesktopWidget(ScreenWidget widget)
         {
@@ -267,8 +255,8 @@ namespace Nabunassar
                 widget.Initialize();
                 var ui = widget.Load();
                 Components.Add(widget);
-                DesktopContainer.Widgets.Add(ui);
-                widget.OnDispose += () => DesktopContainer.Widgets.Remove(ui);
+                //DesktopContainer.Widgets.Add(ui);
+                //widget.OnDispose += () => DesktopContainer.Widgets.Remove(ui);
             }
 
         }
@@ -298,7 +286,7 @@ namespace Nabunassar
             Window.Position = new Microsoft.Xna.Framework.Point(x, y);
 
             FrameCounter = new FrameCounter();
-            ResourceLoader = new ResourceLoader(this);
+            ResourceLoader = new ResourceLoader(this.Settings);
             base.Content = new NabunassarContentManager(this, ResourceLoader);
             SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
 
@@ -311,6 +299,8 @@ namespace Nabunassar
             Game.InitializeGameState();
 
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
+
+            LoadPenumbra();
 
             base.LoadContent();
         }
@@ -364,16 +354,12 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
-            //if (Desktop.Root != default && _myraGameObject!=default && _myraGameObject.Bounds.BoundingRectangle.Width==0)
-            //{
-            //    _myraGameObject.Bounds = new RectangleF(_myraGameObject.Bounds.Position, new SizeF(Desktop.Root.ActualBounds.Width, Desktop.Root.ActualBounds.Height));
-
-            //    if (_myraGameObject.Bounds.BoundingRectangle.Width != 0)
-            //        EntityFactory.AddCollistion(_myraGameObject);
-            //}
-
             MouseExtended.Update();
             KeyboardExtended.Update();
+
+            light.Position = MouseExtended.GetState().Position.ToVector2();
+
+            Penumbra.Transform = Camera.GetViewMatrix();
 
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
@@ -396,6 +382,15 @@ namespace Nabunassar
             if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
                 IsDrawBounds = !IsDrawBounds;
 
+            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.Y))
+            {
+                Penumbra.Visible = !Penumbra.Visible;
+            }
+            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.L))
+            {
+                Penumbra.Debug = !Penumbra.Debug;
+            }
+
             AdjustZoom();
 
             if (IsGameActive)
@@ -412,6 +407,7 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
+            Game.Penumbra.BeginDraw();
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);

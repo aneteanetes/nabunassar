@@ -2,16 +2,13 @@
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
-using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.Desktops.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
-using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using SharpFont.PostScript;
 
 namespace Nabunassar.Systems
 {
@@ -191,7 +188,6 @@ namespace Nabunassar.Systems
         }
 
         public static bool IsPreventNextMove = false;
-        private GameObject _prevFocusedGameObj;
 
         private void SelectObjectByMouse(GameTime gameTime, MouseStateExtended mouse)
         {
@@ -199,41 +195,6 @@ namespace Nabunassar.Systems
             var focusedGameObj = cursor.FocusedMapObject;
 
             RadialMenu.Open(Game, focusedGameObj, new Vector2(mouse.X, mouse.Y));
-
-            //    if (IsContextMenuOpened && Game.IsMouseActive)
-            //    {
-            //        CloseRadialMenu();
-
-            //        if (_prevFocusedGameObj == focusedGameObj)
-            //            return true;
-            //    }
-
-            //    _prevFocusedGameObj = focusedGameObj;
-
-            //    if (focusedGameObj != default)
-            //    {
-            //        if (IsContextMenuOpened)
-            //        {
-            //            CloseRadialMenu();
-            //            return true;
-            //        }
-
-            //        IsContextMenuOpened = true;
-            //        Console.WriteLine(focusedGameObj.Name);
-            //        Game.SwitchDesktop(new RadialMenu(Game, focusedGameObj, new Vector2(mouse.X, mouse.Y)));
-            //        return true;
-            //    }
-            //    else if (Game.IsMouseActive)
-            //    {
-            //        CloseRadialMenu();
-            //        //return true;
-            //    }
-
-            //if (mouse.WasButtonPressed(MouseButton.Left) && IsContextMenuOpened && Game.IsMouseActive)
-            //{
-            //    CloseRadialMenu();
-            //    return true;
-            //}
 
             return;
         }

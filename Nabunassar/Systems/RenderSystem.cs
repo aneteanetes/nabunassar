@@ -38,8 +38,6 @@ namespace Nabunassar.ECS
             }
         }
 
-        private int i;
-
         public override void Draw(GameTime gameTime, bool sys)
         {
             var sb = Game.BeginDraw();
