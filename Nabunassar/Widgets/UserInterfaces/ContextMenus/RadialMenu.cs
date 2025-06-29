@@ -2,14 +2,16 @@
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
+using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Extensions.OrthographCameraExtensions;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
+using Nabunassar.Widgets.Base;
 using GameObject = Nabunassar.Entities.Game.GameObject;
 
-namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
+namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
 {
     internal class RadialMenu : ScreenWidget
     {
@@ -23,6 +25,8 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         private static Texture2D CircleTextureFocused;
         private static Texture2D IconTexture;
         private static Texture2D CenterCircleTexture;
+        private static Texture2D transparentLineTexture;
+        private static Texture2D CursorTileset;
         private Vector2 _position= Vector2.Zero;
 
         public static bool IsContextMenuOpened { get; set; }
@@ -40,7 +44,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
         public static void Open(NabunassarGame game, GameObject gameObject, Vector2 position)
         {
-            game.SwitchDesktop(new RadialMenu(game, gameObject, position));
+            game.AddDesktopWidget(new RadialMenu(game, gameObject, position));
             IsContextMenuOpened = true;
         }
 
@@ -54,7 +58,13 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
                 CenterCircleTexture = Content.Load<Texture2D>("Assets/Images/Interface/Circle140_f.png");
                 MainTileset = Content.Load<Texture2D>("Assets/Tilesets/colored-transparent_packed.png");
 
+                transparentLineTexture = Content.Load<Texture2D>("Assets/Images/Interface/TransparentLine.png");
+
+                CursorTileset = Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png");
+
                 ActionIcons["speak"] = new TextureRegion(MainTileset, new Rectangle(576, 208, 16, 16));
+                ActionIcons["moveto"] = new TextureRegion(CursorTileset, new Rectangle(288, 48, 16, 16));
+                ActionIcons["spell"] = new TextureRegion(MainTileset, new Rectangle(448, 176, 16, 16));
             }
 
             if (_gameObject!=default && _gameObject.Image != default)
@@ -71,7 +81,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         private Image centerImage;
         protected override Widget InitWidget()
         {
-            Game.DisableSystems(typeof(PlayerControllSystem),typeof(FocusSystem));
+            Game.DisableSystems(typeof(PlayerControllSystem),typeof(ObjectFocusSystem));
 
             var globalPanel = new Panel();
 
@@ -87,38 +97,38 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             TextureRegion imageRegion = default;
             if (_gameObjectImage == null)
             {
-                imageRegion = new TextureRegion(IconTexture, new Rectangle(0, 0, IconTexture.Width, IconTexture.Height));
+                //imageRegion = new TextureRegion(IconTexture, new Rectangle(0, 0, IconTexture.Width, IconTexture.Height));
             }
             else
             {
                 imageRegion = new TextureRegion(_gameObjectImage, new Rectangle(0, 0, _gameObjectImage.Width, _gameObjectImage.Height));
+
+                centerImage = new Image()
+                {
+                    Renderable = imageRegion,
+                    Width = 140,
+                    Height = 140
+                };
+                centerImage.MouseEntered += Btn_MouseEntered;
+                centerImage.MouseLeft += Btn_MouseLeft;
+                centerImage.HorizontalAlignment = HorizontalAlignment.Center;
+                centerImage.VerticalAlignment = VerticalAlignment.Center;
+                //centerImage.TouchDown += CenterCircle_TouchDown;
+                panel.Widgets.Add(centerImage);
+
+                //var centerCircle = new Image()
+                //{
+                //    Renderable = new TextureRegion(CenterCircleTexture, new Rectangle(0, 0, CenterCircleWidthHeight, CenterCircleWidthHeight)),
+                //    Width = CenterCircleWidthHeight,
+                //    Height = CenterCircleWidthHeight
+                //};
+                //centerCircle.MouseEntered += Btn_MouseEntered;
+                //centerCircle.MouseLeft += Btn_MouseLeft;
+                //centerCircle.HorizontalAlignment = HorizontalAlignment.Center;
+                //centerCircle.VerticalAlignment = VerticalAlignment.Center;
+                ////centerCircle.TouchDown += CenterCircle_TouchDown;
+                //panel.Widgets.Add(centerCircle);
             }
-
-            centerImage = new Image()
-            {
-                Renderable = imageRegion,
-                Width = 140,
-                Height = 140
-            };
-            centerImage.MouseEntered += Btn_MouseEntered;
-            centerImage.MouseLeft += Btn_MouseLeft;
-            centerImage.HorizontalAlignment = HorizontalAlignment.Center;
-            centerImage.VerticalAlignment = VerticalAlignment.Center;
-            //centerImage.TouchDown += CenterCircle_TouchDown;
-            panel.Widgets.Add(centerImage);
-
-            var centerCircle = new Image()
-            {
-                Renderable = new TextureRegion(CenterCircleTexture, new Rectangle(0, 0, CenterCircleWidthHeight, CenterCircleWidthHeight)),
-                Width = CenterCircleWidthHeight,
-                Height = CenterCircleWidthHeight
-            };
-            centerCircle.MouseEntered += Btn_MouseEntered;
-            centerCircle.MouseLeft += Btn_MouseLeft;
-            centerCircle.HorizontalAlignment = HorizontalAlignment.Center;
-            centerCircle.VerticalAlignment = VerticalAlignment.Center;
-            //centerCircle.TouchDown += CenterCircle_TouchDown;
-            panel.Widgets.Add(centerCircle);
 
             FillActionsBasedOnObjectType(panel);
             globalPanel.TouchDown += GlobalPanel_TouchDown;
@@ -145,7 +155,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         {
             if (_gameObject == null)
             {
-
+                FillEmptyActions(panel);
                 return;
             }
 
@@ -164,10 +174,29 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
             CreateCircle(panel, Direction.Up, ActionIcons["speak"], TalkWithNPC);
         }
 
+        private void FillEmptyActions(Panel panel)
+        {
+            CreateCircle(panel, Direction.Right, ActionIcons["moveto"], MoveParty);
+            CreateCircle(panel, Direction.RightUp, ActionIcons["spell"], ReOpenNested);
+        }
+
+        private void ReOpenNested()
+        {
+            Close();
+            Open(Game, this._gameObject, _position);
+            Mouse.SetPosition(((int)_position.X),((int)_position.Y));
+        }
+
+        private void MoveParty()
+        {
+            Game.GameState.Party.MoveTo(Game.Camera.ScreenToWorld(_position));
+            Close();
+        }
+
         private void TalkWithNPC()
         {
             Close();
-            Game.SwitchDesktop(new DialogueMenu(Game, _gameObject));
+            Game.AddDesktopWidget(new DialogueMenu(Game, _gameObject));
         }
 
         private void CenterCircle_TouchDown(object sender, EventArgs e)
@@ -300,6 +329,7 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
                 {
                     Renderable = iconTexture
                 };
+                icon.Color = "#cfc6b8".AsColor();
                 icon.Width = CircleWidthHeight-CircleWidthHeight/4;
                 icon.Height = CircleWidthHeight - CircleWidthHeight / 4;
                 icon.HorizontalAlignment = HorizontalAlignment.Center;
@@ -363,15 +393,6 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
 
             var mouse = MouseExtended.GetState();
 
-            // надеемся что оно всегда будет закрываться
-            //if (widget.Scale.X >= 1)
-            //{
-            //    if (mouse.WasButtonPressed(MouseButton.Left) || mouse.WasButtonPressed(MouseButton.Right))
-            //    {
-            //        QueueForClosing = true;
-            //    }
-            //}
-
             base.Update(gameTime);
         }
 
@@ -379,12 +400,19 @@ namespace Nabunassar.Desktops.UserInterfaces.ContextMenus
         {
             if (widget.Scale.X >= 1)
             {
-                var sb = Game.BeginDraw();
+                var sb = Game.BeginDraw(false, samplerState: SamplerState.LinearClamp);
                 
                 var mouse = MouseExtended.GetState();
-                var mousePos = Game.Camera.ScreenToWorld(mouse.X, mouse.Y);
+                var toMousePos = mouse.Position.ToVector2();//Game.Camera.ScreenToWorld(mouse.X, mouse.Y);
 
-                sb.DrawLine(Game.Camera.ScreenToWorld(_position), mousePos, Color.LightGray, .5f);
+                toMousePos += new Vector2(1.5f, 0);
+
+                var fromCenterPos = _position;/*Game.Camera.ScreenToWorld(_position);*/
+
+                float length = Vector2.Distance(fromCenterPos, toMousePos);
+                float angle = (float)Math.Atan2(toMousePos.Y - fromCenterPos.Y, toMousePos.X - fromCenterPos.X);
+                
+                sb.Draw(transparentLineTexture, new Rectangle(((int)fromCenterPos.X), ((int)fromCenterPos.Y), ((int)length), 5), new Rectangle(0, 0, transparentLineTexture.Width, 1), Color.White, angle, Vector2.Zero, SpriteEffects.None, 0);
             }
         }
     }

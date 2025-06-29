@@ -3,8 +3,9 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Extensions.OrthographCameraExtensions;
 using Nabunassar.Systems;
+using Nabunassar.Widgets.Base;
 
-namespace Nabunassar.Desktops.UserInterfaces
+namespace Nabunassar.Widgets.UserInterfaces
 {
     internal class DialogueMenu : ScreenWidget
     {
@@ -17,7 +18,7 @@ namespace Nabunassar.Desktops.UserInterfaces
 
         protected override Widget InitWidget()
         {
-            Game.DisableSystems(typeof(PlayerControllSystem),typeof(FocusSystem));
+            Game.DisableSystems(typeof(PlayerControllSystem),typeof(ObjectFocusSystem));
             Game.ZoomToPoint(_gameObject.MapObject.Position, 4);
 
             return new Panel();

@@ -3,12 +3,12 @@ using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using Nabunassar.Desktops;
-using Nabunassar.Desktops.Menu;
+using Nabunassar.Widgets.Menu;
 using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Screens.Game
 {
@@ -20,15 +20,8 @@ namespace Nabunassar.Screens.Game
         {
         }
 
-        public override ScreenWidget GetWidget()
-        {
-            return new EmptyScreenWidget(Game);
-        }
-
         public override void LoadContent()
         {
-            Game.Penumbra.Visible = true;
-
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
@@ -90,29 +83,22 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (Game.DesktopWidget == default || Game.DesktopWidget.GetType()==typeof(EmptyScreenWidget) || Game.DesktopWidget.GetType()==typeof(MainMenu))
+                if (!isEsc)
                 {
-                    if (!isEsc)
-                    {
-                        isEsc = true;
-                        Game.SwitchDesktop(new MainMenu(Game));
-                        Game.ChangeGameActive();
-                    }
-                    else
-                    {
-                        isEsc = false;
-                        Game.SwitchDesktop();
-                        Game.ChangeGameActive();
-                    }
+                    isEsc = true;
+                    Game.AddDesktopWidget(new MainMenu(Game));
+                    Game.ChangeGameActive();
+                }
+                else
+                {
+                    isEsc = false;
+                    Game.RemoveDesktopWidgets<MainMenu>();
+                    Game.ChangeGameActive();
                 }
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
             {
-                //if (!logWindow)
-                //    Game.SwitchDesktop(new LogWindow(Game));
-                //else
-                //    Game.SwitchDesktop();
 
                 logWindow = !logWindow;
             }

@@ -6,21 +6,31 @@ namespace Nabunassar.Tiled.Map
     {
         public Dictionary<string, string> Properties { get; set; } = new();
 
+        private Dictionary<string,object> propertyValueCache = new();
+
         public T GetPropopertyValue<T>(string propName)
         {
+            T value = default;
+
+            if(propertyValueCache.ContainsKey(propName))
+                return propertyValueCache[propName].As<T>();
+
             if (Properties.ContainsKey(propName))
             {
                 var p = Properties[propName];
                 if (typeof(T).IsEnum)
                 {
-                    return Enum.Parse(typeof(T), p, true).As<T>();
+                    value = Enum.Parse(typeof(T), p, true).As<T>();
                 }
                 else
                 {
-                    return Convert.ChangeType(p, typeof(T)).As<T>();
+                    value = Convert.ChangeType(p, typeof(T)).As<T>();
                 }
             }
-            return default;
+
+            propertyValueCache[propName] = value;
+
+            return value;
         }
     }
 }

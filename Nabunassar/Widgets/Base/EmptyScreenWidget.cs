@@ -1,6 +1,6 @@
 ﻿using Myra.Graphics2D.UI;
 
-namespace Nabunassar.Desktops
+namespace Nabunassar.Widgets.Base
 {
     internal class EmptyScreenWidget : ScreenWidget
     {

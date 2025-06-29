@@ -48,7 +48,6 @@
 	<ItemGroup>
 	  <Folder Include="Components\Inactive\" />
 	  <Folder Include="Resources\BaseGame\Assets\Images\Interface\" />
-	  <Folder Include="Resources\BaseGame\Assets\Shaders\" />
 	  <Folder Include="Resources\BaseGame\Assets\Sprites\NPCs\" />
 	</ItemGroup>
 

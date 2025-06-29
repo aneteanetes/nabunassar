@@ -1,4 +1,5 @@
-﻿using MonoGame.Extended;
+﻿using Geranium.Reflection;
+using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 
@@ -30,7 +31,14 @@ namespace Nabunassar.Systems
                 if (mapObj != null)
                 {
                     if (lightComp != null)
-                        lightComp.Move(mapObj.Origin);
+                    {
+                        if (mapObj.Bounds != default)
+                        {
+                            lightComp.Move(mapObj.BoundsOrigin);
+                        }
+                        else
+                            lightComp.Move(mapObj.Origin);
+                    }
 
                     if (hullComp != null)
                         hullComp.Move(mapObj.Position);

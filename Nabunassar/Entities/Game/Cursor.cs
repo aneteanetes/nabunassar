@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Input;
 using Nabunassar.Components;
 
 namespace Nabunassar.Entities.Game
@@ -41,12 +42,16 @@ namespace Nabunassar.Entities.Game
         {
             var anotherGameObject = another.GameObject;
 
+            var mouse = MouseExtended.GetState();
+            var mousePosition = mouse.Position.ToVector2();
+
             if (FocusedMapObject == default)
             {
                 FocusEvents.Enqueue(new FocusEvent()
                 {
                     IsFocused = true,
                     Object = anotherGameObject,
+                    Position = mousePosition
                 });
             }
             else if (FocusedMapObject != anotherGameObject)
@@ -55,12 +60,14 @@ namespace Nabunassar.Entities.Game
                 {
                     IsFocused = false,
                     Object = FocusedMapObject,
+                    Position = mousePosition
                 });
 
                 FocusEvents.Enqueue(new FocusEvent()
                 {
                     IsFocused = true,
                     Object = anotherGameObject,
+                    Position = mousePosition
                 });
             }
 
@@ -78,13 +85,5 @@ namespace Nabunassar.Entities.Game
 
             FocusedMapObject = default;
         }
-    }
-
-    internal struct FocusEvent
-    {
-        public GameObject Object { get; set; }
-
-        public bool IsFocused { get; set; }
-
     }
 }

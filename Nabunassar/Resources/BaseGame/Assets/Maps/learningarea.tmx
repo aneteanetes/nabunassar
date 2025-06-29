@@ -57,11 +57,11 @@
     <object id="2" x="6.96875" y="0.90625" width="2.03125" height="14.0313"/>
     <object id="3" x="4.96875" y="3.96875" width="6.0625" height="7.96875"/>
     <object id="4" x="6" y="1.96875" width="3.96875" height="1.96875"/>
-    <object id="5" x="7.81678" y="1.08944">
+    <object id="5" x="7.86108" y="0.822458">
      <properties>
       <property name="ObjectType" value="Hull"/>
      </properties>
-     <polygon points="0.117777,0.176665 -3.54737,6.06552 -2.54128,10.541 -0.650651,10.541 -0.533096,13.6327 0.887649,13.5149 1.18197,10.5116 2.92494,10.5705 3.57814,5.74162"/>
+     <polygon points="0.141496,0.176665 -4.0144,5.26457 -3.97467,10.4298 -1.10375,12.4989 -0.984724,14.3002 1.29921,14.2936 1.30797,12.5362 4.31863,10.704 4.37928,5.14091"/>
     </object>
    </objectgroup>
   </tile>
@@ -388,15 +388,8 @@
  <tileset firstgid="1079" name="virgil" tilewidth="16" tileheight="24" tilecount="12" columns="4">
   <image source="../Tilesets/virgil.png" trans="000000" width="64" height="72"/>
  </tileset>
- <tileset firstgid="1091" name="Hulls" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
-  <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
-  <tile id="51">
-   <objectgroup draworder="index" id="3">
-    <object id="2" x="7.80272" y="1.11888">
-     <polygon points="0,0 -3.73942,6.86051 -2.41443,10.7766 -0.76555,10.7766 -0.824439,13.7799 1.14833,13.7505 1.11888,10.806 2.64998,10.7766 4.09275,6.68384"/>
-    </object>
-   </objectgroup>
-  </tile>
+ <tileset firstgid="1091" name="cursors" tilewidth="16" tileheight="16" tilecount="220" columns="20">
+  <image source="../Tilesets/cursor_tilemap_packed.png" trans="000000" width="320" height="176"/>
  </tileset>
  <layer id="1" name="Ground" width="30" height="26">
   <data encoding="csv">

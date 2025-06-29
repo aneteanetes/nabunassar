@@ -51,19 +51,19 @@ namespace Nabunassar.Tiled.Map
 
                         BindProperties(x, tile);
 
-                        var bounds = x.Element("objectgroup");
-                        if (bounds != null)
+                        var shapes = x.Element("objectgroup");
+                        if (shapes != null)
                         {
-                            foreach (var bound in bounds.Elements("object"))
+                            foreach (var obj in shapes.Elements("object"))
                             {
-                                var polygonTag = bound.Element("polygon");
+                                var polygonTag = obj.Element("polygon");
                                 if (polygonTag == null)
                                 {
                                     tile.Bounds.Add(new MonoGame.Extended.RectangleF(
-                                        bound.GetTagAttrFloatRound("x"),
-                                        bound.GetTagAttrFloatRound("y"),
-                                        bound.GetTagAttrFloatRound("width"),
-                                        bound.GetTagAttrFloatRound("height")
+                                        obj.GetTagAttrFloatRound("x"),
+                                        obj.GetTagAttrFloatRound("y"),
+                                        obj.GetTagAttrFloatRound("width"),
+                                        obj.GetTagAttrFloatRound("height")
                                         ));
                                 }
                                 else
@@ -74,8 +74,10 @@ namespace Nabunassar.Tiled.Map
                                         .Select(x => x.AsVector2())
                                         .ToArray();
 
-                                    var polygon = new TiledPolygonObject(polygonList);
-                                    BindProperties(bound,polygon);
+                                    var pos = new Vector2(obj.GetTagAttrFloatRound("x"), obj.GetTagAttrFloatRound("y"));
+
+                                    var polygon = new TiledPolygonObject(polygonList,pos);
+                                    BindProperties(obj,polygon);
 
                                     tile.Polygons.Add(polygon);
                                 }

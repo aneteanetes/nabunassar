@@ -1,21 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using Myra.Graphics2D.UI;
-using Nabunassar.Desktops;
-using Nabunassar.Desktops.Menu;
-using Nabunassar.Desktops.UserInterfaces;
-using Nabunassar.Desktops.UserInterfaces.ContextMenus;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Nabunassar.Widgets.Menu;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Screens
 {
     internal class MainMenuScreen : BaseGameScreen
     {
         private Texture2D background;
-        private Vector2 _position = new Vector2(50, 50);
 
         public MainMenuScreen(NabunassarGame game) : base(game) { }
 
@@ -33,7 +26,6 @@ namespace Nabunassar.Screens
 
         public override void Update(GameTime gameTime)
         {
-            _position = Vector2.Lerp(_position, Mouse.GetState().Position.ToVector2(), 1f * gameTime.GetElapsedSeconds());
         }
 
         public override void Draw(GameTime gameTime)

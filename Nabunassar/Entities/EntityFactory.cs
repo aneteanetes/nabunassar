@@ -9,6 +9,7 @@ using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using Nabunassar.Widgets.UserInterfaces;
 using Penumbra;
 
 namespace Nabunassar.Entities
@@ -59,7 +60,7 @@ namespace Nabunassar.Entities
             entity.Attach(gameObj);
 
             var name = "cursorspritesheet";
-            var texture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/cursor_tilemap_packed.png");
+            var texture = _game.Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png");
             _cursorAtlas = Texture2DAtlas.Create(name+"atlas", texture, 16, 16);
             SpriteSheet spriteSheet = new SpriteSheet(name, _cursorAtlas);
 
@@ -109,10 +110,13 @@ namespace Nabunassar.Entities
 
             var bounds = new RectangleF(Vector2.Zero, size);
 
-            var gameObject = new MapObject(_game, position, ObjectType.Ground, entity, bounds, "ground") { Name = descriptor };
-            entity.Attach(gameObject);
+            var mapObject = new MapObject(_game, position, ObjectType.Ground, entity, bounds, "ground") { Name = descriptor };
+            entity.Attach(mapObject);
 
-            AddCollistion(gameObject);
+            AddCollistion(mapObject);
+
+            var gameObj = _game.DataBase.GetObject(polygon.GetPropopertyValue<ObjectType>(nameof(ObjectType)));
+            entity.Attach(gameObj);
 
             var tileComp = new TileComponent(polygon);
             entity.Attach(tileComp);
@@ -211,16 +215,18 @@ namespace Nabunassar.Entities
 
             var bounds = new RectangleF(new Vector2(6,0), new Vector2(20, 6));
 
-            var gameObject = new MapObject(_game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
-            partyEntity.Attach(gameObject);
-            AddCollistion(gameObject);
+            var mapObject = new MapObject(_game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
+            partyEntity.Attach(mapObject);
+            AddCollistion(mapObject);
+
+            party.MapObject= mapObject;
 
             var x =-4;
             var y = -12;
             var i = 1;
             foreach (var hero in party.Reverse())
             {
-                CreateHero(hero, new Vector2(x, y), gameObject, i);
+                CreateHero(hero, new Vector2(x, y), mapObject, i);
                 x += 8;
                 i++;
             }
@@ -244,12 +250,13 @@ namespace Nabunassar.Entities
             directionEntity.Attach(directionRender);
 
             party.DirectionRender = directionRender;
-            gameObject.OnStopMove += () => directionSprite.IsVisible = false;
+            mapObject.OnStopMove += () => directionSprite.IsVisible = false;
 
-            var light = new LightComponent(new PointLight
+            var light = new LightComponent(PartyLight = new PointLight
             {
                 Scale = new Vector2(250f), // Range of the light source (how far the light will travel)
                 ShadowType = ShadowType.Illuminated, // Will not lit hulls themselves
+                Radius = 80,
             });
             partyEntity.Attach(light);
 
@@ -257,6 +264,8 @@ namespace Nabunassar.Entities
 
             return partyEntity;
         }
+
+        public PointLight PartyLight { get; set; }
 
         public Entity CreateHero(Hero hero, Vector2 personalPosition, MapObject parent, int order)
         {
@@ -341,6 +350,8 @@ namespace Nabunassar.Entities
 
             var entity = CreateEntity(descriptor, order);
             entity.Attach(gameObj);
+
+            entity.Attach(_object);
 
             var position = _object.Position;
             Vector2 size = Vector2.Zero;
@@ -434,12 +445,17 @@ namespace Nabunassar.Entities
                 var hullPolugons = _object.GetPolygons().Where(x => x.GetPropopertyValue<ObjectType>("ObjectType") == ObjectType.Hull);
                 foreach (var hullPolygon in hullPolugons)
                 {
-                    hulls.Add(new Hull(hullPolygon.Vertices));
+                    hulls.Add(new Hull(hullPolygon.Vertices)
+                    {
+                        Position = hullPolygon.Position
+                    });
                 }
 
                 entity.Attach(new HullComponent(hulls.ToArray()));
             }
 
+            var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(_game, focusEvent.Object, focusEvent.Position));
+            entity.Attach(title);
 
             return entity;
         }

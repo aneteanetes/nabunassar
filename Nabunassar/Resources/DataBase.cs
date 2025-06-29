@@ -24,6 +24,14 @@ namespace Nabunassar.Resources
         public GameObject GetObject(ObjectType objectType)
         {
             var obj = GetObjectInternal(x=>x.ObjectType==objectType);
+            if (obj == null)
+            {
+#warning debug zone
+                obj = new GameObject()
+                {
+                    ObjectType = objectType
+                };
+            }
 
             if (obj != null)
                 obj.ObjectId = _game.Random.Next(-10000, -10);

@@ -2,20 +2,23 @@
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Entities.Game;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar.Systems
 {
-    internal class FocusSystem : BaseSystem
+    internal class ObjectFocusSystem : BaseSystem
     {
         private ComponentMapper<FocusComponent> focusMapper;
+        private ComponentMapper<FocusWidgetComponent> widgetMapper;
 
-        public FocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusComponent)))
+        public ObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusComponent),typeof(FocusWidgetComponent)))
         {
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
             focusMapper = mapperService.GetMapper<FocusComponent>();
+            widgetMapper = mapperService.GetMapper<FocusWidgetComponent>();
         }
 
         public override void Update(GameTime gameTime, bool isSystem)
@@ -24,11 +27,16 @@ namespace Nabunassar.Systems
                 return;
 
             List<FocusComponent> focusComponents = new();
+            List<FocusWidgetComponent> widgetComponents = new();
             foreach (var entity in ActiveEntities)
             {
                 var focus = focusMapper.Get(entity);
                 if(focus != null)
                     focusComponents.Add(focus);
+
+                //var widget = widgetMapper.Get(entity);
+                //if(widget != null)
+                //    widgetComponents.Add(widget);
             }
 
             while (Cursor.FocusEvents.IsNotEmpty())
@@ -41,6 +49,21 @@ namespace Nabunassar.Systems
                     else
                         focusComponent.OnUnfocus?.Invoke(@event.Object);
                 }
+
+                //var objectWidgets = widgetComponents.Where(x => x.GameObject == @event.Object);
+                //foreach (var objectWidget in objectWidgets)
+                //{
+                //    if (@event.IsFocused)
+                //    {
+                //        var screenWidget = objectWidget.WidgetFactory?.Invoke(@event);
+                //        objectWidget.CurrentScreenWidget = screenWidget;
+                //        Game.AddDesktopWidget(screenWidget);
+                //    }
+                //    else
+                //    {
+                //        Game.RemoveDesktopWidgets<TitleWidget>();
+                //    }
+                //}
             }
         }
     }

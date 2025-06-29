@@ -21,7 +21,7 @@ namespace Nabunassar
             Penumbra = new PenumbraComponent(this, penumbraShaders);
             Penumbra.Initialize();
             Penumbra.Visible = false;
-            Penumbra.AmbientColor = Color.Black;
+            //Penumbra.AmbientColor = Color.Black;
 
             light = new PointLight
             {
@@ -41,6 +41,16 @@ namespace Nabunassar
             //Penumbra.Lights.Add(light);
 
             Components.Add(Penumbra);
+        }
+
+        public void EnableLights()
+        {
+            Penumbra.Visible = true;
+        }
+
+        public void DisableLights()
+        {
+            Penumbra.Visible = false;
         }
     }    
 }

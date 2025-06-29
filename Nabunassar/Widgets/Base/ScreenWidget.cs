@@ -5,7 +5,7 @@ using Nabunassar.Monogame;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Interfaces;
 
-namespace Nabunassar.Desktops
+namespace Nabunassar.Widgets.Base
 {
     internal abstract class ScreenWidget : IGameComponent, IDrawable, IUpdateable, IDisposable
     {
@@ -13,7 +13,7 @@ namespace Nabunassar.Desktops
 
         protected NabunassarContentManager Content => Game.Content;
 
-        private Widget _widget;
+        protected Widget UIWidget;
 
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;
@@ -37,6 +37,8 @@ namespace Nabunassar.Desktops
             VisibleChanged?.Invoke(null, null);
         }
 
+        public Widget GetWidgetReference() => UIWidget;
+
         protected virtual void LoadContent() { }
 
         protected virtual void UnloadContent() { }
@@ -54,7 +56,7 @@ namespace Nabunassar.Desktops
 
         public Widget Load()
         {
-            _widget = InitWidget();
+            UIWidget = InitWidget();
 
             //if (IsMouseActiveOnRootWidget)
             //{
@@ -69,7 +71,7 @@ namespace Nabunassar.Desktops
                 //Game.IsMouseActive = true;
             };
 
-            return _widget;
+            return UIWidget;
         }
 
         private void _widget_MouseLeft(object sender, EventArgs e)
@@ -88,7 +90,7 @@ namespace Nabunassar.Desktops
         {
             UnloadContent();
             Game.Components.Remove(this);
-            Game.Desktop.Root = null;
+            Game.Desktop.Widgets.Remove(UIWidget);
             OnDispose?.Invoke();
             GameObject = null;
         }
@@ -96,7 +98,6 @@ namespace Nabunassar.Desktops
         public virtual void Close()
         {
             Dispose();
-            Game.SwitchDesktop();
         }
 
         public virtual void Update(GameTime gameTime) { }

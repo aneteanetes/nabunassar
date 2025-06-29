@@ -6,7 +6,6 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
-using Nabunassar.Desktops;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Content;
@@ -16,11 +15,15 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Penumbra;
+using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public WidgetFactory WidgetFactory { get; set; }
+
         public PenumbraComponent Penumbra { get; set; }
         public bool IsMouseActive { get; internal set; } = true;
 
@@ -50,9 +53,9 @@ namespace Nabunassar
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop Desktop = null;
+        public Desktop DesktopContainer = null;
 
-        public ScreenWidget DesktopWidget= null;    
+        public Panel Desktop = null;
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 

@@ -16,7 +16,8 @@ namespace Nabunassar
                 .AddSystem(new FlickeringSystem(this))
                 .AddSystem(new MoveSystem(this))
                 .AddSystem(new MouseControlSystem(this))
-                .AddSystem(new FocusSystem(this))
+                .AddSystem(new MouseMapObjectFocusSystem(this))
+                .AddSystem(new ObjectFocusSystem(this))
                 .AddSystem(new LightSystem(this))
                 .Build();
 

@@ -5,7 +5,7 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using Nabunassar.Desktops.UserInterfaces.ContextMenus;
+using Nabunassar.Widgets.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
@@ -161,11 +161,7 @@ namespace Nabunassar.Systems
 
                 void MovePartyByMouseInternal()
                 {
-                    gameobj.MoveToPosition(gameobj.Position, targetPosition);
-
-                    var dirComp = party.DirectionRender;
-                    dirComp.Sprite.IsVisible = true;
-                    dirComp.Position = targetPosition;
+                    party.MoveTo(targetPosition);
                 }
 
                 if (gameobj.IsMoving)
@@ -202,7 +198,7 @@ namespace Nabunassar.Systems
         private void CloseRadialMenu()
         {
             RadialMenu.IsContextMenuOpened = false;
-            Game.SwitchDesktop(default);
+            Game.RemoveDesktopWidgets<RadialMenu>();
         }
     }
 }

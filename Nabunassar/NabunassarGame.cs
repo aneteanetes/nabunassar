@@ -19,7 +19,7 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
-using Nabunassar.Desktops;
+using Nabunassar.Widgets;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
@@ -224,8 +224,6 @@ namespace Nabunassar
             base.Initialize();
         }
 
-        private MapObject _myraGameObject;
-
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
         {
@@ -234,80 +232,13 @@ namespace Nabunassar
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
 
-            if (DesktopWidget != null)
-                DesktopWidget.Dispose();
+            RemoveDesktopWidgets();
 
             var widget = screen.GetWidget();
-            SwitchDesktop(widget);
+            if (widget != default)
+                AddDesktopWidget(widget);
 
             ScreenManager.LoadScreen(screen, transition);
-        }
-
-        //private Container DesktopContainer;
-
-        public void AddDesktopWidget(ScreenWidget widget)
-        {
-            if (Desktop.Root == null)
-                Desktop.Root = new Panel();
-
-            if (widget != default)
-            {
-                widget.Initialize();
-                var ui = widget.Load();
-                Components.Add(widget);
-                //DesktopContainer.Widgets.Add(ui);
-                //widget.OnDispose += () => DesktopContainer.Widgets.Remove(ui);
-            }
-
-        }
-
-        public void SwitchDesktop(ScreenWidget widget=null)
-        {
-            if (widget != null)
-            {
-                widget.Initialize();
-                Components.Add(widget);
-                DesktopWidget = widget;
-                Desktop.Root = widget.Load();
-                _myraGameObject = widget.GameObject;
-            }
-            else
-            {
-                DesktopWidget?.Dispose();
-                DesktopWidget = null;
-                Desktop.Root = null;
-            }
-        }
-
-        protected override void LoadContent()
-        {
-            var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
-            var y = SelectedMonitorBounds.h / 2 - Settings.HeightPixel / 2;
-            Window.Position = new Microsoft.Xna.Framework.Point(x, y);
-
-            FrameCounter = new FrameCounter();
-            ResourceLoader = new ResourceLoader(this.Settings);
-            base.Content = new NabunassarContentManager(this, ResourceLoader);
-            SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
-
-            MyraEnvironment.Game = this;
-            MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-            Desktop = new Desktop();
-
-            SwitchScreen<MainMenuScreen>();
-
-            Game.InitializeGameState();
-
-            GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
-
-            LoadPenumbra();
-
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
         }
 
         private Vector2 MoveCamera()
@@ -354,10 +285,10 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
+            DebugUpdate(gameTime);
+
             MouseExtended.Update();
             KeyboardExtended.Update();
-
-            light.Position = MouseExtended.GetState().Position.ToVector2();
 
             Penumbra.Transform = Camera.GetViewMatrix();
 
@@ -371,73 +302,13 @@ namespace Nabunassar
             _mousePosition = new Vector2(mouseState.X, mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
-            var keyboardState = KeyboardExtended.GetState();
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
-                isDrawFPS = !isDrawFPS;
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
-                isDrawCoords = !isDrawCoords;
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
-                IsDrawBounds = !IsDrawBounds;
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.Y))
-            {
-                Penumbra.Visible = !Penumbra.Visible;
-            }
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.L))
-            {
-                Penumbra.Debug = !Penumbra.Debug;
-            }
-
-            AdjustZoom();
-
             if (IsGameActive)
             {
-                WorldGame.Update(gameTime);
                 CollisionComponent.Update(gameTime);
+                WorldGame.Update(gameTime);
             }
 
             base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            if (!IsActive)
-                return;
-
-            Game.Penumbra.BeginDraw();
-            GraphicsDevice.Clear(Color.Black);
-
-            base.Draw(gameTime);
-
-            SpriteBatch.End();
-
-            if (isDrawFPS)
-                DrawFPS();
-
-            if (isDrawCoords)
-                DrawPositions();
-        }
-
-        public void DrawFPS()
-        {
-            var sb = BeginDraw(false);
-
-            sb.DrawText(Fonts.Retron, 30, FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
-
-            sb.End();
-        }
-
-        public void DrawPositions()
-        {
-            var sb = BeginDraw(false);
-
-            sb.DrawText(Fonts.Retron, 20, "World: " + _worldPosition.ToString(), new Vector2(50, 100), Color.PeachPuff);
-            sb.DrawText(Fonts.Retron, 20, "Display: " + _mousePosition.ToString(), new Vector2(50, 125), Color.AntiqueWhite);
-
-            sb.End();
         }
     }
 }

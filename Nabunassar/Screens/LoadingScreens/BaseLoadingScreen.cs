@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Nabunassar.Desktops;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Screens.LoadingScreens
 {

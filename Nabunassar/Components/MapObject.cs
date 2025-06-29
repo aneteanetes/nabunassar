@@ -21,6 +21,13 @@ namespace Nabunassar.Components
 
         public IShapeF Bounds { get; set; }
 
+        public Vector2 BoundsOrigin {
+            get
+            {
+                return new Vector2(Bounds.Position.X + Bounds.BoundingRectangle.Width / 2, Bounds.Position.Y + Bounds.BoundingRectangle.Height / 2);
+            }
+        }
+
         public RectangleF BoundsAbsolute => new RectangleF(Bounds.Position - BoundRelativePosition, Bounds.BoundingRectangle.Size);
 
         public Color BoundsColor { get; set; }

@@ -4,9 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Resources;
 using Nabunassar.Screens.Game;
+using Nabunassar.Widgets.Base;
 
-namespace Nabunassar.Desktops.Menu;
+namespace Nabunassar.Widgets.Menu;
 
 internal partial class MainMenu : ScreenWidget
 {

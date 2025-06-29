@@ -10,7 +10,7 @@ namespace Nabunassar.Entities.Data
     {
         public Entity Entity { get; set; }
 
-        public MapObject GameObject { get; set; }
+        public MapObject MapObject { get; set; }
 
         public Direction ViewDirection { get; set; } = Direction.Right;
 
@@ -139,6 +139,14 @@ namespace Nabunassar.Entities.Data
                 default:
                     break;
             }
+        }
+
+        public void MoveTo(Vector2 to)
+        {
+            MapObject.MoveToPosition(MapObject.Position, to);
+
+            DirectionRender.Sprite.IsVisible = true;
+            DirectionRender.Position = to;
         }
     }
 }
