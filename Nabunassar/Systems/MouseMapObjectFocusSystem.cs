@@ -1,15 +1,12 @@
 ﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
-using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Entities.Game;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
-using static Assimp.Metadata;
 
 namespace Nabunassar.Systems
 {
@@ -90,11 +87,11 @@ namespace Nabunassar.Systems
             {
                 if(focusedMapObject!=null)
                 {
-                    var tiledObject = focusedMapObject.Entity.Get<TiledObject>();
-                    if (tiledObject != default)
+                    var tiledBase = focusWidgetComponent.GameObject.Entity.Get<TiledBase>();
+                    if (tiledBase != default)
                     {
-                        position = new Vector2(((float)tiledObject.x) + tiledObject.width / 2, ((float)tiledObject.y));
-                        position = Game.Camera.WorldToScreen(position-new Vector2(16));
+                        position = tiledBase.Position;//new Vector2(((float)tiledObject.x) + tiledObject.width / 2, ((float)tiledObject.y));
+                        position = Game.Camera.WorldToScreen(position);
                     }
                 }
 

@@ -9,6 +9,7 @@ using Nabunassar.Widgets.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
+using Geranium.Reflection;
 
 namespace Nabunassar.Systems
 {
@@ -188,9 +189,20 @@ namespace Nabunassar.Systems
         private void SelectObjectByMouse(GameTime gameTime, MouseStateExtended mouse)
         {
             var cursor = Game.GameState.Cursor;
-            var focusedGameObj = cursor.FocusedMapObject;
+            var radialMenuGameObject = cursor.FocusedMapObject;
 
-            RadialMenu.Open(Game, focusedGameObj, new Vector2(mouse.X, mouse.Y));
+            if (radialMenuGameObject == null)
+            {
+                var layer = Game.CollisionComponent.Layers["ground"];
+                var mousePos = Game.Camera.ScreenToWorld(mouse.Position.ToVector2());
+                var groundTile = layer.Space.Query(new RectangleF(mousePos, new SizeF(2, 2))).FirstOrDefault();
+                if (groundTile != default)
+                {
+                    radialMenuGameObject = groundTile.As<MapObject>().GameObject;
+                }
+            }
+
+            RadialMenu.Open(Game, radialMenuGameObject, new Vector2(mouse.X, mouse.Y));
 
             return;
         }

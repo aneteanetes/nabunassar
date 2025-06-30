@@ -20,8 +20,6 @@ namespace Nabunassar.Tiled.Map
 
         public int height { get; set; }
 
-        public Vector2 Position { get; set; }
-
         public bool collide => Properties["collide"] == "true";
 
         public string objectgroup { get; set; }

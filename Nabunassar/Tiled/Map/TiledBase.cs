@@ -4,6 +4,8 @@ namespace Nabunassar.Tiled.Map
 {
     public class TiledBase
     {
+        public virtual Vector2 Position { get; set; }
+
         public Dictionary<string, string> Properties { get; set; } = new();
 
         private Dictionary<string,object> propertyValueCache = new();

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 
@@ -13,15 +12,16 @@ namespace Nabunassar.Widgets.UserInterfaces
     {
         private static Texture2D _backgroundImage;
         private static Vector2 _position;
-        private static FontSystem _font; 
+        private static FontSystem _font;
+        private string _text;
 
-        private GameObject _gameObject;
-
-        public TitleWidget(NabunassarGame game, GameObject gameObject, Vector2 position) : base(game)
+        public TitleWidget(NabunassarGame game, string text, Vector2 position) : base(game)
         {
-            _gameObject = gameObject;
             _position=position;
+            _text=text ?? "[Title not found!]";
         }
+
+        protected virtual string GetText() => _text;
 
         protected override void LoadContent()
         {
@@ -49,9 +49,13 @@ namespace Nabunassar.Widgets.UserInterfaces
             labelText.OverBackground = backNormal;
             labelText.Font = compiledFont;
 
-            labelText.Text = _gameObject?.ObjectType.ToString() ?? "Объект №15";
+            labelText.Text = GetText();
             labelText.Top = -45;
-            labelText.Left = (int)(compiledFont.MeasureString(labelText.Text).X / 2) + /* padding*/5;
+
+            float sexteenPixels = Game.Camera.WorldToScreen(new Vector2(16)).X;
+            var textMeasure = compiledFont.MeasureString(labelText.Text).X + 20;
+
+            labelText.Left = (int)(sexteenPixels / 2 - textMeasure / 2);
 
             panel.Left = ((int)_position.X);
             panel.Top = ((int)_position.Y);
@@ -62,29 +66,5 @@ namespace Nabunassar.Widgets.UserInterfaces
         }
 
         private Label labelText;
-
-        //public override void Update(GameTime gameTime)
-        //{
-        //    var uiWidget = this.UIWidget;
-        //    if (uiWidget != null && labelText.ActualBounds!=default)
-        //    {
-        //        uiWidget.Top = (int)(_position.Y - labelText.ActualBounds.Size.Y);
-        //        uiWidget.Left = (int)(_position.X + labelText.ActualBounds.Size.X / 2);
-        //    }
-
-        //    base.Update(gameTime);
-        //}
-
-        //public override void Draw(GameTime gameTime)
-        //{
-        //    var uiWidget = this.UIWidget;
-        //    if (uiWidget != null && labelText.ActualBounds != default)
-        //    {
-        //        uiWidget.Top = (int)(_position.Y - labelText.ActualBounds.Size.Y);
-        //        uiWidget.Left = (int)(_position.X + labelText.ActualBounds.Size.X);
-        //    }
-
-        //    base.Draw(gameTime);
-        //}
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
@@ -62,6 +63,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
 
                 CursorTileset = Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png");
 
+                ActionIcons["info"] = new TextureRegion(MainTileset, new Rectangle(592, 208, 16, 16));
                 ActionIcons["speak"] = new TextureRegion(MainTileset, new Rectangle(576, 208, 16, 16));
                 ActionIcons["moveto"] = new TextureRegion(CursorTileset, new Rectangle(288, 48, 16, 16));
                 ActionIcons["spell"] = new TextureRegion(MainTileset, new Rectangle(448, 176, 16, 16));
@@ -81,7 +83,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
         private Image centerImage;
         protected override Widget InitWidget()
         {
-            Game.DisableSystems(typeof(PlayerControllSystem),typeof(ObjectFocusSystem));
+            Game.DisableMouseSystems();
+            Game.RemoveDesktopWidgets<TitleWidget>();
 
             var globalPanel = new Panel();
 
@@ -95,11 +98,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             panel.Left = (int)Math.Floor(_position.X- PanelWidthHeight / 2);
 
             TextureRegion imageRegion = default;
-            if (_gameObjectImage == null)
-            {
-                //imageRegion = new TextureRegion(IconTexture, new Rectangle(0, 0, IconTexture.Width, IconTexture.Height));
-            }
-            else
+            if (_gameObjectImage != null)
             {
                 imageRegion = new TextureRegion(_gameObjectImage, new Rectangle(0, 0, _gameObjectImage.Width, _gameObjectImage.Height));
 
@@ -109,39 +108,13 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
                     Width = 140,
                     Height = 140
                 };
-                centerImage.MouseEntered += Btn_MouseEntered;
-                centerImage.MouseLeft += Btn_MouseLeft;
                 centerImage.HorizontalAlignment = HorizontalAlignment.Center;
                 centerImage.VerticalAlignment = VerticalAlignment.Center;
-                //centerImage.TouchDown += CenterCircle_TouchDown;
                 panel.Widgets.Add(centerImage);
-
-                //var centerCircle = new Image()
-                //{
-                //    Renderable = new TextureRegion(CenterCircleTexture, new Rectangle(0, 0, CenterCircleWidthHeight, CenterCircleWidthHeight)),
-                //    Width = CenterCircleWidthHeight,
-                //    Height = CenterCircleWidthHeight
-                //};
-                //centerCircle.MouseEntered += Btn_MouseEntered;
-                //centerCircle.MouseLeft += Btn_MouseLeft;
-                //centerCircle.HorizontalAlignment = HorizontalAlignment.Center;
-                //centerCircle.VerticalAlignment = VerticalAlignment.Center;
-                ////centerCircle.TouchDown += CenterCircle_TouchDown;
-                //panel.Widgets.Add(centerCircle);
             }
 
             FillActionsBasedOnObjectType(panel);
             globalPanel.TouchDown += GlobalPanel_TouchDown;
-
-            //var icon = new TextureRegion(IconTexture, new Rectangle(0, 0, 1125, 1125));
-            //CreateCircle(panel, Direction.Up, icon);
-            //CreateCircle(panel, Direction.Down, icon);
-            //CreateCircle(panel, Direction.Left, icon);
-            //CreateCircle(panel, Direction.Right, icon);
-            //CreateCircle(panel, Direction.UpLeft, icon);
-            //CreateCircle(panel, Direction.UpRight, icon);
-            //CreateCircle(panel, Direction.DownLeft, icon);
-            //CreateCircle(panel, Direction.DownRight, icon);
 
             return globalPanel;
         }
@@ -159,25 +132,35 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
                 return;
             }
 
+            FillInfoAction(panel);
+
             switch (_gameObject.ObjectType)
             {
+                case ObjectType.Ground:
+                    FillEmptyActions(panel);
+                    break;
                 case ObjectType.NPC:
                     FillNPCActions(panel);
-                    break;
+                    break;                    
                 default:
                     break;
             }
         }
 
+        private void FillInfoAction(Panel panel)
+        {
+            CreateCircle(panel, Direction.Up, ActionIcons["info"],Game.Strings["UI"]["info"], OpenInfoWindow);
+        }
+
         private void FillNPCActions(Panel panel)
         {
-            CreateCircle(panel, Direction.Up, ActionIcons["speak"], TalkWithNPC);
+            CreateCircle(panel, Direction.UpRight, ActionIcons["speak"], Game.Strings["UI"]["speak"], TalkWithNPC);
         }
 
         private void FillEmptyActions(Panel panel)
         {
-            CreateCircle(panel, Direction.Right, ActionIcons["moveto"], MoveParty);
-            CreateCircle(panel, Direction.RightUp, ActionIcons["spell"], ReOpenNested);
+            CreateCircle(panel, Direction.Right, ActionIcons["moveto"], Game.Strings["UI"]["moveto"], MoveParty);
+            CreateCircle(panel, Direction.RightUp, ActionIcons["spell"], Game.Strings["UI"]["spell"], ReOpenNested);
         }
 
         private void ReOpenNested()
@@ -185,6 +168,11 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             Close();
             Open(Game, this._gameObject, _position);
             Mouse.SetPosition(((int)_position.X),((int)_position.Y));
+        }
+
+        private void OpenInfoWindow()
+        {
+
         }
 
         private void MoveParty()
@@ -212,7 +200,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             base.Close();
         }
 
-        private void CreateCircle(Panel panel, Direction direction, TextureRegion iconTexture, Action click=default)
+        private void CreateCircle(Panel panel, Direction direction, TextureRegion iconTexture, string title, Action click = default)
         {
             var x = 0;
             var y = 0;
@@ -229,7 +217,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
 
             void middleY()
             {
-                y = CircleWidthHeight*2;
+                y = CircleWidthHeight * 2;
             }
 
             void upHalfPartY()
@@ -240,13 +228,13 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             void downHalfPartY()
             {
                 upHalfPartY();
-                y +=CircleWidthHeight*2;
+                y += CircleWidthHeight * 2;
                 y += CircleWidthHeight / 2;
             }
 
             var xoffset = CircleWidthHeight + CircleWidthHeight / 4;
 
-            void shiftX(bool isPlus=true)
+            void shiftX(bool isPlus = true)
             {
                 if (isPlus)
                 {
@@ -266,11 +254,11 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             {
                 case Direction.Up:
                     middleX();
-                    y+= fourthPart;
+                    y += fourthPart;
                     break;
                 case Direction.Down:
                     middleX(); downY();
-                    y-= fourthPart;
+                    y -= fourthPart;
                     break;
                 case Direction.Left:
                     middleY();
@@ -314,7 +302,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
                     Height = CircleWidthHeight
                 };
 
-                btn.MouseEntered += Btn_MouseEntered;
+                btn.MouseEntered += (sender, @event) => Btn_MouseEntered(sender, @event, title);
                 btn.MouseLeft += Btn_MouseLeft;
                 btn.TouchDown += (s, e) => QueueForClosing = false; //здесь можно отменить закрытие по клику
                 btn.Click += (s, e) => click?.Invoke(); // а здесь обрабатывается событие по клику на кнопке
@@ -325,12 +313,12 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
                 btn.Left = x;
                 btn.Top = y;
 
-                var icon =  new Image()
+                var icon = new Image()
                 {
                     Renderable = iconTexture
                 };
                 icon.Color = "#cfc6b8".AsColor();
-                icon.Width = CircleWidthHeight-CircleWidthHeight/4;
+                icon.Width = CircleWidthHeight - CircleWidthHeight / 4;
                 icon.Height = CircleWidthHeight - CircleWidthHeight / 4;
                 icon.HorizontalAlignment = HorizontalAlignment.Center;
                 icon.VerticalAlignment = VerticalAlignment.Center;
@@ -351,14 +339,25 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus
             }
         }
 
+        private TitleWidget _titleWidget;
+
         private void Btn_MouseLeft(object sender, EventArgs e)
         {
-            Game.IsMouseActive = true;
+            var btn = sender.As<Button>();
+            Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
-        private void Btn_MouseEntered(object sender, EventArgs e)
+        private void Btn_MouseEntered(object sender, EventArgs e, string text)
         {
-            Game.IsMouseActive = false;
+            var btn = sender.As<Button>();
+            var parent = btn.Parent;
+
+            var left = btn.Left + parent.Left;
+            var top = btn.Top + parent.Top;
+
+
+            _titleWidget = new TitleWidget(Game, text, new Vector2(left, top));
+            Game.AddDesktopWidget(_titleWidget);
         }
 
         private bool QueueForClosing = false;

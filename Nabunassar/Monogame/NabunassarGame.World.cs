@@ -33,6 +33,11 @@ namespace Nabunassar
             types.ForEach(x => DisabledWorldSystems.Add(x));
         }
 
+        public void DisableMouseSystems()
+        {
+            Game.DisableSystems(typeof(PlayerControllSystem), typeof(ObjectFocusSystem), typeof(MouseMapObjectFocusSystem));
+        }
+
         public void DisableSystemsExcept(params Type[] types)
         {
             var exept = RegisteredSystems.Except(types);

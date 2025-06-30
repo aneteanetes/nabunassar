@@ -1,4 +1,5 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Geranium.Reflection;
+using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Resources
@@ -18,6 +19,15 @@ namespace Nabunassar.Resources
             return data[type];
         }
 
+        public string GetString(string file, string @string)
+        {
+            var code = _game.Settings.LanguageCode ?? "ru-RU";
+
+            var data = Get<Dictionary<string, string>>($"Data/Localization/{code}/{file}.json");
+            var value = data[@string];
+
+            return value ?? "[Not found]";
+        }
 
         private List<GameObject> _objects;
 

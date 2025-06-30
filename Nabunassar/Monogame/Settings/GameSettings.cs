@@ -11,6 +11,8 @@ namespace Nabunassar.Monogame.Settings
         /// </summary>
         public bool IsLogging { get; set; }
 
+        public string LanguageCode { get; set; } = "ru-RU";
+
         public string GameTitle { get; set; } = "Nabunassar";
 
         public TimeSpan DropFpsOnUnfocus { get; set; } = TimeSpan.Zero;

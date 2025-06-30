@@ -2,7 +2,6 @@
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Extensions.OrthographCameraExtensions;
-using Nabunassar.Systems;
 using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Widgets.UserInterfaces
@@ -18,7 +17,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         protected override Widget InitWidget()
         {
-            Game.DisableSystems(typeof(PlayerControllSystem),typeof(ObjectFocusSystem));
+            Game.DisableMouseSystems();
             Game.ZoomToPoint(_gameObject.MapObject.Position, 4);
 
             return new Panel();

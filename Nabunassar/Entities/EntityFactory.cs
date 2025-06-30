@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
@@ -132,6 +133,7 @@ namespace Nabunassar.Entities
             var gameObject = _game.DataBase.GetObject(_object.GetPropopertyValue<int>("ObjectId"));
 
             entity.Attach(gameObject);
+            entity.Attach(_object.As<TiledBase>());
             entity.Attach(new AnimatedPerson());
 
             SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
@@ -202,6 +204,9 @@ namespace Nabunassar.Entities
 
             var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order);
             glowEntity.Attach(glowAnimatedSprite);
+
+            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(_game, focusEvent.Object?.ObjectType.ToString(), focusEvent.Position));
+            entity.Attach(title);
 
             return entity;
         }
@@ -351,7 +356,7 @@ namespace Nabunassar.Entities
             var entity = CreateEntity(descriptor, order);
             entity.Attach(gameObj);
 
-            entity.Attach(_object);
+            entity.Attach(_object.As<TiledBase>());
 
             var position = _object.Position;
             Vector2 size = Vector2.Zero;
@@ -454,7 +459,7 @@ namespace Nabunassar.Entities
                 entity.Attach(new HullComponent(hulls.ToArray()));
             }
 
-            var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(_game, focusEvent.Object, focusEvent.Position));
+            var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(_game, focusEvent.Object?.ObjectType.ToString(), focusEvent.Position));
             entity.Attach(title);
 
             return entity;

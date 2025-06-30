@@ -12,8 +12,6 @@
             Position = position != default ? position : new Vector2(left, top);
         }
 
-        public Vector2 Position { get; private set; }
-
         public Vector2[] Vertices { get; set; }
     }
 }

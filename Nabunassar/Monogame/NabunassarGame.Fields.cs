@@ -17,11 +17,14 @@ using Nabunassar.Struct;
 using Penumbra;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets;
+using Nabunassar.Localization;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public LocalizedStrings Strings { get; set; }
+
         public WidgetFactory WidgetFactory { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }

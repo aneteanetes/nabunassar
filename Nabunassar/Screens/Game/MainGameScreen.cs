@@ -83,13 +83,13 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (!isEsc)
+                if (!isEsc && Game.Desktop.Widgets.Count == 0)
                 {
                     isEsc = true;
                     Game.AddDesktopWidget(new MainMenu(Game));
                     Game.ChangeGameActive();
                 }
-                else
+                else if (Game.Desktop.Widgets.Count == 1 && Game.Desktop.Widgets[0].GetType()==typeof(MainMenu))
                 {
                     isEsc = false;
                     Game.RemoveDesktopWidgets<MainMenu>();
