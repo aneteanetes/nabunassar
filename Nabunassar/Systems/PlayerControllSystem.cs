@@ -5,11 +5,11 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
-using Nabunassar.Widgets.UserInterfaces.ContextMenus;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 using Geranium.Reflection;
+using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 
 namespace Nabunassar.Systems
 {
@@ -83,17 +83,6 @@ namespace Nabunassar.Systems
                     if (animatedSprite != null && animatedSprite.CurrentAnimation != "run")
                     {
                         animatedSprite.SetAnimation("run");
-                    }
-                }
-            }
-            else
-            {
-                foreach (var hero in party)
-                {
-                    var animatedSprite = hero.Entity.Get<AnimatedSprite>();
-                    if (animatedSprite.CurrentAnimation != "idle")
-                    {
-                        animatedSprite.SetAnimation("idle");
                     }
                 }
             }

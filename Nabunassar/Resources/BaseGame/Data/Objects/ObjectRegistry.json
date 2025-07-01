@@ -8,10 +8,10 @@
   },
   {
     "ObjectId": 2,
-    "Name": "Wall",
+    "Name": "Door",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/snow/snowwall_s.png",
-    "ObjectType": "Wall"
+    "Image": "Assets/Images/Objects/snow/fortdoor_s.png",
+    "ObjectType": "Door"
   },
   {
     "ObjectId": 3,
@@ -40,5 +40,18 @@
     "Cursor": "Pointer",
     "Image": "Assets/Images/Objects/snow/snowtree3_s.png",
     "ObjectType": "Tree"
+  },
+  {
+    "ObjectId": 7,
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/hermitage_s.png",
+    "ObjectType": "Door"
+  },
+  {
+    "ObjectId": 8,
+    "Name": "Wall",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/snowwall_s.png",
+    "ObjectType": "Wall"
   }
 ]

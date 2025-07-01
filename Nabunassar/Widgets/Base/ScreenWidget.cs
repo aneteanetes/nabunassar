@@ -9,7 +9,7 @@ namespace Nabunassar.Widgets.Base
 {
     internal abstract class ScreenWidget : IGameComponent, IDrawable, IUpdateable, IDisposable
     {
-        protected NabunassarGame Game { get; private set; }
+        public NabunassarGame Game { get; private set; }
 
         protected NabunassarContentManager Content => Game.Content;
 
@@ -50,7 +50,7 @@ namespace Nabunassar.Widgets.Base
 
         protected abstract Widget InitWidget();
 
-        public MapObject GameObject { get; private set; }
+        public MapObject MapObject { get; private set; }
 
         protected virtual bool IsMouseActiveOnRootWidget => true;
 
@@ -92,7 +92,7 @@ namespace Nabunassar.Widgets.Base
             Game.Components.Remove(this);
             Game.Desktop.Widgets.Remove(UIWidget);
             OnDispose?.Invoke();
-            GameObject = null;
+            MapObject = null;
         }
 
         public virtual void Close()

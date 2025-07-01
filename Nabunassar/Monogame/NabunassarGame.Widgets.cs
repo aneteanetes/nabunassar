@@ -20,6 +20,17 @@ namespace Nabunassar
             }
         }
 
+        public ScreenWidget GetDesktopWidget<T>()
+        {
+            var widget = _screenWidgets.FirstOrDefault(x=>x.GetType() == typeof(T));
+            return widget;
+        }
+
+        public bool IsDesktopWidgetExist<T>()
+        {
+            return _screenWidgets.Exists(x=>x.GetType() == typeof(T));
+        }
+
         public void RemoveDesktopWidgets()
         {
             _screenWidgets.Clear();

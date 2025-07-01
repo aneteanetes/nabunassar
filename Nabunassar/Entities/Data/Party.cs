@@ -1,8 +1,10 @@
 ﻿using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
+using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
+using System.IO;
 
 namespace Nabunassar.Entities.Data
 {
@@ -147,6 +149,18 @@ namespace Nabunassar.Entities.Data
 
             DirectionRender.Sprite.IsVisible = true;
             DirectionRender.Position = to;
+        }
+
+        public void OnStopMoving()
+        {
+            foreach (var hero in this)
+            {
+                var animatedSprite = hero.Entity.Get<AnimatedSprite>();
+                if (animatedSprite.CurrentAnimation != "idle")
+                {
+                    animatedSprite.SetAnimation("idle");
+                }
+            }
         }
     }
 }

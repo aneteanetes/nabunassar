@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Shapes;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
@@ -42,9 +43,23 @@ namespace Nabunassar.Entities
             cursor.FocusedMapObject = null;
 
             var cursorImg = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0028.png");
-            var mouseCursor = MouseCursor.FromTexture2D(cursorImg, 0, 0);
-            
-            cursor.DefineCursor("cursor",mouseCursor);
+            var cursorDefault = MouseCursor.FromTexture2D(cursorImg, 0, 0);
+
+            var cursorEnterTexture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0035.png");
+            var cursorEnter = MouseCursor.FromTexture2D(cursorEnterTexture, 0, 0);
+
+            var cursorInfoTexture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0033.png");
+            var cursorInfo = MouseCursor.FromTexture2D(cursorInfoTexture, 0, 0);
+
+            var cursorSpeakTexture = _game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0050.png");
+            var cursorSpeak = MouseCursor.FromTexture2D(cursorSpeakTexture, 0, 0);
+
+            cursor.DefineCursor("cursor", cursorDefault);
+
+            cursor.DefineCursor("enter", cursorEnter);
+            cursor.DefineCursor("info", cursorInfo);
+            cursor.DefineCursor("speak", cursorSpeak);
+
             cursor.SetCursor("cursor");
 
 
@@ -117,6 +132,7 @@ namespace Nabunassar.Entities
             AddCollistion(mapObject);
 
             var gameObj = _game.DataBase.GetObject(polygon.GetPropopertyValue<ObjectType>(nameof(ObjectType)));
+            gameObj.MergeProperties(polygon);
             entity.Attach(gameObj);
 
             var tileComp = new TileComponent(polygon);
@@ -131,6 +147,8 @@ namespace Nabunassar.Entities
             var descriptor = "npc " + _object.gid;
             var entity = CreateEntity(descriptor,order);
             var gameObject = _game.DataBase.GetObject(_object.GetPropopertyValue<int>("ObjectId"));
+
+            gameObject.MergeProperties(_object);
 
             entity.Attach(gameObject);
             entity.Attach(_object.As<TiledBase>());
@@ -205,7 +223,7 @@ namespace Nabunassar.Entities
             var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order);
             glowEntity.Attach(glowAnimatedSprite);
 
-            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(_game, focusEvent.Object?.ObjectType.ToString(), focusEvent.Position));
+            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(_game, focusEvent.Object.GetObjectName(), focusEvent.Position));
             entity.Attach(title);
 
             return entity;
@@ -223,6 +241,8 @@ namespace Nabunassar.Entities
             var mapObject = new MapObject(_game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
             partyEntity.Attach(mapObject);
             AddCollistion(mapObject);
+
+            mapObject.OnStopMove += party.OnStopMoving;
 
             party.MapObject= mapObject;
 
@@ -337,6 +357,8 @@ namespace Nabunassar.Entities
                 gameObj = this._game.DataBase.GetObject(objId);
             else
                 gameObj = this._game.DataBase.GetObject(objType);
+
+            gameObj.MergeProperties(_object);
 
             var descriptor = "";
 
@@ -459,8 +481,11 @@ namespace Nabunassar.Entities
                 entity.Attach(new HullComponent(hulls.ToArray()));
             }
 
-            var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(_game, focusEvent.Object?.ObjectType.ToString(), focusEvent.Position));
-            entity.Attach(title);
+            if (gameObj.ObjectType.IsInteractive())
+            {
+                var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(_game, focusEvent.Object.GetObjectName(), focusEvent.Position));
+                entity.Attach(title);
+            }
 
             return entity;
         }

@@ -59,6 +59,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4" y="6" width="8" height="5"/>
@@ -78,6 +79,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="8" width="14" height="4"/>
@@ -96,6 +98,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4.03125" y="4.03125" width="7.96875" height="8.96875"/>
@@ -110,6 +113,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.96875" y="9" width="2.09375" height="5.9375"/>
@@ -125,6 +129,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="2" y="8.03125" width="4.96875" height="4.9375"/>
@@ -145,6 +150,7 @@
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
     <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.03125" y="14" width="3.9375" height="1.03125"/>
@@ -183,9 +189,14 @@
     <object id="2" x="0.9375" y="0.96875" width="7" height="7"/>
    </objectgroup>
   </tile>
+  <tile id="673">
+   <properties>
+    <property name="Color" type="color" value="#ffbab2a6"/>
+   </properties>
+  </tile>
   <tile id="690">
    <properties>
-    <property name="Color" type="color" value="#ff4d58ac"/>
+    <property name="Color" type="color" value="#ff9fd5e1"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -247,10 +258,17 @@
     <object id="2" x="1" y="7.96875" width="6.96875" height="7"/>
    </objectgroup>
   </tile>
+  <tile id="790">
+   <properties>
+    <property name="ObjectType" value="Door"/>
+   </properties>
+  </tile>
   <tile id="839">
    <properties>
     <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="IsLocked" type="bool" value="true"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="0.96875" width="14.0313" height="14.0625"/>
@@ -276,6 +294,11 @@
      <polygon points="0,0 0.104011,15.8306 15.9483,15.8999 16.0177,0"/>
     </object>
    </objectgroup>
+  </tile>
+  <tile id="888">
+   <properties>
+    <property name="ObjectType" value="Door"/>
+   </properties>
   </tile>
   <tile id="893">
    <properties>
@@ -333,6 +356,8 @@
    <properties>
     <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="IsLocked" type="bool" value="false"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1.03125" y="6.90625" width="13.9375" height="8.09375"/>
@@ -572,8 +597,8 @@
   </object>
   <object id="28" gid="987" x="160" y="64" width="16" height="16">
    <properties>
-    <property name="ObjectId" type="int" value="1"/>
-    <property name="ObjectType" value="NPC"/>
+    <property name="ObjectId" type="int" value="7"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
   </object>
   <object id="29" gid="840" x="176" y="192" width="16" height="16">

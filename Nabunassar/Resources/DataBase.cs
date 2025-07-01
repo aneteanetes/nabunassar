@@ -6,6 +6,8 @@ namespace Nabunassar.Resources
 {
     internal class DataBase
     {
+        public const string NotFoundStringConstant = "[String Is Not Found]";
+
         NabunassarGame _game;
 
         public DataBase(NabunassarGame game)
@@ -19,14 +21,27 @@ namespace Nabunassar.Resources
             return data[type];
         }
 
+        public string GetFromDictionary(string file, string key)
+        {
+            var data = Get<Dictionary<string, string>>(file);
+            return data[key];
+        }
+
         public string GetString(string file, string @string)
         {
+            if (@string == null)
+                return NotFoundStringConstant;
+
             var code = _game.Settings.LanguageCode ?? "ru-RU";
 
             var data = Get<Dictionary<string, string>>($"Data/Localization/{code}/{file}.json");
-            var value = data[@string];
 
-            return value ?? "[Not found]";
+            if(data.TryGetValue(@string, out var value))
+            {
+                return value;
+            }
+
+            return NotFoundStringConstant;
         }
 
         private List<GameObject> _objects;

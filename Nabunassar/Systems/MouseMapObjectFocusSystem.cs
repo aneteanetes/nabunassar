@@ -70,6 +70,7 @@ namespace Nabunassar.Systems
             {
                 _focusedWidgetComponent = null;
                 Game.RemoveDesktopWidgets<TitleWidget>();
+                Game.GameState.Cursor.SetCursor("cursor");
                 return;
             }
 
@@ -77,6 +78,7 @@ namespace Nabunassar.Systems
                 return;
 
             Game.RemoveDesktopWidgets<TitleWidget>();
+            Game.GameState.Cursor.SetCursor("cursor");
 
             _focusedWidgetComponent = focusWidgetComponent;
 
@@ -90,7 +92,7 @@ namespace Nabunassar.Systems
                     var tiledBase = focusWidgetComponent.GameObject.Entity.Get<TiledBase>();
                     if (tiledBase != default)
                     {
-                        position = tiledBase.Position;//new Vector2(((float)tiledObject.x) + tiledObject.width / 2, ((float)tiledObject.y));
+                        position = tiledBase.Position;
                         position = Game.Camera.WorldToScreen(position);
                     }
                 }
@@ -103,6 +105,9 @@ namespace Nabunassar.Systems
                 });
                 Game.AddDesktopWidget(screenWidget);
 
+                var cursor = Game.DataBase.GetFromDictionary("Data/Interface/ObjectTypeCursors.json", focusWidgetComponent.GameObject.ObjectType.ToString());
+                if (cursor != default)
+                    Game.GameState.Cursor.SetCursor(cursor);
             }
         }
     }

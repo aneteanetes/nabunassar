@@ -89,7 +89,7 @@ namespace Nabunassar.Screens.Game
                     Game.AddDesktopWidget(new MainMenu(Game));
                     Game.ChangeGameActive();
                 }
-                else if (Game.Desktop.Widgets.Count == 1 && Game.Desktop.Widgets[0].GetType()==typeof(MainMenu))
+                else if (Game.Desktop.Widgets.Count == 1 && Game.IsDesktopWidgetExist<MainMenu>())
                 {
                     isEsc = false;
                     Game.RemoveDesktopWidgets<MainMenu>();

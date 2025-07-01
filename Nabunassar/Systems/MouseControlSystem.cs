@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Animations;
 using MonoGame.Extended.ECS;
-using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
 
@@ -88,6 +87,7 @@ namespace Nabunassar.Systems
             }
             else if (animatedSprite.CurrentAnimation != "cursor")
             {
+                animatedSprite.SetAnimation("cursor");
                 Game.GameState.Cursor.SetCursor("cursor");
             }
         }
