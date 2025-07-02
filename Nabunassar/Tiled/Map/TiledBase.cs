@@ -1,26 +1,10 @@
 ﻿using Geranium.Reflection;
+using Nabunassar.Entities.Base;
 
 namespace Nabunassar.Tiled.Map
 {
-    public class TiledBase
+    public class TiledBase : Propertied
     {
-        public Dictionary<string, string> Properties { get; set; } = new();
-
-        public T GetPropopertyValue<T>(string propName)
-        {
-            if (Properties.ContainsKey(propName))
-            {
-                var p = Properties[propName];
-                if (typeof(T).IsEnum)
-                {
-                    return Enum.Parse(typeof(T), p, true).As<T>();
-                }
-                else
-                {
-                    return Convert.ChangeType(p, typeof(T)).As<T>();
-                }
-            }
-            return default;
-        }
+        public virtual Vector2 Position { get; set; }
     }
 }

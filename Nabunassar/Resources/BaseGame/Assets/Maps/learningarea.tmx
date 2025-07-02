@@ -3,66 +3,83 @@
  <properties>
   <property name="newversion" type="int" value="1"/>
  </properties>
- <tileset firstgid="1" name="winter" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
+ <tileset firstgid="1" name="TilesAndCollisions" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
   <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
   <tile id="1">
    <properties>
     <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="2">
    <properties>
     <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="3">
    <properties>
     <property name="Color" type="color" value="#ff3b4a58"/>
     <property name="GroundType" value="Road"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="4">
    <properties>
     <property name="Color" type="color" value="#ff3b4a58"/>
-    <property name="GorundType" value="Road"/>
+    <property name="GroundType" value="Road"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="5">
    <properties>
     <property name="Color" type="color" value="#ff22907e"/>
     <property name="GroundType" value="Grass"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="6">
    <properties>
     <property name="Color" type="color" value="#ff22907e"/>
     <property name="GroundType" value="Grass"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="7">
    <properties>
     <property name="Color" type="color" value="#ff22907e"/>
     <property name="GroundType" value="Grass"/>
+    <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
   <tile id="51">
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4" y="6" width="8" height="5"/>
     <object id="2" x="6.96875" y="0.90625" width="2.03125" height="14.0313"/>
     <object id="3" x="4.96875" y="3.96875" width="6.0625" height="7.96875"/>
     <object id="4" x="6" y="1.96875" width="3.96875" height="1.96875"/>
+    <object id="5" x="7.86108" y="0.822458">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0.141496,0.176665 -4.0144,5.26457 -3.97467,10.4298 -1.10375,12.4989 -0.984724,14.3002 1.29921,14.2936 1.30797,12.5362 4.31863,10.704 4.37928,5.14091"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="52">
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="8" width="14" height="4"/>
@@ -80,6 +97,8 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="4.03125" y="4.03125" width="7.96875" height="8.96875"/>
@@ -93,6 +112,8 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.96875" y="9" width="2.09375" height="5.9375"/>
@@ -107,6 +128,8 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="2" y="8.03125" width="4.96875" height="4.9375"/>
@@ -126,6 +149,8 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="6.03125" y="14" width="3.9375" height="1.03125"/>
@@ -164,15 +189,26 @@
     <object id="2" x="0.9375" y="0.96875" width="7" height="7"/>
    </objectgroup>
   </tile>
+  <tile id="673">
+   <properties>
+    <property name="Color" type="color" value="#ffbab2a6"/>
+   </properties>
+  </tile>
   <tile id="690">
    <properties>
-    <property name="Color" type="color" value="#ff383f7d"/>
+    <property name="Color" type="color" value="#ff9fd5e1"/>
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="2.03125" y="4.9375" width="12" height="8"/>
     <object id="2" x="3" y="3.96875" width="9.96875" height="9.96875"/>
     <object id="3" x="4.9375" y="2.90625" width="6.09375" height="12.0625"/>
+    <object id="4" x="2.26721" y="5.47663">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 3.03276,-1.5311 3.0622,-2.17887 8.42105,-2.29665 8.36216,-1.41332 11.3949,0.0883327 11.5421,6.83106 8.4505,8.27383 8.4505,9.12771 2.97387,9.21605 2.88554,8.09717 0.117777,6.97828"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="702">
@@ -222,13 +258,26 @@
     <object id="2" x="1" y="7.96875" width="6.96875" height="7"/>
    </objectgroup>
   </tile>
+  <tile id="790">
+   <properties>
+    <property name="ObjectType" value="Door"/>
+   </properties>
+  </tile>
   <tile id="839">
    <properties>
     <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="IsLocked" type="bool" value="true"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1" y="0.96875" width="14.0313" height="14.0625"/>
+    <object id="2" x="1.20721" y="1.29555">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.0883327,13.456 13.5444,13.5149 13.6032,0"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="843">
@@ -237,8 +286,19 @@
     <property name="IsHalfed" type="bool" value="true"/>
    </properties>
    <objectgroup draworder="index" id="2">
-    <object id="1" x="1.03125" y="1" width="14" height="14.0001"/>
+    <object id="1" x="0.942917" y="0.970556" width="14" height="14.0001"/>
+    <object id="2" x="-8.88178e-16" y="0.0588885">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.104011,15.8306 15.9483,15.8999 16.0177,0"/>
+    </object>
    </objectgroup>
+  </tile>
+  <tile id="888">
+   <properties>
+    <property name="ObjectType" value="Door"/>
+   </properties>
   </tile>
   <tile id="893">
    <properties>
@@ -247,6 +307,12 @@
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="0.96875" y="1.03125" width="14.0625" height="13.9063"/>
+    <object id="2" x="-0.0588885" y="0.0294442">
+     <properties>
+      <property name="ObjectType" value="Hull"/>
+     </properties>
+     <polygon points="0,0 0.104393,15.8306 16.007,15.8999 16.0765,0"/>
+    </object>
    </objectgroup>
   </tile>
   <tile id="947">
@@ -290,6 +356,8 @@
    <properties>
     <property name="Color" type="color" value="#ffafbacf"/>
     <property name="IsHalfed" type="bool" value="true"/>
+    <property name="IsLocked" type="bool" value="false"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
    <objectgroup draworder="index" id="2">
     <object id="1" x="1.03125" y="6.90625" width="13.9375" height="8.09375"/>
@@ -358,13 +426,8 @@
  <tileset firstgid="1079" name="virgil" tilewidth="16" tileheight="24" tilecount="12" columns="4">
   <image source="../Tilesets/virgil.png" trans="000000" width="64" height="72"/>
  </tileset>
- <tileset firstgid="1091" name="summer" tilewidth="16" tileheight="16" tilecount="1078" columns="49">
-  <image source="../Tilesets/colored-transparent_packed.png" trans="000000" width="784" height="352"/>
-  <tile id="51">
-   <properties>
-    <property name="Color" type="color" value="#ff38d973"/>
-   </properties>
-  </tile>
+ <tileset firstgid="1091" name="cursors" tilewidth="16" tileheight="16" tilecount="220" columns="20">
+  <image source="../Tilesets/cursor_tilemap_packed.png" trans="000000" width="320" height="176"/>
  </tileset>
  <layer id="1" name="Ground" width="30" height="26">
   <data encoding="csv">
@@ -534,8 +597,8 @@
   </object>
   <object id="28" gid="987" x="160" y="64" width="16" height="16">
    <properties>
-    <property name="ObjectId" type="int" value="1"/>
-    <property name="ObjectType" value="NPC"/>
+    <property name="ObjectId" type="int" value="7"/>
+    <property name="ObjectType" value="Door"/>
    </properties>
   </object>
   <object id="29" gid="840" x="176" y="192" width="16" height="16">

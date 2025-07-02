@@ -3,6 +3,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components.Abstract;
+using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using System.Diagnostics;
@@ -19,6 +20,13 @@ namespace Nabunassar.Components
         public GameObject GameObject => Entity.Get<GameObject>();
 
         public IShapeF Bounds { get; set; }
+
+        public Vector2 BoundsOrigin {
+            get
+            {
+                return new Vector2(Bounds.Position.X + Bounds.BoundingRectangle.Width / 2, Bounds.Position.Y + Bounds.BoundingRectangle.Height / 2);
+            }
+        }
 
         public RectangleF BoundsAbsolute => new RectangleF(Bounds.Position - BoundRelativePosition, Bounds.BoundingRectangle.Size);
 
@@ -195,9 +203,21 @@ namespace Nabunassar.Components
             else
             {
                 var hostCollision = host.Get<MapObject>();
-                hostCollision.Position -= collisionInfo.PenetrationVector * 2;
+                hostCollision.Position -= collisionInfo.PenetrationVector;
+
+                if (thisObj.boundsTried > 50)
+                {
+                    thisObj.boundsTried = 0;
+                    thisObj.StopMove();
+                }
+                else
+                {
+                    thisObj.boundsTried++;
+                }
             }
         }
+
+        private int boundsTried = 0;
 
         public void OnNoCollision()
         {

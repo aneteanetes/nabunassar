@@ -21,8 +21,6 @@ namespace Nabunassar.Tiled.Map
 
         public int TileOffsetY { get; set; }
 
-        public Vector2 Position { get; set; } = Vector2.Zero;
-
         public TiledLayer Layer { get; set; }
 
         public TiledTileset Tileset { get; set; }

@@ -1,18 +1,15 @@
 ﻿using MonoGame.Extended.ECS;
-using MonoGame.Extended.ECS.Systems;
 using Nabunassar.Components;
 
 namespace Nabunassar.Systems
 {
-    internal class FlickeringSystem : EntityUpdateSystem
+    internal class FlickeringSystem : BaseSystem
     {
         private ComponentMapper<FlickeringComponent> _flickeringMapper;
 
-        NabunassarGame _game;
 
-        public FlickeringSystem(NabunassarGame game) : base(Aspect.One(typeof(FlickeringComponent)))
+        public FlickeringSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FlickeringComponent)))
         {
-            _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -20,7 +17,7 @@ namespace Nabunassar.Systems
             _flickeringMapper = mapperService.GetMapper<FlickeringComponent>();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool sys)
         {
             if (!this.CanUpdate(gameTime, 15))
                 return;
@@ -43,21 +40,6 @@ namespace Nabunassar.Systems
             }
         }
 
-        /// <summary>
-        /// Генерирует значение синусоиды в диапазоне [0, amplitude]
-        /// </summary>
-        /// <param name="time">Текущее время</param>
-        /// <param name="period">Период полного цикла (0->1->0)</param>
-        /// <param name="amplitude">Амплитуда (максимальное значение)</param>
-        /// <returns>Значение синусоиды в заданный момент времени</returns>
-        static double SineWave(double time, double period, double amplitude = 1.0)
-        {
-            // Нормализованный угол [0, 2π]
-            double angle = 2 * Math.PI * time / period;
-
-            // Используем (1 - cos(θ))/2 для получения плавного перехода 0->1->0
-            return amplitude * (1 + Math.Cos(angle)) / 2;
-        }
 
         /// <summary>
         /// Генерирует значение синусоиды в диапазоне [minValue, maxValue]

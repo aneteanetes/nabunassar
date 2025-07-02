@@ -1,10 +1,14 @@
-﻿using Nabunassar.Components;
+﻿using MonoGame.Extended.ECS;
+using Nabunassar.Components;
+using Nabunassar.Entities.Base;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Game
 {
-    internal class GameObject : IClonable<GameObject>
+    internal class GameObject : Propertied, IClonable<GameObject>
     {
+        public Entity Entity { get; set; }
+
         public MapObject MapObject { get; set; }
 
         public long ObjectId { get; set; }
@@ -29,6 +33,30 @@ namespace Nabunassar.Entities.Game
             };
 
             return obj;
+        }
+    }
+
+    internal static class GameObjectMethods
+    {
+        public static string GetObjectName(this GameObject obj)
+        {
+            if (obj == null)
+                return string.Empty;
+
+            var objectNames = NabunassarGame.Game.Strings["ObjectNames"];
+
+            string token = null;
+
+            if (obj.Name != null)
+                token = obj.Name;
+
+            if (token == null && obj.ObjectId > 0)
+                token = obj.ObjectId.ToString();
+
+            if (token == null)
+                token = obj.ObjectType.ToString();
+
+            return objectNames[token];
         }
     }
 }

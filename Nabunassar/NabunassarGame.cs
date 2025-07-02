@@ -1,27 +1,25 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
-global using GoRogueGameObject = GoRogue.GameFramework.GameObject;
-
 using AssetManagementBase;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Monogame.Extended;
+using MonoGame;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
-using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.Extended.ViewportAdapters;
 using Myra;
 using Myra.Graphics2D.UI;
+using Nabunassar.Components;
 using Nabunassar.Content;
 using Nabunassar.Content.Compiler;
-using Nabunassar.Desktops;
-using Nabunassar.ECS;
+using Nabunassar.Widgets;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
@@ -30,11 +28,6 @@ using Nabunassar.Resources;
 using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
-using Nabunassar.Systems;
-using System.Reflection;
-using FontStashSharp;
-using Nabunassar.Components;
-using MonoGame;
 
 namespace Nabunassar
 {
@@ -44,13 +37,8 @@ namespace Nabunassar
 
         public NabunassarGame(GameSettings settings)
         {
-            settings.PathBin = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            settings.PathRepository = Directory.GetParent(settings.PathProject).ToString();
-            settings.PathData = Path.Combine(settings.PathBin, "Data");
-
-#if DEBUG
-            ResourceCompiler.Compile(settings);
-#endif
+            if (!settings.IsInitialized)
+                throw new Exception("Settings is not initialized!");
 
             Settings = settings;
 
@@ -68,7 +56,7 @@ namespace Nabunassar
             }
             catch (Exception ex)
             {
-                Console.WriteLine("SDL cant be inited in release mode, TODO: dev build");
+                Console.WriteLine($"SDL cant be inited in release mode, TODO: dev build, ex:{ex}");
             }
 
             GraphicsDeviceManagerInitialization();
@@ -216,6 +204,7 @@ namespace Nabunassar
             DataBase=new DataBase(this);
 
             Random = new FastRandom();
+
             var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 
@@ -230,21 +219,10 @@ namespace Nabunassar
 
             CollisionComponent.AddCollisionBetweenLayer(cursorLayer, objectsLayer);
 
-            World = new WorldBuilder()
-                .AddSystem(new PlayerControllSystem(this))
-                .AddSystem(new RenderSystem(this))
-                .AddSystem(new CursorSystem(this))
-                .AddSystem(new MoveSystem(this))
-                .AddSystem(new MouseControlSystem(this))
-                .AddSystem(new FlickeringSystem(this))
-                .Build();
-
-            EntityFactory=new Entities.EntityFactory(this);
+            InitGameWorlds();
 
             base.Initialize();
         }
-
-        private MapObject _myraGameObject;
 
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
@@ -254,78 +232,13 @@ namespace Nabunassar
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
 
-            if (DesktopWidget != null)
-                DesktopWidget.Dispose();
+            RemoveDesktopWidgets();
 
             var widget = screen.GetWidget();
-            SwitchDesktop(widget);
+            if (widget != default)
+                AddDesktopWidget(widget);
 
             ScreenManager.LoadScreen(screen, transition);
-        }
-
-        private Container DesktopContainer;
-
-        public void AddDesktopWidget(ScreenWidget widget)
-        {
-            if (Desktop.Root == null)
-                Desktop.Root = new Panel();
-
-            if (widget != default)
-            {
-                widget.Initialize();
-                var ui = widget.Load();
-                Components.Add(widget);
-                DesktopContainer.Widgets.Add(ui);
-                widget.OnDispose += () => DesktopContainer.Widgets.Remove(ui);
-            }
-
-        }
-
-        public void SwitchDesktop(ScreenWidget widget=null)
-        {
-            if (widget != null)
-            {
-                widget.Initialize();
-                Components.Add(widget);
-                DesktopWidget = widget;
-                Desktop.Root = widget.Load();
-                _myraGameObject = widget.GameObject;
-            }
-            else
-            {
-                DesktopWidget?.Dispose();
-                DesktopWidget = null;
-                Desktop.Root = null;
-            }
-        }
-
-        protected override void LoadContent()
-        {
-            var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
-            var y = SelectedMonitorBounds.h / 2 - Settings.HeightPixel / 2;
-            Window.Position = new Microsoft.Xna.Framework.Point(x, y);
-
-            FrameCounter = new FrameCounter();
-            ResourceLoader = new ResourceLoader(this);
-            base.Content = new NabunassarContentManager(this, ResourceLoader);
-            SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
-
-            MyraEnvironment.Game = this;
-            MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-            Desktop = new Desktop();
-
-            SwitchScreen<MainMenuScreen>();
-
-            Game.InitializeGameState();
-
-            GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
-
-            base.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            base.UnloadContent();
         }
 
         private Vector2 MoveCamera()
@@ -372,16 +285,12 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
-            //if (Desktop.Root != default && _myraGameObject!=default && _myraGameObject.Bounds.BoundingRectangle.Width==0)
-            //{
-            //    _myraGameObject.Bounds = new RectangleF(_myraGameObject.Bounds.Position, new SizeF(Desktop.Root.ActualBounds.Width, Desktop.Root.ActualBounds.Height));
-
-            //    if (_myraGameObject.Bounds.BoundingRectangle.Width != 0)
-            //        EntityFactory.AddCollistion(_myraGameObject);
-            //}
+            DebugUpdate(gameTime);
 
             MouseExtended.Update();
             KeyboardExtended.Update();
+
+            Penumbra.Transform = Camera.GetViewMatrix();
 
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
@@ -393,63 +302,13 @@ namespace Nabunassar
             _mousePosition = new Vector2(mouseState.X, mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
-            var keyboardState = KeyboardExtended.GetState();
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
-                isDrawFPS = !isDrawFPS;
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.X))
-                isDrawCoords = !isDrawCoords;
-
-            if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
-                IsDrawBounds = !IsDrawBounds;
-
-            AdjustZoom();
-
             if (IsGameActive)
             {
-                World.Update(gameTime);
                 CollisionComponent.Update(gameTime);
+                WorldGame.Update(gameTime);
             }
 
             base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            if (!IsActive)
-                return;
-
-            GraphicsDevice.Clear(Color.Black);
-
-            base.Draw(gameTime);
-
-            SpriteBatch.End();
-
-            if (isDrawFPS)
-                DrawFPS();
-
-            if (isDrawCoords)
-                DrawPositions();
-        }
-
-        public void DrawFPS()
-        {
-            var sb = BeginDraw(false);
-
-            sb.DrawText(Fonts.Retron, 30, FrameCounter.ToString(), new Vector2(1, 1), Color.Yellow);
-
-            sb.End();
-        }
-
-        public void DrawPositions()
-        {
-            var sb = BeginDraw(false);
-
-            sb.DrawText(Fonts.Retron, 20, "World: " + _worldPosition.ToString(), new Vector2(50, 100), Color.PeachPuff);
-            sb.DrawText(Fonts.Retron, 20, "Display: " + _mousePosition.ToString(), new Vector2(50, 125), Color.AntiqueWhite);
-
-            sb.End();
         }
     }
 }

@@ -46,8 +46,8 @@ namespace Nabunassar
 
 			var entrydll = Assembly.GetExecutingAssembly().Location;
 			var root = Path.GetDirectoryName(entrydll);
-#warning SDL runtime platform check
-			var sdlPath = Path.Combine(root, @"runtimes\win-x64\native\SDL2.dll");
+
+			var sdlPath = Path.Combine(root, $@"runtimes\{RuntimeInformation.RuntimeIdentifier}\native\SDL2.dll");
 
 			if (!File.Exists(sdlPath))
 				sdlPath = Path.Combine(root, "SDL2.dll");

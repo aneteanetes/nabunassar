@@ -6,14 +6,12 @@ using Nabunassar.Struct;
 
 namespace Nabunassar.Systems
 {
-    internal class MoveSystem : EntityUpdateSystem, IDrawSystem
+    internal class MoveSystem : BaseSystem
     {
-        NabunassarGame _game;
         ComponentMapper<MapObject> _gameObjectComponentMapper;
 
-        public MoveSystem(NabunassarGame game) : base(Aspect.All(typeof(MapObject),typeof(MoveableComponent)))
+        public MoveSystem(NabunassarGame game) : base(game,Aspect.All(typeof(MapObject),typeof(MoveableComponent)))
         {
-            _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -21,7 +19,7 @@ namespace Nabunassar.Systems
             _gameObjectComponentMapper = mapperService.GetMapper<MapObject>();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool sys)
         {
             if (!this.CanUpdate(gameTime, 15))
                 return;
@@ -107,15 +105,15 @@ namespace Nabunassar.Systems
         }
 
 
-        public void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, bool sys)
         {
             foreach (var entityId in ActiveEntities)
             {
                 var gameobject = _gameObjectComponentMapper.Get(entityId);
                 var ray = gameobject.Ray2;
-                if(ray!=default && _game.IsDrawBounds)
+                if(ray!=default && Game.IsDrawBounds)
                 {
-                    var sb = _game.BeginDraw();
+                    var sb = Game.BeginDraw();
                     sb.DrawLine(ray.Position, ray.Direction, Color.Yellow, 1);
                 }
             }

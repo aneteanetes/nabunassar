@@ -49,26 +49,38 @@ namespace Nabunassar.Tiled.Map
                             Id = x.GetTagAttrInteger("id")
                         };
 
-                        var isPropertiesExists = x.Element("properties");
-                        if (isPropertiesExists != null)
-                        {
-                            foreach (var prop in x.Element("properties").Elements("property"))
-                            {
-                                tile.Properties[prop.GetTagAttrString("name")] = prop.GetTagAttrString("value");
-                            }
-                        }
+                        BindProperties(x, tile);
 
-                        var bounds = x.Element("objectgroup");
-                        if(bounds != null)
+                        var shapes = x.Element("objectgroup");
+                        if (shapes != null)
                         {
-                            foreach (var bound in bounds.Elements("object"))
+                            foreach (var obj in shapes.Elements("object"))
                             {
-                                tile.Bounds.Add(new MonoGame.Extended.RectangleF(
-                                    bound.GetTagAttrFloatRound("x"),
-                                    bound.GetTagAttrFloatRound("y"),
-                                    bound.GetTagAttrFloatRound("width"),
-                                    bound.GetTagAttrFloatRound("height")
-                                    ));
+                                var polygonTag = obj.Element("polygon");
+                                if (polygonTag == null)
+                                {
+                                    tile.Bounds.Add(new MonoGame.Extended.RectangleF(
+                                        obj.GetTagAttrFloatRound("x"),
+                                        obj.GetTagAttrFloatRound("y"),
+                                        obj.GetTagAttrFloatRound("width"),
+                                        obj.GetTagAttrFloatRound("height")
+                                        ));
+                                }
+                                else
+                                {
+                                    var polygonsString = polygonTag.GetTagAttrString("points");
+                                    var polygonList = polygonsString
+                                        .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(x => x.AsVector2())
+                                        .ToArray();
+
+                                    var pos = new Vector2(obj.GetTagAttrFloatRound("x"), obj.GetTagAttrFloatRound("y"));
+
+                                    var polygon = new TiledPolygonObject(polygonList,pos);
+                                    BindProperties(obj,polygon);
+
+                                    tile.Polygons.Add(polygon);
+                                }
                             }
                         }
 
@@ -88,6 +100,18 @@ namespace Nabunassar.Tiled.Map
             ProcessObjects(map, tiledMap);
 
             return tiledMap;
+        }
+
+        private static void BindProperties(XElement x, TiledBase tiledBase)
+        {
+            var isPropertiesExists = x.Element("properties");
+            if (isPropertiesExists != null)
+            {
+                foreach (var prop in x.Element("properties").Elements("property"))
+                {
+                    tiledBase.Properties[prop.GetTagAttrString("name")] = prop.GetTagAttrString("value");
+                }
+            }
         }
 
         private static string ResourceFile(string file)
@@ -306,10 +330,6 @@ namespace Nabunassar.Tiled.Map
 
 
             return null;
-#warning tileset tile filename
-            //return tileset.Tiles
-            //    .FirstOrDefault(x => x.Id == Math.Abs(gid - tileset.firstgid))
-            //    ?.File;
         }
 
         public List<TiledLayer> Layers { get; set; } = new List<TiledLayer>();

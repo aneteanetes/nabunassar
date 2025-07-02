@@ -1,7 +1,5 @@
 ﻿#pragma warning disable IDE1006 // Naming Styles
 
-using Geranium.Reflection;
-using Microsoft.Xna.Framework;
 using MonoGame.Extended;
 
 namespace Nabunassar.Tiled.Map
@@ -22,8 +20,6 @@ namespace Nabunassar.Tiled.Map
 
         public int height { get; set; }
 
-        public Vector2 Position { get; set; }
-
         public bool collide => Properties["collide"] == "true";
 
         public string objectgroup { get; set; }
@@ -38,6 +34,16 @@ namespace Nabunassar.Tiled.Map
             return tile.Bounds.Count != 0;
         }
 
+        public bool IsHavePolygons()
+        {
+            var tile = GetTile();
+
+            if (tile == null)
+                return false;
+
+            return tile.Polygons.Count != 0;
+        }
+
         public List<RectangleF> GetBounds()
         {
             if (!IsHaveBounds())
@@ -45,6 +51,15 @@ namespace Nabunassar.Tiled.Map
 
             var tile = GetTile();
             return tile.Bounds;
+        }
+
+        public List<TiledPolygonObject> GetPolygons()
+        {
+            if (!IsHavePolygons())
+                return [];
+
+            var tile = GetTile();
+            return tile.Polygons;
         }
 
         public TiledTile GetTile() => Tileset?.Tiles?.FirstOrDefault(x => x.Id == this.gid-1);

@@ -5,14 +5,12 @@ using Nabunassar.Components;
 
 namespace Nabunassar.Systems
 {
-    internal class CursorSystem : EntityUpdateSystem
+    internal class CursorSystem : BaseSystem
     {
-        NabunassarGame _game;
         ComponentMapper<MapObject> _gameObjectComponentMapper;
 
-        public CursorSystem(NabunassarGame game) : base(Aspect.All(typeof(CursorComponent)))
+        public CursorSystem(NabunassarGame game) : base(game,Aspect.All(typeof(CursorComponent)))
         {
-            _game = game;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -20,11 +18,11 @@ namespace Nabunassar.Systems
             _gameObjectComponentMapper = mapperService.GetMapper<MapObject>();
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime, bool sys)
         {
             var mouse = MouseExtended.GetState();
 
-            var _worldPosition = _game.Camera.ScreenToWorld(mouse.X, mouse.Y);
+            var _worldPosition = Game.Camera.ScreenToWorld(mouse.X, mouse.Y);
 
             foreach (var entityId in ActiveEntities)
             {

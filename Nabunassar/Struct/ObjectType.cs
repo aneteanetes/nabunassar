@@ -21,7 +21,8 @@
         Hero,
         Sprite,
         Interface,
-        Border
+        Border,
+        Hull
     }
 
     public static class ObjectTypeInspectorExtensions

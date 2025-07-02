@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Input;
 using Nabunassar.Components;
 
 namespace Nabunassar.Entities.Game
@@ -8,6 +9,10 @@ namespace Nabunassar.Entities.Game
     internal class Cursor
     {
         public GameObject FocusedMapObject { get; set; }
+
+        public static GameObject ObjectFocused { get; private set; }
+        
+        public static GameObject ObjectUnfocused { get; private set; }
 
         public static Action<GameObject> OnObjectFocused { get; set; } = x => { };
 
@@ -31,19 +36,39 @@ namespace Nabunassar.Entities.Game
             Cursors[name] = mouseCursor;
         }
 
+        public static Queue<FocusEvent> FocusEvents = new();
+
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject another)
         {
             var anotherGameObject = another.GameObject;
+
+            var mouse = MouseExtended.GetState();
+            var mousePosition = mouse.Position.ToVector2();
+
             if (FocusedMapObject == default)
             {
-                OnObjectFocused?.Invoke(anotherGameObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = true,
+                    Object = anotherGameObject,
+                    Position = mousePosition
+                });
             }
-            else
-
-            if (FocusedMapObject != anotherGameObject)
+            else if (FocusedMapObject != anotherGameObject)
             {
-                OnObjectUnfocused?.Invoke(FocusedMapObject);
-                OnObjectFocused?.Invoke(anotherGameObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = false,
+                    Object = FocusedMapObject,
+                    Position = mousePosition
+                });
+
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = true,
+                    Object = anotherGameObject,
+                    Position = mousePosition
+                });
             }
 
             FocusedMapObject = anotherGameObject;
@@ -52,7 +77,12 @@ namespace Nabunassar.Entities.Game
         internal void OnNoCollistion()
         {
             if (FocusedMapObject != default)
-                OnObjectUnfocused?.Invoke(FocusedMapObject);
+                FocusEvents.Enqueue(new FocusEvent()
+                {
+                    IsFocused = false,
+                    Object = FocusedMapObject,
+                });
+
             FocusedMapObject = default;
         }
     }

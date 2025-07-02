@@ -15,16 +15,14 @@ namespace Nabunassar.Monogame.SpriteBatch
             Game = game;
         }
 
-        public DepthStencilState DepthStencilState;
-
-        public SpriteSortMode? spriteSortMode;
+        public DepthStencilState DepthStencilState = DepthStencilState.None;
 
         public new void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = null)
         {
             if (!IsOpened)
             {
                 IsOpened = true;
-                base.Begin(spriteSortMode ?? sortMode, blendState, samplerState, depthStencilState ?? DepthStencilState, rasterizerState, effect, transformMatrix);
+                base.Begin(sortMode, blendState, samplerState, depthStencilState ?? DepthStencilState, rasterizerState, effect, transformMatrix);
             }
         }
 

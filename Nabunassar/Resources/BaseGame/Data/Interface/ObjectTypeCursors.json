@@ -1,0 +1,7 @@
+﻿{  
+  "Door":"enter",
+  "Tree":"info",
+  "Wall":"cursor",
+  "Object":"cursor",
+  "NPC":"speak"
+}

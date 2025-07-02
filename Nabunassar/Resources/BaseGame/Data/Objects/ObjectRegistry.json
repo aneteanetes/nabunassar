@@ -3,28 +3,55 @@
     "ObjectId": 1,
     "Name": "Virgil",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/virgil.png",
+    "Image": "Assets/Images/Objects/npc/virgil_s.png",
     "ObjectType": "NPC"
   },
   {
     "ObjectId": 2,
-    "Name": "Wall",
+    "Name": "Door",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/castle1.png",
-    "ObjectType": "Wall"
+    "Image": "Assets/Images/Objects/snow/fortdoor_s.png",
+    "ObjectType": "Door"
   },
   {
     "ObjectId": 3,
     "Name": "Well",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/well.png",
+    "Image": "Assets/Images/Objects/snow/snowwell_s.png",
     "ObjectType": "Object"
   },
   {
     "ObjectId": 4,
     "Name": "Tree",
     "Cursor": "Pointer",
-    "Image": "Assets/Images/Objects/snowtree.png",
+    "Image": "Assets/Images/Objects/snow/snowtree1_s.png",
     "ObjectType": "Tree"
+  },
+  {
+    "ObjectId": 5,
+    "Name": "Tree",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/snowtree2_s.png",
+    "ObjectType": "Tree"
+  },
+  {
+    "ObjectId": 6,
+    "Name": "Tree",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/snowtree3_s.png",
+    "ObjectType": "Tree"
+  },
+  {
+    "ObjectId": 7,
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/hermitage_s.png",
+    "ObjectType": "Door"
+  },
+  {
+    "ObjectId": 8,
+    "Name": "Wall",
+    "Cursor": "Pointer",
+    "Image": "Assets/Images/Objects/snow/snowwall_s.png",
+    "ObjectType": "Wall"
   }
 ]

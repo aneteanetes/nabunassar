@@ -6,7 +6,6 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
-using Nabunassar.Desktops;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Content;
@@ -15,11 +14,20 @@ using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
+using Penumbra;
+using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets;
+using Nabunassar.Localization;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public LocalizedStrings Strings { get; set; }
+
+        public WidgetFactory WidgetFactory { get; set; }
+
+        public PenumbraComponent Penumbra { get; set; }
         public bool IsMouseActive { get; internal set; } = true;
 
         public bool IsGameActive { get; set; } = true;
@@ -44,14 +52,13 @@ namespace Nabunassar
 
         public EntityFactory EntityFactory { get; set; }
 
-        public World World { get; private set; }
-
+        public World WorldGame { get; private set; }
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop Desktop = null;
+        public Desktop DesktopContainer = null;
 
-        public ScreenWidget DesktopWidget= null;    
+        public Panel Desktop = null;
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 

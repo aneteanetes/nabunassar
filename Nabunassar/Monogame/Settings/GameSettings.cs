@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace Nabunassar.Monogame.Settings
 {
@@ -9,6 +10,8 @@ namespace Nabunassar.Monogame.Settings
         /// Логировать работу
         /// </summary>
         public bool IsLogging { get; set; }
+
+        public string LanguageCode { get; set; } = "ru-RU";
 
         public string GameTitle { get; set; } = "Nabunassar";
 
@@ -97,5 +100,16 @@ namespace Nabunassar.Monogame.Settings
         /// Путь к репозиторию
         /// </summary>
         public string PathRepository { get; set; }
+
+        public bool IsInitialized { get; private set; }
+
+        public void Initialize()
+        {
+            PathBin = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            PathRepository = Directory.GetParent(PathProject).ToString();
+            PathData = Path.Combine(PathBin, "Data");
+
+            IsInitialized = true;
+        }
     }
 }

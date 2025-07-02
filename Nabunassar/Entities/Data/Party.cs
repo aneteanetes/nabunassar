@@ -1,11 +1,10 @@
-﻿using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
+﻿using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
+using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Roy_T.AStar.Primitives;
-using System.Collections.Generic;
+using System.IO;
 
 namespace Nabunassar.Entities.Data
 {
@@ -13,7 +12,7 @@ namespace Nabunassar.Entities.Data
     {
         public Entity Entity { get; set; }
 
-        public MapObject GameObject { get; set; }
+        public MapObject MapObject { get; set; }
 
         public Direction ViewDirection { get; set; } = Direction.Right;
 
@@ -144,79 +143,22 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        internal void OnMoving(Vector2 prev, Vector2 next)
+        public void MoveTo(Vector2 to)
         {
-            return;
-            var diff = prev - next;
-            var direction = prev.DetectDirection(next);
+            MapObject.MoveToPosition(MapObject.Position, to);
 
+            DirectionRender.Sprite.IsVisible = true;
+            DirectionRender.Position = to;
+        }
+
+        public void OnStopMoving()
+        {
             foreach (var hero in this)
             {
-                if (hero.GameObject.IsMoving)
+                var animatedSprite = hero.Entity.Get<AnimatedSprite>();
+                if (animatedSprite.CurrentAnimation != "idle")
                 {
-                    var ray = hero.GameObject.Ray2;
-
-                    float xFrom = ray.Position.X;
-                    float yFrom = ray.Position.Y;
-
-                    float xTo = ray.Direction.X;
-                    float yTo = ray.Direction.Y;
-
-                    void Up()
-                    {
-                        yFrom -=diff.Y;
-                        yTo -=diff.Y;
-                    }
-
-                    void Down()
-                    {
-                        yFrom += diff.Y;
-                        yTo += diff.Y;
-                    }
-
-                    void Left()
-                    {
-                        xFrom -= diff.X;
-                        xTo -= diff.X;
-                    }
-
-                    void Right()
-                    {
-                        xFrom += diff.X;
-                        xTo += diff.X;
-                    }
-
-                    switch (direction)
-                    {
-                        case Direction.Up:
-                            Up();
-                            break;
-                        case Direction.Down:
-                            Down();
-                            break;
-                        case Direction.Left:
-                            Left();
-                            break;
-                        case Direction.Right:
-                            Right();
-                            break;
-                        case Direction.UpLeft:
-                            Up(); Left();
-                            break;
-                        case Direction.UpRight:
-                            Up(); Right();
-                            break;
-                        case Direction.DownLeft:
-                            Down(); Left();
-                            break;
-                        case Direction.DownRight:
-                            Down(); Right();
-                            break;
-                        default:
-                            break;
-                    }
-
-                    hero.GameObject.Ray2 = new Ray2(new Vector2(xFrom, yFrom), new Vector2(xTo, yTo));
+                    animatedSprite.SetAnimation("idle");
                 }
             }
         }
