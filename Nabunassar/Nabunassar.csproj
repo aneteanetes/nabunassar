@@ -28,6 +28,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="nabunassar.local.cfg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="nabunassar.cfg">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
