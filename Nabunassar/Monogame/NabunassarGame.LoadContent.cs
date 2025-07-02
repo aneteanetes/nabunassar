@@ -24,12 +24,16 @@ namespace Nabunassar
             base.Content = new NabunassarContentManager(this, ResourceLoader);
             SpriteBatch = new SpriteBatchManager(this, GraphicsDevice, Content);
 
+            // myra  & desktops
+
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             DesktopContainer = new Desktop();
             Desktop = new Panel();
             DesktopContainer.Widgets.Add(Desktop);
-            WidgetFactory = new Widgets.WidgetFactory(this);
+            Dialogues = new Widgets.WidgetFactory(this);
+
+            //
 
             SwitchScreen<MainMenuScreen>();
 

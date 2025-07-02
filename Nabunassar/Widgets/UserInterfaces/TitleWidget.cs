@@ -14,10 +14,15 @@ namespace Nabunassar.Widgets.UserInterfaces
         private static Vector2 _position;
         private static FontSystem _font;
         private string _text;
+        private Color _color;
 
-        public TitleWidget(NabunassarGame game, string text, Vector2 position) : base(game)
+        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default) : base(game)
         {
-            _position=position;
+            _color = color;
+            if(_color ==default)
+                _color = Color.White;
+
+            _position =position;
             _text=text ?? "[Title not found!]";
         }
 
@@ -48,6 +53,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             labelText.FocusedBackground = backNormal;
             labelText.OverBackground = backNormal;
             labelText.Font = compiledFont;
+            labelText.TextColor = _color;
 
             labelText.Text = GetText();
             labelText.Top = -45;

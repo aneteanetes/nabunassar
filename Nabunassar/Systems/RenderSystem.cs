@@ -64,21 +64,26 @@ namespace Nabunassar.ECS
             {
                 if (Game.IsDrawBounds)
                 {
-                    var gameObj = _gameObjectMapper.Get(entity);
-                    if (gameObj != null && gameObj.Bounds != default)
+                    var mapObj = _gameObjectMapper.Get(entity);
+                    if (mapObj != null && mapObj.Bounds != default)
                     {
-                        var color = gameObj.BoundsColor;
+                        var color = mapObj.BoundsColor;
 
                         if (color == default)
                         {
-                            color = gameObj.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;
+                            color = mapObj.ObjectType == Struct.ObjectType.Ground ? Color.Blue : Color.Red;
                         }
                         else
                         {
                             //debug
                         }
 
-                        sb.DrawRectangle(gameObj.Bounds.As<RectangleF>(), color);
+                        sb.DrawRectangle(mapObj.Bounds.As<RectangleF>(), color);
+
+                        if (entity.Get<DescriptorComponent>().Name == "party")
+                        {
+                            sb.DrawRectangle(mapObj.Bounds.BoundingRectangle.Multiple(2), Color.Purple);
+                        }
                     }
                 }
             }

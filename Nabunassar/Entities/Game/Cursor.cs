@@ -10,14 +10,6 @@ namespace Nabunassar.Entities.Game
     {
         public GameObject FocusedMapObject { get; set; }
 
-        public static GameObject ObjectFocused { get; private set; }
-        
-        public static GameObject ObjectUnfocused { get; private set; }
-
-        public static Action<GameObject> OnObjectFocused { get; set; } = x => { };
-
-        public static Action<GameObject> OnObjectUnfocused { get; set; } = x => { };
-
         public SpriteSheet SpriteSheet { get; set; }
 
         public AnimatedSprite AnimatedSprite { get; set; }

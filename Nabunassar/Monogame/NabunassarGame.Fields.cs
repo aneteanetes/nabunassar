@@ -25,7 +25,7 @@ namespace Nabunassar
     {
         public LocalizedStrings Strings { get; set; }
 
-        public WidgetFactory WidgetFactory { get; set; }
+        public WidgetFactory Dialogues { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }
         public bool IsMouseActive { get; internal set; } = true;

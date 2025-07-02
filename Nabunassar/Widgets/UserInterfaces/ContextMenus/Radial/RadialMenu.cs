@@ -9,8 +9,6 @@ using Nabunassar.Struct;
 using Nabunassar.Systems;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions;
-using System;
-using static System.Collections.Specialized.BitVector32;
 
 namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 {
@@ -34,8 +32,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         private Panel _widget;
         public Vector2 Position { get; private set; }
 
-        public static bool IsContextMenuOpened { get; set; }
-
         protected override bool IsMouseActiveOnRootWidget => false;
 
         public GameObject GameObject {  get; private set; }
@@ -52,7 +48,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         {
             game.AddDesktopWidget(new RadialMenu(game, gameObject, position));
             game.GameState.Cursor.SetCursor("cursor");
-            IsContextMenuOpened = true;
         }
 
         protected override void LoadContent()
@@ -214,7 +209,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         private void FillNPCActions(Panel panel)
         {
-            AddAction(panel, new SpeakRadialAction(this));
+            AddAction(panel, new SpeakToRadialAction(this));
             AddAction(panel, new AttackRadialAction(this));
             AddAction(panel, new StealRadialAction(this));
         }
@@ -292,6 +287,11 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                         innerIcon.HorizontalAlignment = HorizontalAlignment.Center;
                         innerIcon.VerticalAlignment = VerticalAlignment.Center;
 
+                        if (innerAction.IsDisabled)
+                        {
+                            innerIcon.Color = Color.Gray;
+                        }
+
                         //innerIcon.Left = innerActionPos.X;
                         //innerIcon.Top = innerActionPos.Y;
 
@@ -324,7 +324,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 {
                     innerActionsWidgets.ForEach(iactw => iactw.Visible = true);
                 }
-                Btn_MouseEntered(sender, @event, title);
+                Btn_MouseEntered(sender, @event, title,!action.IsDisabled);
             };
             btn.MouseLeft += (sender, @event) =>
             {
@@ -356,15 +356,22 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             var btnContent = new Panel();
             btnContent.HorizontalAlignment = HorizontalAlignment.Center;
             btnContent.VerticalAlignment = VerticalAlignment.Center;
-            btnContent.Widgets.Add(icon);
             btnContent.Width = btn.Width;
             btnContent.Height = btn.Height;
+            btnContent.Widgets.Add(icon);
+
+            if (action.IsDisabled)
+            {
+                btn.Enabled = false;
+                btn.Background = btn.OverBackground;
+                icon.Color = Color.Gray;
+            }
 
             btn.Content = btnContent;
-
             panel.Widgets.Add(btn);
 
             btn.BringToFront();
+
 
             return (btn,btnContent);
         }
@@ -592,7 +599,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
-        private void Btn_MouseEntered(object sender, EventArgs e, string text)
+        private void Btn_MouseEntered(object sender, EventArgs e, string text, bool isEnabled=true)
         {
             var btn = sender.As<Button>();
             var parent = btn.Parent;
@@ -601,7 +608,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             var top = btn.Top + parent.Top;
 
 
-            _titleWidget = new TitleWidget(Game, text, new Vector2(left, top));
+            _titleWidget = new TitleWidget(Game, text, new Vector2(left, top), isEnabled ? Color.White : Color.Gray);
             Game.AddDesktopWidget(_titleWidget);
         }
 
@@ -610,7 +617,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         public override void Close()
         {
             Game.EnableSystems();
-            IsContextMenuOpened = false;
             PlayerControllSystem.IsPreventNextMove = true;
             base.Close();
         }

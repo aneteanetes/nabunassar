@@ -74,32 +74,34 @@ namespace Nabunassar.Systems
                                 break;
                         }
 
-                        newPos = new Vector2(gameobject.Position.X + xOffset, gameobject.Position.Y + yOffset);
+                        newPos = new Vector2(gameobject.BoundsOrigin.X + xOffset, gameobject.BoundsOrigin.Y + yOffset);
                     }
                     else
                     {
-                        var boundT = gameobject.MoveSpeed / Vector2.Distance(gameobject.Position, gameobject.Ray2.Direction);
-                        newPos = Vector2.Lerp(gameobject.Position, gameobject.Ray2.Direction, boundT);
+                        var posT = gameobject.MoveSpeed / Vector2.Distance(gameobject.BoundsOrigin, gameobject.Ray2.Direction);
+                        newPos = Vector2.Lerp(gameobject.BoundsOrigin, gameobject.Ray2.Direction, posT);
+
+                        //var boundT = gameobject.MoveSpeed / Vector2.Distance(gameobject.BoundsOrigin, gameobject.Ray2.Direction);
+                        //var newposBound = Vector2.Lerp(gameobject.BoundsOrigin, gameobject.Ray2.Direction, posT);
                     }
 
                     //reset speed after changing position
                     gameobject.ResetMoveSpeed();
 
                     // reset moving if position reached //new RectangleF(position.Position,position.BoundsComponent.Bounds.BoundingRectangle.Size)
-                    if (new RectangleF(gameobject.Position,new SizeF(2,2)).Intersects(new RectangleF(gameobject.TargetPosition, new SizeF(1, 1))))
+                    if (gameobject.Ray2 != default && gameobject.Bounds.Intersects(new RectangleF(gameobject.TargetPosition, new SizeF(1, 1))))
                     {
                         gameobject.StopMove();
                     }
 
                     // setting position
                     gameobject.OnMoving?.Invoke(gameobject.Position, newPos);
-                    gameobject.SetPosition(newPos);
+                    gameobject.SetPositionFromBoundsOrigin(newPos);
 
-                    if (gameobject.Position.RoundNew() == gameobject.Ray2.Direction.RoundNew())
+                    if (gameobject.Position.RoundNew() == gameobject.Ray2.Direction.RoundNew() && gameobject.Ray2 != default)
                     {
                         gameobject.StopMove();
                     }
-
                 }
             }
         }

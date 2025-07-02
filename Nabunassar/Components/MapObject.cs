@@ -17,6 +17,30 @@ namespace Nabunassar.Components
 
         public MapObject Parent { get; set; }
 
+        private Direction _viewDirection = Direction.Right;
+        public Direction ViewDirection
+        {
+            get => _viewDirection;
+            set
+            {
+                _viewDirection = value;
+
+                var render = this.Entity.Get<RenderComponent>();
+                if (render != null)
+                {
+
+                    if (_viewDirection.IsRight())
+                    {
+                        render.Sprite.Effect = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+                    }
+                    else if (_viewDirection.IsLeft())
+                    {
+                        render.Sprite.Effect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+                    }
+                }
+            }
+        }
+
         public GameObject GameObject => Entity.Get<GameObject>();
 
         public IShapeF Bounds { get; set; }
@@ -24,9 +48,12 @@ namespace Nabunassar.Components
         public Vector2 BoundsOrigin {
             get
             {
-                return new Vector2(Bounds.Position.X + Bounds.BoundingRectangle.Width / 2, Bounds.Position.Y + Bounds.BoundingRectangle.Height / 2);
+                return new Vector2(_boundsOriginX, _boundsOriginY);
             }
         }
+
+        private float _boundsOriginX => Bounds.Position.X + Bounds.BoundingRectangle.Width / 2;
+        private float _boundsOriginY => Bounds.Position.Y + Bounds.BoundingRectangle.Height / 2;
 
         public RectangleF BoundsAbsolute => new RectangleF(Bounds.Position - BoundRelativePosition, Bounds.BoundingRectangle.Size);
 
@@ -142,6 +169,12 @@ namespace Nabunassar.Components
             Position = position;
         }
 
+        public virtual void SetPositionFromBoundsOrigin(Vector2 position)
+        {
+            var newPos = new Vector2((position.X - BoundRelativePosition.X) - Bounds.BoundingRectangle.Width / 2, (position.Y - BoundRelativePosition.Y) - Bounds.BoundingRectangle.Height / 2);
+            Position = newPos;
+        }
+
         public virtual void SetAbsolutePosition(Vector2 position)
         {
             _position = position;
@@ -205,7 +238,7 @@ namespace Nabunassar.Components
                 var hostCollision = host.Get<MapObject>();
                 hostCollision.Position -= collisionInfo.PenetrationVector;
 
-                if (thisObj.boundsTried > 50)
+                if (thisObj.boundsTried > BoundsTries)
                 {
                     thisObj.boundsTried = 0;
                     thisObj.StopMove();
@@ -216,6 +249,8 @@ namespace Nabunassar.Components
                 }
             }
         }
+
+        public int BoundsTries { get; set; } = 50;
 
         private int boundsTried = 0;
 

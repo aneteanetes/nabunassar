@@ -1,15 +1,21 @@
 ﻿using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
+using Myra.Graphics2D.UI;
 using Nabunassar.Components;
+using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
+using Nabunassar.Widgets.UserInterfaces;
+using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 using System.IO;
 
 namespace Nabunassar.Entities.Data
 {
     internal class Party : Quad<Hero>
     {
+        public ActionQueue ActionQueue { get; set; } = new();
+
         public Entity Entity { get; set; }
 
         public MapObject MapObject { get; set; }
@@ -143,12 +149,80 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        public void MoveTo(Vector2 to)
+        public void MoveTo(Vector2 to, GameObject gameObject=null, Vector2 mouseScreenPosition=default)
         {
-            MapObject.MoveToPosition(MapObject.Position, to);
+            MapObject.BoundsTries = 75;
+
+            MapObject.MoveToPosition(MapObject.BoundsOrigin, to);
 
             DirectionRender.Sprite.IsVisible = true;
             DirectionRender.Position = to;
+
+            if (gameObject != null)
+            {
+                MapObject.BoundsTries = 15;
+
+                ActionQueue.Enqueue(() =>
+                {
+                    Interact(gameObject, mouseScreenPosition);
+                });
+            }
+        }
+
+        public void Interact(GameObject gameObject, Vector2 mouseScreenPosition)
+        {
+            switch (gameObject.ObjectType)
+            {
+                case ObjectType.Object:
+                    RadialMenu.Open(this._game, gameObject, mouseScreenPosition);
+                    break;
+                case ObjectType.NPC:
+                    SpeakTo(gameObject);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        public bool IsObjectNear(GameObject gameObject)
+        {
+            var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
+            return visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
+        }
+
+        public void SpeakTo(GameObject gameObject, Vector2 talkingTargetPosition=default)
+        {
+            if (gameObject.MapObject != null)
+            {
+                var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
+
+                if (visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle))
+                {
+                    var direction = MapObject.Position.DetectDirection(gameObject.MapObject.Position)
+                        .ToLeftRight();
+
+                    ChangeViewDirection(direction);
+                    gameObject.MapObject.ViewDirection = direction.Opposite();
+
+                    _game.Dialogues.OpenDialogue(gameObject);
+                }
+                else
+                {
+                    MoveTo(talkingTargetPosition, gameObject);
+                }
+            }
+        }
+
+        public void ChangeViewDirection(Direction direction)
+        {
+            var dir = direction.ToLeftRight();
+
+            foreach (var hero in this)
+            {
+                var render = hero.Entity.Get<RenderComponent>();
+                render.Sprite.Effect = dir == Direction.Left ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally : Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+            }
         }
 
         public void OnStopMoving()
@@ -160,6 +234,16 @@ namespace Nabunassar.Entities.Data
                 {
                     animatedSprite.SetAnimation("idle");
                 }
+            }
+
+            this.MapObject.BoundsTries = 75;
+
+            Action dequeued = ActionQueue.Dequeue();
+            while (dequeued != default)
+            {
+                dequeued?.Invoke();
+                this.MapObject.BoundsTries = 50;
+                dequeued = ActionQueue.Dequeue();
             }
         }
     }

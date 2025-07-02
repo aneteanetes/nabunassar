@@ -1,5 +1,4 @@
-﻿using Myra.Graphics2D.UI;
-using Nabunassar.Widgets.Base;
+﻿using Nabunassar.Widgets.Base;
 
 namespace Nabunassar
 {
@@ -7,7 +6,8 @@ namespace Nabunassar
     {
         private List<ScreenWidget> _screenWidgets = new();
 
-        public void AddDesktopWidget(ScreenWidget widget)
+        public T AddDesktopWidget<T>(T widget)
+            where T : ScreenWidget
         {
             if (widget != default)
             {
@@ -17,7 +17,11 @@ namespace Nabunassar
                 var uiWidget = widget.Load();
                 Components.Add(widget);
                 Desktop.Widgets.Add(uiWidget);
+
+                return widget;
             }
+
+            return null;
         }
 
         public ScreenWidget GetDesktopWidget<T>()

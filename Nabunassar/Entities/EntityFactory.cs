@@ -1,11 +1,9 @@
-﻿using FontStashSharp;
-using Geranium.Reflection;
+﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
-using MonoGame.Extended.Shapes;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
@@ -234,6 +232,7 @@ namespace Nabunassar.Entities
             var descriptor = "party";
             var partyEntity = CreateEntity(descriptor);
             partyEntity.Attach(party);
+
             party.Entity = partyEntity;
 
             var bounds = new RectangleF(new Vector2(6,0), new Vector2(20, 6));
@@ -295,7 +294,7 @@ namespace Nabunassar.Entities
         public Entity CreateHero(Hero hero, Vector2 personalPosition, MapObject parent, int order)
         {
             var descriptor = "hero" + personalPosition.X;
-            var entity = CreateEntity(descriptor, 3 + order);
+            var entity = CreateEntity(descriptor, 3 + order); // from 4 to 8
             hero.Entity = entity;
             var size = new Vector2(16, 24) * TileSizeMultiplier;
 
@@ -400,7 +399,7 @@ namespace Nabunassar.Entities
 
                 if (isHalfed)
                 {
-                    var entityDownpart = CreateEntity(descriptor + "downpart", order);
+                    var entityDownpart = CreateEntity(descriptor + "downpart", 1);
                     var spriteDownPart = new Sprite(_sprite.TextureRegion.Texture)
                     {
                         TextureRegion = new Texture2DRegion(_sprite.TextureRegion.Texture, new Rectangle(_sprite.TextureRegion.X, _sprite.TextureRegion.Y + 8, 16, 8))
@@ -419,7 +418,7 @@ namespace Nabunassar.Entities
 
             if (objType.IsInteractive())
             {
-                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), order);
+                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), -1);
             }
 
             // end glow

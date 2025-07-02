@@ -19,6 +19,8 @@ namespace Nabunassar.Entities.Game
 
         public string Image { get; set; }
 
+        public bool IsTrapped { get; set; }
+
         public ObjectType ObjectType { get; set; } = ObjectType.None;
 
         public GameObject Clone()

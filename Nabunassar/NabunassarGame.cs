@@ -264,7 +264,6 @@ namespace Nabunassar
             return movementDirection;
         }
         
-        // Add this to the Game1.cs file
         private void AdjustZoom()
         {
             var state = Keyboard.GetState();

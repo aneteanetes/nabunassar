@@ -112,6 +112,8 @@ namespace Nabunassar.Systems
             if (moveVector != Vector2.Zero)
                 gameobj.MoveToDirection(gameobj.Position, moveVector * gameobj.MoveSpeed);
 
+            if (gameobj.IsMoving && gameobj.Ray2==default && moveVector == Vector2.Zero)
+                gameobj.StopMove();
         }
 
         private void PartyActions(KeyboardStateExtended keyboard, Party party, MapObject gameobj)
@@ -151,7 +153,17 @@ namespace Nabunassar.Systems
 
                 void MovePartyByMouseInternal()
                 {
-                    party.MoveTo(targetPosition);
+                    var mouseScreenPos = mouse.Position.ToVector2();
+
+                    var obj = Game.GameState.Cursor.FocusedMapObject;
+                    if (obj != null && party.IsObjectNear(obj))
+                    {
+                        party.Interact(obj, mouseScreenPos);
+                    }
+                    else
+                    {
+                        party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedMapObject, mouseScreenPos);
+                    }
                 }
 
                 if (gameobj.IsMoving)
@@ -194,12 +206,6 @@ namespace Nabunassar.Systems
             RadialMenu.Open(Game, radialMenuGameObject, new Vector2(mouse.X, mouse.Y));
 
             return;
-        }
-
-        private void CloseRadialMenu()
-        {
-            RadialMenu.IsContextMenuOpened = false;
-            Game.RemoveDesktopWidgets<RadialMenu>();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Input;
-using Nabunassar.Entities.Game;
+﻿using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions;
 
@@ -12,6 +11,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         public string CodeName { get; set; }
 
         public RadialMenu Menu { get; protected set; }
+
+        public bool IsDisabled { get; set; }
 
         public NabunassarGame Game => Menu.Game;
 
