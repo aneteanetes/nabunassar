@@ -2,13 +2,10 @@
 using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using Nabunassar.Components;
-using Nabunassar.Widgets.Menu;
-using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
-using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.Menu;
 
 namespace Nabunassar.Screens.Game
 {
@@ -25,6 +22,7 @@ namespace Nabunassar.Screens.Game
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
+            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
 
