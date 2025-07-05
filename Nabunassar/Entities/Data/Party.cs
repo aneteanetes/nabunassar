@@ -238,12 +238,14 @@ namespace Nabunassar.Entities.Data
 
             this.MapObject.BoundsTries = 75;
 
-            Action dequeued = ActionQueue.Dequeue();
+            Action dequeued = ActionQueue.Dequeue(); 
+            dequeued?.Invoke();
+
             while (dequeued != default)
             {
+                dequeued = ActionQueue.Dequeue();
                 dequeued?.Invoke();
                 this.MapObject.BoundsTries = 50;
-                dequeued = ActionQueue.Dequeue();
             }
         }
     }

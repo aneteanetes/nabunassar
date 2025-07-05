@@ -19,7 +19,7 @@ namespace Nabunassar.Systems
 
         public override void Update(GameTime gameTime, bool sys)
         {
-            if (!this.CanUpdate(gameTime, 15))
+            if (!this.IsUpdateAvailable(gameTime, 15))
                 return;
 
             foreach (var entity in ActiveEntities)
