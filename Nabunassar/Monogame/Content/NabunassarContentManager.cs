@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Nabunassar.Content;
+using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,11 +16,11 @@ namespace Nabunassar.Monogame.Content
     {
         private ResourceLoader _resourceLoader;
         private JsonSerializer _jsonSerializer;
-        Game _game;
+        NabunassarGame _game;
 
         private Dictionary<string, FontSystem> _fonts = new();
 
-        public NabunassarContentManager(Game game, ResourceLoader resourceLoader) : base(game.Services)
+        public NabunassarContentManager(NabunassarGame game, ResourceLoader resourceLoader) : base(game.Services)
         {
             _game = game;
             _resourceLoader = resourceLoader;
@@ -54,16 +55,12 @@ namespace Nabunassar.Monogame.Content
             {
                 T jsonDeserialized = default;
                 var stream = OpenStream(assetName);
-                using (var sr = new StreamReader(stream))
-                using (var jsonTextReader = new JsonTextReader(sr))
-                {
-                    jsonDeserialized = _jsonSerializer.Deserialize<T>(jsonTextReader);
-                }
+                jsonDeserialized = ParseJsonStream<T>(stream);
                 LoadedAssets[assetName] = jsonDeserialized;
                 return jsonDeserialized;
             }
 
-            if(typeof(T) == typeof(Effect))
+            if (typeof(T) == typeof(Effect))
             {
                 var stream = OpenStream(assetName).As<MemoryStream>();
                 var effect = new Effect(_game.GraphicsDevice, stream.ToArray()).As<T>();
@@ -73,6 +70,32 @@ namespace Nabunassar.Monogame.Content
             }
 
             return base.Load<T>(assetName);
+        }
+
+        private T ParseJsonStream<T>(Stream stream)
+        {
+            T jsonDeserialized;
+            using (var sr = new StreamReader(stream))
+            using (var jsonTextReader = new JsonTextReader(sr))
+            {
+                jsonDeserialized = _jsonSerializer.Deserialize<T>(jsonTextReader);
+            }
+
+            return jsonDeserialized;
+        }
+
+        public Dialogue LoadDialogue(string dialoguePathName)
+        {
+            string assetName = dialoguePathName;
+
+            if (!assetName.Contains("Data"))
+                assetName = $"Data/Localization/{_game.Settings.LanguageCode}/Dialogues/" + dialoguePathName;
+
+            var stream = OpenStream(assetName);
+            var model = ParseJsonStream<DialogueModel>(stream);
+            model.DialogueFile = dialoguePathName;
+
+            return new Dialogue(_game,model);
         }
 
         public FontSystem LoadFont(string assetName)

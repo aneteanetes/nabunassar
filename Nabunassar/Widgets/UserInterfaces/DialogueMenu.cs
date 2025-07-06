@@ -1,9 +1,12 @@
 ﻿using FontStashSharp;
+using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
@@ -17,6 +20,7 @@ namespace Nabunassar.Widgets.UserInterfaces
         private Texture2D _background;
         private Texture2D _speakBackground;
         private Texture2D _closeTexture;
+        private Dialogue _dialogue;
 
         public DialogueMenu(NabunassarGame game, GameObject gameObject) : base(game)
         {
@@ -29,8 +33,14 @@ namespace Nabunassar.Widgets.UserInterfaces
             _background = Content.Load<Texture2D>("Assets/Images/Borders/panel-030.png");
             _speakBackground = Content.Load<Texture2D>("Assets/Images/Borders/speakerbubble2.png");
             _closeTexture = Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png");
+
+            if (_gameObject.Dialogue.IsNotEmpty())
+                _dialogue = Content.LoadDialogue(_gameObject.Dialogue);
+
             base.LoadContent();
         }
+
+        private Panel _globalPanel;
 
         protected override Widget InitWidget()
         {
@@ -40,22 +50,26 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             Game.Camera.ViewOn(_gameObject.MapObject.Position);
 
-            var panel = new Panel();
+            var panel = _globalPanel = new Panel();
+
+            panel.TouchDown += (s, e) => RevealSpeakerText();
+
+            //panel.Background = new SolidBrush(Color.Red);
 
             panel.Widgets.Add(DialogueOptionsPanel());
             panel.Widgets.Add(SpeakerBubble());
-            panel.Widgets.Add(PartyBubble());
 
-#warning fullfill speaker text
-            var generatedText = string.Join(",", Enumerable.Range(0, 10).Select(x => Guid.NewGuid().ToString()));
-            SetSpeakerText(generatedText);
+            if (_dialogue == null)
+            {
+                var generatedText = string.Join(",", Enumerable.Range(0, 10).Select(x => Guid.NewGuid().ToString()));
+                SetSpeakerText(generatedText);
+            }
+            else
+            {
+                SetSpeakerText(_dialogue.InitialRound.Text);
+            }
 
             return panel;
-        }
-
-        private Panel PartyBubble()
-        {
-            return new Panel();
         }
 
         private string _speakerText;
@@ -63,7 +77,6 @@ namespace Nabunassar.Widgets.UserInterfaces
         private int _speakerTextCharIndex;
 
         private Label _speakerLabel;
-        private Panel _speakerPanel;
 
         private void SetSpeakerText(string txt)
         {
@@ -72,7 +85,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             _speakerLabel.Text = "";
         }
 
-        private void RevealSoeakerText()
+        private void RevealSpeakerText()
         {
             _speakerLabel.Text = _speakerText;
         }
@@ -84,14 +97,14 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             var objScreenPosition = Game.Camera.WorldToScreen(_gameObject.MapObject.Position);
 
-            var panel = _speakerPanel= new Panel();
+            var panel = new Panel();
             var gray = Color.Gray;
             panel.Background = _speakBackground.NinePatchDouble();
             panel.Padding = new Myra.Graphics2D.Thickness(20);
             panel.Width = width;
             panel.Height = height;
 
-            panel.TouchDown += (s, e) => RevealSoeakerText();
+            panel.TouchDown += (s, e) => RevealSpeakerText();
 
             var objWidth = (int)(_gameObject.MapObject.Bounds.BoundingRectangle.Width * Game.Camera.Zoom);
 
@@ -145,6 +158,8 @@ namespace Nabunassar.Widgets.UserInterfaces
             return panel;
         }
 
+        private VerticalStackPanel _replicsPanel;
+
         private Panel DialogueOptionsPanel()
         {
             var panel = new Panel();
@@ -158,40 +173,12 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             panel.Top = -50;
 
-            var replicsCount = 8;
-            var replics = Enumerable.Range(0, replicsCount).Select(x=>Guid.NewGuid().ToString()).ToArray();
-
-            var y = 0;
 
             var scrollContainer = new ScrollViewer();
             scrollContainer.Background = new SolidBrush(Color.Transparent);
-            //scrollContainer.ShowVerticalScrollBar = true;
 
-            var scroll = new VerticalStackPanel();
-
-            for (int i = 0; i < replicsCount; i++)
-            {
-                var btn = new Button();
-                btn.Top = y;
-                btn.Tag = i;
-
-                btn.Background = new SolidBrush(Color.Transparent);
-                btn.PressedBackground = new SolidBrush(Color.Black);
-
-                //y += 26;
-
-                var label = new Label();
-                label.Font = _font.GetFont(25);
-                label.Text = $"{i}. "+replics[i];
-
-                btn.Content = label;
-
-                btn.Click += (s, e) => SelectReplica(s, e, replics[(int)btn.Tag]);
-
-                //btn.HorizontalAlignment = HorizontalAlignment.Left;
-
-                scroll.Widgets.Add(btn);
-            }
+            var scroll = _replicsPanel = new VerticalStackPanel();
+            FillReplicaButtons();
 
             scrollContainer.Content = scroll;
             panel.Widgets.Add(scrollContainer);
@@ -206,7 +193,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             {
                 //Font = _font.GetFont(24),
                 //Text = "X",
-                Renderable = new TextureRegion(_closeTexture,new Rectangle(272,0,16,16)),
+                Renderable = new TextureRegion(_closeTexture, new Rectangle(272, 0, 16, 16)),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
             };
@@ -219,10 +206,54 @@ namespace Nabunassar.Widgets.UserInterfaces
             return panel;
         }
 
-        private void SelectReplica(object sender, EventArgs e, string replica)
+        private void FillReplicaButtons()
         {
-            var speakerText = replica + "!!! "+Guid.NewGuid().ToString();
-            SetSpeakerText(speakerText);
+            _replicsPanel.Widgets.Clear();
+            var replicsCount = _dialogue.CurrentRound.Replics.Count;
+            if (replicsCount > 0)
+            {
+                var replics = _dialogue.CurrentRound.Replics;
+                for (int i = 0; i < replicsCount; i++)
+                {
+                    Button btn = CreateReplicaButton($"{i+1}. " + replics[i].Text, Color.White);
+
+                    btn.Tag = i;
+                    btn.Click += (s, e) => SelectReplica(s, e, replics[(int)btn.Tag]);
+
+                    _replicsPanel.Widgets.Add(btn);
+                }
+            }
+            else
+            {
+                Button btn = CreateReplicaButton(_dialogue.EndDialogueReplica.Text, Color.Gray);
+
+                btn.Click += (s, e) => this.Close();
+
+                _replicsPanel.Widgets.Add(btn);
+            }
+        }
+
+        private Button CreateReplicaButton(string text, Color textColor)
+        {
+            var btn = new Button();
+
+            btn.Background = new SolidBrush(Color.Transparent);
+            btn.PressedBackground = new SolidBrush(Color.Black);
+
+            var label = new Label();
+            label.Font = _font.GetFont(25);
+            label.TextColor = Color.White;
+            label.Text = text;
+
+            btn.Content = label;
+            return btn;
+        }
+
+        private void SelectReplica(object sender, EventArgs e, DialogueReplica replica)
+        {
+            var round = replica.Select();
+            SetSpeakerText(round.Text);
+            FillReplicaButtons();
         }
 
         public override void Update(GameTime gameTime)
@@ -232,6 +263,22 @@ namespace Nabunassar.Widgets.UserInterfaces
             if (keyboard.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
                 this.Close();
+            }
+
+
+            if (new[] { Keys.D1, Keys.D2, Keys.D3, Keys.D4, Keys.D5, Keys.D6, Keys.D7, Keys.D8, Keys.D9 }.Any(keyboard.WasKeyPressed))
+            {
+                var pressed = keyboard.GetPressedKeys()
+                    .Where(keyCode => (int)keyCode >= 48 && (int)keyCode <= 57)
+                    .FirstOrDefault();
+
+                if(pressed!=default)
+                {
+                    var index = int.Parse(pressed.ToString().Replace("D", ""));
+                    var replica = _dialogue.CurrentRound.Replics.ElementAtOrDefault(index - 1);
+                    if (replica != null)
+                        SelectReplica(null, null, replica);
+                }
             }
 
             if (this.IsUpdateAvailable(gameTime, 40))

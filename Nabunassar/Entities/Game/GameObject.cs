@@ -21,6 +21,8 @@ namespace Nabunassar.Entities.Game
 
         public bool IsTrapped { get; set; }
 
+        public string Dialogue { get; set; }
+
         public ObjectType ObjectType { get; set; } = ObjectType.None;
 
         public GameObject Clone()
@@ -31,7 +33,8 @@ namespace Nabunassar.Entities.Game
                 Name = Name,
                 Cursor = Cursor,
                 Image = Image,
-                ObjectType = ObjectType
+                ObjectType = ObjectType,
+                Dialogue = Dialogue,
             };
 
             return obj;

@@ -132,6 +132,8 @@ namespace Nabunassar.Content.Compiler
 
             if (res == default)
             {
+                Console.WriteLine($"Resource {filePath} was added!");
+
                 var newResource = new Resource()
                 {
                     Path = formattedPath,
@@ -152,8 +154,7 @@ namespace Nabunassar.Content.Compiler
                     dataResource.LastWriteTime = lastTime;
                     db.Update(dataResource);
 
-                    if (configuration.IsLogging)
-                        Console.WriteLine($"Resource {formattedPath} was updated!");
+                    Console.WriteLine($"Resource {formattedPath} was modified!");
                 }
             }
         }

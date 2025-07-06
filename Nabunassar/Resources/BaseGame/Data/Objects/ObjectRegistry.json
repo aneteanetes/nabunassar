@@ -4,7 +4,8 @@
     "Name": "Virgil",
     "Cursor": "Pointer",
     "Image": "Assets/Images/Objects/npc/virgil_s.png",
-    "ObjectType": "NPC"
+    "ObjectType": "NPC",
+    "Dialogue": "Virgil/VirgilInitiate.json"
   },
   {
     "ObjectId": 2,

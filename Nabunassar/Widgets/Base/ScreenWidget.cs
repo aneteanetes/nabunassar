@@ -46,9 +46,15 @@ namespace Nabunassar.Widgets.Base
 
         protected virtual void UnloadContent() { }
 
+        private bool isInitialized = false;
+
         public virtual void Initialize()
         {
-            LoadContent();
+            if (!isInitialized) // game component calls initialize, but for widget initialize must be called before it
+            {
+                LoadContent();
+                isInitialized = true;
+            }
         }
 
         protected abstract Widget InitWidget();
