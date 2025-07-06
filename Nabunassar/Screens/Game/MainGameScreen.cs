@@ -6,6 +6,7 @@ using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Screens.Game
 {
@@ -25,6 +26,7 @@ namespace Nabunassar.Screens.Game
             Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
+            Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)
             {
@@ -67,7 +69,8 @@ namespace Nabunassar.Screens.Game
             {
                 Game.EntityFactory.CreateNPC(mapObject);
             }
-            
+
+
             Game.RunGameState();
         }
 
@@ -92,6 +95,18 @@ namespace Nabunassar.Screens.Game
                     isEsc = false;
                     Game.RemoveDesktopWidgets<MainMenu>();
                     Game.ChangeGameActive();
+                }
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
+            {
+                if (!Game.IsDesktopWidgetExist<MinimapWindow>())
+                {
+                    Game.AddDesktopWidget(new MinimapWindow(Game));
+                }
+                else
+                {
+                    Game.RemoveDesktopWidgets<MinimapWindow>();
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Map;
 
 namespace Nabunassar.Entities.Data
 {
@@ -9,6 +10,8 @@ namespace Nabunassar.Entities.Data
         public Cursor Cursor { get; set; } = new();
 
         public Action<string> OnLog { get; set; }
+
+        public Minimap Minimap { get; set; }
 
         public void Log(string message)
         {

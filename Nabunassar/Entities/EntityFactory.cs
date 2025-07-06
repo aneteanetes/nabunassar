@@ -7,10 +7,12 @@ using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Map;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
 using Penumbra;
+using SharpFont.PostScript;
 
 namespace Nabunassar.Entities
 {
@@ -146,6 +148,8 @@ namespace Nabunassar.Entities
             var entity = CreateEntity(descriptor,order);
             var gameObject = _game.DataBase.GetObject(_object.GetPropopertyValue<int>("ObjectId"));
 
+            AddOnMinimap(entity.Id, _object.Position, ObjectType.NPC, gameObject.Name);
+
             gameObject.MergeProperties(_object);
 
             entity.Attach(gameObject);
@@ -234,6 +238,8 @@ namespace Nabunassar.Entities
             partyEntity.Attach(party);
 
             party.Entity = partyEntity;
+
+            AddOnMinimap(partyEntity.Id, position, ObjectType.Player, _game.Strings["UI"]["You"]);
 
             var bounds = new RectangleF(new Vector2(6,0), new Vector2(20, 6));
 
@@ -376,11 +382,13 @@ namespace Nabunassar.Entities
 
             var entity = CreateEntity(descriptor, order);
             entity.Attach(gameObj);
-
             entity.Attach(_object.As<TiledBase>());
 
             var position = _object.Position;
             Vector2 size = Vector2.Zero;
+
+            // minimap
+            AddOnMinimap(entity.Id, position, objType.IsInteractive() ? ObjectType.Object : ObjectType.Border);
 
             Color color = GetColorFromTile(_object);
 
@@ -498,7 +506,7 @@ namespace Nabunassar.Entities
             glowEntity.Attach(new FocusComponent(
                 mapObj =>
                 {
-                    if (mapObj == gameObj && _game.IsMouseActive)
+                    if (mapObj == gameObj && _game.IsMouseMoveAvailable)
                     {
                         glowSprite.IsVisible = true;
                     }
@@ -565,6 +573,36 @@ namespace Nabunassar.Entities
         public void AddCollistion(MapObject gameObject)
         {
             _game.CollisionComponent.Insert(gameObject);
+        }
+
+        public void AddOnMinimap(int entityId, Vector2 gamePosition, ObjectType objectType, string toolTip = default)
+        {
+            var minimap = _game.GameState.Minimap;
+
+            minimap.Add(new MinimapPoint()
+            {
+                Position = minimap.TransformPosition(gamePosition),
+                Name = toolTip ?? Guid.NewGuid().ToString(),
+                ObjectType = objectType,
+                EntityId = entityId
+            });
+        }
+
+        internal void CreateMinimap(TiledMap _tiledMap)
+        {
+
+            var mapSize = new Vector2(_tiledMap.width * _tiledMap.tilewidth, _tiledMap.height * _tiledMap.tileheight);
+            var miniMapSize = new Vector2(_tiledMap.width, _tiledMap.height);
+
+            var minimap = new Minimap(mapSize,miniMapSize);
+            minimap.AreaName =  _game.Strings["AreaNames"][_tiledMap.GetPropopertyValue<string>("AreaName")];
+
+            var entity = CreateEntity("minimap", 100);
+            entity.Attach(minimap);
+
+            minimap.Texture = new RenderTarget2D(_game.GraphicsDevice, ((int)minimap.MapSize.X), ((int)minimap.MapSize.Y));
+
+            _game.GameState.Minimap = minimap;
         }
 
         public Entity CreateEntity(string descriptor=null, int order=0)

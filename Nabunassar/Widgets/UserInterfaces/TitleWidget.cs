@@ -16,6 +16,8 @@ namespace Nabunassar.Widgets.UserInterfaces
         private string _text;
         private Color _color;
 
+        protected override bool IsMouseMovementAvailableWithThisActivedWidget => true;
+
         public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default) : base(game)
         {
             _color = color;

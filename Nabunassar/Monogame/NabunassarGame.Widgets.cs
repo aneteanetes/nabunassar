@@ -1,4 +1,5 @@
-﻿using Nabunassar.Widgets.Base;
+﻿using Myra.Graphics2D.UI;
+using Nabunassar.Widgets.Base;
 
 namespace Nabunassar
 {
@@ -15,8 +16,19 @@ namespace Nabunassar
 
                 widget.Initialize();
                 var uiWidget = widget.Load();
-                Components.Add(widget);
-                Desktop.Widgets.Add(uiWidget);
+
+
+                if (!Components.Contains(widget))
+                    Components.Add(widget);
+
+                if (uiWidget is Window windowWidget)
+                {
+                    windowWidget.Show(DesktopContainer, widget.Position.ToPoint());
+                }
+                else
+                {
+                    Desktop.Widgets.Add(uiWidget);
+                }
 
                 return widget;
             }
@@ -43,12 +55,18 @@ namespace Nabunassar
 
         public void RemoveDesktopWidget(ScreenWidget widget)
         {
-            if (widget == default)
+            if (widget == default && !widget.IsRemoved)
                 return;
 
             var uiWidget = widget.GetWidgetReference();
-            Desktop.Widgets.Remove(uiWidget);
+
+            if (uiWidget is Window windowWidget)
+                windowWidget.Close();
+            else
+                Desktop.Widgets.Remove(uiWidget);
+
             _screenWidgets.Remove(widget);
+            widget.IsRemoved = true;
             widget.Dispose();
         }
 

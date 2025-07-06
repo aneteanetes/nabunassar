@@ -10,6 +10,7 @@ namespace Nabunassar
         protected void InitGameWorlds()
         {
             WorldGame = new WorldBuilderProxy(this)
+                .AddSystem(new MinimapSystem(this))
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new RenderSystem(this))

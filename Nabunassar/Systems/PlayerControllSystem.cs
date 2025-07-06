@@ -145,7 +145,7 @@ namespace Nabunassar.Systems
                 return;
             }
 
-            if (Game.IsMouseActive)
+            if (Game.IsMouseMoveAvailable)
             {
                 Game.GameState.Log("moved party by mouse click");
 

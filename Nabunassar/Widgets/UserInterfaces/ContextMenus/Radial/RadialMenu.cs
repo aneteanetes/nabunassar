@@ -32,7 +32,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         private Panel _widget;
         public Vector2 Position { get; private set; }
 
-        protected override bool IsMouseActiveOnRootWidget => false;
+        protected override bool IsMouseMovementAvailableWithThisActivedWidget => false;
 
         public GameObject GameObject {  get; private set; }
 

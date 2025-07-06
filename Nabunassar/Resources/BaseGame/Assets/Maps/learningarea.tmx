@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
  <properties>
+  <property name="AreaName" value="Underpeaks"/>
   <property name="newversion" type="int" value="1"/>
  </properties>
  <tileset firstgid="1" name="TilesAndCollisions" tilewidth="16" tileheight="16" tilecount="1078" columns="49">

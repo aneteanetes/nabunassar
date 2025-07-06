@@ -1,4 +1,5 @@
-﻿using MonoGame.Extended;
+﻿using Geranium.Reflection;
+using MonoGame.Extended;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Monogame;
@@ -28,6 +29,8 @@ namespace Nabunassar.Widgets.Base
 
         public int UpdateOrder { get; set; } = 0;
 
+        public Vector2 Position { get; set; }
+
         public ScreenWidget(NabunassarGame game)
         {
             Game = game;
@@ -52,47 +55,53 @@ namespace Nabunassar.Widgets.Base
 
         public MapObject MapObject { get; private set; }
 
-        protected virtual bool IsMouseActiveOnRootWidget => true;
+        protected virtual bool IsMouseMovementAvailableWithThisActivedWidget => false;
+
+        private HashSet<Widget> bindedWidgets = new();
 
         public Widget Load()
         {
             UIWidget = InitWidget();
 
-            //if (IsMouseActiveOnRootWidget)
-            //{
-            //    _widget.MouseEntered += _widget_MouseEntered;
-            //    _widget.MouseLeft += _widget_MouseLeft;
-            //}
-
-            OnDispose += () =>
+            if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
-                ////_widget.MouseEntered -= _widget_MouseEntered;
-                ////_widget.MouseLeft -= _widget_MouseLeft;
-                //Game.IsMouseActive = true;
-            };
+                UIWidget.MouseEntered += _widget_MouseEntered;
+                UIWidget.MouseLeft += _widget_MouseLeft;
+
+                OnDispose += () =>
+                {
+                    UIWidget.MouseEntered -= _widget_MouseEntered;
+                    UIWidget.MouseLeft -= _widget_MouseLeft;
+                };
+            }
 
             return UIWidget;
         }
 
         private void _widget_MouseLeft(object sender, EventArgs e)
         {
-            Game.IsMouseActive = true;
+            Game.IsMouseMoveAvailable = true;
         }
 
         private void _widget_MouseEntered(object sender, EventArgs e)
         {
-            Game.IsMouseActive = false;
+            Game.IsMouseMoveAvailable = false;
         }
 
         public Action OnDispose { get; set; }
+
+        public bool IsRemoved { get; internal set; }
 
         public virtual void Dispose()
         {
             UnloadContent();
             Game.Components.Remove(this);
-            Game.Desktop.Widgets.Remove(UIWidget);
             OnDispose?.Invoke();
             MapObject = null;
+            Game.IsMouseMoveAvailable = true;
+
+            if(!IsRemoved)
+                Game.RemoveDesktopWidget(this);
         }
 
         public virtual void Close()

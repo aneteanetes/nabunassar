@@ -102,6 +102,11 @@ namespace Nabunassar.Systems
                     {
                         gameobject.StopMove();
                     }
+
+                    if (Game.GameState.Minimap.IsPresentedOnMinimap(entityId))
+                    {
+                        Game.GameState.Minimap.Move(newPos,entityId);
+                    }
                 }
             }
         }

@@ -2,12 +2,13 @@
 using Microsoft.Xna.Framework;
 using MonoGame.Extended.Shapes;
 using MonoGame.Extended.Tiled;
+using Nabunassar.Entities.Base;
 using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace Nabunassar.Tiled.Map
 {
-    public class TiledMap
+    public class TiledMap : TiledBase
     {
         const uint FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
         const uint FLIPPED_VERTICALLY_FLAG = 0x40000000;
@@ -20,6 +21,7 @@ namespace Nabunassar.Tiled.Map
             var xdoc = XDocument.Load(stream);
             var map = xdoc.Root;
 
+
             var tiledMap = new TiledMap
             {
                 width = map.GetTagAttrInteger(nameof(width)),
@@ -28,6 +30,8 @@ namespace Nabunassar.Tiled.Map
                 tileheight = map.GetTagAttrInteger(nameof(tileheight)),
                 infinite = map.GetTagAttrInteger(nameof(infinite)) == 1 ? true : false
             };
+
+            ReadProperties(map, tiledMap);
 
             foreach (var xmlTileSet in map.Elements("tileset"))
             {
@@ -150,16 +154,7 @@ namespace Nabunassar.Tiled.Map
                     }
 
                     tobj.Position = new Vector2((int)tobj.x, (int)tobj.y - 16);
-
-
-                    var props = objtag.Element("properties");
-                    if (props != default)
-                    {
-                        foreach (var xmlprop in props.Elements())
-                        {
-                            tobj.Properties[xmlprop.GetTagAttrString("name")] = xmlprop.GetTagAttrString("value");
-                        }
-                    }
+                    ReadProperties(objtag, tobj);
 
                     if (tobj.gid != 0)
                     {
@@ -195,6 +190,18 @@ namespace Nabunassar.Tiled.Map
                         tiledMap.NPCs.Add(tobj);
                     else
                         tiledMap.Objects.Add(tobj);
+                }
+            }
+        }
+
+        private static void ReadProperties(XElement rootWithPropsTag, TiledBase tobj)
+        {
+            var props = rootWithPropsTag.Element("properties");
+            if (props != default)
+            {
+                foreach (var xmlprop in props.Elements())
+                {
+                    tobj.Properties[xmlprop.GetTagAttrString("name")] = xmlprop.GetTagAttrString("value");
                 }
             }
         }

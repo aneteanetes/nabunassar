@@ -28,7 +28,8 @@ namespace Nabunassar
         public WidgetFactory Dialogues { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }
-        public bool IsMouseActive { get; internal set; } = true;
+
+        public bool IsMouseMoveAvailable { get; internal set; } = true;
 
         public bool IsGameActive { get; set; } = true;
 
