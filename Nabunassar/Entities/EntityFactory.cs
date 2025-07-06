@@ -131,9 +131,16 @@ namespace Nabunassar.Entities
 
             AddCollistion(mapObject);
 
-            var gameObj = _game.DataBase.GetObject(polygon.GetPropopertyValue<ObjectType>(nameof(ObjectType)));
+            var gameObj = _game.DataBase.GetObject(polygon.GetPropertyValue<ObjectType>(nameof(ObjectType)));
             gameObj.MergeProperties(polygon);
             entity.Attach(gameObj);
+
+            if (gameObj.ObjectType == ObjectType.Ground)
+            {
+                var groundType = gameObj.GetPropertyValue<GroundType>(nameof(GroundType));
+
+                AddOnMinimap(entity.Id,position, ObjectType.Ground,null, groundType);
+            }
 
             var tileComp = new TileComponent(polygon);
             entity.Attach(tileComp);
@@ -146,7 +153,7 @@ namespace Nabunassar.Entities
             var order = 12;
             var descriptor = "npc " + _object.gid;
             var entity = CreateEntity(descriptor,order);
-            var gameObject = _game.DataBase.GetObject(_object.GetPropopertyValue<int>("ObjectId"));
+            var gameObject = _game.DataBase.GetObject(_object.GetPropertyValue<int>("ObjectId"));
 
             AddOnMinimap(entity.Id, _object.Position, ObjectType.NPC, gameObject.Name);
 
@@ -353,8 +360,8 @@ namespace Nabunassar.Entities
 
         public Entity CreateTiledObject(TiledObject _object)
         {
-            var objId = _object.GetPropopertyValue<long>(nameof(GameObject.ObjectId));
-            var objType = _object.GetPropopertyValue<ObjectType>(nameof(GameObject.ObjectType));
+            var objId = _object.GetPropertyValue<long>(nameof(GameObject.ObjectId));
+            var objType = _object.GetPropertyValue<ObjectType>(nameof(GameObject.ObjectType));
 
             GameObject gameObj = null;
 
@@ -376,7 +383,7 @@ namespace Nabunassar.Entities
                 descriptor = $"obj {_object.gid}";
             }
 
-            var isHalfed = _object.GetPropopertyValue<bool>("IsHalfed");
+            var isHalfed = _object.GetPropertyValue<bool>("IsHalfed");
 
             var order = isHalfed ? 10 : 1;
 
@@ -476,7 +483,7 @@ namespace Nabunassar.Entities
             if (isHavePolygons)
             {
                 List<Hull> hulls = [];
-                var hullPolugons = _object.GetPolygons().Where(x => x.GetPropopertyValue<ObjectType>("ObjectType") == ObjectType.Hull);
+                var hullPolugons = _object.GetPolygons().Where(x => x.GetPropertyValue<ObjectType>("ObjectType") == ObjectType.Hull);
                 foreach (var hullPolygon in hullPolugons)
                 {
                     hulls.Add(new Hull(hullPolygon.Vertices)
@@ -561,7 +568,7 @@ namespace Nabunassar.Entities
         {
             var color = DefaultColor;
 
-            var hexColor = _object.GetPropopertyValue<string>(nameof(Color));
+            var hexColor = _object.GetPropertyValue<string>(nameof(Color));
             if (hexColor != default)
             {
                 color = hexColor.AsColor();
@@ -575,7 +582,7 @@ namespace Nabunassar.Entities
             _game.CollisionComponent.Insert(gameObject);
         }
 
-        public void AddOnMinimap(int entityId, Vector2 gamePosition, ObjectType objectType, string toolTip = default)
+        public void AddOnMinimap(int entityId, Vector2 gamePosition, ObjectType objectType, string toolTip = default, GroundType groundType = GroundType.Dirt)
         {
             var minimap = _game.GameState.Minimap;
 
@@ -584,7 +591,8 @@ namespace Nabunassar.Entities
                 Position = minimap.TransformPosition(gamePosition),
                 Name = toolTip ?? Guid.NewGuid().ToString(),
                 ObjectType = objectType,
-                EntityId = entityId
+                EntityId = entityId,
+                GroundType = groundType
             });
         }
 
@@ -595,7 +603,7 @@ namespace Nabunassar.Entities
             var miniMapSize = new Vector2(_tiledMap.width, _tiledMap.height);
 
             var minimap = new Minimap(mapSize,miniMapSize);
-            minimap.AreaName =  _game.Strings["AreaNames"][_tiledMap.GetPropopertyValue<string>("AreaName")];
+            minimap.AreaName =  _game.Strings["AreaNames"][_tiledMap.GetPropertyValue<string>("AreaName")];
 
             var entity = CreateEntity("minimap", 100);
             entity.Attach(minimap);

@@ -57,13 +57,28 @@ namespace Nabunassar.Systems
             switch (point.ObjectType)
             {
                 case Struct.ObjectType.NPC:
-                    dotColor = Color.LightBlue;
+                    dotColor = Color.Blue;
                     break;
                 case Struct.ObjectType.Object:
                     dotColor = Color.Gray;
                     break;
                 case Struct.ObjectType.Player:
                     dotColor = Color.Red;
+                    break;
+                case Struct.ObjectType.Ground:
+                    {
+                        switch (point.GroundType)
+                        {
+                            case Struct.GroundType.Road:
+                                dotColor = "#320e0e".AsColor();
+                                break;
+                            case Struct.GroundType.Grass:
+                                dotColor = "#1a2a1b".AsColor();
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     break;
                 default:
                     dotColor = Color.White;

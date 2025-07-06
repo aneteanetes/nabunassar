@@ -229,7 +229,7 @@ namespace Nabunassar.Components
                 var tileComp = other.Get<TileComponent>();
                 if (tileComp != null)
                 {
-                    var groudType = tileComp.Polygon.GetPropopertyValue<GroundType>(nameof(GroundType));
+                    var groudType = tileComp.Polygon.GetPropertyValue<GroundType>(nameof(GroundType));
                     MoveSpeed = Game.DataBase.GetGroundTypeSpeed(groudType);
                 }
             }

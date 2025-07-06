@@ -200,7 +200,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         private void FillDoorActions(Panel panel)
         {
-            if (GameObject.GetPropopertyValue<bool>("IsLocked"))
+            if (GameObject.GetPropertyValue<bool>("IsLocked"))
                 AddAction(panel, new LockpickRadialAction(this));
 
             AddAction(panel, new EnterDoorRadialAction(this));

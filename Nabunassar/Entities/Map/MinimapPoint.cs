@@ -10,6 +10,8 @@ namespace Nabunassar.Entities.Map
 
         public ObjectType ObjectType { get; set; }
 
+        public GroundType GroundType { get; set; }
+
         public string Name { get; set; }
     }
 }

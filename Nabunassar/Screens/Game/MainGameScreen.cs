@@ -50,7 +50,7 @@ namespace Nabunassar.Screens.Game
 
             foreach (var _layer in _tiledMap.Layers)
             {
-                var sorted = _layer.Tiles.OrderBy(x => x.GetPropopertyValue<GroundType>(nameof(GroundType))).ToList();
+                var sorted = _layer.Tiles.OrderBy(x => x.GetPropertyValue<GroundType>(nameof(GroundType))).ToList();
                 foreach (var tile in sorted) // slower ground put last
                 {
                     if (tile.Gid == 0)

@@ -179,7 +179,6 @@ namespace Nabunassar.Entities.Data
                 case ObjectType.NPC:
                     SpeakTo(gameObject);
                     break;
-
                 default:
                     break;
             }

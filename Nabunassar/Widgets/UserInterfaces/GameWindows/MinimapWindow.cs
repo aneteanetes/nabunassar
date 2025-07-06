@@ -50,10 +50,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                 {
                     Renderable = new TextureRegion(minimap.Texture),
                     Width = ((int)minimap.OriginSize.X) / 3,
-                    Height = ((int)minimap.OriginSize.Y) / 3,
+                    Height = ((int)minimap.OriginSize.Y) / 3
                 };
-                map.Background = new SolidBrush(Color.Green);
-
 
                 window.Content = map;
             }
