@@ -26,6 +26,7 @@ namespace Nabunassar.Screens.Game
             Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
+            Game.GameState.LoadedMap = _tiledMap;
             Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)

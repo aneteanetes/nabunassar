@@ -6,7 +6,7 @@ namespace Nabunassar.Resources
 {
     internal class DataBase
     {
-        public const string NotFoundStringConstant = "[String Is Not Found]";
+        public const string NotFoundStringConstant = "[String Was Not Found]";
 
         NabunassarGame _game;
 
@@ -24,6 +24,12 @@ namespace Nabunassar.Resources
         public string GetFromDictionary(string file, string key)
         {
             var data = Get<Dictionary<string, string>>(file);
+            return data[key];
+        }
+
+        public TValue GetFromDictionary<TValue>(string file, string key)
+        {
+            var data = Get<Dictionary<string, TValue>>(file);
             return data[key];
         }
 
@@ -51,11 +57,13 @@ namespace Nabunassar.Resources
             var obj = GetObjectInternal(x=>x.ObjectType==objectType);
             if (obj == null)
             {
-#warning debug zone
-                obj = new GameObject()
-                {
-                    ObjectType = objectType
-                };
+                obj = GetObjectInternal(x => x.Name == x.ObjectType.ObjectTypeInLoadedMap());
+
+                if (obj == null)
+                    obj = new GameObject()
+                    {
+                        ObjectType = objectType
+                    };
             }
 
             if (obj != null)
@@ -80,6 +88,13 @@ namespace Nabunassar.Resources
             var @object = _objects.FirstOrDefault(selector);
             if (@object == default)
                 return default;
+
+            if (@object.BattlerId != 0)
+            {
+                var battler = Get<List<Battler>>("Data/Battlers/BattlerRegistry.json").FirstOrDefault(x => x.BattlerId == @object.BattlerId);
+                if (battler != default)
+                    @object.Battler = battler;
+            }
 
             var newObject = @object.Clone();
 

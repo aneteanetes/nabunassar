@@ -1,5 +1,6 @@
 ﻿using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
 {
@@ -7,6 +8,12 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
     {
         public InformationRadialAction(RadialMenu menu) : base(menu, Direction.Up,"info")
         {
+        }
+
+        public override void OnClick()
+        {
+            Menu.Close();
+            InformationWindow.Open(Game, this.Menu.GameObject);
         }
     }
 }

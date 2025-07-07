@@ -1,8 +1,12 @@
 [
   {
     "ObjectId": 1,
+    "BattlerId": 1,
+    "Reputation": "Neutral",
+    "DangerRating": "Dangerous",
     "Name": "Virgil",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/npc/virgil_m.jpg",
     "Image": "Assets/Images/Objects/npc/virgil_s.png",
     "ObjectType": "NPC",
     "Dialogue": "Virgil/VirgilInitiate.json"
@@ -11,6 +15,7 @@
     "ObjectId": 2,
     "Name": "Door",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/fortdoor_m.jpg",
     "Image": "Assets/Images/Objects/snow/fortdoor_s.png",
     "ObjectType": "Door"
   },
@@ -18,6 +23,7 @@
     "ObjectId": 3,
     "Name": "Well",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowwell_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowwell_s.png",
     "ObjectType": "Object"
   },
@@ -25,6 +31,7 @@
     "ObjectId": 4,
     "Name": "Tree",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowtree1_m.png",
     "Image": "Assets/Images/Objects/snow/snowtree1_s.png",
     "ObjectType": "Tree"
   },
@@ -32,6 +39,7 @@
     "ObjectId": 5,
     "Name": "Tree",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowtree2_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowtree2_s.png",
     "ObjectType": "Tree"
   },
@@ -39,12 +47,14 @@
     "ObjectId": 6,
     "Name": "Tree",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowtree3_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowtree3_s.png",
     "ObjectType": "Tree"
   },
   {
     "ObjectId": 7,
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/hermitage_m.jpg",
     "Image": "Assets/Images/Objects/snow/hermitage_s.png",
     "ObjectType": "Door"
   },
@@ -52,6 +62,7 @@
     "ObjectId": 8,
     "Name": "Wall",
     "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowwall_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowwall_s.png",
     "ObjectType": "Wall"
   }

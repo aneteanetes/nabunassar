@@ -59,6 +59,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             minimapWindow.Title = minimap.AreaName;
             this.Position = _windowPosition;
 
+            if (this.Position == default)
+                this.Position = new Vector2(1);
+
             return minimapWindow;
         }
     }

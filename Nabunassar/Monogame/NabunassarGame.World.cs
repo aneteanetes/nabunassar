@@ -2,6 +2,7 @@
 using MonoGame.Extended.ECS.Systems;
 using Nabunassar.ECS;
 using Nabunassar.Systems;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar
 {
@@ -29,6 +30,16 @@ namespace Nabunassar
         public HashSet<Type> RegisteredSystems = new();
 
 
+        public void DisableWorld()
+        {
+            ChangeGameActive();
+        }
+
+        public void EnableWorld()
+        {
+            ChangeGameActive();
+        }
+
         public void DisableSystems(params Type[] types)
         {
             types.ForEach(x => DisabledWorldSystems.Add(x));
@@ -37,6 +48,7 @@ namespace Nabunassar
         public void DisableMouseSystems()
         {
             Game.DisableSystems(typeof(PlayerControllSystem), typeof(ObjectFocusSystem), typeof(MouseMapObjectFocusSystem));
+            Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
         public void DisableSystemsExcept(params Type[] types)

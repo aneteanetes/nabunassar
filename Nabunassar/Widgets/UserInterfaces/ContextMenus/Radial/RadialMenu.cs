@@ -97,7 +97,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         protected override Widget InitWidget()
         {
             Game.DisableMouseSystems();
-            Game.RemoveDesktopWidgets<TitleWidget>();
 
             _globalPanel = new Panel();
 

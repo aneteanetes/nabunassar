@@ -151,22 +151,38 @@ namespace Nabunassar.Entities.Data
 
         public void MoveTo(Vector2 to, GameObject gameObject=null, Vector2 mouseScreenPosition=default)
         {
+            if (gameObject == null)
+            {
+                MoveParty(to);
+            }
+            else
+            { 
+                if (IsObjectNear(gameObject))
+                {
+                    Interact(gameObject, mouseScreenPosition);
+                }
+                else
+                {
+                    MoveParty(to);
+
+                    MapObject.BoundsTries = 15;
+
+                    ActionQueue.Enqueue(() =>
+                    {
+                        Interact(gameObject, mouseScreenPosition);
+                    });
+                }
+            }
+        }
+
+        private void MoveParty(Vector2 to)
+        {
             MapObject.BoundsTries = 75;
 
             MapObject.MoveToPosition(MapObject.BoundsOrigin, to);
 
             DirectionRender.Sprite.IsVisible = true;
             DirectionRender.Position = to;
-
-            if (gameObject != null)
-            {
-                MapObject.BoundsTries = 15;
-
-                ActionQueue.Enqueue(() =>
-                {
-                    Interact(gameObject, mouseScreenPosition);
-                });
-            }
         }
 
         public void Interact(GameObject gameObject, Vector2 mouseScreenPosition)
@@ -206,10 +222,10 @@ namespace Nabunassar.Entities.Data
 
                     _game.Dialogues.OpenDialogue(gameObject);
                 }
-                else
-                {
-                    MoveTo(talkingTargetPosition, gameObject);
-                }
+                //else
+                //{
+                //    MoveTo(talkingTargetPosition, gameObject);
+                //}
             }
         }
 

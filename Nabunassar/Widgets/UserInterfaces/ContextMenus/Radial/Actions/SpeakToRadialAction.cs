@@ -12,7 +12,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
         {
             Menu.Close();
             var speakerWorldPosition = Game.Camera.ScreenToWorld(Menu.Position);
-            Game.GameState.Party.SpeakTo(Menu.GameObject, speakerWorldPosition);
+
+            Game.GameState.Party.MoveTo(speakerWorldPosition, Menu.GameObject);
         }
     }
 }

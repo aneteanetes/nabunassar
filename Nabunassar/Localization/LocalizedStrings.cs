@@ -1,4 +1,5 @@
 ﻿using Geranium.Reflection;
+using Nabunassar.Resources;
 
 namespace Nabunassar.Localization
 {
@@ -8,6 +9,8 @@ namespace Nabunassar.Localization
         private string _fileName;
 
         internal string KeyChain { get; set; }
+
+        public string NotFound => DataBase.NotFoundStringConstant;
 
         public LocalizedStrings(NabunassarGame game, string fileName=null)
         {

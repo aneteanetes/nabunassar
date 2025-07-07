@@ -155,15 +155,7 @@ namespace Nabunassar.Systems
                 {
                     var mouseScreenPos = mouse.Position.ToVector2();
 
-                    var obj = Game.GameState.Cursor.FocusedMapObject;
-                    if (obj != null && party.IsObjectNear(obj))
-                    {
-                        party.Interact(obj, mouseScreenPos);
-                    }
-                    else
-                    {
-                        party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedMapObject, mouseScreenPos);
-                    }
+                    party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedMapObject, mouseScreenPos);
                 }
 
                 if (gameobj.IsMoving)

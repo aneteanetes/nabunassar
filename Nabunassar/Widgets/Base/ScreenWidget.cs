@@ -1,10 +1,6 @@
-﻿using Geranium.Reflection;
-using MonoGame.Extended;
-using Myra.Graphics2D.UI;
+﻿using Myra.Graphics2D.UI;
 using Nabunassar.Components;
-using Nabunassar.Monogame;
 using Nabunassar.Monogame.Content;
-using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar.Widgets.Base
 {
@@ -46,16 +42,7 @@ namespace Nabunassar.Widgets.Base
 
         protected virtual void UnloadContent() { }
 
-        private bool isInitialized = false;
-
-        public virtual void Initialize()
-        {
-            if (!isInitialized) // game component calls initialize, but for widget initialize must be called before it
-            {
-                LoadContent();
-                isInitialized = true;
-            }
-        }
+        public virtual void Initialize() { }
 
         protected abstract Widget InitWidget();
 
@@ -67,6 +54,7 @@ namespace Nabunassar.Widgets.Base
 
         public Widget Load()
         {
+            LoadContent();
             UIWidget = InitWidget();
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
@@ -106,7 +94,7 @@ namespace Nabunassar.Widgets.Base
             MapObject = null;
             Game.IsMouseMoveAvailable = true;
 
-            if(!IsRemoved)
+            if (!IsRemoved)
                 Game.RemoveDesktopWidget(this);
         }
 

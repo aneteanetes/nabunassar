@@ -1,4 +1,5 @@
-﻿using Myra.Graphics2D.UI;
+﻿using Geranium.Reflection;
+using Myra.Graphics2D.UI;
 using Nabunassar.Widgets.Base;
 
 namespace Nabunassar
@@ -14,16 +15,25 @@ namespace Nabunassar
             {
                 _screenWidgets.Add(widget);
 
-                widget.Initialize();
                 var uiWidget = widget.Load();
-
 
                 if (!Components.Contains(widget))
                     Components.Add(widget);
 
                 if (uiWidget is Window windowWidget)
                 {
-                    windowWidget.Show(DesktopContainer, widget.Position.ToPoint());
+                    Nullable<Point> pos = widget.Position == default ?
+                        null
+                        : widget.Position.ToPoint();
+
+                    if (widget.As<ScreenWidgetWindow>()?.IsModal ?? false)
+                    {
+                        windowWidget.ShowModal(DesktopContainer, pos);
+                    }
+                    else
+                    {
+                        windowWidget.Show(DesktopContainer, pos);
+                    }
                 }
                 else
                 {
