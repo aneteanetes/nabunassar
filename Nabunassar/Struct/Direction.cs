@@ -144,7 +144,7 @@ namespace Nabunassar
 
         public static Direction Rangom(this Direction dir)
         {            
-            switch (NabunassarGame.Game.Random.Next(0, 9))
+            switch (NabunassarGame.Random.Next(0, 9))
             {
                 case 1: return Direction.Up;
                 case 2: return Direction.Down;

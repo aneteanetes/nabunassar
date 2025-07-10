@@ -11,10 +11,5 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
             ])
         {
         }
-
-        public override void OnClick()
-        {
-            Menu.Fullfill(InnerActions,this);
-        }
     }
 }

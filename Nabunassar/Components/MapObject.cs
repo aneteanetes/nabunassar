@@ -131,8 +131,7 @@ namespace Nabunassar.Components
             Position = position;
             _onCollistion = onCollistion;
             IsMoveable = isMoveable;
-            ResetMoveSpeed();
-            
+            ResetMoveSpeed();            
         }
 
         // position
@@ -294,6 +293,23 @@ namespace Nabunassar.Components
         public MovingEventHandler OnMoving { get; set; }
 
         public Action OnAfterDraw { get; internal set; }
+
+        public List<MapObject> Dependant { get; internal set; } = new();
+
+        public Action OnDestroy { get; set; }
+
+        public void Destroy()
+        {
+            OnDestroy?.Invoke();
+
+            Game.WorldGame.DestroyEntity(Entity);
+            Game.CollisionComponent.Remove(this);
+
+            foreach (var depend in Dependant)
+            {
+                depend.Destroy();
+            }
+        }
     }
 
     internal delegate void CollisionEventHandler(CollisionEventArgs collisionInfo, MapObject host, MapObject another);

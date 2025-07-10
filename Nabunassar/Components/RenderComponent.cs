@@ -14,7 +14,7 @@ namespace Nabunassar.Components
             Rotation = rotation;
         }
 
-        public Effect ColorSwapEffect { get; set; }
+        public Effect Effect { get; set; }
 
         public Color ColorForSwap { get; set; } = Color.White;
 

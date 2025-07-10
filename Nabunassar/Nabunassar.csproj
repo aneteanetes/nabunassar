@@ -47,6 +47,8 @@
 
 	<ItemGroup>
 	  <Folder Include="Components\Inactive\" />
+	  <Folder Include="Entities\Data\Abilities\GameAbilities\" />
+	  <Folder Include="Entities\Data\Abilities\CombatAbilities\" />
 	  <Folder Include="Resources\BaseGame\Assets\Images\Interface\" />
 	  <Folder Include="Resources\BaseGame\Assets\Sprites\NPCs\" />
 	</ItemGroup>

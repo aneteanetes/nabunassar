@@ -10,6 +10,7 @@ using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 using Geranium.Reflection;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
+using Nabunassar.Components.Effects;
 
 namespace Nabunassar.Systems
 {
@@ -135,6 +136,12 @@ namespace Nabunassar.Systems
 
             if (keyboard.IsKeyDown(Keys.Space))
                 gameobj.StopMove();
+
+            if(keyboard.WasKeyPressed(Keys.G))
+                foreach (var hero in party)
+                {
+                    hero.Entity.Attach(new DissolveEffect(Game, hero.Entity) as EffectComponent);
+                }
         }
 
         private void MoveByMouse(MouseStateExtended mouse, Party party, MapObject gameobj)

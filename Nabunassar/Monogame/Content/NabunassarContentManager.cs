@@ -1,14 +1,12 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
-using info.lundin.math;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Nabunassar.Content;
+using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Nabunassar.Monogame.Content
 {
@@ -24,7 +22,9 @@ namespace Nabunassar.Monogame.Content
         {
             _game = game;
             _resourceLoader = resourceLoader;
-            _jsonSerializer = JsonSerializer.CreateDefault();
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new DiceJsonConverter());
+            _jsonSerializer = JsonSerializer.CreateDefault(settings);
         }
 
         public override T Load<T>(string assetName)

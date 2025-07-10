@@ -37,7 +37,9 @@ namespace Nabunassar
 
         public CustomCollisionComponent CollisionComponent { get; private set; }
 
-        public FastRandom Random { get; private set; }
+        public static FastRandom Random { get; private set; } = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+
+        public FastRandom Randoms => Random;
 
         public GameState GameState { get; private set; }
 

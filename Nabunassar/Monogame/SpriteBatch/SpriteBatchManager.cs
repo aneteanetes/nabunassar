@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Monogame.Content;
+using System.Net;
 using System.Xml.Linq;
 
 namespace Nabunassar.Monogame.SpriteBatch
@@ -42,7 +43,7 @@ namespace Nabunassar.Monogame.SpriteBatch
         /// <param name="effect">if null then <see cref="NoEffectNameConstant"/> constant</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public SpriteBatchKnowed GetSpriteBatch(SamplerState samplerState = null, bool alphaBlend = false, bool isTransformMatrix = true, Effect effect = default)
+        public SpriteBatchKnowed GetSpriteBatch(SamplerState samplerState = null, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null,  bool isTransformMatrix = true, Effect effect = default)
         {
             if (!isBegined)
                 throw new Exception("SpriteBatchManager needs to be Begin() for work with actual resolution matrix!");
@@ -55,7 +56,7 @@ namespace Nabunassar.Monogame.SpriteBatch
 
             var effectName = effect == null ? NoEffectNameConstant : effect.Name;
 
-            var key = $"{samplerState}{alphaBlend}{isTransformMatrix}{effectName}";
+            var key = $"{samplerState}{isTransformMatrix}{effectName}";
             if (!SpriteBatches.TryGetValue(key, out var spriteBatch))
             {
                 SpriteBatches[key] = spriteBatch = new SpriteBatchKnowed(_game, _graphicsDevice);
@@ -64,9 +65,10 @@ namespace Nabunassar.Monogame.SpriteBatch
             if (!spriteBatch.IsOpened)
             {
                 spriteBatch.Begin(
+                    sortMode: sortMode,
                     transformMatrix: _resolutionMatrix,
                     samplerState: samplerState,
-                    blendState: /*alphaBlend ?*/ BlendState.NonPremultiplied /*: BlendState.NonPremultiplied*/, /*GetBlendState(useLight, alphaBlend, colorInvert),*/
+                    blendState: blendState == null ? BlendState.NonPremultiplied : blendState,
                     effect: effect,
                     depthStencilState: spriteBatch.DepthStencilState,
                     rasterizerState: antialise);

@@ -192,8 +192,6 @@ namespace Nabunassar
 
             DataBase=new DataBase(this);
 
-            Random = new FastRandom();
-
             var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 

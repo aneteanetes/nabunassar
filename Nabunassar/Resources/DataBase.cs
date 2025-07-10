@@ -67,7 +67,7 @@ namespace Nabunassar.Resources
             }
 
             if (obj != null)
-                obj.ObjectId = _game.Random.Next(-10000, -10);
+                obj.ObjectId = _game.Randoms.Next(-10000, -10);
 
             return obj;
         }

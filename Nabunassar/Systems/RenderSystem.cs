@@ -1,10 +1,10 @@
 ﻿using Geranium.Reflection;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
-using MonoGame.Extended.ECS.Systems;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
+using Nabunassar.Components.Effects;
 using Nabunassar.Systems;
 
 namespace Nabunassar.ECS
@@ -14,8 +14,9 @@ namespace Nabunassar.ECS
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private ComponentMapper<MapObject> _gameObjectMapper;
+        private ComponentMapper<EffectComponent> _effectMapper;
 
-        public RenderSystem(NabunassarGame game) : base(game, Aspect.One(typeof(RenderComponent),typeof(MapObject)))
+        public RenderSystem(NabunassarGame game) : base(game, Aspect.One(typeof(RenderComponent), typeof(MapObject)))
         {
         }
 
@@ -24,6 +25,7 @@ namespace Nabunassar.ECS
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
             _gameObjectMapper = mapperService.GetMapper<MapObject>();
+            _effectMapper = mapperService.GetMapper<EffectComponent>();
         }
 
         public override void Update(GameTime gameTime, bool sys)
@@ -32,8 +34,12 @@ namespace Nabunassar.ECS
 
             foreach (var entityId in ActiveEntities)
             {
+                var effect = _effectMapper.Get(entityId);
+                if (effect != null)
+                    effect.Update(gameTime);
+
                 var render = _renderMapper.Get(entityId);
-                if (render!=null && render.Sprite is AnimatedSprite animatedSprite)
+                if (render != null && render.Sprite is AnimatedSprite animatedSprite)
                     animatedSprite.Update(gameTime);
             }
         }
@@ -54,15 +60,28 @@ namespace Nabunassar.ECS
                 var render = _renderMapper.Get(entity);
                 if (render != null && render.Sprite.IsVisible)
                 {
+                    var effect = _effectMapper.Get(entity);
+                    if (effect != default)
+                    {
+                        sb.End();
+                        sb = Game.BeginDraw(effect: effect.Effect);
+                    }
+
                     sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
                     if (render.OnAfterDraw != default)
                         render.OnAfterDraw?.Invoke();
+
+                    if (effect != default)
+                    {
+                        sb.End();
+                        sb = Game.BeginDraw();
+                    }
                 }
             }
 
-            foreach (var entity in entities)
+            if (Game.IsDrawBounds)
             {
-                if (Game.IsDrawBounds)
+                foreach (var entity in entities)
                 {
                     var mapObj = _gameObjectMapper.Get(entity);
                     if (mapObj != null && mapObj.Bounds != default)
@@ -87,6 +106,7 @@ namespace Nabunassar.ECS
                     }
                 }
             }
+
         }
     }
 }

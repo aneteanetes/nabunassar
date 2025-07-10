@@ -1,6 +1,8 @@
 ﻿using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Entities.Base;
+using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Struct;
 
@@ -29,6 +31,10 @@ namespace Nabunassar.Entities.Game
         }
 
         public Battler Battler { get; set; }
+
+        public Rank LandscapeRank { get; set; } = Rank.Basic;
+
+        public Dice LandscapeDice { get; set; } = Dice.d4;
 
         public int BattlerId { get; set; }
 
@@ -60,6 +66,12 @@ namespace Nabunassar.Entities.Game
         public string Dialogue { get; set; }
 
         public ObjectType ObjectType { get; set; } = ObjectType.None;
+
+        public void Destroy()
+        {
+            if (MapObject != null)
+                MapObject.Destroy();
+        }
     }
 
     internal static class GameObjectMethods

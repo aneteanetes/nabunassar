@@ -1,5 +1,6 @@
 ﻿using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
+using Nabunassar.Components;
 using Nabunassar.ECS;
 using Nabunassar.Systems;
 using Nabunassar.Widgets.UserInterfaces;
@@ -29,6 +30,12 @@ namespace Nabunassar
         public HashSet<Type> DisabledWorldSystems = new();
         public HashSet<Type> RegisteredSystems = new();
 
+        public void DestoryEntity(Entity entity)
+        {
+            var collision = entity.Get<MapObject>();
+            this.WorldGame.DestroyEntity(entity);
+            CollisionComponent.Remove(collision);
+        }
 
         public void DisableWorld()
         {

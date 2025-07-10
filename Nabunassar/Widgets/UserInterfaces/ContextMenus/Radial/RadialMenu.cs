@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
@@ -50,6 +51,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             game.GameState.Cursor.SetCursor("cursor");
         }
 
+        private Dictionary<BaseWorldAbility, TextureRegion> worldAbilities = new();
+
         protected override void LoadContent()
         {
             if (CircleTexture == default)
@@ -80,6 +83,21 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 ActionIcons["taketrap"] = new TextureRegion(TrapsTileset, new Rectangle(16, 0, 16, 16));
 
                 MoreActionsArrow = new TextureRegion(CursorTileset,new Rectangle(160,64,16, 16));
+            }
+
+            foreach (var hero in Game.GameState.Party)
+            {
+                if (hero.Creature != default)
+                {
+                    foreach (var abil in hero.Creature.WorldAbilities)
+                    {
+                        if (abil != null)
+                        {
+                            var texture = Content.Load<Texture2D>(abil.Icon);
+                            worldAbilities[abil] = new TextureRegion(texture);
+                        }
+                    }
+                }
             }
 
             if (GameObject != default && GameObject.Image != default)
@@ -216,7 +234,27 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         private void FillBaseActions(Panel panel)
         {
             AddAction(panel, new SpellsRadialAction(this));
-            AddAction(panel, new SkillRadialAction(this));
+
+
+            List<SkillAbilityRadialAction> skillActions = new();
+            foreach (var hero in Game.GameState.Party)
+            {
+                if (hero.Creature != default)
+                {
+                    foreach (var abil in hero.Creature.WorldAbilities)
+                    {
+                        if (abil != null)
+                        {
+                            var texture = Content.Load<Texture2D>(abil.Icon);
+                            worldAbilities[abil] = new TextureRegion(texture);
+
+                            skillActions.Add(new SkillAbilityRadialAction(this, abil, abil.Name, worldAbilities[abil]));
+                        }
+                    }
+                }
+            }
+
+            AddAction(panel, new SkillRadialAction(this, skillActions));
         }
 
         private void FillEmptyActions(Panel panel)
@@ -278,7 +316,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
                         var innerIcon = new Image()
                         {
-                            Renderable = ActionIcons[innerAction.CodeName]
+                            Renderable = innerAction.Icon ?? ActionIcons[innerAction.CodeName]
                         };
                         innerIcon.Color = _baseColor;
                         innerIcon.Width = 24;
@@ -314,8 +352,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
             var token = action.Is<BackRadialAction>() ? "back" : action.CodeName;
 
-            var title = Game.Strings["UI"][token];
-            var iconTexture = ActionIcons[action.CodeName];
+            var title = action.Name ?? Game.Strings["UI"][token];
+            var iconTexture = action.Icon ?? ActionIcons[action.CodeName];
 
             btn.MouseEntered += (sender, @event) =>
             {
