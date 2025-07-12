@@ -4,17 +4,18 @@ using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
+using Nabunassar.ECS;
 using Nabunassar.Entities.Game;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar.Systems
 {
-    internal class MouseMapObjectFocusSystem : BaseSystem
+    internal class MapObjectFocusSystem : BaseSystem
     {
         private ComponentMapper<FocusWidgetComponent> focusWidgetMapper;
 
-        public MouseMapObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusWidgetComponent)))
+        public MapObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusWidgetComponent)))
         {
         }
 
@@ -68,6 +69,8 @@ namespace Nabunassar.Systems
 
             if (focusWidgetComponent == null)
             {
+                RenderSystem.DisableGlow();
+
                 _focusedWidgetComponent = null;
                 Game.RemoveDesktopWidgets<TitleWidget>();
                 Game.GameState.Cursor.SetCursor("cursor");
@@ -108,6 +111,8 @@ namespace Nabunassar.Systems
                 var cursor = Game.DataBase.GetFromDictionary("Data/Interface/ObjectTypeCursors.json", focusWidgetComponent.GameObject.ObjectType.ToString());
                 if (cursor != default)
                     Game.GameState.Cursor.SetCursor(cursor);
+
+                focusWidgetComponent.OnFocus?.Invoke(focusWidgetComponent.GameObject);
             }
         }
     }

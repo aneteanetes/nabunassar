@@ -1,4 +1,6 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.TextureAtlases;
+using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
 using Nabunassar.Tiled.Map;
 
@@ -21,6 +23,11 @@ namespace Nabunassar.Entities.Data
         public void Log(string message)
         {
             OnLog?.Invoke(message);
+        }
+
+        public void AddText(string text)
+        {
+
         }
     }
 }

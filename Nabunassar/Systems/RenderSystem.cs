@@ -16,6 +16,13 @@ namespace Nabunassar.ECS
         private ComponentMapper<MapObject> _gameObjectMapper;
         private ComponentMapper<EffectComponent> _effectMapper;
 
+        private static bool isGlowNeedDisable = false;
+
+        public static void DisableGlow()
+        {
+            isGlowNeedDisable = true;
+        }
+
         public RenderSystem(NabunassarGame game) : base(game, Aspect.One(typeof(RenderComponent), typeof(MapObject)))
         {
         }
@@ -39,9 +46,19 @@ namespace Nabunassar.ECS
                     effect.Update(gameTime);
 
                 var render = _renderMapper.Get(entityId);
-                if (render != null && render.Sprite is AnimatedSprite animatedSprite)
-                    animatedSprite.Update(gameTime);
+                if (render != null)
+                {
+                    //updating effect
+                    if(render.IsEffect && isGlowNeedDisable)
+                        render.Sprite.IsVisible = false;
+
+                    // updating animations
+                    if (render.Sprite is AnimatedSprite animatedSprite)
+                        animatedSprite.Update(gameTime);
+                }
             }
+
+            isGlowNeedDisable = false;
         }
 
         public override void Draw(GameTime gameTime, bool sys)

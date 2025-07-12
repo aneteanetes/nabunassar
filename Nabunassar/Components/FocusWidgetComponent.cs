@@ -17,5 +17,9 @@ namespace Nabunassar.Components
             GameObject = gameObject;
             WidgetFactory = widgetFactory;
         }
+
+        public Action<GameObject> OnFocus { get; set; }
+
+        public Action<GameObject> OnUnfocus { get; set; }
     }
 }

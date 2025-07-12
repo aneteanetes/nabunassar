@@ -23,10 +23,9 @@ namespace Nabunassar
                 Creature = new Creature()
             };
 
-            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, new Entities.Data.Abilities.AbilityModel()
-            {
-                Icon = "Assets/Images/Icons/Abilities/landscape.png"
-            }, party.First.Creature);
+
+
+            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party.First.Creature);
 
             party.Second = new Hero(this) { Tileset = "rogue.png" };
             party.Third = new Hero(this) { Tileset = "wizard.png" };

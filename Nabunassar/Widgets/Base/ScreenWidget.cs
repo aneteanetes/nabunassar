@@ -17,6 +17,8 @@ namespace Nabunassar.Widgets.Base
         public event EventHandler<EventArgs> DrawOrderChanged;
         public event EventHandler<EventArgs> VisibleChanged;
 
+        public virtual bool IsRemovable => true;
+
         public int DrawOrder { get; set; }
 
         public bool Visible { get; set; } = true;
@@ -59,25 +61,30 @@ namespace Nabunassar.Widgets.Base
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
-                UIWidget.MouseEntered += _widget_MouseEntered;
-                UIWidget.MouseLeft += _widget_MouseLeft;
-
-                OnDispose += () =>
-                {
-                    UIWidget.MouseEntered -= _widget_MouseEntered;
-                    UIWidget.MouseLeft -= _widget_MouseLeft;
-                };
+                BindWidgetBLockMouse(UIWidget);
             }
 
             return UIWidget;
         }
 
-        private void _widget_MouseLeft(object sender, EventArgs e)
+        protected void BindWidgetBLockMouse(Widget widget)
+        {
+            widget.MouseEntered += _widget_MouseEntered;
+            widget.MouseLeft += _widget_MouseLeft;
+
+            OnDispose += () =>
+            {
+                widget.MouseEntered -= _widget_MouseEntered;
+                widget.MouseLeft -= _widget_MouseLeft;
+            };
+        }
+
+        protected void _widget_MouseLeft(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = true;
         }
 
-        private void _widget_MouseEntered(object sender, EventArgs e)
+        protected void _widget_MouseEntered(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = false;
         }

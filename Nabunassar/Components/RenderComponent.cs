@@ -14,6 +14,11 @@ namespace Nabunassar.Components
             Rotation = rotation;
         }
 
+        /// <summary>
+        /// Признак, что этот renderable эффект, который можно отключать
+        /// </summary>
+        public bool IsEffect { get; set; }
+
         public Effect Effect { get; set; }
 
         public Color ColorForSwap { get; set; } = Color.White;

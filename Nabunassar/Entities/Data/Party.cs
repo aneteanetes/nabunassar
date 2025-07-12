@@ -1,8 +1,11 @@
-﻿using MonoGame.Extended.Collisions;
+﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
@@ -262,6 +265,27 @@ namespace Nabunassar.Entities.Data
                 dequeued?.Invoke();
                 this.MapObject.BoundsTries = 50;
             }
+        }
+
+        public List<BaseWorldAbility> GetWorldAbilities(GameObject gameObject)
+        {
+            List<BaseWorldAbility> worldAbilities = new();
+
+            foreach (var hero in this)
+            {
+                if (hero.Creature != default)
+                {
+                    foreach (var abil in hero.Creature.WorldAbilities)
+                    {
+                        if (abil != null && abil.IsApplicable(gameObject))
+                        {
+                            worldAbilities.Add(abil);
+                        }
+                    }
+                }
+            }
+
+            return worldAbilities;
         }
     }
 }

@@ -4,14 +4,14 @@ using Nabunassar.Components;
 using Nabunassar.Entities.Game;
 using Nabunassar.Widgets.UserInterfaces;
 
-namespace Nabunassar.Systems
+namespace Nabunassar.Systems.Disabled
 {
     internal class ObjectFocusSystem : BaseSystem
     {
         private ComponentMapper<FocusComponent> focusMapper;
         private ComponentMapper<FocusWidgetComponent> widgetMapper;
 
-        public ObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusComponent),typeof(FocusWidgetComponent)))
+        public ObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusComponent), typeof(FocusWidgetComponent)))
         {
         }
 
@@ -31,7 +31,7 @@ namespace Nabunassar.Systems
             foreach (var entity in ActiveEntities)
             {
                 var focus = focusMapper.Get(entity);
-                if(focus != null)
+                if (focus != null)
                     focusComponents.Add(focus);
 
                 //var widget = widgetMapper.Get(entity);

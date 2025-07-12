@@ -12,9 +12,9 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public Dice Dice { get; set; }
 
-        public Creature Creature { get; private set; }
+        public string Description { get; set; }
 
-        public string Description { get; private set; }
+        public Creature Creature { get; private set; }
 
         public NabunassarGame Game { get; private set; }
 
@@ -30,6 +30,12 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public abstract bool IsApplicable(GameObject gameObject);
 
-        public abstract void Cast(GameObject gameObject);
+        public void Cast(GameObject gameObject)
+        {
+            if(IsApplicable(gameObject))
+                Execute(gameObject);
+        }
+
+        protected abstract void Execute(GameObject gameObject);
     }
 }

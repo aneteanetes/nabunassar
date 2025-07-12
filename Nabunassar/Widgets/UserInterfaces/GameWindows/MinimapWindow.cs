@@ -1,7 +1,5 @@
 ﻿using FontStashSharp;
 using Microsoft.Xna.Framework.Graphics;
-using Myra.Graphics2D;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Resources;
@@ -9,9 +7,8 @@ using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 {
-    internal class MinimapWindow : ScreenWidget
+    internal class MinimapWindow : ScreenWidgetWindow
     {
-        private Window minimapWindow;
         private FontSystem _font;
         private Texture2D _background;
 
@@ -28,41 +25,46 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         private static Vector2 _windowPosition;
 
-        protected override Widget InitWidget()
+        protected override Window CreateWindow()
         {
             var minimap = Game.GameState.Minimap;
 
-            if (minimapWindow == null)
+            var window = new Window();
+            window.TitleFont = _font.GetFont(19);
+            window.CloseKey = Microsoft.Xna.Framework.Input.Keys.M;
+            window.Closed += (s, e) => this.Close();
+
+            window.TouchUp += (s, e) =>
             {
-                var window = minimapWindow = new Window();
-                window.TitleFont = _font.GetFont(19);
-                window.CloseKey = Microsoft.Xna.Framework.Input.Keys.M;
-                window.Closed += (s,e)=> this.Close();
+                _windowPosition = new Vector2(window.Left, window.Top);
+            };
 
-                window.TouchUp += (s, e) =>
-                {
-                    _windowPosition = new Vector2(window.Left, window.Top);
-                };
+            window.Background = _background.NinePatch();//new SolidBrush("#252626".AsColor());
 
-                window.Background = _background.NinePatch();//new SolidBrush("#252626".AsColor());
+            var map = new Image()
+            {
+                Renderable = new TextureRegion(minimap.Texture),
+                Width = ((int)minimap.OriginSize.X) / 3,
+                Height = ((int)minimap.OriginSize.Y) / 3
+            };
 
-                var map = new Image()
-                {
-                    Renderable = new TextureRegion(minimap.Texture),
-                    Width = ((int)minimap.OriginSize.X) / 3,
-                    Height = ((int)minimap.OriginSize.Y) / 3
-                };
+            window.Content = map;
 
-                window.Content = map;
-            }
+            if (Position != default)
+                _windowPosition = new Vector2(Position.X - ((map.Width ?? 0)+10),0);
 
-            minimapWindow.Title = minimap.AreaName;
+            return window;
+        }
+
+        protected override void InitWindow(Window window)
+        {
+            var minimap = Game.GameState.Minimap;
+
+            window.Title = minimap.AreaName;
             this.Position = _windowPosition;
 
             if (this.Position == default)
                 this.Position = new Vector2(1);
-
-            return minimapWindow;
         }
     }
 }

@@ -8,13 +8,16 @@ namespace Nabunassar
     {
         private List<ScreenWidget> _screenWidgets = new();
 
+        public int WidgetsCount()
+        {
+            return _screenWidgets.Where(x => x.IsRemovable).Count();
+        }
+
         public T AddDesktopWidget<T>(T widget)
             where T : ScreenWidget
         {
             if (widget != default)
             {
-                _screenWidgets.Add(widget);
-
                 var uiWidget = widget.Load();
 
                 if (!Components.Contains(widget))
@@ -22,7 +25,8 @@ namespace Nabunassar
 
                 if (uiWidget is Window windowWidget)
                 {
-                    Nullable<Point> pos = widget.Position == default ?
+
+                    Point? pos = widget.Position == default ?
                         null
                         : widget.Position.ToPoint();
 
@@ -37,6 +41,7 @@ namespace Nabunassar
                 }
                 else
                 {
+                    _screenWidgets.Add(widget);
                     Desktop.Widgets.Add(uiWidget);
                 }
 

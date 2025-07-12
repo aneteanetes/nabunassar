@@ -234,11 +234,12 @@ namespace Nabunassar.Entities
 
             var glowAnimatedSprite = new AnimatedSprite(glowSpriteSheet, "idle");
 
-            var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order);
-            glowEntity.Attach(glowAnimatedSprite);
-
             var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
             entity.Attach(title);
+
+            var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order, title);
+            glowEntity.Attach(glowAnimatedSprite);
+
 
             return entity;
         }
@@ -449,11 +450,6 @@ namespace Nabunassar.Entities
                 position.Y += 16;
             }
 
-            if (objType.IsInteractive())
-            {
-                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), -1);
-            }
-
             // end glow
 
             if (gameObj != default)
@@ -511,36 +507,45 @@ namespace Nabunassar.Entities
                 entity.Attach(new HullComponent(hulls.ToArray()));
             }
 
+            // FOCUS
+
             if (gameObj.ObjectType.IsInteractive())
             {
-                var title = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
-                entity.Attach(title);
+                var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
+                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), -1, focusWidgetComp);
+                entity.Attach(focusWidgetComp);
             }
 
             return entity;
         }
 
-        private Entity CreateGlowOutline(TiledObject _object, GameObject gameObj, string descriptor, Entity entity, Vector2 position, Sprite glowSprite, int order)
+        private Entity CreateGlowOutline(TiledObject _object, GameObject gameObj, string descriptor, Entity entity, Vector2 position, Sprite glowSprite, int order, FocusWidgetComponent focusWidgetComponent)
         {
             var glowEntity = CreateEntity(descriptor + " glow", order-1);
             var glowRender = new RenderComponent(Game, glowSprite, position, 0);
+            glowRender.IsEffect = true;
             glowSprite.IsVisible = false;
             glowEntity.Attach(glowRender);
-            glowEntity.Attach(new FocusComponent(
-                mapObj =>
+
+            focusWidgetComponent.OnFocus = mapObj =>
                 {
                     if (mapObj == gameObj && Game.IsMouseMoveAvailable)
                     {
                         glowSprite.IsVisible = true;
                     }
-                },
-                mapObj =>
+                };
+            focusWidgetComponent.OnUnfocus = mapObj =>
                 {
                     if (mapObj == gameObj)
                     {
                         glowSprite.IsVisible = false;
                     }
-                }));
+                };
+
+            gameObj.Dependant.Add(new GameObject()
+            {
+                Entity = glowEntity
+            });
 
             //Cursor.OnObjectFocused
             //    Cursor.OnObjectUnfocused

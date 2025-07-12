@@ -44,7 +44,7 @@ namespace Nabunassar.Components.Effects
 
     internal static class DissolveEffectExtensions
     {
-        public static void AddDissolve(this Entity entity, Action onEnd=null, NabunassarGame game=null)
+        public static void Dissolve(this Entity entity, Action onEnd=null, NabunassarGame game=null)
         {
             var dissolve = new DissolveEffect(game ?? NabunassarGame.Game, entity);
             entity.Attach(dissolve as EffectComponent);

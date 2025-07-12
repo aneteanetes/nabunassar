@@ -1,4 +1,5 @@
 ﻿using Geranium.Reflection;
+using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 
@@ -104,6 +105,12 @@ namespace Nabunassar.Resources
         public T Get<T>(string assetName)
         {
             return _game.Content.Load<T>(assetName);
+        }
+
+        internal AbilityModel GetAbility(string abilityName)
+        {
+            var abilities = _game.Content.Load<List<AbilityModel>>("Data/Abilities/AbilityRegistry.json");
+            return abilities.FirstOrDefault(x=>x.Name== abilityName);
         }
     }
 }

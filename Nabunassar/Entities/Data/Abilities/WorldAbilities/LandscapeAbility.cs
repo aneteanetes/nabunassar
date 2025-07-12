@@ -1,5 +1,4 @@
-﻿using Nabunassar.Components.Effects;
-using Nabunassar.Entities.Data.Formulas;
+﻿using Nabunassar.Entities.Data.Formulas;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 
@@ -7,11 +6,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 {
     internal class LandscapeAbility : BaseWorldAbility
     {
-        public LandscapeAbility(NabunassarGame game, AbilityModel model, Creature creature) : base(game, model, creature)
+        public LandscapeAbility(NabunassarGame game, Creature creature) : base(game, game.DataBase.GetAbility("Landscape"), creature)
         {
         }
 
-        public override void Cast(GameObject gameObject)
+        protected override void Execute(GameObject gameObject)
         {
             if (gameObject == default)
                 return;
@@ -21,10 +20,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 #warning landscape always success
             if (true)
             {
-                gameObject.Entity.AddDissolve(() =>
-                {
-                    gameObject.Destroy();
-                });
+                gameObject.Destroy();
             }
 
 #warning landscape ability

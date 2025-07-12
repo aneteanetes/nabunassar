@@ -1,5 +1,7 @@
 ﻿using MonoGame.Extended.ECS;
+using Myra.MML;
 using Nabunassar.Components;
+using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Base;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
@@ -67,10 +69,23 @@ namespace Nabunassar.Entities.Game
 
         public ObjectType ObjectType { get; set; } = ObjectType.None;
 
+        public List<GameObject> Dependant { get; internal set; } = new();
+
         public void Destroy()
         {
-            if (MapObject != null)
-                MapObject.Destroy();
+            if (Entity != default)
+            {
+                Entity.Dissolve(() =>
+                {
+                    if (MapObject != null)
+                        MapObject.Destroy();
+                });
+
+                foreach (var depend in Dependant)
+                {
+                    depend.Destroy();
+                }
+            }
         }
     }
 

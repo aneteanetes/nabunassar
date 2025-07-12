@@ -71,13 +71,20 @@ namespace Nabunassar.Screens.Game
                 Game.EntityFactory.CreateNPC(mapObject);
             }
 
-
             Game.RunGameState();
+
+            InitGameUI();
         }
 
         private bool isEsc = false;
 
         private bool logWindow = false;
+
+        public void InitGameUI()
+        {
+            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, 0) });
+            Game.AddDesktopWidget(new ChatWindow(Game));
+        }
 
         public override void Update(GameTime gameTime)
         {

@@ -10,6 +10,8 @@ using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
+using System.Text;
 
 namespace Nabunassar.Widgets.UserInterfaces
 {
@@ -80,6 +82,8 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         private void SetSpeakerText(string txt)
         {
+            ChatWindow.AddMessage(Game.Strings["ObjectNames"][_gameObject.Name] + ": " + txt);
+
             _speakerText = txt;
             _speakerTextCharIndex = 0;
             _speakerLabel.Text = "";
@@ -166,12 +170,12 @@ namespace Nabunassar.Widgets.UserInterfaces
             var gray = Color.Gray;
             panel.Background = _background.NinePatchDouble();
             panel.Padding = new Myra.Graphics2D.Thickness(20);
-            panel.Width = 1000;
+            panel.Width = 750;
             panel.Height = 150;
             panel.HorizontalAlignment = HorizontalAlignment.Center;
             panel.VerticalAlignment = VerticalAlignment.Bottom;
 
-            panel.Top = -50;
+            panel.Top = -100; //-100
 
 
             var scrollContainer = new ScrollViewer();
@@ -253,6 +257,7 @@ namespace Nabunassar.Widgets.UserInterfaces
         {
             var round = replica.Select();
             SetSpeakerText(round.Text);
+
             FillReplicaButtons();
         }
 

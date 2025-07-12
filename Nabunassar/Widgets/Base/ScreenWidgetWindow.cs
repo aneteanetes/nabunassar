@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.UI;
 
 namespace Nabunassar.Widgets.Base
@@ -11,6 +12,8 @@ namespace Nabunassar.Widgets.Base
 
         public virtual bool IsModal => false;
 
+        public virtual bool IsCloseable => true;
+
         protected abstract Window CreateWindow();
 
         protected override void LoadContent()
@@ -20,33 +23,41 @@ namespace Nabunassar.Widgets.Base
 
         protected abstract void InitWindow(Window window);
 
-        private Window _window;
+        protected Window Window;
         private Vector2 _windowPosition;
         protected Texture2D WindowBackground;
 
         protected override Widget InitWidget()
         {
-            if (_window == null)
+            if (Window == null)
             {
-                _window = CreateWindow(); 
-                _window.TouchUp += (s, e) =>
+                Window = CreateWindow(); 
+                Window.TouchUp += (s, e) =>
                 {
-                    _windowPosition = new Vector2(_window.Left, _window.Top);
+                    _windowPosition = new Vector2(Window.Left, Window.Top);
                 };
-                _window.Closed += (s, e) => this.Close();
+                Window.Closed += (s, e) => this.Close();
             }
 
-            _window.Background = WindowBackground.NinePatch();
+            Window.Background = WindowBackground.NinePatch();
 
             if (!IsModal)
                 this.Position = _windowPosition;
 
-            InitWindow(_window);
+            InitWindow(Window);
 
             if (IsModal)
                 Game.DisableMouseSystems();
 
-            return _window;
+            if (!IsCloseable)
+            {
+                var closeBtn = Window.TitlePanel.GetChildren(true, x => x.Is<Button>()).FirstOrDefault();
+                if(closeBtn != null)
+                    Window.TitlePanel.Widgets.Remove(closeBtn);
+            }
+
+
+            return Window;
         }
 
         public override void Close()

@@ -31,7 +31,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         private static Color _baseColor = "#cfc6b8".AsColor();
 
         private Panel _widget;
-        public Vector2 Position { get; private set; }
 
         protected override bool IsMouseMovementAvailableWithThisActivedWidget => false;
 
@@ -50,8 +49,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             game.AddDesktopWidget(new RadialMenu(game, gameObject, position));
             game.GameState.Cursor.SetCursor("cursor");
         }
-
-        private Dictionary<BaseWorldAbility, TextureRegion> worldAbilities = new();
 
         protected override void LoadContent()
         {
@@ -83,21 +80,6 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 ActionIcons["taketrap"] = new TextureRegion(TrapsTileset, new Rectangle(16, 0, 16, 16));
 
                 MoreActionsArrow = new TextureRegion(CursorTileset,new Rectangle(160,64,16, 16));
-            }
-
-            foreach (var hero in Game.GameState.Party)
-            {
-                if (hero.Creature != default)
-                {
-                    foreach (var abil in hero.Creature.WorldAbilities)
-                    {
-                        if (abil != null)
-                        {
-                            var texture = Content.Load<Texture2D>(abil.Icon);
-                            worldAbilities[abil] = new TextureRegion(texture);
-                        }
-                    }
-                }
             }
 
             if (GameObject != default && GameObject.Image != default)
@@ -237,21 +219,11 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
 
             List<SkillAbilityRadialAction> skillActions = new();
-            foreach (var hero in Game.GameState.Party)
-            {
-                if (hero.Creature != default)
-                {
-                    foreach (var abil in hero.Creature.WorldAbilities)
-                    {
-                        if (abil != null)
-                        {
-                            var texture = Content.Load<Texture2D>(abil.Icon);
-                            worldAbilities[abil] = new TextureRegion(texture);
 
-                            skillActions.Add(new SkillAbilityRadialAction(this, abil, abil.Name, worldAbilities[abil]));
-                        }
-                    }
-                }
+            foreach (var abil in Game.GameState.Party.GetWorldAbilities(GameObject))
+            {
+                var abilIconTexture = Content.Load<Texture2D>(abil.Icon);
+                skillActions.Add(new SkillAbilityRadialAction(this, abil, abil.Name, new TextureRegion(abilIconTexture)));
             }
 
             AddAction(panel, new SkillRadialAction(this, skillActions));
