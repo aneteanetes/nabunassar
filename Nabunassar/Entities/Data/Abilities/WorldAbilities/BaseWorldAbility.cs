@@ -8,9 +8,9 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
     {
         public int Value { get; set; }
 
-        public Rank Rank { get; set; }
+        public Rank Rank { get; set; } = Rank.Basic;
 
-        public Dice Dice { get; set; }
+        public Dice Dice { get; set; } = Dice.d4;
 
         public string Description { get; set; }
 

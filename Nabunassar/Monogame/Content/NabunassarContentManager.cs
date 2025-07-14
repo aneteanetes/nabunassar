@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using FontStashSharp.RichText;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,6 +26,21 @@ namespace Nabunassar.Monogame.Content
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new DiceJsonConverter());
             _jsonSerializer = JsonSerializer.CreateDefault(settings);
+
+            RichTextDefaults.FontResolver = fontName_ttf =>
+            {
+                var dotIndex = fontName_ttf.IndexOf(",");
+                var font = fontName_ttf.Substring(0, dotIndex);
+                var size = int.Parse(fontName_ttf.Substring(dotIndex+1).TrimStart());
+
+                return this.LoadFont(font).GetFont(size);
+            };
+
+            RichTextDefaults.ImageResolver = imageName =>
+            {
+                var texture = this.Load<Texture2D>(imageName);
+                return new TextureFragment(texture);
+            };
         }
 
         public override T Load<T>(string assetName)

@@ -1,0 +1,9 @@
+﻿namespace Nabunassar.Entities.Data.Dices
+{
+    internal readonly struct DiceRoll(Dice dice, int result)
+    {
+        public readonly Dice Dice { get; } = dice;
+
+        public readonly int Result { get; } = result;
+    }
+}

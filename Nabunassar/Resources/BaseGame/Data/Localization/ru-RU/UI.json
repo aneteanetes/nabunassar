@@ -16,5 +16,11 @@
   "You": "Вы",
   "ExitDialogue": "[Закончить разговор]",
   "Reputation": "Репутация",
-  "Close": "Закрыть"
+  "Close": "Закрыть",
+  "Throw": "Бросок",
+  "SkillCheck": "Проверка навыка",
+  "Difficult": "Сложность",
+  "Result": "Результат",
+  "Success": "Успех",
+  "Failure": "Провал"
 }

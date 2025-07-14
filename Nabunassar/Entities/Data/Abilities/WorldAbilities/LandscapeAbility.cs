@@ -1,5 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Formulas;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Struct;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
@@ -15,21 +17,43 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (gameObject == default)
                 return;
 
-            var isSuccess = SkillCheck.Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.Agility);
+            var roll = SkillCheck.Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.Agility);
 
-#warning landscape always success
-            if (true)
+            var commonColor = roll.IsSuccess ? Color.Green : Color.Red;
+
+            var ui = Game.Strings["UI"].FineTuning();
+
+            var resultText = roll.IsSuccess
+                ? ui["SUCCESS"].ToString()
+                : ui["FAILURE"].ToString();
+
+            var text = DrawText.Create("")
+                .Font(Fonts.BitterBold)
+                .Size(16)
+                .Color(commonColor)
+                .Append(ui["SkillCheck"])
+                .AppendSpace()
+                .Color("#a2a832".AsColor())
+                .Append(Name).AppendSpace()
+                .Color(commonColor)
+                .Append(": ")
+                .Append($"{ui["difficult"]}: {roll.Complexity.Result} = {roll.Complexity}, {ui["throw"]}: {roll.Roll.Result} = {roll.Roll}, {ui["result"]}: {resultText}!");
+
+            Game.GameState.AddRollMessage(text, roll);
+
+            if (roll.IsSuccess)
             {
                 gameObject.Destroy();
+#warning landscape get resources
+                // take resources
             }
-
-#warning landscape ability
-            // destory object
-            // take resources
         }
 
         public override bool IsApplicable(GameObject gameObject)
         {
+            if (gameObject == default)
+                return true;
+
             var objType = gameObject.ObjectType;
             return objType is not ObjectType.NPC;
         }

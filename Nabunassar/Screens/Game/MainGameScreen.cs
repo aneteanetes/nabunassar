@@ -82,7 +82,7 @@ namespace Nabunassar.Screens.Game
 
         public void InitGameUI()
         {
-            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, 0) });
+            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
             Game.AddDesktopWidget(new ChatWindow(Game));
         }
 

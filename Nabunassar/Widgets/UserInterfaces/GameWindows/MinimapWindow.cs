@@ -39,7 +39,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                 _windowPosition = new Vector2(window.Left, window.Top);
             };
 
-            window.Background = _background.NinePatch();//new SolidBrush("#252626".AsColor());
+            window.Background = _background.NinePatch();
 
             var map = new Image()
             {
@@ -51,7 +51,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             window.Content = map;
 
             if (Position != default)
-                _windowPosition = new Vector2(Position.X - ((map.Width ?? 0)+10),0);
+                _windowPosition = new Vector2(Position.X - ((map.Width ?? 0)+10), Position.Y - ((map.Height ?? 0) + 40));
 
             return window;
         }

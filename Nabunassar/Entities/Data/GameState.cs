@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
+using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Tiled.Map;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Entities.Data
 {
@@ -25,9 +28,14 @@ namespace Nabunassar.Entities.Data
             OnLog?.Invoke(message);
         }
 
-        public void AddText(string text)
+        public void AddMessage(DrawText text)
         {
+            ChatWindow.AddMessage(text.ToString());
+        }
 
+        public void AddRollMessage(DrawText text, RollResult rollResult)
+        {
+            ChatWindow.AddRollMessage(text.ToString(), rollResult);
         }
     }
 }

@@ -5,6 +5,7 @@ using MonoGame.Extended.Input;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
     {
         private static FontSystem _font;
         private Texture2D chatborder;
+        private Texture2D chatborderBlack;
         private TextureRegion resizeImage;
         private Texture2D pixel;
         private Texture2D sliderknob;
@@ -27,6 +29,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         {
             _font = Game.Content.LoadFont(Fonts.Retron);
             chatborder = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm.png");
+            chatborderBlack = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm_b.png");
             resizeImage = new TextureRegion(Game.Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png"), new Rectangle(64, 96, 16, 16));
             pixel = Game.Content.Load<Texture2D>("Assets/Images/pixel.png");
             sliderknob = Game.Content.Load<Texture2D>("Assets/Images/Borders/sliderknob.png");
@@ -114,21 +117,36 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             }
         }
 
-        public static void AddMessage(string message)
+        private static Label AddMessageLabel(string message)
         {
-            var text = new Label()
+            var label = new Label()
             {
                 Background = new SolidBrush(Color.Transparent),
                 Wrap = true,
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Font = _font.GetFont(16),
-                Text = message
+                Text = message,
             };
 
-            messageBox.Widgets.Add(text);
+            messageBox.Widgets.Add(label);
             messageBox.InvalidateMeasure();
             SetScrollDown();
+
+            return label;
+        }
+
+        public static void AddMessage(string message) 
+            => AddMessageLabel(message);
+
+        public static void AddRollMessage(string message, RollResult rollResult)
+        {
+            var label = AddMessageLabel(message);
+            label.TouchDown += (s, e) =>
+            {
+                //show roll result window
+            };
+            label.MouseCursor = MouseCursorType.Hand;
         }
 
         private void TitlePanel_TouchDoubleClick(object sender, EventArgs e)
@@ -140,7 +158,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         {
             this.Position = new Vector2(0, minimalTop);
 
-            window.Background = chatborder.NinePatch();
+            window.Background = chatborderBlack.NinePatch();
+            window.OverBackground = chatborder.NinePatch();
 
             BindWidgetBLockMouse(window.TitlePanel);
 
