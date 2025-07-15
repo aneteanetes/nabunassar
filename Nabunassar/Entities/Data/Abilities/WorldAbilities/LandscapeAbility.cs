@@ -1,4 +1,5 @@
-﻿using Nabunassar.Entities.Data.Formulas;
+﻿using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Formulas;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
@@ -17,9 +18,10 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (gameObject == default)
                 return;
 
-            var roll = SkillCheck.Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.Agility);
+            var roll = SkillCheck.Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
 
-            var commonColor = roll.IsSuccess ? Color.Green : Color.Red;
+            var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
+            var commonColor = Globals.BaseColor;
 
             var ui = Game.Strings["UI"].FineTuning();
 
@@ -37,7 +39,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 .Append(Name).AppendSpace()
                 .Color(commonColor)
                 .Append(": ")
-                .Append($"{ui["difficult"]}: {roll.Complexity.Result} = {roll.Complexity}, {ui["throw"]}: {roll.Roll.Result} = {roll.Roll}, {ui["result"]}: {resultText}!");
+                .Append($"{ui["difficult"]}: {roll.Complexity.ToDrawText(commonColor)}, {ui["throw"]}: {roll.Roll.ToDrawText(commonColor)}: ")
+                .Color(resultColor)
+                .Append($" {resultText}")
+                .Color(commonColor)
+                .Append("!");
 
             Game.GameState.AddRollMessage(text, roll);
 

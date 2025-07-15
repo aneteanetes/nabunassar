@@ -18,9 +18,9 @@ namespace Nabunassar.Entities.Game
 
         public static Dictionary<string, MouseCursor> Cursors = new();
 
-        public void SetCursor(string name)
+        public void SetCursor(string name=null)
         {
-            Mouse.SetCursor(Cursors[name]);
+            Mouse.SetCursor(Cursors[name ?? "cursor"]);
         }
 
         public void DefineCursor(string name, MouseCursor mouseCursor)

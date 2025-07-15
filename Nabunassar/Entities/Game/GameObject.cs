@@ -1,5 +1,6 @@
-﻿using MonoGame.Extended.ECS;
-using Myra.MML;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Base;
@@ -29,7 +30,23 @@ namespace Nabunassar.Entities.Game
                 BattlerId = BattlerId
             };
 
+            var landscape = GetLandscapeAbility();
+
+            obj.LandscapeDice = LandscapeDice.Entity(landscape);
+            obj.LandscapeRank = LandscapeRank.Entity(landscape);
+
             return obj;
+        }
+
+        private IEntity GetLandscapeAbility()
+        {
+            var game = NabunassarGame.Game;
+            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
+
+            return game.DataBase.AddEntity(new DescribeEntity()
+            {
+                FormulaName = game.Strings["AbilityNames"][landScapeAbilityModel.Name] + " " + game.Strings["Entities"]["GameObject"].ToLower()
+            });
         }
 
         public Battler Battler { get; set; }
@@ -37,6 +54,8 @@ namespace Nabunassar.Entities.Game
         public Rank LandscapeRank { get; set; } = Rank.Basic;
 
         public Dice LandscapeDice { get; set; } = Dice.d4;
+
+        public RollResult RollResult { get; set; }
 
         public int BattlerId { get; set; }
 

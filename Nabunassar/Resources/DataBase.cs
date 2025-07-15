@@ -1,4 +1,5 @@
 ﻿using Geranium.Reflection;
+using Nabunassar.Entities;
 using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
@@ -14,6 +15,21 @@ namespace Nabunassar.Resources
         public DataBase(NabunassarGame game)
         {
             _game = game;
+        }
+
+        private Dictionary<Guid, IEntity> Entities = new();
+
+        public IEntity AddEntity(IEntity entity)
+        {
+            return Entities[entity.ObjectId] = entity;
+        }
+
+        public IEntity GetEntity(Guid id)
+        {
+            if(Entities.ContainsKey(id)) 
+                return Entities[id];
+
+            return default;
         }
 
         public float GetGroundTypeSpeed(GroundType type)
@@ -65,6 +81,24 @@ namespace Nabunassar.Resources
                     {
                         ObjectType = objectType
                     };
+            }
+
+            if (obj != null)
+                obj.ObjectId = _game.Randoms.Next(-10000, -10);
+
+            return obj;
+        }
+
+        public GameObject GetObjectGround(GroundType groundType)
+        {
+            var groundName = groundType + _game.GameState.LoadedMapPostFix;
+            var obj = GetObjectInternal(x => x.Name == groundName);
+            if (obj == null)
+            {
+                obj = new GameObject()
+                {
+                    ObjectType = ObjectType.Ground
+                };
             }
 
             if (obj != null)

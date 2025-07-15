@@ -22,5 +22,7 @@
   "Difficult": "Сложность",
   "Result": "Результат",
   "Success": "Успех",
-  "Failure": "Провал"
+  "Failure": "Провал",
+  "ThrowResult": "Результат броска",
+  "Formula": "Формула"
 }

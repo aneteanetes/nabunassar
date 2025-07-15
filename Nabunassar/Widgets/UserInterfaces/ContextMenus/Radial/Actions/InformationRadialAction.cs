@@ -1,6 +1,6 @@
 ﻿using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
-using Nabunassar.Widgets.UserInterfaces.GameWindows;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 
 namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
 {

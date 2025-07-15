@@ -61,13 +61,13 @@ namespace Nabunassar.Widgets.Base
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
-                BindWidgetBLockMouse(UIWidget);
+                BindWidgetBlockMouse(UIWidget);
             }
 
             return UIWidget;
         }
 
-        protected void BindWidgetBLockMouse(Widget widget)
+        public void BindWidgetBlockMouse(Widget widget)
         {
             widget.MouseEntered += _widget_MouseEntered;
             widget.MouseLeft += _widget_MouseLeft;

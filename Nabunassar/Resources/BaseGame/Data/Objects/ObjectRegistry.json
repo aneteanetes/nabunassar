@@ -1,5 +1,13 @@
 [
   {
+    "Name": "RoadSnow",
+    "Portrait": "Assets/Images/Objects/grounds/snowroad.jpg"
+  },
+  {
+    "Name": "GrassSnow",
+    "Portrait": "Assets/Images/Objects/grounds/snowgrass.jpg"
+  },
+  {
     "ObjectId": 1,
     "BattlerId": 1,
     "Reputation": "Neutral",

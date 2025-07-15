@@ -1,4 +1,6 @@
-﻿namespace Nabunassar
+﻿using Nabunassar.Entities;
+
+namespace Nabunassar
 {
     internal interface IClonable<T>
     {

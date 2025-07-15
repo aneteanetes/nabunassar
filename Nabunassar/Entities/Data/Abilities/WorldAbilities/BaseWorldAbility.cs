@@ -23,9 +23,26 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             Creature = creature;
             Game = game;
 
+            var entity = GetEntity(creature);
+
+            Rank = Rank.Entity(entity);
+            Dice = Dice.Entity(entity);
+
             Name = Game.Strings["AbilityNames"][model.Name];
             Description = Game.Strings["AbilityDescriptions"][model.Name];
             Icon = model.Icon;
+        }
+
+        private IEntity GetEntity(IEntity creatureEntity)
+        {
+            var game = NabunassarGame.Game;
+            var strings = game.Strings.FineTuning();
+            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
+
+            return game.DataBase.AddEntity(new DescribeEntity()
+            {
+                FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][landScapeAbilityModel.Name]} {creatureEntity.FormulaName}"
+            });
         }
 
         public abstract bool IsApplicable(GameObject gameObject);

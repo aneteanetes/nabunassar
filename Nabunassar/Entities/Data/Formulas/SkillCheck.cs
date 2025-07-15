@@ -26,7 +26,6 @@ namespace Nabunassar.Entities.Data.Formulas
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 
-
             return new RollResult()
             {
                 Complexity = checkValue,

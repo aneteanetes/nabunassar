@@ -1,16 +1,17 @@
-﻿using Nabunassar.Entities.Data.Rankings;
+﻿using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Struct;
 
 namespace Nabunassar.Entities.Game.Stats
 {
     internal class PrimaryStats : Quad<Rank>
     {
-        public PrimaryStats()
+        public PrimaryStats(IEntity entity)
         {
-            Strength = Rank.d6;
-            Agility = Rank.d6;
-            Intelligence = Rank.d6;
-            Dialectics = Rank.d6;
+            Strength = Rank.d6.Entity(entity);
+            Agility = Rank.d6.Entity(entity);
+            Intelligence = Rank.d6.Entity(entity);
+            Dialectics = Rank.d6.Entity(entity);
         }
 
         public Rank Strength { get => base.First; set => base.First = value; }
@@ -20,6 +21,34 @@ namespace Nabunassar.Entities.Game.Stats
         public Rank Intelligence { get => base.Third; set => base.Third = value; }
 
         public Rank Dialectics { get => base.Fourth; set => base.Fourth = value; }
+
+        public Dice StrengthDice
+        {
+            get => Agility.AsDice().Entity(GetStatDescription(nameof(Strength)));
+        }
+
+        public Dice AgilityDice
+        {
+            get => Agility.AsDice().Entity(GetStatDescription(nameof(Agility)));
+        }
+
+        public Dice IntelligenceDice
+        {
+            get => Agility.AsDice().Entity(GetStatDescription(nameof(Intelligence)));
+        }
+
+        public Dice DialecticsDice
+        {
+            get => Agility.AsDice().Entity(GetStatDescription(nameof(Dialectics)));
+        }
+
+        private IEntity GetStatDescription(string stat)
+        {
+            return NabunassarGame.Game.DataBase.AddEntity(new DescribeEntity()
+            {
+                FormulaName = NabunassarGame.Game.Strings["GameTexts"][stat]
+            });
+        }
 
         public int FreePoints = 0;
 
@@ -34,10 +63,10 @@ namespace Nabunassar.Entities.Game.Stats
 
         public void Decrease(int idx)
         {
-            var value = this[idx];
-            if (value != 1)
+            var rank = this[idx];
+            if (rank.Value != 1)
             {
-                this[idx] = value - 1;
+                this[idx] = new Rank(rank.Value - 1);
                 FreePoints++;
             }
         }
@@ -46,10 +75,10 @@ namespace Nabunassar.Entities.Game.Stats
         {
             if (FreePoints > 0)
             {
-                var value = this[idx];
-                if (value < 5)
+                var rank = this[idx];
+                if (rank.Value < 5)
                 {
-                    this[idx] = value + 1;
+                    this[idx] = new Rank(rank.Value + 1);
                     FreePoints--;
                 }
             }

@@ -8,10 +8,12 @@ namespace Nabunassar.Entities.Struct
     internal class DrawText
     {
         private string _text;
+        private string _unformatText;
 
         private DrawText(string text)
         {
             _text = Escape(text);
+            _unformatText = text;
         }
 
         private string Escape(string text)
@@ -68,12 +70,14 @@ namespace Nabunassar.Entities.Struct
         public DrawText Append(string text)
         {
             _text += text;
+            _unformatText += text;
             return this;
         }
 
         public DrawText AppendSpace()
         {
             _text += " ";
+            _unformatText += " ";
             return this;
         }
 
@@ -85,7 +89,9 @@ namespace Nabunassar.Entities.Struct
 
         public DrawText AppendLine(DrawText text = default)
         {
-            _text += "/n" + text == default ? text._text : "";
+            var newline = "/n" + text == default ? text._text : "";
+            _text += newline;
+            _unformatText += newline;
             return this;
         }
 
@@ -146,6 +152,11 @@ namespace Nabunassar.Entities.Struct
         public override string ToString()
         {
             return _text;
+        }
+
+        public string ToUnformatString()
+        {
+            return _unformatText;
         }
 
         public override int GetHashCode()

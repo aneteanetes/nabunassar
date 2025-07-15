@@ -8,7 +8,9 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 {
@@ -20,9 +22,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         private TextureRegion resizeImage;
         private Texture2D pixel;
         private Texture2D sliderknob;
+        private static ScreenWidgetWindow ChatWindowWidget;
 
         public ChatWindow(NabunassarGame game) : base(game)
         {
+            ChatWindowWidget = this;
         }
 
         protected override void LoadContent()
@@ -99,7 +103,20 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         private void Scrollcontainer_TouchUp(object sender, EventArgs e)
         {
-            _widget_MouseLeft(sender, e);   
+            var scroll = sender.As<ScrollViewer>();
+            var r = _verticalScrollbarThumbAccessor.GetValue(scroll).As<Rectangle>();
+            var thumbPosition = ThumbPositionAccessor.GetValue(scroll).As<Point>();
+            r.Y += thumbPosition.Y;
+
+            if (Game.DesktopContainer.TouchPosition != null)
+            {
+                var touchPosition = scroll.ToLocal(Game.DesktopContainer.TouchPosition.Value);
+
+                if (!r.Contains(touchPosition))
+                {
+                    _widget_MouseLeft(sender, e);
+                }
+            }
         }
 
         private void Scrollcontainer_TouchDown(object sender, EventArgs e)
@@ -123,9 +140,10 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             {
                 Background = new SolidBrush(Color.Transparent),
                 Wrap = true,
-                VerticalAlignment = VerticalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 Font = _font.GetFont(16),
+                TextColor = Globals.BaseColor,
                 Text = message,
             };
 
@@ -144,9 +162,28 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             var label = AddMessageLabel(message);
             label.TouchDown += (s, e) =>
             {
-                //show roll result window
+                var window = new DiceResultWindow(ChatWindowWidget.Game, new Entities.Game.GameObject()
+                {
+                    RollResult = rollResult,
+                    ObjectType = Struct.ObjectType.RollResult
+                });
+                DiceResultWindow.Open<DiceResultWindow>(window);
             };
+            label.OverBackground = new SolidBrush(Color.Black.AddAlpha(.7f));
             label.MouseCursor = MouseCursorType.Hand;
+            label.MouseEntered += Label_MouseEntered;
+            label.MouseLeft += Label_MouseLeft;
+            ChatWindowWidget.BindWidgetBlockMouse(label);
+        }
+
+        private static void Label_MouseLeft(object sender, EventArgs e)
+        {
+            NabunassarGame.Game.GameState.Cursor.SetCursor();
+        }
+
+        private static void Label_MouseEntered(object sender, EventArgs e)
+        {
+            NabunassarGame.Game.GameState.Cursor.SetCursor("info");
         }
 
         private void TitlePanel_TouchDoubleClick(object sender, EventArgs e)
@@ -161,7 +198,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             window.Background = chatborderBlack.NinePatch();
             window.OverBackground = chatborder.NinePatch();
 
-            BindWidgetBLockMouse(window.TitlePanel);
+            BindWidgetBlockMouse(window.TitlePanel);
 
             window.CloseKey = Microsoft.Xna.Framework.Input.Keys.None;
             window.TitlePanel.Opacity = 1;

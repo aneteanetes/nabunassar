@@ -67,7 +67,7 @@ namespace Nabunassar.Systems
                 }
             }
 
-            if (focusWidgetComponent == null)
+            if (focusWidgetComponent == null && _focusedWidgetComponent!=null)
             {
                 RenderSystem.DisableGlow();
 

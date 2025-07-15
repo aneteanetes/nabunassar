@@ -3,17 +3,17 @@ using Nabunassar.Entities.Data.Rankings;
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal struct Dice(int edges = 1, Description description=null, int lucky = 0)
+    internal struct Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
     {
         public int Edges { get; } = edges;
 
-        public Description Described { get; set; } = description;
+        public Guid ObjectId { get; set; } = objectId;
 
-        public int LuckyRoll { get; } = lucky;
+        public int LuckyRoll { get; } = luckyRoll;
 
         private int rollsCounter = 0;
 
-        private int[] _previousRolls = new int[lucky];
+        private int[] _previousRolls = new int[luckyRoll];
 
         public override string ToString()
         {
@@ -33,18 +33,19 @@ namespace Nabunassar.Entities.Data.Dices
 
         public static Dice d20 => new(20);
 
-        public Dice Description(Description description)
+        public static Dice FromEntity(IEntity entity, Dice dice)
         {
-            this.Described = description;
-            return this;
+            return new Dice(dice.Edges, entity.ObjectId, dice.LuckyRoll);
         }
+
+        public Dice Entity(IEntity entity) => FromEntity(entity, this);
 
 #pragma warning restore IDE1006 // Naming Styles
 
-        public DiceRoll Roll()
+        public DiceRoll Roll(DiceOperation operation)
         {
             if (LuckyRoll == 0)
-                return PureRoll();
+                return PureRoll(operation);
 
             //lucky dice rolling
             if (rollsCounter == LuckyRoll)
@@ -52,11 +53,11 @@ namespace Nabunassar.Entities.Data.Dices
                 var prevAvg = ((int)Math.Round(_previousRolls.Average()));
 
                 var result = NabunassarGame.Random.Next(prevAvg, Edges + 1);
-                return new DiceRoll(this, result);
+                return new DiceRoll(this, result, operation);
             }
             else
             {
-                var value = PureRoll();
+                var value = PureRoll(operation);
                 _previousRolls[rollsCounter] = value.Result;
                 rollsCounter++;
 
@@ -64,25 +65,25 @@ namespace Nabunassar.Entities.Data.Dices
             }
         }
 
-        private DiceRoll PureRoll()
+        private DiceRoll PureRoll(DiceOperation operation)
         {
             var result = NabunassarGame.Random.Next(Edges + 1);
 
-            return new DiceRoll(this, result);
+            return new DiceRoll(this, result, operation);
         }
 
         public static DiceResult operator +(Dice one, Dice another)
         {
-            var oneRoll = one.Roll();
-            var anotherRoll = another.Roll();
+            var oneRoll = one.Roll(DiceOperation.Add);
+            var anotherRoll = another.Roll(DiceOperation.Add);
 
             return new DiceResult(oneRoll.Result + anotherRoll.Result, default, DiceOperation.Add, oneRoll, anotherRoll);
         }
 
         public static DiceResult operator -(Dice one, Dice another)
         {
-            var oneRoll = one.Roll();
-            var twoRoll = another.Roll();
+            var oneRoll = one.Roll(DiceOperation.Substract);
+            var twoRoll = another.Roll(DiceOperation.Substract);
 
             var result = oneRoll.Result - twoRoll.Result;
             if(result<0)
@@ -98,7 +99,7 @@ namespace Nabunassar.Entities.Data.Dices
             var value = 0;
             for (int i = 0; i < dicesCount; i++)
             {
-                var roll = dice.Roll();
+                var roll = dice.Roll(DiceOperation.Add);
                 value += roll.Result;
             }
 
@@ -108,59 +109,59 @@ namespace Nabunassar.Entities.Data.Dices
         public static DiceResult operator +(int value, Dice dice)
         {
             var modifier = value;
-            var roll = dice.Roll();
+            var roll = dice.Roll( DiceOperation.Add);
 
             var result = roll.Result + modifier;
 
-            return new DiceResult(result, [new DiceModifier(value, DiceModifierType.Pure)], DiceOperation.Add, roll);
+            return new DiceResult(result, [new DiceModifier(value,value, DiceModifierType.Pure, DiceOperation.Add)], DiceOperation.Add, roll);
         }
 
         public static DiceResult operator -(int value, Dice dice)
         {
             var modifier = value;
-            var roll = dice.Roll();
+            var roll = dice.Roll(DiceOperation.Substract);
 
             var result = roll.Result - modifier;
             if (result < 0)
                 result = 0;
 
-            return new DiceResult(result, [new DiceModifier(value, DiceModifierType.Pure)], DiceOperation.Substract, roll);
+            return new DiceResult(result, [new DiceModifier(value,value, DiceModifierType.Pure, DiceOperation.Substract)], DiceOperation.Substract, roll);
         }
 
-        public static DiceResult operator *(Rank dicesCount, Dice dice)
+        public static DiceResult operator *(DiceModifier mod, Dice dice)
         {
             List<DiceRoll> rolls = new();
 
             var value = 0;
-            for (int i = 0; i < dicesCount; i++)
+            for (int i = 0; i < mod.Result; i++)
             {
-                var roll = dice.Roll();
+                var roll = dice.Roll(DiceOperation.Add);
                 value += roll.Result;
             }
 
-            return new DiceResult(value, [new DiceModifier(0, dicesCount)], DiceOperation.Add, [.. rolls]);
+            return new DiceResult(value, [mod], DiceOperation.Add, [.. rolls]);
         }
 
-        public static DiceResult operator +(Rank value, Dice dice)
+        public static DiceResult operator +(DiceModifier mod, Dice dice)
         {
-            var modifier = (int)value;
-            var roll = dice.Roll();
+            var modifier = mod.Result;
+            var roll = dice.Roll(DiceOperation.Add);
 
             var result = roll.Result + modifier;
 
-            return new DiceResult(result, [new DiceModifier(value, value)], DiceOperation.Add, roll);
+            return new DiceResult(result, [mod], DiceOperation.Add, roll);
         }
 
-        public static DiceResult operator -(Rank value, Dice dice)
+        public static DiceResult operator -(DiceModifier mod, Dice dice)
         {
-            var modifier = (int)value;
-            var roll = dice.Roll();
+            var modifier = mod.Result;
+            var roll = dice.Roll(DiceOperation.Substract);
 
             var result = roll.Result - modifier;
             if (result < 0)
                 result = 0;
 
-            return new DiceResult(result, [new DiceModifier(value, value)], DiceOperation.Substract, roll);
+            return new DiceResult(result, [mod], DiceOperation.Substract, roll);
         }
     }
 }

@@ -133,17 +133,21 @@ namespace Nabunassar.Entities
 
             AddCollistion(mapObject);
 
-            var gameObj = Game.DataBase.GetObject(polygon.GetPropertyValue<ObjectType>(nameof(ObjectType)));
+            var objectType = polygon.GetPropertyValue<ObjectType>(nameof(ObjectType));
+            var groundType = polygon.GetPropertyValue<GroundType>(nameof(GroundType));
+
+            var gameObj = objectType == ObjectType.Ground
+                ? Game.DataBase.GetObjectGround(groundType)
+                : Game.DataBase.GetObject(objectType);
+
             gameObj.MergeProperties(polygon);
             gameObj.MapObject = mapObject;
             entity.Attach(gameObj);
 
             gameObj.Entity = entity;
 
-            if (gameObj.ObjectType == ObjectType.Ground)
+            if (objectType == ObjectType.Ground)
             {
-                var groundType = gameObj.GetPropertyValue<GroundType>(nameof(GroundType));
-
                 AddOnMinimap(entity.Id,position, ObjectType.Ground,null, groundType);
             }
 

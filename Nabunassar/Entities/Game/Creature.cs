@@ -4,10 +4,21 @@ using Nabunassar.Entities.Struct;
 
 namespace Nabunassar.Entities.Game
 {
-    internal class Creature
+    internal class Creature : IEntity
     {
-        public PrimaryStats PrimaryStats { get; set; } =new PrimaryStats();
+        public Creature()
+        {
+            ObjectId = Guid.NewGuid();
+            PrimaryStats = new PrimaryStats(this);
+            FormulaName = NabunassarGame.Game.Strings["Entities"][nameof(Creature)];
+        }
+
+        public PrimaryStats PrimaryStats { get; set; }
 
         public Quad<BaseWorldAbility> WorldAbilities { get; set; } = new Quad<BaseWorldAbility>();
+
+        public Guid ObjectId { get; set; }
+
+        public string FormulaName {  get; set; }
     }
 }

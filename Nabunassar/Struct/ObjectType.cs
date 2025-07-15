@@ -24,7 +24,8 @@ namespace Nabunassar.Struct
         Sprite,
         Interface,
         Border,
-        Hull
+        Hull,
+        RollResult
     }
 
     public static class ObjectTypeInspectorExtensions

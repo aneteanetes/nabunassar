@@ -1,5 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Struct;
+using SharpDX;
 
 namespace Nabunassar.Entities.Data.Rankings
 {
@@ -9,13 +11,21 @@ namespace Nabunassar.Entities.Data.Rankings
 
         public readonly bool IsDirty { get; }
 
-        public readonly Description Descripted { get; }
+        public readonly Guid ObjectId { get; }
 
-        public Rank(int rank, bool isDirty = false, Description description = null)
+        public Rank(int rank, bool isDirty = false, Guid objectId = default)
         {
             Value = rank;
             IsDirty = isDirty;
+            ObjectId = objectId;
         }
+
+        public static Rank FromEntity(IEntity entity, Rank rank)
+        {
+            return new Rank(rank.Value, objectId: entity.ObjectId);
+        }
+
+        public Rank Entity(IEntity entity) => FromEntity(entity, this);
 
         public static Rank None = new Rank(0);
         public static Rank Basic = new Rank(1);
@@ -33,38 +43,48 @@ namespace Nabunassar.Entities.Data.Rankings
         public static Rank d12 = GrandMaster;
         public static Rank d20 = Ultimate;
 
-        public Rank Description(Description description)
+        //public static DiceResult operator -(int val, Rank rank)
+        //{
+        //    var result = rank.Value - val;
+
+        //    return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
+        //}
+
+        public static DiceModifier operator -(Rank rank, int val)
         {
-            return new Rank(Value, IsDirty, description);
+            var result = rank.Value - val;
+            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Substract,rank);
+
+            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
         }
 
-        public static Rank operator -(int val, Rank rank)
+        //public static Rank operator +(int val, Rank rank)
+        //{
+        //    return new Rank(rank.Value + val, true);
+        //}
+
+        public static DiceModifier operator +(Rank rank, int val)
         {
-            return new Rank(rank.Value - val, true);
+            var result = rank.Value + val;
+            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Add,rank);
+            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
         }
 
-        public static Rank operator -(Rank rank, int val)
+        public static DiceModifier operator *(Rank rank, int val)
         {
-            return new Rank(rank.Value - val, true);
+            var result = rank.Value * val;
+            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Multiply, rank);
+            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Multiply, [new DiceRoll(default, result, rank)]);
         }
 
-        public static Rank operator +(int val, Rank rank)
+        public static implicit operator DiceModifier(Rank rank)
         {
-            return new Rank(rank.Value + val, true);
+            return new DiceModifier(rank.Value, rank.Value, DiceModifierType.Rank, DiceOperation.Unary, rank);
         }
 
-        public static Rank operator +(Rank rank, int val)
-        {
-            return new Rank(rank.Value + val, true);
-        }
+        public Dice AsDice() => (Dice)this;
 
-        public static Rank operator *(Rank rank, int val)
-        {
-            return new Rank(rank.Value * val, true);
-        }
-
-
-        public static implicit operator Rank(Dice dice) => dice.Edges switch
+        public static explicit operator Rank(Dice dice) => dice.Edges switch
         {
             4 => Rank.Basic,
             6 => Rank.Advanced,
@@ -75,7 +95,7 @@ namespace Nabunassar.Entities.Data.Rankings
             _ => Rank.None,
         };
 
-        public static implicit operator Dice(Rank rank) => rank.Value switch
+        public static explicit operator Dice(Rank rank) => rank.Value switch
         {
             1 => Dice.d4,
             2 => Dice.d6,
@@ -85,8 +105,6 @@ namespace Nabunassar.Entities.Data.Rankings
             6 => Dice.d20,
             _ => new Dice(0),
         };
-
-        public static implicit operator int(Rank rank) => rank.Value;
 
         public static implicit operator DiceModifierType(Rank rank) => rank.IsDirty
                     ? DiceModifierType.RankModified
