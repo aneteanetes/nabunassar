@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Geranium.Reflection;
+using Newtonsoft.Json;
 
 namespace Nabunassar.Entities.Data.Dices
 {
@@ -8,11 +9,11 @@ namespace Nabunassar.Entities.Data.Dices
         {
             string s = (string)reader.Value;
 
-            if (s.Length > 0 || !s.Contains("d"))
-                throw new JsonSerializationException("Dice expression is wrong! it must be 'dX'");
+            if (s.IsEmpty() || !s.Contains("d"))
+                throw new JsonSerializationException($"Dice expression is wrong! It must be 'dX', passed value: {s}");
 
             if(!int.TryParse(s.Replace("d",""), out var diceNumber))
-                throw new JsonSerializationException("Dice expression is wrong! it must be 'dX'");
+                throw new JsonSerializationException($"Dice expression is wrong! It must be 'dX', passed value: {s}");
 
             return new Dice(diceNumber);
         }

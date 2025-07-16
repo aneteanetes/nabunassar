@@ -4,6 +4,12 @@ using Nabunassar.Content.Compiler;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Monogame.Settings;
+using System.Reflection;
+
+
+var members = typeof(Rank).GetMembers(BindingFlags.Static | BindingFlags.Public)
+.OfType<FieldInfo>().ToList();
+
 
 var config = new ConfigurationBuilder()
                 .AddJsonFile($"nabunassar.cfg", true)

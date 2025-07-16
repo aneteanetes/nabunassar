@@ -56,7 +56,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         {
             var window = new Window();
 
-
             scrollcontainer = new ScrollViewer();
             scrollcontainer.VerticalScrollBackground = new TextureRegion(pixel);
             scrollcontainer.VerticalScrollKnob = new TextureRegion(sliderknob);
@@ -145,6 +144,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                 Font = _font.GetFont(16),
                 TextColor = Globals.BaseColor,
                 Text = message,
+                Padding = new Myra.Graphics2D.Thickness(0,5,0,0),
             };
 
             messageBox.Widgets.Add(label);

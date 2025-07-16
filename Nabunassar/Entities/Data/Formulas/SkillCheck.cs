@@ -26,12 +26,7 @@ namespace Nabunassar.Entities.Data.Formulas
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 
-            return new RollResult()
-            {
-                Complexity = checkValue,
-                Roll = skillValue,
-                IsSuccess = skillValue.Result >= checkValue.Result
-            };
+            return new RollResult(checkValue, skillValue, true);
         }
     }
 }

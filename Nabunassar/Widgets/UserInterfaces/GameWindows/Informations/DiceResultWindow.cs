@@ -19,7 +19,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 
         protected override string Portrait => "Assets/Images/Objects/dices.jpg";
 
-        protected override void FillInformationWindow(VerticalStackPanel informationpanel)
+        protected override int FillInformationWindow(VerticalStackPanel informationpanel)
         {
             var rollResult = this.GameObject.RollResult;
 
@@ -31,7 +31,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
             AddRollResult(informationpanel, rollResult.Roll, Game.Strings["UI"]["Throw"],true);
             AddTitle(informationpanel, $"{Game.Strings["UI"]["Result"]}: {textResult}", new Thickness(0,15,0,0));
 
-            base.FillInformationWindow(informationpanel);
+            return base.FillInformationWindow(informationpanel);
         }
 
         protected override void LoadContent()

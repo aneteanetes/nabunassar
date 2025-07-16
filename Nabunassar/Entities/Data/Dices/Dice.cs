@@ -72,6 +72,11 @@ namespace Nabunassar.Entities.Data.Dices
             return new DiceRoll(this, result, operation);
         }
 
+        public DiceRoll MaxRoll(DiceOperation operation)
+        {
+            return new DiceRoll(this,Edges, operation);
+        }
+
         public static DiceResult operator +(Dice one, Dice another)
         {
             var oneRoll = one.Roll(DiceOperation.Add);

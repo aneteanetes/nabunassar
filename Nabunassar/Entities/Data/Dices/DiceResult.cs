@@ -1,6 +1,4 @@
-﻿using info.lundin.math;
-using MonoGame.Extended.Particles.Modifiers;
-using Nabunassar.Entities.Data.Rankings;
+﻿using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Struct;
 
 namespace Nabunassar.Entities.Data.Dices
@@ -14,6 +12,14 @@ namespace Nabunassar.Entities.Data.Dices
         public readonly DiceModifier[] Modifiers { get; } = modifiers == default ? [] : modifiers;
 
         public readonly int Result { get; } = result;
+
+        public DiceResult Maximum()
+        {
+            var diceRolls = DiceRolls.Select(r => r.Dice.MaxRoll(r.Operation));
+            var diceResult = diceRolls.Sum(dr => dr.Result);
+            var modifiers = Modifiers.Sum(x=>x.Result);
+            return new DiceResult(diceResult + modifiers, Modifiers, Operation, diceRolls.ToArray());
+        }
 
         public static DiceResult operator +(DiceResult diceResult, Dice dice)
         {

@@ -87,7 +87,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 
             var fontSize = 20;
 
-            FillInformationWindow(informationpanel);
+            var topOffset = FillInformationWindow(informationpanel);
 
             var desc = Game.Strings.GetObjectDescription(GameObject);
             if (desc.IsFound())
@@ -97,11 +97,10 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
                     Font = Font.GetFont(fontSize),
                     Text = Game.Strings.GetObjectDescription(GameObject),
                     Wrap = true,
-                    Top = fontSize
+                    Top = topOffset
                 };
                 informationpanel.Widgets.Add(description);
             }
-
 
             var btn = new Button()
             {
@@ -148,7 +147,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
             return window;
         }
 
-        protected virtual void FillInformationWindow(VerticalStackPanel informationpanel)
+        protected virtual int FillInformationWindow(VerticalStackPanel informationpanel)
         {
             var fontSize = 20;
 
@@ -184,7 +183,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
                 informationpanel.Widgets.Add(hp);
                 informationpanel.Widgets.Add(rep);
                 informationpanel.Widgets.Add(rating);
+
+                return fontSize;
             }
+
+            return 0;
         }
 
         protected override void InitWindow(Window window)

@@ -25,6 +25,7 @@ namespace Nabunassar.Monogame.Content
             _resourceLoader = resourceLoader;
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new DiceJsonConverter());
+            settings.Converters.Add(new RankJsonConverter());
             _jsonSerializer = JsonSerializer.CreateDefault(settings);
 
             RichTextDefaults.FontResolver = fontName_ttf =>

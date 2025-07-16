@@ -1,10 +1,14 @@
 [
   {
     "Name": "RoadSnow",
+    "LandscapeRank": "Master",
+    "LandscapeDice": "d12",
     "Portrait": "Assets/Images/Objects/grounds/snowroad.jpg"
   },
   {
     "Name": "GrassSnow",
+    "LandscapeRank": "Expert",
+    "LandscapeDice": "d8",
     "Portrait": "Assets/Images/Objects/grounds/snowgrass.jpg"
   },
   {

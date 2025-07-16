@@ -93,6 +93,8 @@ namespace Nabunassar.Resources
         {
             var groundName = groundType + _game.GameState.LoadedMapPostFix;
             var obj = GetObjectInternal(x => x.Name == groundName);
+            obj.ObjectType = ObjectType.Ground;
+            obj.GroundType = groundType;
             if (obj == null)
             {
                 obj = new GameObject()

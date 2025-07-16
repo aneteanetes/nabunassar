@@ -49,6 +49,8 @@ namespace Nabunassar.Entities.Game
             });
         }
 
+        public GroundType GroundType { get; set; }
+
         public Battler Battler { get; set; }
 
         public Rank LandscapeRank { get; set; } = Rank.Basic;
@@ -130,8 +132,8 @@ namespace Nabunassar.Entities.Game
             if (token == null)
                 token = obj.ObjectType.ToString();
 
-            if (obj.ObjectType == ObjectType.Ground)
-                token = obj.GetPropertyValue<GroundType>(nameof(GroundType)).ToString();
+            if (token==null && obj.ObjectType == ObjectType.Ground)
+                token = obj.GroundType.ToString();
 
             return objectNames[token];
         }
