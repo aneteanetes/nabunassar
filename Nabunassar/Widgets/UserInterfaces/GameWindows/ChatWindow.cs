@@ -2,7 +2,6 @@
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Input;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
@@ -10,7 +9,6 @@ using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 {
@@ -22,7 +20,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         private TextureRegion resizeImage;
         private Texture2D pixel;
         private Texture2D sliderknob;
-        private static ScreenWidgetWindow ChatWindowWidget;
+        private static ChatWindow ChatWindowWidget;
 
         public ChatWindow(NabunassarGame game) : base(game)
         {
@@ -57,8 +55,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             var window = new Window();
 
             scrollcontainer = new ScrollViewer();
-            scrollcontainer.VerticalScrollBackground = new TextureRegion(pixel);
-            scrollcontainer.VerticalScrollKnob = new TextureRegion(sliderknob);
+            //scrollcontainer.VerticalScrollBackground = new TextureRegion(pixel);
+            //scrollcontainer.VerticalScrollKnob = new TextureRegion(sliderknob);
 
             scrollcontainer.TouchDown += Scrollcontainer_TouchDown;
             scrollcontainer.TouchUp += Scrollcontainer_TouchUp;
@@ -133,25 +131,45 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             }
         }
 
+        private static int trashhold = 20;
+
         private static Label AddMessageLabel(string message)
         {
             var label = new Label()
             {
-                Background = new SolidBrush(Color.Transparent),
                 Wrap = true,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                Font = _font.GetFont(16),
-                TextColor = Globals.BaseColor,
                 Text = message,
                 Padding = new Myra.Graphics2D.Thickness(0,5,0,0),
             };
+
+            if(messageBox.Widgets.Count> trashhold)
+            {
+                ChatWindowWidget.ClearMessageBox(1);
+            }
 
             messageBox.Widgets.Add(label);
             messageBox.InvalidateMeasure();
             SetScrollDown();
 
             return label;
+        }
+
+        public void ClearMessageBox(int? count = null)
+        {
+            List<Widget> widgets = new List<Widget>();
+            for (int i = 0; i < (count ?? messageBox.Widgets.Count); i++)
+            {
+                var widget = messageBox.Widgets[i + 1];
+                widget.MouseEntered -= Label_MouseEntered;
+                widget.MouseLeft += Label_MouseLeft;
+                ChatWindowWidget.UnBindWidgetBlockMouse(widget);
+                widgets.Add(widget);
+            }
+
+            foreach (var widget in widgets)
+            {
+                messageBox.Widgets.Remove(widget);
+            }
         }
 
         public static void AddMessage(string message) 
@@ -169,11 +187,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                 });
                 DiceResultWindow.Open<DiceResultWindow>(window);
             };
-            label.OverBackground = new SolidBrush(Color.Black.AddAlpha(.7f));
-            label.MouseCursor = MouseCursorType.Hand;
             label.MouseEntered += Label_MouseEntered;
             label.MouseLeft += Label_MouseLeft;
-            ChatWindowWidget.BindWidgetBlockMouse(label);
+            ChatWindowWidget.BindWidgetBlockMouse(label, false);
         }
 
         private static void Label_MouseLeft(object sender, EventArgs e)
@@ -189,6 +205,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
         private void TitlePanel_TouchDoubleClick(object sender, EventArgs e)
         {
             SetWindowPosition(minimalTop);
+            SetScrollDown();
         }
 
         protected override void InitWindow(Window window)
@@ -241,7 +258,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         private static void SetScrollDown()
         {
-            //scrollcontainer.ScrollPosition = new Point(0, scrollcontainer.Height ?? 0 + 1);
             scrollcontainer.ScrollPosition = new Microsoft.Xna.Framework.Point(0, messageBox.ActualBounds.Size.Y);
         }
 

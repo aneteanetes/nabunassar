@@ -126,7 +126,7 @@ namespace Nabunassar.Monogame.Content
                     FontResolutionFactor = 2,
 
                 };
-                var fontSystem = new FontSystem(fontSettings);
+                var fontSystem = new FontSystem(/*fontSettings*/);
                 fontSystem.AddFont(font);
 
                 _fonts[assetName] = fontSystem;

@@ -20,6 +20,7 @@ namespace Nabunassar.Screens.Abstract
 
         public virtual ScreenWidget GetWidget() => null;
 
+
         public override void Draw(GameTime gameTime)
         {
             Game.WorldGame.Draw(gameTime);

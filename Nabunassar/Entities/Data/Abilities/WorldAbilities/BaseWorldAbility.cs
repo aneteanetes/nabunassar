@@ -1,6 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
+using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 {
@@ -46,6 +47,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         }
 
         public abstract bool IsApplicable(GameObject gameObject);
+
+        public abstract Result<bool> IsActive(GameObject gameObject);
 
         public void Cast(GameObject gameObject)
         {

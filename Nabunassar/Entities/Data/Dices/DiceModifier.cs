@@ -2,17 +2,17 @@
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal readonly struct DiceModifier(int result, int value, DiceModifierType type, DiceOperation operation, Rank rank = default)
+    internal class DiceModifier(int result, int value, DiceModifierType type, DiceOperation operation, Rank rank = default)
     {
-        public readonly DiceModifierType Type { get; } = type;
+        public DiceModifierType Type { get; } = type;
 
-        public readonly int Result { get; } = result;
+        public int Result { get; } = result;
 
-        public readonly int Value { get; } = value;
+        public int Value { get; } = value;
 
-        public readonly Rank Rank { get; } = rank;
+        public Rank Rank { get; } = rank;
 
-        public readonly DiceOperation Operation { get; } = operation;
+        public DiceOperation Operation { get; } = operation;
 
         public override string ToString()
         {

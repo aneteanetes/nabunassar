@@ -5,13 +5,13 @@ using SharpDX;
 
 namespace Nabunassar.Entities.Data.Rankings
 {
-    internal readonly struct Rank
+    internal class Rank
     {
-        public readonly int Value { get; }
+        public int Value { get; }
 
-        public readonly bool IsDirty { get; }
+        public bool IsDirty { get; }
 
-        public readonly Guid ObjectId { get; }
+        public Guid ObjectId { get; }
 
         public Rank(int rank, bool isDirty = false, Guid objectId = default)
         {

@@ -23,10 +23,6 @@ namespace Nabunassar
                 Creature = new Creature()
             };
 
-
-
-            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party.First.Creature);
-
             party.Second = new Hero(this) { Tileset = "rogue.png" };
             party.Third = new Hero(this) { Tileset = "wizard.png" };
             party.Fourth = new Hero(this) { Tileset = "priest.png" };
@@ -34,6 +30,8 @@ namespace Nabunassar
             var pos = new Vector2(175, 230);
 
             EntityFactory.CreateParty(GameState.Party, pos);
+
+            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party, party.First.Creature);
         }
 
         public void ChangeGameActive()

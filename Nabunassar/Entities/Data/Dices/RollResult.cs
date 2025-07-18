@@ -1,6 +1,6 @@
 ﻿namespace Nabunassar.Entities.Data.Dices
 {
-    internal struct RollResult
+    internal class RollResult
     {
         public RollResult(DiceResult complexity, DiceResult roll, bool isAutoMax = false)
         {

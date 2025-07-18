@@ -1,27 +1,30 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
-using Myra.Graphics2D.TextureAtlases;
-using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
-using System.IO;
 
 namespace Nabunassar.Entities.Data
 {
-    internal class Party : Quad<Hero>
+    internal class Party : Quad<Hero>, IDistanceMeter
     {
         public ActionQueue ActionQueue { get; set; } = new();
 
         public Entity Entity { get; set; }
 
         public MapObject MapObject { get; set; }
+
+        public GameObject GameObject => new GameObject()
+        {
+            MapObject = MapObject,
+            Entity = Entity,
+            ObjectType = ObjectType.Player            
+        };
 
         public Direction ViewDirection { get; set; } = Direction.Right;
 
@@ -203,10 +206,16 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        public bool IsObjectNear(GameObject gameObject)
+
+        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+
+        public Result<bool> IsObjectNear(GameObject gameObject)
         {
-            var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
-            return visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
+            if (gameObject == null)
+                return new Result<bool>(false,NabunassarGame.Game.Strings["GameTexts"]["NoTarget"]);
+
+
+            return DistanceMeterRectangle.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
         }
 
         public void SpeakTo(GameObject gameObject, Vector2 talkingTargetPosition=default)

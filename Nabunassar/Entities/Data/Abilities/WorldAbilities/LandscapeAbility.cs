@@ -1,4 +1,4 @@
-﻿using Nabunassar.Entities.Data.Dices;
+﻿using Geranium.Reflection;
 using Nabunassar.Entities.Data.Formulas;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
@@ -9,8 +9,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 {
     internal class LandscapeAbility : BaseWorldAbility
     {
-        public LandscapeAbility(NabunassarGame game, Creature creature) : base(game, game.DataBase.GetAbility("Landscape"), creature)
+        private IDistanceMeter _distanceMeter;
+
+        public LandscapeAbility(NabunassarGame game, IDistanceMeter distanceMeter, Creature creature) : base(game, game.DataBase.GetAbility("Landscape"), creature)
         {
+            _distanceMeter = distanceMeter;
         }
 
         protected override void Execute(GameObject gameObject)
@@ -53,6 +56,20 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 #warning landscape get resources
                 // take resources
             }
+        }
+
+        public override Result<bool> IsActive(GameObject gameObject)
+        {
+            var value = _distanceMeter.IsObjectNear(gameObject);
+            if (value.Message.IsNotEmpty())
+                return value;
+
+            var result = new Result<bool>(value);
+
+            if (!value)
+                result.Message = Game.Strings["GameTexts"]["TooAway"];
+
+            return result;
         }
 
         public override bool IsApplicable(GameObject gameObject)

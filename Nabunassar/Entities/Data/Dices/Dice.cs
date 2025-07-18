@@ -3,7 +3,7 @@ using Nabunassar.Entities.Data.Rankings;
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal struct Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
+    internal class Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
     {
         public int Edges { get; } = edges;
 

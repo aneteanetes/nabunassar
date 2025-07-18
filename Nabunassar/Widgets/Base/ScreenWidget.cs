@@ -67,16 +67,23 @@ namespace Nabunassar.Widgets.Base
             return UIWidget;
         }
 
-        public void BindWidgetBlockMouse(Widget widget)
+        public void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
         {
             widget.MouseEntered += _widget_MouseEntered;
             widget.MouseLeft += _widget_MouseLeft;
 
-            OnDispose += () =>
-            {
-                widget.MouseEntered -= _widget_MouseEntered;
-                widget.MouseLeft -= _widget_MouseLeft;
-            };
+            if (withDispose)
+                OnDispose += () =>
+                {
+                    widget.MouseEntered -= _widget_MouseEntered;
+                    widget.MouseLeft -= _widget_MouseLeft;
+                };
+        }
+
+        public void UnBindWidgetBlockMouse(Widget widget)
+        {
+            widget.MouseEntered -= _widget_MouseEntered;
+            widget.MouseLeft -= _widget_MouseLeft;
         }
 
         protected void _widget_MouseLeft(object sender, EventArgs e)

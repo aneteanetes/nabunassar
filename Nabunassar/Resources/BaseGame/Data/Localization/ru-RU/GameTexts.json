@@ -5,5 +5,7 @@
   "Intelligence": "Интеллект",
   "Dialectics": "Диалектика",
   "Rank": "Ранг",
-  "Dice": "Кость"
+  "Dice": "Кость",
+  "TooAway": "Слишком далеко",
+    "NoTarget": "Нет цели"
 }

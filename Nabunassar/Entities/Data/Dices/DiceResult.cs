@@ -3,15 +3,15 @@ using Nabunassar.Entities.Struct;
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal readonly struct DiceResult(int result, DiceModifier[] modifiers, DiceOperation operation, params DiceRoll[] diceThrows)
+    internal class DiceResult(int result, DiceModifier[] modifiers, DiceOperation operation, params DiceRoll[] diceThrows)
     {
-        public readonly DiceOperation Operation { get; } = operation;
+        public  DiceOperation Operation { get; } = operation;
 
-        public readonly DiceRoll[] DiceRolls { get; } = diceThrows;
+        public  DiceRoll[] DiceRolls { get; } = diceThrows;
 
-        public readonly DiceModifier[] Modifiers { get; } = modifiers == default ? [] : modifiers;
+        public  DiceModifier[] Modifiers { get; } = modifiers == default ? [] : modifiers;
 
-        public readonly int Result { get; } = result;
+        public  int Result { get; } = result;
 
         public DiceResult Maximum()
         {

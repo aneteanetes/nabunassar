@@ -5,6 +5,7 @@ using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
+using Nabunassar.Entities.Data;
 using Nabunassar.Systems;
 
 namespace Nabunassar.ECS
@@ -15,6 +16,7 @@ namespace Nabunassar.ECS
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private ComponentMapper<MapObject> _gameObjectMapper;
         private ComponentMapper<EffectComponent> _effectMapper;
+        private ComponentMapper<Party> _partyMapper;
 
         private static bool isGlowNeedDisable = false;
 
@@ -33,6 +35,7 @@ namespace Nabunassar.ECS
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
             _gameObjectMapper = mapperService.GetMapper<MapObject>();
             _effectMapper = mapperService.GetMapper<EffectComponent>();
+            _partyMapper = mapperService.GetMapper<Party>();
         }
 
         public override void Update(GameTime gameTime, bool sys)
@@ -118,7 +121,8 @@ namespace Nabunassar.ECS
 
                         if (entity.Get<DescriptorComponent>().Name == "party")
                         {
-                            sb.DrawRectangle(mapObj.Bounds.BoundingRectangle.Multiple(2), Color.Purple);
+                            var party = _partyMapper.Get(entity);
+                            sb.DrawRectangle(party.DistanceMeterRectangle, Color.Purple);
                         }
                     }
                 }

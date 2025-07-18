@@ -223,7 +223,17 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             foreach (var abil in Game.GameState.Party.GetWorldAbilities(GameObject))
             {
                 var abilIconTexture = Content.Load<Texture2D>(abil.Icon);
-                skillActions.Add(new SkillAbilityRadialAction(this, abil, abil.Name, new TextureRegion(abilIconTexture)));
+
+                var isEnable = abil.IsActive(GameObject);
+
+                var iconName = abil.Name;
+                if(!isEnable && isEnable.Message.IsNotEmpty())
+                    iconName = isEnable.Message;
+
+                skillActions.Add(new SkillAbilityRadialAction(this, abil, iconName, new TextureRegion(abilIconTexture))
+                {
+                    IsDisabled = !isEnable
+                });
             }
 
             AddAction(panel, new SkillRadialAction(this, skillActions));

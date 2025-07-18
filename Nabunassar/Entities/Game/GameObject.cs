@@ -1,5 +1,6 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
@@ -11,7 +12,7 @@ using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Game
 {
-    internal class GameObject : Propertied, IClonable<GameObject>
+    internal class GameObject : Propertied, IDistanceMeter, IClonable<GameObject>
     {
         public GameObject Clone()
         {
@@ -91,6 +92,22 @@ namespace Nabunassar.Entities.Game
         public ObjectType ObjectType { get; set; } = ObjectType.None;
 
         public List<GameObject> Dependant { get; internal set; } = new();
+
+        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(2);
+
+        public Result<bool> IsObjectNear(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return new Result<bool>(false, NabunassarGame.Game.Strings["GameTexts"]["NoTarget"]);
+
+            if (this.MapObject != default && this.MapObject.Bounds != default)
+            {
+                var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
+                return visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
+            }
+
+            return false;
+        }
 
         public void Destroy()
         {
