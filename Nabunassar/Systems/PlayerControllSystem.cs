@@ -10,6 +10,7 @@ using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 using Geranium.Reflection;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
+using Nabunassar.Components.Effects;
 
 namespace Nabunassar.Systems
 {
@@ -112,6 +113,8 @@ namespace Nabunassar.Systems
             if (moveVector != Vector2.Zero)
                 gameobj.MoveToDirection(gameobj.Position, moveVector * gameobj.MoveSpeed);
 
+            if (gameobj.IsMoving && gameobj.Ray2==default && moveVector == Vector2.Zero)
+                gameobj.StopMove();
         }
 
         private void PartyActions(KeyboardStateExtended keyboard, Party party, MapObject gameobj)
@@ -133,6 +136,12 @@ namespace Nabunassar.Systems
 
             if (keyboard.IsKeyDown(Keys.Space))
                 gameobj.StopMove();
+
+            if(keyboard.WasKeyPressed(Keys.G))
+                foreach (var hero in party)
+                {
+                    hero.Entity.Attach(new DissolveEffect(Game, hero.Entity) as EffectComponent);
+                }
         }
 
         private void MoveByMouse(MouseStateExtended mouse, Party party, MapObject gameobj)
@@ -143,7 +152,7 @@ namespace Nabunassar.Systems
                 return;
             }
 
-            if (Game.IsMouseActive)
+            if (Game.IsMouseMoveAvailable)
             {
                 Game.GameState.Log("moved party by mouse click");
 
@@ -151,7 +160,9 @@ namespace Nabunassar.Systems
 
                 void MovePartyByMouseInternal()
                 {
-                    party.MoveTo(targetPosition);
+                    var mouseScreenPos = mouse.Position.ToVector2();
+
+                    party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedMapObject, mouseScreenPos);
                 }
 
                 if (gameobj.IsMoving)
@@ -194,12 +205,6 @@ namespace Nabunassar.Systems
             RadialMenu.Open(Game, radialMenuGameObject, new Vector2(mouse.X, mouse.Y));
 
             return;
-        }
-
-        private void CloseRadialMenu()
-        {
-            RadialMenu.IsContextMenuOpened = false;
-            Game.RemoveDesktopWidgets<RadialMenu>();
         }
     }
 }

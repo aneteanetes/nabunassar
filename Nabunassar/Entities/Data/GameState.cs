@@ -1,4 +1,11 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.TextureAtlases;
+using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Map;
+using Nabunassar.Entities.Struct;
+using Nabunassar.Tiled.Map;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Entities.Data
 {
@@ -10,9 +17,25 @@ namespace Nabunassar.Entities.Data
 
         public Action<string> OnLog { get; set; }
 
+        public Minimap Minimap { get; set; }
+
+        public TiledMap LoadedMap { get; set; }
+
+        public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
+
         public void Log(string message)
         {
             OnLog?.Invoke(message);
+        }
+
+        public void AddMessage(DrawText text)
+        {
+            ChatWindow.AddMessage(text.ToString());
+        }
+
+        public void AddRollMessage(DrawText text, RollResult rollResult)
+        {
+            ChatWindow.AddRollMessage(text.ToString(), rollResult);
         }
     }
 }

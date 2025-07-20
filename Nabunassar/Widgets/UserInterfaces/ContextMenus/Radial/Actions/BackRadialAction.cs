@@ -12,7 +12,6 @@
         public override void OnClick()
         {
             Menu.Fullfill(null, null, Menu.GameObject);
-            base.OnClick();
         }
     }
 }

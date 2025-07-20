@@ -1,5 +1,6 @@
 ﻿using MonoGame.Extended.ECS;
 using Nabunassar.Components;
+using Nabunassar.Entities.Game;
 
 namespace Nabunassar.Entities.Data
 {
@@ -10,6 +11,8 @@ namespace Nabunassar.Entities.Data
         public Entity Entity { get; set; }
 
         public MapObject GameObject { get; set; }
+
+        public Creature Creature { get; set; }
 
         public Hero(NabunassarGame game)
         {

@@ -1,4 +1,6 @@
 ﻿using Geranium.Reflection;
+using Nabunassar.Entities;
+using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 
@@ -6,13 +8,28 @@ namespace Nabunassar.Resources
 {
     internal class DataBase
     {
-        public const string NotFoundStringConstant = "[String Is Not Found]";
+        public const string NotFoundStringConstant = "[String Was Not Found]";
 
         NabunassarGame _game;
 
         public DataBase(NabunassarGame game)
         {
             _game = game;
+        }
+
+        private Dictionary<Guid, IEntity> Entities = new();
+
+        public IEntity AddEntity(IEntity entity)
+        {
+            return Entities[entity.ObjectId] = entity;
+        }
+
+        public IEntity GetEntity(Guid id)
+        {
+            if(Entities.ContainsKey(id)) 
+                return Entities[id];
+
+            return default;
         }
 
         public float GetGroundTypeSpeed(GroundType type)
@@ -24,6 +41,12 @@ namespace Nabunassar.Resources
         public string GetFromDictionary(string file, string key)
         {
             var data = Get<Dictionary<string, string>>(file);
+            return data[key];
+        }
+
+        public TValue GetFromDictionary<TValue>(string file, string key)
+        {
+            var data = Get<Dictionary<string, TValue>>(file);
             return data[key];
         }
 
@@ -51,15 +74,37 @@ namespace Nabunassar.Resources
             var obj = GetObjectInternal(x=>x.ObjectType==objectType);
             if (obj == null)
             {
-#warning debug zone
+                obj = GetObjectInternal(x => x.Name == x.ObjectType.ObjectTypeInLoadedMap());
+
+                if (obj == null)
+                    obj = new GameObject()
+                    {
+                        ObjectType = objectType
+                    };
+            }
+
+            if (obj != null)
+                obj.ObjectId = _game.Randoms.Next(-10000, -10);
+
+            return obj;
+        }
+
+        public GameObject GetObjectGround(GroundType groundType)
+        {
+            var groundName = groundType + _game.GameState.LoadedMapPostFix;
+            var obj = GetObjectInternal(x => x.Name == groundName);
+            obj.ObjectType = ObjectType.Ground;
+            obj.GroundType = groundType;
+            if (obj == null)
+            {
                 obj = new GameObject()
                 {
-                    ObjectType = objectType
+                    ObjectType = ObjectType.Ground
                 };
             }
 
             if (obj != null)
-                obj.ObjectId = _game.Random.Next(-10000, -10);
+                obj.ObjectId = _game.Randoms.Next(-10000, -10);
 
             return obj;
         }
@@ -81,6 +126,13 @@ namespace Nabunassar.Resources
             if (@object == default)
                 return default;
 
+            if (@object.BattlerId != 0)
+            {
+                var battler = Get<List<Battler>>("Data/Battlers/BattlerRegistry.json").FirstOrDefault(x => x.BattlerId == @object.BattlerId);
+                if (battler != default)
+                    @object.Battler = battler;
+            }
+
             var newObject = @object.Clone();
 
             return newObject;
@@ -89,6 +141,12 @@ namespace Nabunassar.Resources
         public T Get<T>(string assetName)
         {
             return _game.Content.Load<T>(assetName);
+        }
+
+        internal AbilityModel GetAbility(string abilityName)
+        {
+            var abilities = _game.Content.Load<List<AbilityModel>>("Data/Abilities/AbilityRegistry.json");
+            return abilities.FirstOrDefault(x=>x.Name== abilityName);
         }
     }
 }

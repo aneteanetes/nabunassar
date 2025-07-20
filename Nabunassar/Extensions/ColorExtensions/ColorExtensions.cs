@@ -2,7 +2,7 @@
 
 namespace Nabunassar
 {
-    internal static class ColorFromHexExtensions
+    internal static class ColorExtensions
     {
         public static Color AsColor(this string hexcolor)
         {
@@ -25,6 +25,11 @@ namespace Nabunassar
             }
 
             return new Color(r, g, b, a);
+        }
+
+        public static Color AddAlpha(this Color color, float alpha)
+        {
+            return new Color(color, alpha);
         }
     }
 }

@@ -2,13 +2,11 @@
 using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using Nabunassar.Components;
-using Nabunassar.Widgets.Menu;
-using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
-using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Screens.Game
 {
@@ -25,8 +23,11 @@ namespace Nabunassar.Screens.Game
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
+            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
+            Game.GameState.LoadedMap = _tiledMap;
+            Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)
             {
@@ -50,7 +51,7 @@ namespace Nabunassar.Screens.Game
 
             foreach (var _layer in _tiledMap.Layers)
             {
-                var sorted = _layer.Tiles.OrderBy(x => x.GetPropopertyValue<GroundType>(nameof(GroundType))).ToList();
+                var sorted = _layer.Tiles.OrderBy(x => x.GetPropertyValue<GroundType>(nameof(GroundType))).ToList();
                 foreach (var tile in sorted) // slower ground put last
                 {
                     if (tile.Gid == 0)
@@ -69,13 +70,21 @@ namespace Nabunassar.Screens.Game
             {
                 Game.EntityFactory.CreateNPC(mapObject);
             }
-            
+
             Game.RunGameState();
+
+            InitGameUI();
         }
 
         private bool isEsc = false;
 
         private bool logWindow = false;
+
+        public void InitGameUI()
+        {
+            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
+            Game.AddDesktopWidget(new ChatWindow(Game));
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -94,6 +103,18 @@ namespace Nabunassar.Screens.Game
                     isEsc = false;
                     Game.RemoveDesktopWidgets<MainMenu>();
                     Game.ChangeGameActive();
+                }
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
+            {
+                if (!Game.IsDesktopWidgetExist<MinimapWindow>())
+                {
+                    Game.AddDesktopWidget(new MinimapWindow(Game));
+                }
+                else
+                {
+                    Game.RemoveDesktopWidgets<MinimapWindow>();
                 }
             }
 

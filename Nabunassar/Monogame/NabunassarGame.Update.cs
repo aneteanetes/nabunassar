@@ -51,6 +51,8 @@ namespace Nabunassar
             }
 
             AdjustZoom();
+
+            Game.DesktopContainer.Update();
         }
     }
 }

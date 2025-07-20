@@ -1,4 +1,5 @@
-﻿using Myra.Graphics2D.UI;
+﻿using Geranium.Reflection;
+using Myra.Graphics2D.UI;
 using Nabunassar.Widgets.Base;
 
 namespace Nabunassar
@@ -7,17 +8,47 @@ namespace Nabunassar
     {
         private List<ScreenWidget> _screenWidgets = new();
 
-        public void AddDesktopWidget(ScreenWidget widget)
+        public int WidgetsCount()
+        {
+            return _screenWidgets.Where(x => x.IsRemovable).Count();
+        }
+
+        public T AddDesktopWidget<T>(T widget)
+            where T : ScreenWidget
         {
             if (widget != default)
             {
-                _screenWidgets.Add(widget);
-
-                widget.Initialize();
                 var uiWidget = widget.Load();
-                Components.Add(widget);
-                Desktop.Widgets.Add(uiWidget);
+
+                if (!Components.Contains(widget))
+                    Components.Add(widget);
+
+                if (uiWidget is Window windowWidget)
+                {
+
+                    Point? pos = widget.Position == default ?
+                        null
+                        : widget.Position.ToPoint();
+
+                    if (widget.As<ScreenWidgetWindow>()?.IsModal ?? false)
+                    {
+                        windowWidget.ShowModal(DesktopContainer, pos);
+                    }
+                    else
+                    {
+                        windowWidget.Show(DesktopContainer, pos);
+                    }
+                }
+                else
+                {
+                    _screenWidgets.Add(widget);
+                    Desktop.Widgets.Add(uiWidget);
+                }
+
+                return widget;
             }
+
+            return null;
         }
 
         public ScreenWidget GetDesktopWidget<T>()
@@ -39,12 +70,18 @@ namespace Nabunassar
 
         public void RemoveDesktopWidget(ScreenWidget widget)
         {
-            if (widget == default)
+            if (widget == default && !widget.IsRemoved)
                 return;
 
             var uiWidget = widget.GetWidgetReference();
-            Desktop.Widgets.Remove(uiWidget);
+
+            if (uiWidget is Window windowWidget)
+                windowWidget.Close();
+            else
+                Desktop.Widgets.Remove(uiWidget);
+
             _screenWidgets.Remove(widget);
+            widget.IsRemoved = true;
             widget.Dispose();
         }
 

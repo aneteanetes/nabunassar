@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Geranium.Reflection;
+using Myra.Graphics2D.TextureAtlases;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions;
@@ -11,7 +12,13 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         public string CodeName { get; set; }
 
+        public string Name { get; set; }
+
+        public TextureRegion Icon { get; set; }
+
         public RadialMenu Menu { get; protected set; }
+
+        public bool IsDisabled { get; set; }
 
         public NabunassarGame Game => Menu.Game;
 
@@ -36,6 +43,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         public virtual void OnClick()
         {
+            if(InnerActions.IsNotEmpty())
+                Menu.Fullfill(InnerActions, this);
             //Close();
             //Open(Game, GameObject, Position);
             //Mouse.SetPosition((int)Position.X, (int)Position.Y);

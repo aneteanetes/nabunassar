@@ -8,7 +8,7 @@ namespace Nabunassar.Entities.Base
 
         private Dictionary<string, object> propertyValueCache = new();
 
-        public T GetPropopertyValue<T>(string propName)
+        public T GetPropertyValue<T>(string propName)
         {
             T value = default;
 

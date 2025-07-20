@@ -29,5 +29,12 @@ namespace Nabunassar
                 ];
             }
         }
+
+        public static RectangleF Multiple(this RectangleF rect, float multiplier)
+        {
+            var width = rect.Width * multiplier;
+            var height = rect.Height * multiplier;
+            return new RectangleF(rect.X - (width/2)/2, rect.Y - (height/2)/2, width, height);
+        }
     }
 }

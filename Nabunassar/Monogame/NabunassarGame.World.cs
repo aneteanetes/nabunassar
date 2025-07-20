@@ -1,7 +1,10 @@
 ﻿using MonoGame.Extended.ECS;
 using MonoGame.Extended.ECS.Systems;
+using Nabunassar.Components;
 using Nabunassar.ECS;
 using Nabunassar.Systems;
+using Nabunassar.Systems.Disabled;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar
 {
@@ -10,14 +13,15 @@ namespace Nabunassar
         protected void InitGameWorlds()
         {
             WorldGame = new WorldBuilderProxy(this)
+                .AddSystem(new MinimapSystem(this))
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new CursorSystem(this))
                 .AddSystem(new RenderSystem(this))
                 .AddSystem(new FlickeringSystem(this))
                 .AddSystem(new MoveSystem(this))
                 .AddSystem(new MouseControlSystem(this))
-                .AddSystem(new MouseMapObjectFocusSystem(this))
-                .AddSystem(new ObjectFocusSystem(this))
+                .AddSystem(new MapObjectFocusSystem(this))
+                //.AddSystem(new ObjectFocusSystem(this))
                 .AddSystem(new LightSystem(this))
                 .Build();
 
@@ -27,6 +31,22 @@ namespace Nabunassar
         public HashSet<Type> DisabledWorldSystems = new();
         public HashSet<Type> RegisteredSystems = new();
 
+        public void DestoryEntity(Entity entity)
+        {
+            var collision = entity.Get<MapObject>();
+            this.WorldGame.DestroyEntity(entity);
+            CollisionComponent.Remove(collision);
+        }
+
+        public void DisableWorld()
+        {
+            ChangeGameActive();
+        }
+
+        public void EnableWorld()
+        {
+            ChangeGameActive();
+        }
 
         public void DisableSystems(params Type[] types)
         {
@@ -35,7 +55,8 @@ namespace Nabunassar
 
         public void DisableMouseSystems()
         {
-            Game.DisableSystems(typeof(PlayerControllSystem), typeof(ObjectFocusSystem), typeof(MouseMapObjectFocusSystem));
+            Game.DisableSystems(typeof(PlayerControllSystem), typeof(ObjectFocusSystem), typeof(MapObjectFocusSystem));
+            Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
         public void DisableSystemsExcept(params Type[] types)

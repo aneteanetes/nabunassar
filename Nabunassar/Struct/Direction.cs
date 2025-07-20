@@ -108,6 +108,26 @@ namespace Nabunassar
             }
         }
 
+        public static bool IsLeft(this Direction dir) => dir switch
+        {
+            Direction.Left or Direction.UpLeft or Direction.DownLeft => true,
+            _ => false,
+        };
+
+        public static Direction ToLeftRight(this Direction dir)
+        {
+            if (IsLeft(dir))
+                return Direction.Left;
+
+            return Direction.Right;
+        }
+
+        public static bool IsRight(this Direction dir) => dir switch
+        {
+            Direction.Right or Direction.UpRight or Direction.DownRight => true,
+            _ => false,
+        };
+
         public static bool IsDiagonal(this Direction dir)
         {
             switch (dir)
@@ -124,7 +144,7 @@ namespace Nabunassar
 
         public static Direction Rangom(this Direction dir)
         {            
-            switch (NabunassarGame.Game.Random.Next(0, 9))
+            switch (NabunassarGame.Random.Next(0, 9))
             {
                 case 1: return Direction.Up;
                 case 2: return Direction.Down;

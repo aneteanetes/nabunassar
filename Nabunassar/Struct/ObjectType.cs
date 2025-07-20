@@ -1,4 +1,6 @@
-﻿namespace Nabunassar.Struct
+﻿using Nabunassar.Entities.Game;
+
+namespace Nabunassar.Struct
 {
     internal enum ObjectType
     {
@@ -22,7 +24,8 @@
         Sprite,
         Interface,
         Border,
-        Hull
+        Hull,
+        RollResult
     }
 
     public static class ObjectTypeInspectorExtensions
@@ -32,6 +35,16 @@
             var code = (int)objectType;
 
             return code > 1 && code < 7;
+        }
+
+        /// <summary>
+        /// (<see cref="ObjectType"/>)<see cref="object.ToString"/>+LoadedMap.AreaObjectPostfix
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
+        internal static string ObjectTypeInLoadedMap(this ObjectType objectType)
+        {
+            return objectType.ToString() + NabunassarGame.Game.GameState.LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using MonoGame.Extended;
-using Myra.Graphics2D.UI;
+﻿using Myra.Graphics2D.UI;
 using Nabunassar.Components;
-using Nabunassar.Monogame;
 using Nabunassar.Monogame.Content;
-using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar.Widgets.Base
 {
@@ -20,6 +17,8 @@ namespace Nabunassar.Widgets.Base
         public event EventHandler<EventArgs> DrawOrderChanged;
         public event EventHandler<EventArgs> VisibleChanged;
 
+        public virtual bool IsRemovable => true;
+
         public int DrawOrder { get; set; }
 
         public bool Visible { get; set; } = true;
@@ -27,6 +26,8 @@ namespace Nabunassar.Widgets.Base
         public bool Enabled { get; set; } = true;
 
         public int UpdateOrder { get; set; } = 0;
+
+        public Vector2 Position { get; set; }
 
         public ScreenWidget(NabunassarGame game)
         {
@@ -43,56 +44,72 @@ namespace Nabunassar.Widgets.Base
 
         protected virtual void UnloadContent() { }
 
-        public virtual void Initialize()
-        {
-            LoadContent();
-        }
+        public virtual void Initialize() { }
 
         protected abstract Widget InitWidget();
 
         public MapObject MapObject { get; private set; }
 
-        protected virtual bool IsMouseActiveOnRootWidget => true;
+        protected virtual bool IsMouseMovementAvailableWithThisActivedWidget => false;
+
+        private HashSet<Widget> bindedWidgets = new();
 
         public Widget Load()
         {
+            LoadContent();
             UIWidget = InitWidget();
 
-            //if (IsMouseActiveOnRootWidget)
-            //{
-            //    _widget.MouseEntered += _widget_MouseEntered;
-            //    _widget.MouseLeft += _widget_MouseLeft;
-            //}
-
-            OnDispose += () =>
+            if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
-                ////_widget.MouseEntered -= _widget_MouseEntered;
-                ////_widget.MouseLeft -= _widget_MouseLeft;
-                //Game.IsMouseActive = true;
-            };
+                BindWidgetBlockMouse(UIWidget);
+            }
 
             return UIWidget;
         }
 
-        private void _widget_MouseLeft(object sender, EventArgs e)
+        public void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
         {
-            Game.IsMouseActive = true;
+            widget.MouseEntered += _widget_MouseEntered;
+            widget.MouseLeft += _widget_MouseLeft;
+
+            if (withDispose)
+                OnDispose += () =>
+                {
+                    widget.MouseEntered -= _widget_MouseEntered;
+                    widget.MouseLeft -= _widget_MouseLeft;
+                };
         }
 
-        private void _widget_MouseEntered(object sender, EventArgs e)
+        public void UnBindWidgetBlockMouse(Widget widget)
         {
-            Game.IsMouseActive = false;
+            widget.MouseEntered -= _widget_MouseEntered;
+            widget.MouseLeft -= _widget_MouseLeft;
+        }
+
+        protected void _widget_MouseLeft(object sender, EventArgs e)
+        {
+            Game.IsMouseMoveAvailable = true;
+        }
+
+        protected void _widget_MouseEntered(object sender, EventArgs e)
+        {
+            Game.IsMouseMoveAvailable = false;
         }
 
         public Action OnDispose { get; set; }
+
+        public bool IsRemoved { get; internal set; }
 
         public virtual void Dispose()
         {
             UnloadContent();
             Game.Components.Remove(this);
-            Game.Desktop.Widgets.Remove(UIWidget);
             OnDispose?.Invoke();
             MapObject = null;
+            Game.IsMouseMoveAvailable = true;
+
+            if (!IsRemoved)
+                Game.RemoveDesktopWidget(this);
         }
 
         public virtual void Close()

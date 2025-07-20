@@ -25,10 +25,11 @@ namespace Nabunassar
     {
         public LocalizedStrings Strings { get; set; }
 
-        public WidgetFactory WidgetFactory { get; set; }
+        public WidgetFactory Dialogues { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }
-        public bool IsMouseActive { get; internal set; } = true;
+
+        public bool IsMouseMoveAvailable { get; internal set; } = true;
 
         public bool IsGameActive { get; set; } = true;
 
@@ -36,7 +37,9 @@ namespace Nabunassar
 
         public CustomCollisionComponent CollisionComponent { get; private set; }
 
-        public FastRandom Random { get; private set; }
+        public static FastRandom Random { get; private set; } = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+
+        public FastRandom Randoms => Random;
 
         public GameState GameState { get; private set; }
 

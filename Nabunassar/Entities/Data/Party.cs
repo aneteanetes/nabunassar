@@ -1,18 +1,30 @@
-﻿using MonoGame.Extended.Collisions;
+﻿using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using System.IO;
+using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 
 namespace Nabunassar.Entities.Data
 {
-    internal class Party : Quad<Hero>
+    internal class Party : Quad<Hero>, IDistanceMeter
     {
+        public ActionQueue ActionQueue { get; set; } = new();
+
         public Entity Entity { get; set; }
 
         public MapObject MapObject { get; set; }
+
+        public GameObject GameObject => new GameObject()
+        {
+            MapObject = MapObject,
+            Entity = Entity,
+            ObjectType = ObjectType.Player            
+        };
 
         public Direction ViewDirection { get; set; } = Direction.Right;
 
@@ -143,12 +155,101 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        public void MoveTo(Vector2 to)
+        public void MoveTo(Vector2 to, GameObject gameObject=null, Vector2 mouseScreenPosition=default)
         {
-            MapObject.MoveToPosition(MapObject.Position, to);
+            if (gameObject == null)
+            {
+                MoveParty(to);
+            }
+            else
+            { 
+                if (IsObjectNear(gameObject))
+                {
+                    Interact(gameObject, mouseScreenPosition);
+                }
+                else
+                {
+                    MoveParty(to);
+
+                    MapObject.BoundsTries = 15;
+
+                    ActionQueue.Enqueue(() =>
+                    {
+                        Interact(gameObject, mouseScreenPosition);
+                    });
+                }
+            }
+        }
+
+        private void MoveParty(Vector2 to)
+        {
+            MapObject.BoundsTries = 75;
+
+            MapObject.MoveToPosition(MapObject.BoundsOrigin, to);
 
             DirectionRender.Sprite.IsVisible = true;
             DirectionRender.Position = to;
+        }
+
+        public void Interact(GameObject gameObject, Vector2 mouseScreenPosition)
+        {
+            switch (gameObject.ObjectType)
+            {
+                case ObjectType.Object:
+                    RadialMenu.Open(this._game, gameObject, mouseScreenPosition);
+                    break;
+                case ObjectType.NPC:
+                    SpeakTo(gameObject);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+
+        public Result<bool> IsObjectNear(GameObject gameObject)
+        {
+            if (gameObject == null)
+                return new Result<bool>(false,NabunassarGame.Game.Strings["GameTexts"]["NoTarget"]);
+
+
+            return DistanceMeterRectangle.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
+        }
+
+        public void SpeakTo(GameObject gameObject, Vector2 talkingTargetPosition=default)
+        {
+            if (gameObject.MapObject != null)
+            {
+                var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
+
+                if (visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle))
+                {
+                    var direction = MapObject.Position.DetectDirection(gameObject.MapObject.Position)
+                        .ToLeftRight();
+
+                    ChangeViewDirection(direction);
+                    gameObject.MapObject.ViewDirection = direction.Opposite();
+
+                    _game.Dialogues.OpenDialogue(gameObject);
+                }
+                //else
+                //{
+                //    MoveTo(talkingTargetPosition, gameObject);
+                //}
+            }
+        }
+
+        public void ChangeViewDirection(Direction direction)
+        {
+            var dir = direction.ToLeftRight();
+
+            foreach (var hero in this)
+            {
+                var render = hero.Entity.Get<RenderComponent>();
+                render.Sprite.Effect = dir == Direction.Left ? Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally : Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+            }
         }
 
         public void OnStopMoving()
@@ -161,6 +262,39 @@ namespace Nabunassar.Entities.Data
                     animatedSprite.SetAnimation("idle");
                 }
             }
+
+            this.MapObject.BoundsTries = 75;
+
+            Action dequeued = ActionQueue.Dequeue(); 
+            dequeued?.Invoke();
+
+            while (dequeued != default)
+            {
+                dequeued = ActionQueue.Dequeue();
+                dequeued?.Invoke();
+                this.MapObject.BoundsTries = 50;
+            }
+        }
+
+        public List<BaseWorldAbility> GetWorldAbilities(GameObject gameObject)
+        {
+            List<BaseWorldAbility> worldAbilities = new();
+
+            foreach (var hero in this)
+            {
+                if (hero.Creature != default)
+                {
+                    foreach (var abil in hero.Creature.WorldAbilities)
+                    {
+                        if (abil != null && abil.IsApplicable(gameObject))
+                        {
+                            worldAbilities.Add(abil);
+                        }
+                    }
+                }
+            }
+
+            return worldAbilities;
         }
     }
 }

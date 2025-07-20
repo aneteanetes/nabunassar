@@ -1,12 +1,10 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
-using AssetManagementBase;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Monogame.Extended;
-using MonoGame;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
@@ -14,18 +12,9 @@ using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.Extended.ViewportAdapters;
-using Myra;
-using Myra.Graphics2D.UI;
-using Nabunassar.Components;
-using Nabunassar.Content;
-using Nabunassar.Content.Compiler;
-using Nabunassar.Widgets;
-using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
-using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
-using Nabunassar.Screens;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 
@@ -203,8 +192,6 @@ namespace Nabunassar
 
             DataBase=new DataBase(this);
 
-            Random = new FastRandom();
-
             var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 
@@ -264,7 +251,6 @@ namespace Nabunassar
             return movementDirection;
         }
         
-        // Add this to the Game1.cs file
         private void AdjustZoom()
         {
             var state = Keyboard.GetState();

@@ -1,5 +1,7 @@
 ﻿using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Game;
 
 namespace Nabunassar
 {
@@ -15,7 +17,12 @@ namespace Nabunassar
         {
             var party = GameState.Party = new Party(this);
 
-            party.First = new Hero(this) { Tileset = "warrior.png" };
+            party.First = new Hero(this)
+            {
+                Tileset = "warrior.png",
+                Creature = new Creature()
+            };
+
             party.Second = new Hero(this) { Tileset = "rogue.png" };
             party.Third = new Hero(this) { Tileset = "wizard.png" };
             party.Fourth = new Hero(this) { Tileset = "priest.png" };
@@ -23,6 +30,8 @@ namespace Nabunassar
             var pos = new Vector2(175, 230);
 
             EntityFactory.CreateParty(GameState.Party, pos);
+
+            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party, party.First.Creature);
         }
 
         public void ChangeGameActive()
