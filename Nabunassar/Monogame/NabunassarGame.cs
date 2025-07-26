@@ -1,6 +1,7 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
 using Geranium.Reflection;
+using Microsoft.Win32;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -17,6 +18,7 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
+using System.Runtime.InteropServices;
 
 namespace Nabunassar
 {
@@ -87,11 +89,18 @@ namespace Nabunassar
             if (monitor.w == 0)
                 monitor = MonitorBounds.ElementAtOrDefault(0);
 
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var windowsScale = GetWindowsScreenScalingFactor(false);
+                Settings.WidthPixel = ((int)(Settings.WidthPixel / windowsScale));
+                Settings.HeightPixel = ((int)(Settings.HeightPixel / windowsScale));
+            }
+
             if (Settings.WidthHeightAutomated && monitor.w != originSize.X && (Settings.WindowMode == WindowMode.FullScreenSoftware || Settings.WindowMode == WindowMode.WindowedScaled))
             {
                 Settings.WidthPixel = monitor.w;
                 Settings.HeightPixel = monitor.h;
-                            }
+            }
 
             originSize = new Point(Settings.OriginWidthPixel, Settings.OriginHeightPixel);
             var size = new Point(Settings.WidthPixel, Settings.HeightPixel);
@@ -170,7 +179,7 @@ namespace Nabunassar
             }
 
             graphics.SynchronizeWithVerticalRetrace = false;
-            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -184,7 +193,7 @@ namespace Nabunassar
             IsMouseVisible = !state.IsConnected;
             Settings.IsGamePadConnected = state.IsConnected;
 
-            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
