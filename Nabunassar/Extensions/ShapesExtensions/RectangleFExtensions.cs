@@ -32,9 +32,13 @@ namespace Nabunassar
 
         public static RectangleF Multiple(this RectangleF rect, float multiplier)
         {
-            var width = rect.Width * multiplier;
-            var height = rect.Height * multiplier;
-            return new RectangleF(rect.X - (width/2)/2, rect.Y - (height/2)/2, width, height);
+            var newWidth = rect.Width * multiplier;
+            var newHeight = rect.Height * multiplier;
+
+            var newX = rect.X + rect.Width / 2 - newWidth / 2;
+            var newY = rect.Y + rect.Height / 2 - newHeight / 2;
+
+            return new RectangleF(newX,newY,newWidth, newHeight);
         }
     }
 }
