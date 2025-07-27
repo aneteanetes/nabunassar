@@ -134,6 +134,7 @@ namespace Nabunassar.Resources
             }
 
             var newObject = @object.Clone();
+            newObject.Init(_game);
 
             return newObject;
         }
@@ -143,10 +144,22 @@ namespace Nabunassar.Resources
             return _game.Content.Load<T>(assetName);
         }
 
+        public T GetById<T>(string assetName, Func<T, bool> idSelector)
+        {
+            return _game.Content.Load<List<T>>(assetName).FirstOrDefault(idSelector);
+        }
+
         internal AbilityModel GetAbility(string abilityName)
         {
             var abilities = _game.Content.Load<List<AbilityModel>>("Data/Abilities/AbilityRegistry.json");
             return abilities.FirstOrDefault(x=>x.Name== abilityName);
+        }
+
+        internal Item GetItem(int itemId)
+        {
+            var item = GetById<Item>("Data/Objects/ItemsRegistry.json", x => x.ObjectId == itemId);
+
+            return item.Clone();
         }
     }
 }

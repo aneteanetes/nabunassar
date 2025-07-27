@@ -29,6 +29,9 @@ namespace Nabunassar.Systems
 
         public override void Update(GameTime gameTime, bool isSystem)
         {
+            if(!Game.IsMouseMoveAvailable)
+                return;
+
             ICollisionActor actor = null;
             GameObject focusedObject = null;
             MapObject focusedMapObject = null;

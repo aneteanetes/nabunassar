@@ -1,4 +1,6 @@
 ﻿using Nabunassar.Struct;
+using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows;
 
 namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
 {
@@ -6,6 +8,12 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
     {
         public OpenRadialAction(RadialMenu menu) : base(menu, Direction.Right, "open")
         {
+        }
+
+        public override void OnClick()
+        {
+            Close();
+            ScreenWidgetWindow.Open(new ItemContainerWindow(Game, GameObject));
         }
     }
 }

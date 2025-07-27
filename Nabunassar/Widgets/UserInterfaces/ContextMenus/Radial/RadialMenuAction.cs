@@ -42,6 +42,11 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             return new BackRadialAction(Menu, this);
         }
 
+        public void Close()
+        {
+            Menu.Close();
+        }
+
         public virtual void OnClick()
         {
             if(InnerActions.IsNotEmpty())

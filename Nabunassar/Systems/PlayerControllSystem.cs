@@ -44,7 +44,7 @@ namespace Nabunassar.Systems
                 var party = _partyComponentMapper.Get(entityId);
                 var gameobj = _gameObjectComponentMapper.Get(entityId);
 
-                if (mouse.WasButtonPressed(MouseButton.Right))
+                if (mouse.WasButtonPressed(MouseButton.Right) && Game.IsMouseMoveAvailable)
                 {
                     SelectObjectByMouse(gameTime, mouse);
                 }

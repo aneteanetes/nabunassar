@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Content;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Speaking;
+using Nabunassar.Entities.Struct.ImageRegions;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
 
@@ -23,10 +24,8 @@ namespace Nabunassar.Monogame.Content
         {
             _game = game;
             _resourceLoader = resourceLoader;
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new DiceJsonConverter());
-            settings.Converters.Add(new RankJsonConverter());
-            _jsonSerializer = JsonSerializer.CreateDefault(settings);
+
+            InitJsonSerializer();
 
             RichTextDefaults.FontResolver = fontName_ttf =>
             {
@@ -44,6 +43,17 @@ namespace Nabunassar.Monogame.Content
             };
         }
 
+        private void InitJsonSerializer()
+        {
+            var settings = new JsonSerializerSettings();
+
+            settings.Converters.Add(new DiceJsonConverter());
+            settings.Converters.Add(new RankJsonConverter());
+            settings.Converters.Add(new ImageRegionJsonConverter());
+
+            _jsonSerializer = JsonSerializer.CreateDefault(settings);
+        }
+
         public override T Load<T>(string assetName)
         {
             if (LoadedAssets.TryGetValue(assetName, out var value) && value is T)
@@ -53,7 +63,6 @@ namespace Nabunassar.Monogame.Content
 
             if (typeof(T) == typeof(Texture2D))
             {
-
                 var stream = OpenStream(assetName);
                 var texture = Texture2D.FromStream(_game.GraphicsDevice, stream, DefaultColorProcessors.PremultiplyAlpha);
                 LoadedAssets[assetName] = texture;

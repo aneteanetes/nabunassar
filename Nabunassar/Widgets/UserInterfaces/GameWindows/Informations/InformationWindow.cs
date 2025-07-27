@@ -192,15 +192,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 
         protected override void InitWindow(Window window)
         {
-            window.Title = GameObject.GetObjectName();
-            window.TitleFont = Font.GetFont(24);
-
-            window.TitlePanel.Background = WindowBackground.NinePatch();
-            window.TitlePanel.Padding = Thickness.Zero;
-
-            var label = window.TitlePanel.GetChildren().FirstOrDefault(x => x.GetType() == typeof(Label)).As<Label>();
-            if (label != null)
-                label.HorizontalAlignment = HorizontalAlignment.Center;
+            StandartWindowTitle(window, GameObject.GetObjectName());
         }
 
         public static void Open(NabunassarGame game, GameObject gameObject)

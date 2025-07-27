@@ -1,6 +1,9 @@
 ﻿using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Game;
+using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.Base
 {
@@ -58,6 +61,19 @@ namespace Nabunassar.Widgets.Base
 
 
             return Window;
+        }
+
+        protected void StandartWindowTitle(Window window, string titleText)
+        {
+            window.Title = titleText;
+            window.TitleFont = Game.Content.LoadFont(Fonts.Retron).GetFont(24);
+
+            window.TitlePanel.Background = WindowBackground.NinePatch();
+            window.TitlePanel.Padding = Thickness.Zero;
+
+            var label = window.TitlePanel.GetChildren().FirstOrDefault(x => x.GetType() == typeof(Label)).As<Label>();
+            if (label != null)
+                label.HorizontalAlignment = HorizontalAlignment.Center;
         }
 
         public override void Close()

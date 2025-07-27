@@ -1,0 +1,25 @@
+[
+  {
+    "TableId": 1,
+    "Rows": [
+      {
+        "ItemId": 1,
+        "Type": "Guaranteed"
+      },
+      {
+        "ItemId": 2,
+        "Type": "Percent",
+        "Value": 50
+      },
+      {
+        "ItemId": 2,
+        "Type": "Percent",
+        "Value": 90
+      },
+      {
+        "ItemId": 2,
+        "Type": "Guaranteed"
+      }
+    ]
+  },
+]

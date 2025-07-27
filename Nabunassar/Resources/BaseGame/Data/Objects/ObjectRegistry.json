@@ -84,6 +84,7 @@
     "Cursor": "Pointer",
     "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowchest_s.png",
-    "ObjectType": "Container"
+    "ObjectType": "Container",
+    "LootTableId": 1
   }
 ]

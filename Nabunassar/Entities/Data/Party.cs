@@ -7,7 +7,9 @@ using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
+using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows;
 
 namespace Nabunassar.Entities.Data
 {
@@ -200,6 +202,9 @@ namespace Nabunassar.Entities.Data
                     break;
                 case ObjectType.NPC:
                     SpeakTo(gameObject);
+                    break;
+                case ObjectType.Container:
+                    ScreenWidgetWindow.Open(new ItemContainerWindow(_game, gameObject));
                     break;
                 default:
                     break;

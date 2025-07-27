@@ -20,11 +20,5 @@ namespace Nabunassar.Widgets
             var dialogue = new DialogueMenu(Game, gameObject);
             return Game.AddDesktopWidget(dialogue);
         }
-
-        public RadialMenu OpenRadial(GameObject gameObject, Vector2 position)
-        {
-            Game.GameState.Cursor.SetCursor("cursor");
-            return Game.AddDesktopWidget(new RadialMenu(Game, gameObject, position));
-        }
     }
 }

@@ -25,5 +25,7 @@
   "Success": "Успех",
   "Failure": "Провал",
   "ThrowResult": "Результат броска",
-  "Formula": "Формула"
+  "Formula": "Формула",
+  "Take": "Взять",
+  "TakeAll": "Взять всё"
 }
