@@ -6,6 +6,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
     {
         public MoveToRadialAction(RadialMenu menu) : base(menu, Direction.Right, "moveto")
         {
+            IsEnabled = true;
         }
 
         public override void OnClick()

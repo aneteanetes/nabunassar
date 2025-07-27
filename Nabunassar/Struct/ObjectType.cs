@@ -14,6 +14,7 @@ namespace Nabunassar.Struct
         Wall,
         Object,
         NPC,
+        Container,
 
         // other objects
         Player,
@@ -25,7 +26,7 @@ namespace Nabunassar.Struct
         Interface,
         Border,
         Hull,
-        RollResult
+        RollResult,
     }
 
     public static class ObjectTypeInspectorExtensions
@@ -34,7 +35,7 @@ namespace Nabunassar.Struct
         {
             var code = (int)objectType;
 
-            return code > 1 && code < 7;
+            return code > 1 && code < 8;
         }
 
         /// <summary>

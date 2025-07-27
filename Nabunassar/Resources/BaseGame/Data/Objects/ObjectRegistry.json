@@ -77,5 +77,13 @@
     "Portrait": "Assets/Images/Objects/snow/snowwall_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowwall_s.png",
     "ObjectType": "Wall"
+  },
+  {
+    "ObjectId": 12,
+    "Name": "SnowChest",
+    "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
+    "Image": "Assets/Images/Objects/snow/snowchest_s.png",
+    "ObjectType": "Container"
   }
 ]

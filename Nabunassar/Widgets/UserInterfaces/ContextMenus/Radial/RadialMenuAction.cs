@@ -18,7 +18,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         public RadialMenu Menu { get; protected set; }
 
-        public bool IsDisabled { get; set; }
+        public bool IsEnabled { get; set; } = true;
 
         public NabunassarGame Game => Menu.Game;
 
@@ -34,6 +34,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             CodeName = codeName;
             InnerActions = innerActions;
             Menu = menu;
+            IsEnabled = menu.Game.GameState.Party.IsObjectNear(menu.GameObject);
         }
 
         public BackRadialAction CreateBackAction()

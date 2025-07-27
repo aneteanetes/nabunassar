@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="145">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="147">
  <properties>
   <property name="AreaName" value="Underpeaks"/>
   <property name="AreaObjectPostfix" value="Snow"/>
@@ -1128,6 +1128,13 @@
   <object id="143" gid="703" x="0" y="32" width="16" height="16">
    <properties>
     <property name="ObjectType" value="Border"/>
+   </properties>
+  </object>
+  <object id="146" gid="305" x="364.667" y="68.3333" width="16" height="16">
+   <properties>
+    <property name="Color" type="color" value="#ff2073aa"/>
+    <property name="IsLocked" type="bool" value="true"/>
+    <property name="ObjectId" type="int" value="12"/>
    </properties>
   </object>
  </objectgroup>

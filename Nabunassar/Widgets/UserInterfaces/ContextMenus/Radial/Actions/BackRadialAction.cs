@@ -7,6 +7,7 @@
         public BackRadialAction(RadialMenu menu, RadialMenuAction baseAction) : base(menu, baseAction.Position, baseAction.CodeName, baseAction.InnerActions)
         {
             PreviousAction = baseAction;
+            IsEnabled = true;
         }
 
         public override void OnClick()

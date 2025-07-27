@@ -55,11 +55,14 @@ namespace Nabunassar.Entities
             var cursorSpeakTexture = Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0050.png");
             var cursorSpeak = MouseCursor.FromTexture2D(cursorSpeakTexture, 0, 0);
 
+            var cursorHand = MouseCursor.FromTexture2D(Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0176.png"), 0, 0);
+
             cursor.DefineCursor("cursor", cursorDefault);
 
             cursor.DefineCursor("enter", cursorEnter);
             cursor.DefineCursor("info", cursorInfo);
             cursor.DefineCursor("speak", cursorSpeak);
+            cursor.DefineCursor("hand", cursorHand);
 
             cursor.SetCursor("cursor");
 
@@ -516,7 +519,7 @@ namespace Nabunassar.Entities
             if (gameObj.ObjectType.IsInteractive())
             {
                 var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
-                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), -1, focusWidgetComp);
+                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), 1, focusWidgetComp);
                 entity.Attach(focusWidgetComp);
             }
 
