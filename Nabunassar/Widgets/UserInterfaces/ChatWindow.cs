@@ -10,7 +10,7 @@ using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using System.Reflection;
 
-namespace Nabunassar.Widgets.UserInterfaces.GameWindows
+namespace Nabunassar.Widgets.UserInterfaces
 {
     internal class ChatWindow : ScreenWidgetWindow
     {
@@ -72,7 +72,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
             //content.Widgets.Add(messageBox);
 
-            window.Content= scrollcontainer;
+            window.Content = scrollcontainer;
 
             window.DragDirection = DragDirection.None;
             window.TitlePanel.TouchDown += TitlePanel_TouchDown;
@@ -85,7 +85,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             {
                 Renderable = resizeImage,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment= VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 Width = 12,
                 Height = 12
             };
@@ -139,10 +139,10 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             {
                 Wrap = true,
                 Text = message,
-                Padding = new Myra.Graphics2D.Thickness(0,5,0,0),
+                Padding = new Myra.Graphics2D.Thickness(0, 5, 0, 0),
             };
 
-            if(messageBox.Widgets.Count> trashhold)
+            if (messageBox.Widgets.Count > trashhold)
             {
                 ChatWindowWidget.ClearMessageBox(1);
             }
@@ -172,7 +172,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             }
         }
 
-        public static void AddMessage(string message) 
+        public static void AddMessage(string message)
             => AddMessageLabel(message);
 
         public static void AddRollMessage(string message, RollResult rollResult)
@@ -185,7 +185,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                     RollResult = rollResult,
                     ObjectType = Struct.ObjectType.RollResult
                 });
-                DiceResultWindow.Open<DiceResultWindow>(window);
+                Open(window);
             };
             label.MouseEntered += Label_MouseEntered;
             label.MouseLeft += Label_MouseLeft;
@@ -210,7 +210,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         protected override void InitWindow(Window window)
         {
-            this.Position = new Vector2(0, minimalTop);
+            Position = new Vector2(0, minimalTop);
 
             window.Background = chatborderBlack.NinePatch();
             window.OverBackground = chatborder.NinePatch();
@@ -247,7 +247,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
                 if (mouse.PositionChanged && mouse.Position.Y >= 0)
                 {
                     var pos = mouse.Position.ToVector2();
-                    SetWindowPosition(((int)pos.Y));
+                    SetWindowPosition((int)pos.Y);
                     SetScrollDown();
                 }
 
@@ -258,14 +258,14 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         private static void SetScrollDown()
         {
-            scrollcontainer.ScrollPosition = new Microsoft.Xna.Framework.Point(0, messageBox.ActualBounds.Size.Y);
+            scrollcontainer.ScrollPosition = new Point(0, messageBox.ActualBounds.Size.Y);
         }
 
         private void SetWindowPosition(int y)
         {
             Window.Top = y;
 
-            scrollcontainer.Height = (minimalTop + minimalHeight) - y;
+            scrollcontainer.Height = minimalTop + minimalHeight - y;
 
 
             if (scrollcontainer.Height < minimalHeight)

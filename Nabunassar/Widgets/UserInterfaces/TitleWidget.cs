@@ -15,10 +15,13 @@ namespace Nabunassar.Widgets.UserInterfaces
         private static FontSystem _font;
         private string _text;
         private Color _color;
+        HorizontalAlignment? _horizontalAlignment;
+        VerticalAlignment? _verticalAlignment;
+        bool _bindGameControls;
 
         protected override bool IsMouseMovementAvailableWithThisActivedWidget => true;
 
-        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default) : base(game)
+        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default, HorizontalAlignment? horizontalAlignment = null, VerticalAlignment? verticalAlignment= null, bool bindGameControls=true) : base(game)
         {
             _color = color;
             if(_color ==default)
@@ -26,6 +29,11 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             _position =position;
             _text=text ?? "[Title not found!]";
+
+            _horizontalAlignment = horizontalAlignment;
+            _verticalAlignment = verticalAlignment;
+
+            _bindGameControls=bindGameControls; //cuz logic
         }
 
         protected virtual string GetText() => _text;
@@ -65,12 +73,32 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             labelText.Left = (int)(sexteenPixels / 2 - textMeasure / 2);
 
+            if (_horizontalAlignment != null)
+                panel.HorizontalAlignment = _horizontalAlignment.Value;
+
+            if (_verticalAlignment != null)
+                panel.VerticalAlignment = _verticalAlignment.Value;
+
             panel.Left = ((int)_position.X);
             panel.Top = ((int)_position.Y);
 
             panel.Widgets.Add(labelText);
 
             return panel;
+        }
+
+        public override void Dispose()
+        {
+            UnloadContent();
+            Game.Components.Remove(this);
+            OnDispose?.Invoke();
+            base.MapObject = null;
+
+            if (_bindGameControls)
+                Game.IsMouseMoveAvailable = true;
+
+            if (!IsRemoved)
+                Game.RemoveDesktopWidget(this);
         }
 
         private Label labelText;

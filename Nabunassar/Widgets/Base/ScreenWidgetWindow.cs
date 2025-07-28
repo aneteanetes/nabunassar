@@ -13,7 +13,38 @@ namespace Nabunassar.Widgets.Base
         {
         }
 
-        public virtual bool IsModal => false;
+        public bool IsCanOpen()
+        {
+            if (_isUnique)
+            {
+                if (_uniqueWindows.ContainsKey(this.GetType()))
+                    return _isUniqueFunc(this);
+
+                _uniqueWindows[this.GetType()] = this;
+                return true;
+            }
+
+            return true;
+        }
+
+        private bool _isUnique = false;
+        private Func<object, bool> _isUniqueFunc;
+        private static Dictionary<Type,object> _uniqueWindows = new();
+
+        public void MakeUnique(Func<object,bool> checkUnique)
+        {
+            _isUnique = true;
+            _isUniqueFunc = checkUnique;
+            this.OnDispose += () =>
+            {
+                var type = this.GetType();
+                if (_uniqueWindows.ContainsKey(type))
+                {
+                    if (_uniqueWindows[type] == this)
+                        _uniqueWindows.Remove(this.GetType());
+                }
+            };
+        }
 
         public virtual bool IsCloseable => true;
 

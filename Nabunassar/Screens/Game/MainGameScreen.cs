@@ -6,6 +6,7 @@ using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Screens.Game
@@ -26,7 +27,7 @@ namespace Nabunassar.Screens.Game
             Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
-            Game.GameState.LoadedMap = _tiledMap;
+            Game.GameState.LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) };
             Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)
@@ -74,6 +75,9 @@ namespace Nabunassar.Screens.Game
             Game.RunGameState();
 
             InitGameUI();
+
+            _tiledMap.Dispose();
+            _tiledMap = null;
         }
 
         private bool isEsc = false;
@@ -84,6 +88,7 @@ namespace Nabunassar.Screens.Game
         {
             Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
             Game.AddDesktopWidget(new ChatWindow(Game));
+            Game.AddDesktopWidget(new ControlPanel(Game));
         }
 
         public override void Update(GameTime gameTime)
@@ -92,13 +97,13 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (!isEsc && Game.Desktop.Widgets.Count == 0)
+                if (!isEsc && Game.WidgetsCount() == 0)
                 {
                     isEsc = true;
-                    Game.AddDesktopWidget(new MainMenu(Game));
+                    Game.AddDesktopWidget(new MainMenu(Game,true));
                     Game.ChangeGameActive();
                 }
-                else if (Game.Desktop.Widgets.Count == 1 && Game.IsDesktopWidgetExist<MainMenu>())
+                else if (Game.WidgetsCount() == 1 && Game.IsDesktopWidgetExist<MainMenu>())
                 {
                     isEsc = false;
                     Game.RemoveDesktopWidgets<MainMenu>();

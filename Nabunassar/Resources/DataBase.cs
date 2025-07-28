@@ -64,6 +64,11 @@ namespace Nabunassar.Resources
                 return value;
             }
 
+            if (data.TryGetValue(@string.ToLowerInvariant(), out value))
+            {
+                return value;
+            }
+
             return NotFoundStringConstant;
         }
 

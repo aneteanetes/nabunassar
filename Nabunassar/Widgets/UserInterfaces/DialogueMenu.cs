@@ -10,7 +10,6 @@ using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
-using Nabunassar.Widgets.UserInterfaces.GameWindows;
 using System.Text;
 
 namespace Nabunassar.Widgets.UserInterfaces

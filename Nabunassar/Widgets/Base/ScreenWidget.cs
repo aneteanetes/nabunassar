@@ -17,6 +17,8 @@ namespace Nabunassar.Widgets.Base
         public event EventHandler<EventArgs> DrawOrderChanged;
         public event EventHandler<EventArgs> VisibleChanged;
 
+        public virtual bool IsModal => false;
+
         public virtual bool IsRemovable => true;
 
         public int DrawOrder { get; set; }
@@ -48,7 +50,7 @@ namespace Nabunassar.Widgets.Base
 
         protected abstract Widget InitWidget();
 
-        public MapObject MapObject { get; private set; }
+        public MapObject MapObject { get; protected set; }
 
         protected virtual bool IsMouseMovementAvailableWithThisActivedWidget => false;
 
@@ -58,6 +60,7 @@ namespace Nabunassar.Widgets.Base
         {
             LoadContent();
             UIWidget = InitWidget();
+            UIWidget.IsModal = IsModal;
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {

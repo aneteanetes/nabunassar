@@ -35,13 +35,13 @@ namespace Nabunassar
 
             //
 
+            Strings = new LocalizedStrings(this);
+
             SwitchScreen<MainMenuScreen>();
 
             Game.InitializeGameState();
 
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
-
-            Strings = new LocalizedStrings(this);
 
             LoadPenumbra();
 

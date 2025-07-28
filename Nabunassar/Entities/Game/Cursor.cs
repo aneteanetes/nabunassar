@@ -28,8 +28,6 @@ namespace Nabunassar.Entities.Game
             Cursors[name] = mouseCursor;
         }
 
-        public static Queue<FocusEvent> FocusEvents = new();
-
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject another)
         {
             var anotherGameObject = another.GameObject;
@@ -37,43 +35,11 @@ namespace Nabunassar.Entities.Game
             var mouse = MouseExtended.GetState();
             var mousePosition = mouse.Position.ToVector2();
 
-            if (FocusedMapObject == default)
-            {
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = true,
-                    Object = anotherGameObject,
-                    Position = mousePosition
-                });
-            }
-            else if (FocusedMapObject != anotherGameObject)
-            {
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = false,
-                    Object = FocusedMapObject,
-                    Position = mousePosition
-                });
-
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = true,
-                    Object = anotherGameObject,
-                    Position = mousePosition
-                });
-            }
-
             FocusedMapObject = anotherGameObject;
         }
 
         internal void OnNoCollistion()
         {
-            if (FocusedMapObject != default)
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = false,
-                    Object = FocusedMapObject,
-                });
 
             FocusedMapObject = default;
         }

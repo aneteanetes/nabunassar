@@ -154,7 +154,7 @@ namespace Nabunassar.Entities
                 AddOnMinimap(entity.Id,position, ObjectType.Ground,null, groundType);
             }
 
-            var tileComp = new TileComponent(polygon);
+            var tileComp = new TileComponent(polygon.CopyBase());
             entity.Attach(tileComp);
 
             return entity;

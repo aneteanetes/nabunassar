@@ -1,11 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended.Graphics;
+using Nabunassar.Entities.Base;
 using System.Diagnostics;
 
 namespace Nabunassar.Tiled.Map
 {
     [DebuggerDisplay("{name}")]
-    public class TiledTileset
+    public class TiledTileset : Propertied
     {
         public string name { get; set; }
 
@@ -102,5 +103,18 @@ namespace Nabunassar.Tiled.Map
         public Texture2DAtlas TextureAtlas { get; set; }
 
         public Texture2DAtlas TextureAtlasGlow { get; set; }
+
+        public override void Dispose()
+        {
+            foreach (var tile in Tiles)
+            {
+                tile.Dispose();
+            }
+            Tiles.Clear();
+            Tiles = null;
+
+            TextureAtlas = null;
+            TextureAtlasGlow = null;
+        }
     }
 }

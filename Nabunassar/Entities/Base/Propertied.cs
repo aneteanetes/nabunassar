@@ -2,7 +2,7 @@
 
 namespace Nabunassar.Entities.Base
 {
-    public class Propertied
+    public class Propertied : IDisposable
     {
         public Dictionary<string, string> Properties { get; set; } = new();
 
@@ -41,6 +41,17 @@ namespace Nabunassar.Entities.Base
             }
 
             propertyValueCache.Clear();
+        }
+
+        public virtual void Dispose()
+        {
+            if (Properties != null)
+                Properties.Clear();
+            Properties = null;
+
+            if (propertyValueCache != null)
+                propertyValueCache.Clear();
+            propertyValueCache = null;
         }
     }
 }

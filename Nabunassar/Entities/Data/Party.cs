@@ -4,6 +4,7 @@ using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
@@ -42,6 +43,8 @@ namespace Nabunassar.Entities.Data
             Third = new Hero(game);
             Fourth = new Hero(game);
         }
+
+        public Inventory Inventory { get; set; } = new();
 
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject other)
         {

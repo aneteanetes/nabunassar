@@ -4,9 +4,9 @@ namespace Nabunassar.Components
 {
     internal class TileComponent
     {
-        public TiledPolygon Polygon { get;private set; }
+        public TiledBase Polygon { get;private set; }
 
-        public TileComponent(TiledPolygon polygon)
+        public TileComponent(TiledBase polygon)
         {
             Polygon = polygon;
         }

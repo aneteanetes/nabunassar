@@ -5,7 +5,7 @@ using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Tiled.Map;
-using Nabunassar.Widgets.UserInterfaces.GameWindows;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar.Entities.Data
 {
@@ -19,7 +19,7 @@ namespace Nabunassar.Entities.Data
 
         public Minimap Minimap { get; set; }
 
-        public TiledMap LoadedMap { get; set; }
+        public TiledBase LoadedMap { get; set; }
 
         public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 

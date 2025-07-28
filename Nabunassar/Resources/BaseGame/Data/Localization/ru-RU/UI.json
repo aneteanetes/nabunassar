@@ -27,5 +27,14 @@
   "ThrowResult": "Результат броска",
   "Formula": "Формула",
   "Take": "Взять",
-  "TakeAll": "Взять всё"
+  "TakeAll": "Взять всё",
+  "Characters": "Персонажи",
+  "Food": "Провизия",
+  "Inventory": "Предметы",
+  "Journal": "Журнал",
+  "GlobalMap": "Мир",
+  "Settings": "Настройки",
+  "NewGame": "Новая игра",
+  "Load": "Загрузить",
+  "Exit": "Выйти"
 }

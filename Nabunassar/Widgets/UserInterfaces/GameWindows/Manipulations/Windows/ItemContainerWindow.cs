@@ -1,6 +1,7 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -21,6 +22,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         public ItemContainerWindow(NabunassarGame game, GameObject container) : base(game)
         {
             _container = container;
+            MakeUnique(x =>
+            {
+                if(x is ItemContainerWindow containerWindow)
+                {
+                    return containerWindow._container != container;
+                }
+
+                return true;
+            });
         }
 
         protected override void LoadContent()
@@ -41,6 +51,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             base.LoadContent();
         }
 
+        private VerticalStackPanel _itemsPanel;
+
         protected override Window CreateWindow()
         {
             var window = new Window();
@@ -50,7 +62,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             var scroll = new ScrollViewer();
 
-            var panel = new VerticalStackPanel();
+            var panel = _itemsPanel = new VerticalStackPanel();
             panel.MinHeight = minimalHeight;
             panel.Width = 300;
 
@@ -71,6 +83,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             grid.RowsProportions.Add(new Proportion(ProportionType.Part, 1.5f));
 
             window.Content = grid;
+            window.CloseKey = Microsoft.Xna.Framework.Input.Keys.Escape;
 
             FillWindow(panel, _container.Items(Game));
             FillButtons(btnPanel);
@@ -78,9 +91,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             return window;
         }
 
+        private Button _takeBtn;
+
         protected void FillButtons(VerticalStackPanel panel)
         {
-            var takeBtn = new Button()
+            var takeBtn = _takeBtn = new Button()
             {
                 Height = 25,
                 Background = WindowBackground.NinePatch(),
@@ -143,12 +158,31 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private void TakeAllBtn_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("take all items");
+            ResetSelectedItem();
+            foreach (var itemMap in itemPanelMap)
+            {
+                TakeItem(itemMap.Key);
+            }
+            Close();
         }
 
         private void TakeBtn_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("take specific btn");
+            TakeItem(_selectedItem);
+            ResetSelectedItem();
+        }
+
+        private void ResetSelectedItem()
+        {
+            _selectedItem = null;
+            _selectedPanel = null;
+        }
+
+        private void TakeItem(Item item)
+        {
+            Game.GameState.Party.Inventory.AddItem(item);
+            _container.RemoveItem(item);
+            _itemsPanel.Widgets.Remove(itemPanelMap[item]);
         }
 
         protected override void InitWindow(Window window)
@@ -164,12 +198,21 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             }
         }
 
+        private Dictionary<Item, Panel> itemPanelMap = new();
+        private Panel _selectedPanel;
+        private Item _selectedItem;
+        private IBrush _defaultPanelBackground;
+
         private Panel CreateItemPanel(Item item)
         {
             var pan = new Panel
             {
                 Height = 32
             };
+
+            _defaultPanelBackground = pan.Background;
+
+            pan.TouchDown += (s,e)=> Pan_TouchDown(s,item);
 
             pan.OverBackground = WindowBackground.NinePatch();
 
@@ -201,13 +244,34 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             pan.Widgets.Add(grid);
 
+            itemPanelMap[item]=pan;
+
             return pan;
+        }
+
+        private void Pan_TouchDown(object sender, Item item)
+        {
+            var itemPanel = sender as Panel;
+
+            if (_selectedPanel != null)
+            {
+                _selectedPanel.Background = _defaultPanelBackground;
+                _selectedItem = null;
+            }
+
+            _selectedPanel = itemPanel;
+            _selectedItem = item;
+
+            _selectedPanel.Background = WindowBackground.NinePatch();
         }
 
         public override void Update(GameTime gameTime)
         {
             if (!Game.GameState.Party.IsObjectNear(_container))
                 this.Close();
+
+            _takeBtn.Enabled = _selectedItem != null;
+
         }
     }
 }

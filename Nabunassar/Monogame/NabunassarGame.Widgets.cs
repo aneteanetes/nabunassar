@@ -25,18 +25,26 @@ namespace Nabunassar
 
                 if (uiWidget is Window windowWidget)
                 {
-
-                    Point? pos = widget.Position == default ?
-                        null
-                        : widget.Position.ToPoint();
-
-                    if (widget.As<ScreenWidgetWindow>()?.IsModal ?? false)
+                    if (widget is ScreenWidgetWindow widgetWindow)
                     {
-                        windowWidget.ShowModal(DesktopContainer, pos);
-                    }
-                    else
-                    {
-                        windowWidget.Show(DesktopContainer, pos);
+                        if (!widgetWindow.IsCanOpen())
+                        {
+                            widgetWindow.Dispose();
+                            return null;
+                        }
+
+                        Point? pos = widget.Position == default ?
+                            null
+                            : widget.Position.ToPoint();
+
+                        if (widgetWindow.IsModal)
+                        {
+                            windowWidget.ShowModal(DesktopContainer, pos);
+                        }
+                        else
+                        {
+                            windowWidget.Show(DesktopContainer, pos);
+                        }
                     }
                 }
                 else
@@ -85,11 +93,13 @@ namespace Nabunassar
             widget.Dispose();
         }
 
-        public void RemoveDesktopWidgets<T>()
+        public void RemoveDesktopWidgets<T>(int skip=0)
         {
-            var pecifiedScreenWidgets = _screenWidgets.Where(x => x.GetType() == typeof(T)).ToArray();
-            foreach (var specificScreenWidget in pecifiedScreenWidgets)
+            var specifiedScreenWidgets = _screenWidgets.Where(x => x.GetType() == typeof(T)).ToArray();
+
+            for (int i = 0; i < specifiedScreenWidgets.Length-skip; i++)
             {
+                var specificScreenWidget = specifiedScreenWidgets[i];
                 RemoveDesktopWidget(specificScreenWidget);
             }
         }

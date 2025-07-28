@@ -122,6 +122,22 @@ namespace Nabunassar.Entities.Game
             return _items;
         }
 
+        public bool RemoveItem(Item item)
+        {
+            if (_items.Contains(item))
+                _items.Remove(item);
+
+            return true;
+        }
+
+        public bool AddItem(Item item)
+        {
+            if (!_items.Contains(item))
+                _items.Add(item);
+
+            return true;
+        }
+
         public Result<bool> IsObjectNear(GameObject gameObject)
         {
             if (gameObject == null)
