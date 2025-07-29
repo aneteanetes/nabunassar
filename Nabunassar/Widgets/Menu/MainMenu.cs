@@ -13,6 +13,12 @@ internal partial class MainMenu : ScreenWidget
 {
     bool _isInGame;
 
+    public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+    {
+        if (_isInGame)
+            base.BindWidgetBlockMouse(widget, withDispose);
+    }
+
     public MainMenu(NabunassarGame game, bool isInGame=false) : base(game)
     {
         _isInGame = isInGame;
@@ -38,7 +44,7 @@ internal partial class MainMenu : ScreenWidget
         base.UnloadContent();
     }
 
-    protected override Widget InitWidget()
+    protected override Widget CreateWidget()
     {
         var panel = new Panel();
 
@@ -109,6 +115,11 @@ internal partial class MainMenu : ScreenWidget
             panel.IsModal = true;
 
         return panel;
+    }
+
+    public override void OnAfterAddedWidget(Widget widget)
+    {
+        widget.BringToFront();
     }
 
     private void Back_Click(object sender, EventArgs e)

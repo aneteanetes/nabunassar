@@ -490,6 +490,7 @@ namespace Nabunassar.Entities
 
                     mapObject.Dependant.Add(complexCollision);
                 }
+                mapObject.Bounds = new RectangleF(position, size);
             }
             else
             {

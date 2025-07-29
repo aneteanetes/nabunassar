@@ -43,7 +43,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         private Panel _globalPanel;
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             Game.RemoveDesktopWidgets<TitleWidget>();
             Game.DisableMouseSystems();

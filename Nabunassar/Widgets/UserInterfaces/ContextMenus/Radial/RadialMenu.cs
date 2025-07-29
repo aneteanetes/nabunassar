@@ -95,7 +95,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         private Panel _globalPanel;
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             Game.DisableMouseSystems();
 

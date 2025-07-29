@@ -10,6 +10,7 @@ using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows;
 
 namespace Nabunassar.Entities.Data
@@ -210,6 +211,7 @@ namespace Nabunassar.Entities.Data
                     ScreenWidgetWindow.Open(new ItemContainerWindow(_game, gameObject));
                     break;
                 default:
+                    InformationWindow.Open(NabunassarGame.Game, gameObject);
                     break;
             }
         }
@@ -240,7 +242,7 @@ namespace Nabunassar.Entities.Data
                     ChangeViewDirection(direction);
                     gameObject.MapObject.ViewDirection = direction.Opposite();
 
-                    _game.Dialogues.OpenDialogue(gameObject);
+                    _game.WidgetFactory.OpenDialogue(gameObject);
                 }
                 //else
                 //{

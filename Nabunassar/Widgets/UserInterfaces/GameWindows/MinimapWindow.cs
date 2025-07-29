@@ -14,6 +14,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
         public MinimapWindow(NabunassarGame game) : base(game)
         {
+            MakeUnique(x => false);
         }
 
         protected override void LoadContent()

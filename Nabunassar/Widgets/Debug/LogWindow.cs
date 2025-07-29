@@ -9,7 +9,7 @@ namespace Nabunassar.Widgets.Debug
         {
         }
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             var window = new Window();
             window.Title = "debug log";

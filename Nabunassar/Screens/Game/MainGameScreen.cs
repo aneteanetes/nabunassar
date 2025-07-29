@@ -97,30 +97,21 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (!isEsc && Game.WidgetsCount() == 0)
+                if (Game.IsDesktopWidgetExist<MainMenu>())
                 {
-                    isEsc = true;
-                    Game.AddDesktopWidget(new MainMenu(Game,true));
+                    Game.RemoveDesktopWidgets<MainMenu>();
                     Game.ChangeGameActive();
                 }
-                else if (Game.WidgetsCount() == 1 && Game.IsDesktopWidgetExist<MainMenu>())
+                else
                 {
-                    isEsc = false;
-                    Game.RemoveDesktopWidgets<MainMenu>();
+                    Game.AddDesktopWidget(new MainMenu(Game, true));
                     Game.ChangeGameActive();
                 }
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
             {
-                if (!Game.IsDesktopWidgetExist<MinimapWindow>())
-                {
-                    Game.AddDesktopWidget(new MinimapWindow(Game));
-                }
-                else
-                {
-                    Game.RemoveDesktopWidgets<MinimapWindow>();
-                }
+                ControlPanel.OpenCloseMiniMap(Game);
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())

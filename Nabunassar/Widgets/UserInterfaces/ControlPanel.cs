@@ -3,6 +3,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces.GameWindows;
 
 namespace Nabunassar.Widgets.UserInterfaces
 {
@@ -15,6 +16,7 @@ namespace Nabunassar.Widgets.UserInterfaces
         private TextureRegion _foodImage;
         private TextureRegion _inventoryImage;
         private TextureRegion _journalImage;
+        private TextureRegion _miniMapImage;
         private TextureRegion _globalMapImage;
         private TextureRegion _settingsImage;
 
@@ -36,13 +38,14 @@ namespace Nabunassar.Widgets.UserInterfaces
             _foodImage = new TextureRegion(iconAsset, new Rectangle(528, 288, 16, 16));
             _inventoryImage = new TextureRegion(iconAsset, new Rectangle(592, 64, 16, 16));
             _journalImage = new TextureRegion(iconAsset, new Rectangle(528, 240, 16, 16));
+            _miniMapImage = new TextureRegion(iconAsset, new Rectangle(768, 64, 16, 16));
             _globalMapImage = new TextureRegion(iconAsset, new Rectangle(512, 240, 16, 16));
             _settingsImage = new TextureRegion(iconAsset, new Rectangle(720, 256, 16, 16));
 
             base.LoadContent();
         }
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             var panel = new HorizontalStackPanel();
 
@@ -60,6 +63,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             AddButton(panel, _inventoryImage, OpenInventory, Game.Strings["UI"]["Inventory"]);
             AddButton(panel, _journalImage, OpenJournal, Game.Strings["UI"]["Journal"]);
             AddButton(panel, _globalMapImage, OpenGlobalMap, Game.Strings["UI"]["GlobalMap"]);
+            AddButton(panel, _miniMapImage, () => OpenCloseMiniMap(Game,true), Game.Strings["UI"]["Minimap"]);
             AddButton(panel, _settingsImage, OpenSettings, Game.Strings["UI"]["Settings"], 0,5);
 
             return panel;
@@ -74,6 +78,20 @@ namespace Nabunassar.Widgets.UserInterfaces
         private void OpenInventory() { }
 
         private void OpenJournal() { }
+
+        public static void OpenCloseMiniMap(NabunassarGame game, bool isControlBtn = false)
+        {
+            if (!game.IsDesktopWidgetExist<MinimapWindow>())
+            {
+                game.AddDesktopWidget(new MinimapWindow(game));
+            }
+            else
+            {
+                game.RemoveDesktopWidgets<MinimapWindow>();
+                if(isControlBtn)
+                    game.IsMouseMoveAvailable = false;
+            }
+        }
 
         private void OpenGlobalMap() { }
 
@@ -101,9 +119,9 @@ namespace Nabunassar.Widgets.UserInterfaces
                 _selectedImage = img;
                 img.Color = Globals.CommonColor;
 
-                var left = Game.Resolution.Width - (img.Parent.ActualBounds.Right + img.Parent.ActualBounds.Size.X);
+                var left = img.ToGlobal(Point.Zero).X;
 
-                Game.AddDesktopWidget(new TitleWidget(Game, title, new Vector2(0,100), Color.White, HorizontalAlignment.Center, VerticalAlignment.Top,false));
+                Game.AddDesktopWidget(new TitleWidget(Game, title, new Vector2(left, 100), Color.White, /*HorizontalAlignment.Center,*/null, VerticalAlignment.Top));
             };
             img.MouseLeft += (s, e) =>
             {

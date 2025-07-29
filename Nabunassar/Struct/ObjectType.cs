@@ -27,6 +27,7 @@ namespace Nabunassar.Struct
         Border,
         Hull,
         RollResult,
+        Merchant,
     }
 
     public static class ObjectTypeInspectorExtensions

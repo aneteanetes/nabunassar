@@ -52,7 +52,7 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            Game.DesktopContainer.Update();
+            Game.Desktop.Update();
         }
     }
 }

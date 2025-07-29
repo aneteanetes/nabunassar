@@ -8,16 +8,19 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
+using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
     internal class ItemContainerWindow : ScreenWidgetWindow
     {
         private FontSystem _font;
+        private FontSystem _fontRetron;
         private Texture2D back;
         private int minimalHeight = 400;
         private GameObject _container;
-        private Dictionary<Item, TextureRegion> _textures = new();
+        private List<ItemView> itemViews = new();
 
         public ItemContainerWindow(NabunassarGame game, GameObject container) : base(game)
         {
@@ -35,23 +38,19 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         protected override void LoadContent()
         {
-            _font = Content.LoadFont(Fonts.Retron);
+            _font = Content.LoadFont(Fonts.BitterSemiBold);
+            _fontRetron = Content.LoadFont(Fonts.Retron);
             back = Content.Load<Texture2D>("Assets/Images/Icons/iconopacity50.png");
 
             foreach (var item in _container.Items(Game))
             {
-                var reg = item.IconRegion;
-                var texture = Content.Load<Texture2D>(item.Icon);
-                var region = new TextureRegion(texture, new Rectangle(reg.X, reg.Y, reg.Width, reg.Height));
-
-
-                _textures[item] = region;
-            }
+                itemViews.Add(new ItemView(item, Content));
+            }            
 
             base.LoadContent();
         }
 
-        private VerticalStackPanel _itemsPanel;
+        private ItemPanel _itemsPanel;
 
         protected override Window CreateWindow()
         {
@@ -62,9 +61,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             var scroll = new ScrollViewer();
 
-            var panel = _itemsPanel = new VerticalStackPanel();
-            panel.MinHeight = minimalHeight;
-            panel.Width = 300;
+            var panel = _itemsPanel = new ItemPanel(itemViews, _font, null, Pan_TouchDoubleClick);
 
             scroll.Height = minimalHeight;
             scroll.Content = panel;
@@ -85,7 +82,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             window.Content = grid;
             window.CloseKey = Microsoft.Xna.Framework.Input.Keys.Escape;
 
-            FillWindow(panel, _container.Items(Game));
             FillButtons(btnPanel);
 
             return window;
@@ -106,7 +102,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 Text = Game.Strings["UI"]["Take"],
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _font.GetFont(24),
+                Font = _fontRetron.GetFont(24),
             };
 
             takeBtn.Click += TakeBtn_Click;
@@ -125,7 +121,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 Text = Game.Strings["UI"]["TakeAll"],
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _font.GetFont(24),
+                Font = _fontRetron.GetFont(24),
             };
 
             takeAllBtn.Click += TakeAllBtn_Click;
@@ -144,7 +140,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 Text = Game.Strings["UI"]["Close"],
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _font.GetFont(24),
+                Font = _fontRetron.GetFont(24),
             };
 
             closeBtn.Click += (x, y) => Close();
@@ -158,31 +154,26 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private void TakeAllBtn_Click(object sender, EventArgs e)
         {
-            ResetSelectedItem();
-            foreach (var itemMap in itemPanelMap)
+            _itemsPanel.ResetSelectedItem();
+            foreach (var itemMap in _container.Items(Game))
             {
-                TakeItem(itemMap.Key);
+                TakeItem(itemMap);
             }
             Close();
         }
 
         private void TakeBtn_Click(object sender, EventArgs e)
         {
-            TakeItem(_selectedItem);
-            ResetSelectedItem();
-        }
-
-        private void ResetSelectedItem()
-        {
-            _selectedItem = null;
-            _selectedPanel = null;
+            TakeItem(_itemsPanel.SelectedItem);
+            _itemsPanel.ResetSelectedItem();
         }
 
         private void TakeItem(Item item)
         {
             Game.GameState.Party.Inventory.AddItem(item);
             _container.RemoveItem(item);
-            _itemsPanel.Widgets.Remove(itemPanelMap[item]);
+
+            _itemsPanel.Remove(item);
         }
 
         protected override void InitWindow(Window window)
@@ -190,79 +181,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             StandartWindowTitle(window, _container.GetObjectName());
         }
 
-        private void FillWindow(VerticalStackPanel panel, List<Item> items)
+        private void Pan_TouchDoubleClick(Panel sender, Item item)
         {
-            foreach (var item in items)
-            {
-                panel.Widgets.Add(CreateItemPanel(item));
-            }
-        }
-
-        private Dictionary<Item, Panel> itemPanelMap = new();
-        private Panel _selectedPanel;
-        private Item _selectedItem;
-        private IBrush _defaultPanelBackground;
-
-        private Panel CreateItemPanel(Item item)
-        {
-            var pan = new Panel
-            {
-                Height = 32
-            };
-
-            _defaultPanelBackground = pan.Background;
-
-            pan.TouchDown += (s,e)=> Pan_TouchDown(s,item);
-
-            pan.OverBackground = WindowBackground.NinePatch();
-
-            var grid = new Grid();
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1.2f));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8.8f));
-
-            var icon = new Image()
-            {
-                Renderable = _textures[item],
-                Width = 32,
-                Height = 32,                
-            };
-
-            var text = new Label()
-            {
-                Font = _font.GetFont(20),
-                Text = item.GetObjectName(),
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Wrap = true,
-            };
-
-            grid.Widgets.Add(icon);
-            grid.Widgets.Add(text);
-
-            Grid.SetColumn(icon, 0);
-            Grid.SetColumn(text, 1);
-
-            pan.Widgets.Add(grid);
-
-            itemPanelMap[item]=pan;
-
-            return pan;
-        }
-
-        private void Pan_TouchDown(object sender, Item item)
-        {
-            var itemPanel = sender as Panel;
-
-            if (_selectedPanel != null)
-            {
-                _selectedPanel.Background = _defaultPanelBackground;
-                _selectedItem = null;
-            }
-
-            _selectedPanel = itemPanel;
-            _selectedItem = item;
-
-            _selectedPanel.Background = WindowBackground.NinePatch();
+            TakeBtn_Click(sender, null);
         }
 
         public override void Update(GameTime gameTime)
@@ -270,7 +191,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             if (!Game.GameState.Party.IsObjectNear(_container))
                 this.Close();
 
-            _takeBtn.Enabled = _selectedItem != null;
+            _takeBtn.Enabled = _itemsPanel.SelectedItem != null;
 
         }
     }

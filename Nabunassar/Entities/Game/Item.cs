@@ -11,6 +11,7 @@ namespace Nabunassar.Entities.Game
 
             item.Icon = Icon;
             item.IconRegion = IconRegion;
+            item.Cost = Cost;
 
             return item;
         }
@@ -18,6 +19,8 @@ namespace Nabunassar.Entities.Game
         public string Icon { get; set; }
 
         public ImageRegion IconRegion { get; set; }
+
+        public Money Cost { get; set; }
 
         public override string GetObjectName()
         {

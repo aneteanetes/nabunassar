@@ -7,6 +7,7 @@ namespace Nabunassar
     internal partial class NabunassarGame
     {
         private List<ScreenWidget> _screenWidgets = new();
+        private List<ScreenWidgetWindow> _screenWindowWidgets = new();
 
         public int WidgetsCount()
         {
@@ -39,22 +40,33 @@ namespace Nabunassar
 
                         if (widgetWindow.IsModal)
                         {
-                            windowWidget.ShowModal(DesktopContainer, pos);
+                            windowWidget.ShowModal(Desktop, pos);
                         }
                         else
                         {
-                            windowWidget.Show(DesktopContainer, pos);
+                            windowWidget.Show(Desktop, pos);
                         }
+                        widget.OnAfterAddedWidget(windowWidget);
+
+                        _screenWindowWidgets.Add(widgetWindow);
+                        void screenWidgetWindowCollectionClear()
+                        {
+                            _screenWindowWidgets.Remove(widgetWindow);
+                            widgetWindow.OnDispose -= screenWidgetWindowCollectionClear;
+                        }
+                        widgetWindow.OnDispose += screenWidgetWindowCollectionClear;
                     }
                 }
                 else
                 {
                     _screenWidgets.Add(widget);
                     Desktop.Widgets.Add(uiWidget);
+                    widget.OnAfterAddedWidget(uiWidget);
                 }
 
                 return widget;
             }
+
 
             return null;
         }
@@ -62,18 +74,29 @@ namespace Nabunassar
         public ScreenWidget GetDesktopWidget<T>()
         {
             var widget = _screenWidgets.FirstOrDefault(x=>x.GetType() == typeof(T));
+
+            if(widget==null)
+                return _screenWindowWidgets.FirstOrDefault(x => x.GetType() == typeof(T));
+
             return widget;
         }
 
         public bool IsDesktopWidgetExist<T>()
         {
-            return _screenWidgets.Exists(x=>x.GetType() == typeof(T));
+            return GetDesktopWidget<T>() != null;
         }
 
         public void RemoveDesktopWidgets()
         {
             _screenWidgets.Clear();
-            Desktop.Widgets.Clear();
+            var notWindowWidgets = Desktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
+            if (notWindowWidgets.Length>0)
+            {
+                foreach (var notWidowWidget in notWindowWidgets)
+                {
+                    Desktop.Widgets.Remove(notWidowWidget);
+                }
+            }
         }
 
         public void RemoveDesktopWidget(ScreenWidget widget)
@@ -96,6 +119,9 @@ namespace Nabunassar
         public void RemoveDesktopWidgets<T>(int skip=0)
         {
             var specifiedScreenWidgets = _screenWidgets.Where(x => x.GetType() == typeof(T)).ToArray();
+
+            if(specifiedScreenWidgets.Length==0)
+                specifiedScreenWidgets = _screenWindowWidgets.Where(x => x.GetType() == typeof(T)).ToArray();
 
             for (int i = 0; i < specifiedScreenWidgets.Length-skip; i++)
             {

@@ -25,7 +25,7 @@ namespace Nabunassar
     {
         public LocalizedStrings Strings { get; set; }
 
-        public WidgetFactory Dialogues { get; set; }
+        public WidgetFactory WidgetFactory { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }
 
@@ -59,9 +59,7 @@ namespace Nabunassar
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop DesktopContainer = null;
-
-        public Panel Desktop = null;
+        public Desktop Desktop = null;
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 

@@ -31,10 +31,12 @@
   "Characters": "Персонажи",
   "Food": "Провизия",
   "Inventory": "Предметы",
+  "PartyInventory": "Инвентарь отряда",
   "Journal": "Журнал",
   "GlobalMap": "Мир",
   "Settings": "Настройки",
   "NewGame": "Новая игра",
   "Load": "Загрузить",
-  "Exit": "Выйти"
+  "Exit": "Выйти",
+  "Minimap": "Миникарта"
 }

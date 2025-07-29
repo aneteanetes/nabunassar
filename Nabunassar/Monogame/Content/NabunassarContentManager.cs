@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Content;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Speaking;
+using Nabunassar.Entities.Json;
 using Nabunassar.Entities.Struct.ImageRegions;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
@@ -50,6 +51,7 @@ namespace Nabunassar.Monogame.Content
             settings.Converters.Add(new DiceJsonConverter());
             settings.Converters.Add(new RankJsonConverter());
             settings.Converters.Add(new ImageRegionJsonConverter());
+            settings.Converters.Add(new MoneyJsonConverter());
 
             _jsonSerializer = JsonSerializer.CreateDefault(settings);
         }

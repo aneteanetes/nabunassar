@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.Base
@@ -59,9 +58,9 @@ namespace Nabunassar.Widgets.Base
 
         protected Window Window;
         private Vector2 _windowPosition;
-        protected Texture2D WindowBackground;
+        public static Texture2D WindowBackground;
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             if (Window == null)
             {

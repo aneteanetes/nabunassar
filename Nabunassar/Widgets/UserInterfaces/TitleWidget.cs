@@ -17,11 +17,10 @@ namespace Nabunassar.Widgets.UserInterfaces
         private Color _color;
         HorizontalAlignment? _horizontalAlignment;
         VerticalAlignment? _verticalAlignment;
-        bool _bindGameControls;
 
         protected override bool IsMouseMovementAvailableWithThisActivedWidget => true;
 
-        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default, HorizontalAlignment? horizontalAlignment = null, VerticalAlignment? verticalAlignment= null, bool bindGameControls=true) : base(game)
+        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default, HorizontalAlignment? horizontalAlignment = null, VerticalAlignment? verticalAlignment= null) : base(game)
         {
             _color = color;
             if(_color ==default)
@@ -32,8 +31,6 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             _horizontalAlignment = horizontalAlignment;
             _verticalAlignment = verticalAlignment;
-
-            _bindGameControls=bindGameControls; //cuz logic
         }
 
         protected virtual string GetText() => _text;
@@ -49,7 +46,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             base.LoadContent();
         }
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             var panel = new Panel();
 
@@ -87,15 +84,17 @@ namespace Nabunassar.Widgets.UserInterfaces
             return panel;
         }
 
+        public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+        {
+            return;
+        }
+
         public override void Dispose()
         {
             UnloadContent();
             Game.Components.Remove(this);
             OnDispose?.Invoke();
             base.MapObject = null;
-
-            if (_bindGameControls)
-                Game.IsMouseMoveAvailable = true;
 
             if (!IsRemoved)
                 Game.RemoveDesktopWidget(this);

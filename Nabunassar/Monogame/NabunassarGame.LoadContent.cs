@@ -8,6 +8,7 @@ using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Screens;
 using Nabunassar.Struct;
+using Nabunassar.Widgets;
 
 namespace Nabunassar
 {
@@ -28,10 +29,9 @@ namespace Nabunassar
 
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-            DesktopContainer = new Desktop();
-            Desktop = new Panel();
-            DesktopContainer.Widgets.Add(Desktop);
-            Dialogues = new Widgets.WidgetFactory(this);
+            Desktop = new Desktop();
+            WidgetFactory = new Widgets.WidgetFactory(this);
+            WidgetFactory.LoadContent();
 
             //
 

@@ -1,6 +1,8 @@
-﻿using Myra.Graphics2D.UI;
+﻿using Geranium.Reflection;
+using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Monogame.Content;
+using System.Diagnostics.Tracing;
 
 namespace Nabunassar.Widgets.Base
 {
@@ -48,7 +50,9 @@ namespace Nabunassar.Widgets.Base
 
         public virtual void Initialize() { }
 
-        protected abstract Widget InitWidget();
+        protected abstract Widget CreateWidget();
+
+        public virtual void OnAfterAddedWidget(Widget widget) { }
 
         public MapObject MapObject { get; protected set; }
 
@@ -59,8 +63,9 @@ namespace Nabunassar.Widgets.Base
         public Widget Load()
         {
             LoadContent();
-            UIWidget = InitWidget();
+            UIWidget = CreateWidget();
             UIWidget.IsModal = IsModal;
+            UIWidget.Tag = this.GetType().Name;
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
@@ -70,7 +75,7 @@ namespace Nabunassar.Widgets.Base
             return UIWidget;
         }
 
-        public void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+        public virtual void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
         {
             widget.MouseEntered += _widget_MouseEntered;
             widget.MouseLeft += _widget_MouseLeft;
@@ -92,11 +97,17 @@ namespace Nabunassar.Widgets.Base
         protected void _widget_MouseLeft(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = true;
+#if DEBUG
+            Console.WriteLine($"{sender} mouse active");
+#endif
         }
 
         protected void _widget_MouseEntered(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = false;
+#if DEBUG
+            Console.WriteLine($"{sender} mouse disabled");
+#endif
         }
 
         public Action OnDispose { get; set; }
