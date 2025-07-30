@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
-using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Monogame.Content;
 
 namespace Nabunassar.Widgets.Views

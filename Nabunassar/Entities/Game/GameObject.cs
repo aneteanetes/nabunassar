@@ -6,6 +6,7 @@ using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Base;
 using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Data.Loot;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;

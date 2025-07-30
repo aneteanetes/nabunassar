@@ -1,4 +1,4 @@
-﻿namespace Nabunassar.Entities.Game
+﻿namespace Nabunassar.Entities.Data
 {
     public class Money(int gold, int silver, int copper)
     {
@@ -10,7 +10,7 @@
 
         public static Money FromCooper(double copperPile)
         {
-            var value = ((int)Math.Floor(copperPile));
+            var value = (int)Math.Floor(copperPile);
 
             var gold = Math.DivRem(value, 1000, out var goldRemind);
             var silver = Math.DivRem(goldRemind, 10, out var silverRemind);

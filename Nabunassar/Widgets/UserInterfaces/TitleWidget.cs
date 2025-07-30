@@ -84,7 +84,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             return panel;
         }
 
-        public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+        public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock = false)
         {
             return;
         }

@@ -75,10 +75,10 @@ namespace Nabunassar.Widgets.Base
             return UIWidget;
         }
 
-        public virtual void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+        public virtual void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock = false)
         {
             widget.MouseEntered += _widget_MouseEntered;
-            widget.MouseLeft += _widget_MouseLeft;
+            widget.MouseLeft += twoSideBlock ? _widget_MouseEntered : _widget_MouseLeft;
 
             if (withDispose)
                 OnDispose += () =>

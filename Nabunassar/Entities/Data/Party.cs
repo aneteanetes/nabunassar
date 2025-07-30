@@ -21,6 +21,8 @@ namespace Nabunassar.Entities.Data
 
         public Entity Entity { get; set; }
 
+        public Money Money { get; set; } = new Money(0,0,0);
+
         public MapObject MapObject { get; set; }
 
         public GameObject GameObject => new GameObject()
@@ -218,6 +220,8 @@ namespace Nabunassar.Entities.Data
 
 
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+
+        public int Weight { get; internal set; } = 95;
 
         public Result<bool> IsObjectNear(GameObject gameObject)
         {

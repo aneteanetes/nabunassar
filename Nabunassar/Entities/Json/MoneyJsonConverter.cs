@@ -1,4 +1,4 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Nabunassar.Entities.Data;
 using Newtonsoft.Json;
 
 namespace Nabunassar.Entities.Json

@@ -1,6 +1,7 @@
 ﻿using Geranium.Reflection;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data.Abilities;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
 

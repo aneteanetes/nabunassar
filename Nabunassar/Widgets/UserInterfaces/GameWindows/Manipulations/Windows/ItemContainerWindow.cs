@@ -5,6 +5,7 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
@@ -59,21 +60,14 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var grid = new Grid();
             grid.MaxHeight = 500;
 
-            var scroll = new ScrollViewer();
-
-            var panel = _itemsPanel = new ItemPanel(itemViews, _font, null, Pan_TouchDoubleClick);
-
-            scroll.Height = minimalHeight;
-            scroll.Content = panel;
-
-            scroll.ShowHorizontalScrollBar = true;
+            _itemsPanel = new ItemPanel(itemViews, _font, null, Pan_TouchDoubleClick);
 
             var btnPanel = new VerticalStackPanel();
             
             grid.Widgets.Add(btnPanel);
-            grid.Widgets.Add(scroll);
+            grid.Widgets.Add(_itemsPanel);
 
-            Grid.SetRow(scroll, 0);
+            Grid.SetRow(_itemsPanel, 0);
             Grid.SetRow(btnPanel, 1);
 
             grid.RowsProportions.Add(new Proportion(ProportionType.Part, 8.5f));

@@ -3,6 +3,7 @@ using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Resources;

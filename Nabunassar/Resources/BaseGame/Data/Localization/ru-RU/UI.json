@@ -38,5 +38,16 @@
   "NewGame": "Новая игра",
   "Load": "Загрузить",
   "Exit": "Выйти",
-  "Minimap": "Миникарта"
+  "Minimap": "Миникарта",
+  "SortByType": "По типу",
+  "SortByAlphabet": "По алфавиту",
+  "SortByNew": "По новизне",
+  "All": "Все",
+  "Consumables":"Расходуемое",
+  "Weapon":"Оружие",
+  "Armor": "Защита",
+  "Accessories":"Аксессуары",
+  "Potions": "Зелья",
+  "Resource": "Ресурсы",
+  "Quest": "Задания"
 }

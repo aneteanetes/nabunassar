@@ -1,4 +1,4 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Nabunassar.Entities.Data.Items;
 
 namespace Nabunassar.Entities.Data.Loot
 {

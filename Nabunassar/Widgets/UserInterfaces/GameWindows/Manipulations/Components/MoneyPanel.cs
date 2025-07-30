@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Data;
 using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
@@ -12,9 +12,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private TextureRegion _img;
         private FontSystem _font;
         private int _size = 14;
+        private bool _showAll;
 
-        public MoneyPanel(Money cost)
+        public MoneyPanel(Money cost, int size=14, bool showAll=false)
         {
+            _size = size;
+            _showAll = showAll;
             var content = NabunassarGame.Game.Content;
 
             var texture = content.Load<Texture2D>("Assets/Tilesets/others.png");
@@ -26,7 +29,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
         private void Fill(Money money)
         {
-            if (money.Gold > 0)
+            if (money.Gold > 0 || _showAll)
             {
                 var goldImg = new Image()
                 {
@@ -48,7 +51,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 Widgets.Add(new Panel() { Width = 5 });
             }
 
-            if (money.Silver > 0)
+            if (money.Silver > 0 || _showAll)
             {
                 var silverImg = new Image()
                 {
@@ -70,7 +73,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 Widgets.Add(new Panel() { Width = 5 });
             }
 
-            if (money.Copper > 0)
+            if (money.Copper > 0 || _showAll)
             {
                 var copperImg = new Image()
                 {

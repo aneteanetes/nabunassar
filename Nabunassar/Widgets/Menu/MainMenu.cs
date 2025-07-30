@@ -13,7 +13,7 @@ internal partial class MainMenu : ScreenWidget
 {
     bool _isInGame;
 
-    public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+    public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock=false)
     {
         if (_isInGame)
             base.BindWidgetBlockMouse(widget, withDispose);

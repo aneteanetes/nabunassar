@@ -6,7 +6,9 @@
     "Image": "Assets/Images/Objects/snow/snowchest_s.png",
     "Icon": "Assets/Tilesets/transparent_packed.png",
     "IconRegion": "(0,224,16,16)",
-    "Cost": "10g,25s,5c"
+    "Cost": "10g,25s,5c",
+    "Weight": "1",
+    "ItemType": "Accessories"
   },
   {
     "ObjectId": 2,
@@ -15,6 +17,8 @@
     "Image": "Assets/Images/Objects/snow/oldsword_s.png",
     "Icon": "Assets/Tilesets/transparent_packed.png",
     "IconRegion": "(528,112,16,16)",
-    "Cost": "15s,56c"
+    "Cost": "15s,56c",
+    "Weight": "2",
+    "ItemType": "Weapon"
   }
 ]

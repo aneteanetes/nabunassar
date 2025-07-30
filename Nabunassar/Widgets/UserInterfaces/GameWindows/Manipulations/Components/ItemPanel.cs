@@ -1,38 +1,48 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
 using Myra.Graphics2D;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Data.Items;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
-    internal class ItemPanel : VerticalStackPanel
+    internal class ItemPanel : ScrollViewer
     {
         private Dictionary<Item, Panel> itemPanelMap = new();
+        private VerticalStackPanel _itemsPanel;
         private Panel _selectedPanel;
         private Item _selectedItem;
         private IBrush _defaultPanelBackground;
+        private List<ItemView> _itemViews;
 
         public Panel SelectedPanel => _selectedPanel;
         public Item SelectedItem => _selectedItem;
 
-        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Panel, Item> click = null, Action<Panel, Item> dblClick = null)
+        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Panel, Item> click = null, Action<Panel, Item> dblClick = null, int width=350)
         {
             MinHeight = 400;
-            Width = 350;
+            Width = width;
+
+            this.ShowVerticalScrollBar = true;
+
+            _itemsPanel = new VerticalStackPanel();
+            _itemsPanel.Width = width-20;
+
+            Content = _itemsPanel;
+
+            _itemViews = itemViews;
 
             foreach (var itemView in itemViews)
             {
-                Widgets.Add(CreateItemPanel(itemView, font, click, dblClick));
+                _itemsPanel.Widgets.Add(CreateItemPanel(itemView, font, click, dblClick));
             }
         }
 
         public void Remove(Item item)
         {
-            Widgets.Remove(itemPanelMap[item]);
+            _itemsPanel.Widgets.Remove(itemPanelMap[item]);
         }
 
         public Panel CreateItemPanel(ItemView itemView, FontSystem font, Action<Panel, Item> click, Action<Panel, Item> dblClick)
@@ -43,6 +53,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 Height = 56,
             };
             pan.OverBackground = ScreenWidgetWindow.WindowBackground.NinePatch();
+            pan.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             pan.TouchDown += (s, e) => Pan_TouchDown(pan, itemView.Item);
 
@@ -124,6 +135,60 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         {
             _selectedItem = null;
             _selectedPanel = null;
+        }
+
+        private List<ItemView> _filteredItems = null;
+
+        public void ResetFilter()
+        {
+            foreach (var kv in itemPanelMap)
+            {
+                kv.Value.Visible = true;
+            }
+            _filteredItems?.Clear();
+            _filteredItems = null;
+
+            if (_order != default)
+            {
+                _order();
+            }
+        }
+
+        internal void Filter(Func<Item, bool> filter)
+        {
+            ResetFilter();
+            _filteredItems = [];
+
+            foreach (var itemView in _itemViews)
+            {
+                if (!filter(itemView.Item))
+                {
+                    itemPanelMap[itemView.Item].Visible = false;
+                }
+                else
+                    _filteredItems.Add(itemView);
+            }
+
+            if (_order != default)
+            {
+                _order();
+            }
+        }
+
+        private Action _order = null;
+
+        internal void Order<T>(Func<Item, T> filter)
+        {
+            _order = () =>
+            {
+                var ordered = (_filteredItems ?? _itemViews).Select(x => x.Item).OrderBy(filter);
+                _itemsPanel.Widgets.Clear();
+                foreach (var item in ordered)
+                {
+                    _itemsPanel.Widgets.Add(itemPanelMap[item]);
+                }
+            };
+            _order();
         }
     }
 }

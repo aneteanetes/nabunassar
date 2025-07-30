@@ -8,6 +8,7 @@ using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Menu;
 using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.GameWindows;
+using Nabunassar.Widgets.Views.IconButtons;
 
 namespace Nabunassar.Screens.Game
 {
@@ -111,7 +112,12 @@ namespace Nabunassar.Screens.Game
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
             {
-                ControlPanel.OpenCloseMiniMap(Game);
+                MinimapIconButton.OpenCloseMiniMap(Game);
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.I))
+            {
+                InventoryIconButton.OpenCloseInventory(Game);
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
