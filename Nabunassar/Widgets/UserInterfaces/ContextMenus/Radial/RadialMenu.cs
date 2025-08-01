@@ -50,7 +50,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             game.GameState.Cursor.SetCursor("cursor");
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             if (CircleTexture == default)
             {

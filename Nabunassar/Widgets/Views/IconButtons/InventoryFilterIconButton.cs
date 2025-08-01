@@ -20,8 +20,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
         {
             if (_filter == null)
                 _itemPanel.ResetFilter();
-            else
-                _itemPanel.Filter(_filter);
+            _itemPanel.Filter(_filter);
         }
     }
 }

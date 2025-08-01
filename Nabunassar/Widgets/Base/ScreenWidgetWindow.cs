@@ -49,7 +49,7 @@ namespace Nabunassar.Widgets.Base
 
         protected abstract Window CreateWindow();
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             WindowBackground = Content.Load<Texture2D>("Assets/Images/Borders/windowbackground.png");
         }

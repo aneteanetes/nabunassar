@@ -27,7 +27,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             ChatWindowWidget = this;
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             _font = Game.Content.LoadFont(Fonts.Retron);
             chatborder = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm.png");

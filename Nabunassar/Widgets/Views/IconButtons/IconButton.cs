@@ -14,6 +14,8 @@ namespace Nabunassar.Widgets.Views.IconButtons
             Icon = icon;
         }
 
+        public virtual bool IsReactOnClick => true;
+
         public virtual void OnClick() { }
     }
 }

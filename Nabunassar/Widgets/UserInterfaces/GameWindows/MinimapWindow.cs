@@ -17,7 +17,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             MakeUnique(x => false);
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             _font = Content.LoadFont(Fonts.Retron);
             _background = Content.Load<Texture2D>("Assets/Images/Borders/windowbackground.png");

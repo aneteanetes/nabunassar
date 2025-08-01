@@ -1,4 +1,6 @@
-﻿using Nabunassar.Entities.Data.Items;
+﻿using Microsoft.Xna.Framework.Input;
+using Myra.Events;
+using Nabunassar.Entities.Data.Items;
 
 namespace Nabunassar.Entities.Data.Affects
 {
@@ -13,11 +15,15 @@ namespace Nabunassar.Entities.Data.Affects
 
             item.DateTimeRecived = DateTime.UtcNow;
 
+            ItemAdded.Invoke(this, item);
+
             return true;
         }
 
         public List<Item> Items { get; set; } = new();
 
         public int Weight => Items.Sum(x => x.Weight);
+
+        public event EventHandler<Item> ItemAdded;
     }
 }

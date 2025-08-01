@@ -190,7 +190,24 @@ namespace Nabunassar.Entities.Game
             if (token == null && ObjectType == ObjectType.Ground)
                 token = GroundType.ToString();
 
-            return objectNames[token];
+            var name = objectNames[token].ToString();
+
+            return name;
+        }
+
+        internal bool IsEmpty() => _items.Count == 0;
+
+        internal string GetObjectNameTitle()
+        {
+            var game = NabunassarGame.Game;
+            var name = GetObjectName();
+
+            if (this.ObjectType == ObjectType.Container && _items != null && _items.Count == 0)
+            {
+                name += $"{Environment.NewLine}({game.Strings["UI"]["Empty"]})";
+            }
+
+            return name;
         }
     }
 }

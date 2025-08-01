@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
@@ -13,6 +14,8 @@ namespace Nabunassar.Entities.Game
         public SpriteSheet SpriteSheet { get; set; }
 
         public AnimatedSprite AnimatedSprite { get; set; }
+
+        public RectangleF Bounds { get; set; }
 
         public List<SpriteSheetAnimation> Animations { get; set; } = new();
 

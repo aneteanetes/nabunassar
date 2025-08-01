@@ -191,11 +191,18 @@ namespace Nabunassar.Systems
             var cursor = Game.GameState.Cursor;
             var radialMenuGameObject = cursor.FocusedMapObject;
 
+            var mousePos = Game.Camera.ScreenToWorld(mouse.Position.ToVector2());
+            var mouseRect = new RectangleF(mousePos, new SizeF(2, 2));
+
+            if (Game.GameState.Party.PartyMenuRectangle.Intersects(mouseRect))
+            {
+                RadialMenu.Open(Game, Game.GameState.Party.GameObject, new Vector2(mouse.X, mouse.Y));
+            }
+
             if (radialMenuGameObject == null)
             {
                 var layer = Game.CollisionComponent.Layers["ground"];
-                var mousePos = Game.Camera.ScreenToWorld(mouse.Position.ToVector2());
-                var groundTile = layer.Space.Query(new RectangleF(mousePos, new SizeF(2, 2))).FirstOrDefault();
+                var groundTile = layer.Space.Query(mouseRect).FirstOrDefault();
                 if (groundTile != default)
                 {
                     radialMenuGameObject = groundTile.As<MapObject>().GameObject;

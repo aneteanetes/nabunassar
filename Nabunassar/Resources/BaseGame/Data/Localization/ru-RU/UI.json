@@ -43,11 +43,12 @@
   "SortByAlphabet": "По алфавиту",
   "SortByNew": "По новизне",
   "All": "Все",
-  "Consumables":"Расходуемое",
-  "Weapon":"Оружие",
+  "Consumables": "Расходуемое",
+  "Weapon": "Оружие",
   "Armor": "Защита",
-  "Accessories":"Аксессуары",
+  "Accessories": "Аксессуары",
   "Potions": "Зелья",
   "Resource": "Ресурсы",
-  "Quest": "Задания"
+  "Quest": "Задания",
+  "Empty": "Пусто"
 }

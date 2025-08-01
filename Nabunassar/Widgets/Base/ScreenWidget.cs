@@ -10,6 +10,8 @@ namespace Nabunassar.Widgets.Base
     {
         public NabunassarGame Game { get; private set; }
 
+        internal static bool NOLOOSEBLOCK = false;
+
         protected NabunassarContentManager Content => Game.Content;
 
         protected Widget UIWidget;
@@ -44,7 +46,7 @@ namespace Nabunassar.Widgets.Base
 
         public Widget GetWidgetReference() => UIWidget;
 
-        protected virtual void LoadContent() { }
+        public virtual void LoadContent() { }
 
         protected virtual void UnloadContent() { }
 
@@ -99,6 +101,12 @@ namespace Nabunassar.Widgets.Base
             Game.IsMouseMoveAvailable = true;
 #if DEBUG
             Console.WriteLine($"{sender} mouse active");
+#endif
+            if (NOLOOSEBLOCK)
+                NabunassarGame.Game.IsMouseMoveAvailable = false;
+            NOLOOSEBLOCK = false;
+#if DEBUG
+            Console.WriteLine("Mouse block restored.");
 #endif
         }
 

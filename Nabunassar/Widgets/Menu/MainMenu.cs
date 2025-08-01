@@ -30,7 +30,7 @@ internal partial class MainMenu : ScreenWidget
     private Texture2D backimgnorm;
     private Texture2D backimgfocus;
 
-    protected override void LoadContent()
+    public override void LoadContent()
     {
         _font = Game.Content.LoadFont("Assets/Fonts/Retron2000.ttf");
         backimgnorm = Game.Content.Load<Texture2D>("Assets/Images/Borders/commonborder.png");

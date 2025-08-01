@@ -34,7 +34,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
             return base.FillInformationWindow(informationpanel);
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             base.LoadContent();
             fontBitter = Content.LoadFont(Fonts.BitterSemiBold);

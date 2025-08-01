@@ -35,7 +35,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         protected virtual string GetText() => _text;
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             if(_backgroundImage == null)
             {
@@ -61,9 +61,10 @@ namespace Nabunassar.Widgets.UserInterfaces
             labelText.OverBackground = backNormal;
             labelText.Font = compiledFont;
             labelText.TextColor = _color;
+            labelText.TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center;
 
             labelText.Text = GetText();
-            labelText.Top = -45;
+            //labelText.Top = -45;
 
             float sexteenPixels = Game.Camera.WorldToScreen(new Vector2(16)).X;
             var textMeasure = compiledFont.MeasureString(labelText.Text).X + 20;
@@ -78,6 +79,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             panel.Left = ((int)_position.X);
             panel.Top = ((int)_position.Y);
+            panel.Top -= 45;
 
             panel.Widgets.Add(labelText);
 

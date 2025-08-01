@@ -15,12 +15,17 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private Panel _selectedPanel;
         private Item _selectedItem;
         private IBrush _defaultPanelBackground;
-        private List<ItemView> _itemViews;
+        private FontSystem _font;
+        private Action<Panel, Item> _click;
+        private Action<Panel, Item> _dblClick;
+        private List<ItemView> _itemViews = new();
 
         public Panel SelectedPanel => _selectedPanel;
         public Item SelectedItem => _selectedItem;
 
-        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Panel, Item> click = null, Action<Panel, Item> dblClick = null, int width=350)
+        public IEnumerable<ItemView> Items => _itemViews;
+
+        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Panel, Item> click = null, Action<Panel, Item> dblClick = null, int width = 350)
         {
             MinHeight = 400;
             Width = width;
@@ -28,21 +33,32 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             this.ShowVerticalScrollBar = true;
 
             _itemsPanel = new VerticalStackPanel();
-            _itemsPanel.Width = width-20;
+            _itemsPanel.Width = width - 20;
 
             Content = _itemsPanel;
 
-            _itemViews = itemViews;
+            _font = font;
+            _click = click;
+            _dblClick = dblClick;
 
             foreach (var itemView in itemViews)
             {
-                _itemsPanel.Widgets.Add(CreateItemPanel(itemView, font, click, dblClick));
+                AddItem(itemView);
             }
+        }
+
+        public void AddItem(ItemView item)
+        {
+            var panel = CreateItemPanel(item, _font, _click, _dblClick);
+            _itemViews.Add(item);
+            _itemsPanel.Widgets.Add(panel);
         }
 
         public void Remove(Item item)
         {
             _itemsPanel.Widgets.Remove(itemPanelMap[item]);
+            var itemView = _itemViews.FirstOrDefault(x => x.Item == item);
+            _itemViews.Remove(itemView);
         }
 
         public Panel CreateItemPanel(ItemView itemView, FontSystem font, Action<Panel, Item> click, Action<Panel, Item> dblClick)
@@ -103,7 +119,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             {
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Bottom,
-                Padding = new Thickness(0,5,0,0)
+                Padding = new Thickness(0, 5, 0, 0)
             };
             textgold.Widgets.Add(money);
 
@@ -119,11 +135,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
         private void Pan_TouchDown(Panel sender, Item item)
         {
-            if (_selectedPanel != null)
-            {
-                _selectedPanel.Background = _defaultPanelBackground;
-                _selectedItem = null;
-            }
+            ResetSelectedItem();
 
             _selectedPanel = sender;
             _selectedItem = item;
@@ -133,13 +145,30 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
         public void ResetSelectedItem()
         {
+            if (_selectedPanel != null)
+            {
+                _selectedPanel.Background = _defaultPanelBackground;
+                _selectedItem = null;
+            }
+
             _selectedItem = null;
             _selectedPanel = null;
         }
 
         private List<ItemView> _filteredItems = null;
+        private Func<Item, bool> _filter;
+
+        public void Refresh()
+        {
+            Filter();
+        }
 
         public void ResetFilter()
+        {
+            _filter = null;
+        }
+
+        internal void Filter(Func<Item, bool> filter = null)
         {
             foreach (var kv in itemPanelMap)
             {
@@ -148,47 +177,53 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             _filteredItems?.Clear();
             _filteredItems = null;
 
-            if (_order != default)
-            {
-                _order();
-            }
-        }
+            if (filter != null)
+                _filter = filter;
 
-        internal void Filter(Func<Item, bool> filter)
-        {
-            ResetFilter();
-            _filteredItems = [];
-
-            foreach (var itemView in _itemViews)
+            if (_filter != null)
             {
-                if (!filter(itemView.Item))
+                _filteredItems = [];
+                foreach (var itemView in _itemViews)
                 {
-                    itemPanelMap[itemView.Item].Visible = false;
+                    if (!_filter(itemView.Item))
+                    {
+                        itemPanelMap[itemView.Item].Visible = false;
+                    }
+                    else
+                        _filteredItems.Add(itemView);
                 }
-                else
-                    _filteredItems.Add(itemView);
             }
 
             if (_order != default)
             {
-                _order();
+                _order(_filteredItems ?? _itemViews);
             }
         }
 
-        private Action _order = null;
+        private Action<List<ItemView>> _order = null;
 
-        internal void Order<T>(Func<Item, T> filter)
+        internal void Order<T>(Func<Item, T> filter, bool isAscendant=true)
         {
-            _order = () =>
+            _order = itemViews =>
             {
-                var ordered = (_filteredItems ?? _itemViews).Select(x => x.Item).OrderBy(filter);
+                var query = itemViews.Select(x => x.Item);
+
+                if (isAscendant)
+                    query = query.OrderBy(filter);
+                else
+                    query = query.OrderByDescending(filter);
+
+                var ordered = query.ToArray();
+
                 _itemsPanel.Widgets.Clear();
                 foreach (var item in ordered)
                 {
                     _itemsPanel.Widgets.Add(itemPanelMap[item]);
                 }
+
+                ResetSelectedItem();
             };
-            _order();
+            _order(_filteredItems ?? _itemViews);
         }
     }
 }

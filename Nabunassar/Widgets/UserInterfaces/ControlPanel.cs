@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Menu;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
@@ -10,7 +11,8 @@ namespace Nabunassar.Widgets.UserInterfaces
 {
     internal class ControlPanel : ScreenWidget
     {
-        private HorizontalIconPanel _iconPanel;
+        private static HorizontalIconPanel _iconPanel;
+        private static InventoryIconButton _inventory;
 
         public override bool IsRemovable => false;
 
@@ -18,7 +20,7 @@ namespace Nabunassar.Widgets.UserInterfaces
         {
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             var iconAsset = Content.Load<Texture2D>("Assets/Tilesets/transparent_packed.png");
 
@@ -31,7 +33,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             var foodImage = new TextureRegion(iconAsset, new Rectangle(528, 288, 16, 16));
             var food = new IconButton(Game.Strings["UI"]["Food"], foodImage);
 
-            var inventory = new InventoryIconButton(Game);
+            _inventory = new InventoryIconButton(Game);
 
             var journalImage = new TextureRegion(iconAsset, new Rectangle(528, 240, 16, 16));
             var journal = new IconButton(Game.Strings["UI"]["Journal"], journalImage);
@@ -47,7 +49,7 @@ namespace Nabunassar.Widgets.UserInterfaces
                 @char,
                 skills,
                 food,
-                inventory,
+                _inventory,
                 journal,
                 globalMap,
                 miniMap,
@@ -63,6 +65,14 @@ namespace Nabunassar.Widgets.UserInterfaces
             _iconPanel.VerticalAlignment = VerticalAlignment.Top;
 
             return _iconPanel;
+        }
+
+        public static void CloseInventory()
+        {
+            if (_iconPanel != default)
+            {
+                _iconPanel.Close(_inventory);
+            }
         }
 
         private Vector2 GetTitlePosition(Image image)

@@ -27,7 +27,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 
         public override bool IsModal => true;
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             if (Portrait.IsEmpty())
             {

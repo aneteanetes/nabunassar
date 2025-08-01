@@ -13,7 +13,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
         public override void OnClick()
         {
             Close();
-            ScreenWidgetWindow.Open(new ItemContainerWindow(Game, GameObject));
+            LootWindow.Open(Menu.Game, GameObject);
+            //ScreenWidgetWindow.Open(new ItemContainerWindow(Game, GameObject));
         }
     }
 }

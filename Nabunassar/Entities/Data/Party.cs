@@ -1,4 +1,5 @@
-﻿using MonoGame.Extended;
+﻿using Geranium.Reflection;
+using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
@@ -210,7 +211,8 @@ namespace Nabunassar.Entities.Data
                     SpeakTo(gameObject);
                     break;
                 case ObjectType.Container:
-                    ScreenWidgetWindow.Open(new ItemContainerWindow(_game, gameObject));
+                    LootWindow.Open(_game, gameObject);
+                    //ScreenWidgetWindow.Open(new ItemContainerWindow(_game, gameObject));
                     break;
                 default:
                     InformationWindow.Open(NabunassarGame.Game, gameObject);
@@ -218,8 +220,18 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+
+        public RectangleF PartyMenuRectangle
+        {
+            get
+            {
+                var bounds = this.MapObject.Bounds.As<RectangleF>();
+                var height = 10;
+                var width = 14;
+                return new RectangleF(bounds.X-7, bounds.Y-4, bounds.Width+ width, bounds.Height+ height);
+            }
+        }
 
         public int Weight { get; internal set; } = 95;
 

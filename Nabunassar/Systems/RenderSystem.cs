@@ -123,6 +123,7 @@ namespace Nabunassar.ECS
                         {
                             var party = _partyMapper.Get(entity);
                             sb.DrawRectangle(party.DistanceMeterRectangle, Color.Purple);
+                            sb.DrawRectangle(party.PartyMenuRectangle, Color.LightSkyBlue);
                         }
                     }
                 }

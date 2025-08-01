@@ -1,9 +1,6 @@
 ﻿using FontStashSharp;
-using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
-using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
-using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
@@ -14,21 +11,22 @@ using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
-    internal class ItemContainerWindow : ScreenWidgetWindow
+    internal class LootWindow : ScreenWidgetWindow
     {
+        private GameObject _container;
         private FontSystem _font;
         private FontSystem _fontRetron;
         private Texture2D back;
         private int minimalHeight = 400;
-        private GameObject _container;
         private List<ItemView> itemViews = new();
+        private ItemPanel _itemsPanel;
 
-        public ItemContainerWindow(NabunassarGame game, GameObject container) : base(game)
+        public LootWindow(NabunassarGame game, GameObject container) : base(game)
         {
             _container = container;
             MakeUnique(x =>
             {
-                if(x is ItemContainerWindow containerWindow)
+                if (x is LootWindow containerWindow)
                 {
                     return containerWindow._container != container;
                 }
@@ -37,7 +35,13 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             });
         }
 
-        protected override void LoadContent()
+        public static void Open(NabunassarGame game, GameObject container)
+        {
+            var window = new LootWindow(game, container);
+            ScreenWidgetWindow.Open(window);
+        }
+
+        public override void LoadContent()
         {
             _font = Content.LoadFont(Fonts.BitterSemiBold);
             _fontRetron = Content.LoadFont(Fonts.Retron);
@@ -46,24 +50,65 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             foreach (var item in _container.Items(Game))
             {
                 itemViews.Add(new ItemView(item, Content));
-            }            
+            }
 
             base.LoadContent();
         }
-
-        private ItemPanel _itemsPanel;
 
         protected override Window CreateWindow()
         {
             var window = new Window();
 
             var grid = new Grid();
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.2f));
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
+
+            var container = ContainerItemsGrid();
+
+            var inventoryWindow = new InventoryWindow(Game);
+            inventoryWindow.LoadContent();
+            var inventory = inventoryWindow.InnerPanel();
+
+            var split = new Button()
+            {
+                Enabled = false,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Width = 5
+            };
+
+            Grid.SetColumn(container, 0);
+            Grid.SetColumn(split, 1);
+            Grid.SetColumn(inventory, 2);
+
+            grid.Widgets.Add(container);
+            grid.Widgets.Add(split);
+            grid.Widgets.Add(inventory);
+
+            grid.Width = container.Width + 25 + inventory.Width; 
+
+            window.Content = grid;
+            window.CloseKey = Microsoft.Xna.Framework.Input.Keys.Escape;
+
+            return window;
+        }
+
+        protected override void InitWindow(Window window)
+        {
+            StandartWindowTitle(window, _container.GetObjectName());
+        }
+
+        public Grid ContainerItemsGrid()
+        {
+            var grid = new Grid();
             grid.MaxHeight = 500;
 
             _itemsPanel = new ItemPanel(itemViews, _font, null, Pan_TouchDoubleClick);
 
+            grid.Width = _itemsPanel.Width;
+
             var btnPanel = new VerticalStackPanel();
-            
+
             grid.Widgets.Add(btnPanel);
             grid.Widgets.Add(_itemsPanel);
 
@@ -73,15 +118,14 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             grid.RowsProportions.Add(new Proportion(ProportionType.Part, 8.5f));
             grid.RowsProportions.Add(new Proportion(ProportionType.Part, 1.5f));
 
-            window.Content = grid;
-            window.CloseKey = Microsoft.Xna.Framework.Input.Keys.Escape;
-
             FillButtons(btnPanel);
 
-            return window;
+
+            return grid;
         }
 
         private Button _takeBtn;
+        private Button _takeAllBtn;
 
         protected void FillButtons(VerticalStackPanel panel)
         {
@@ -104,7 +148,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             takeBtn.PressedBackground = new SolidBrush(Color.Black);
 
 
-            var takeAllBtn = new Button()
+            _takeAllBtn = new Button()
             {
                 Height = 25,
                 Background = WindowBackground.NinePatch(),
@@ -118,9 +162,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 Font = _fontRetron.GetFont(24),
             };
 
-            takeAllBtn.Click += TakeAllBtn_Click;
-            takeAllBtn.Content = takeAllTxt;
-            takeAllBtn.PressedBackground = new SolidBrush(Color.Black);
+            _takeAllBtn.Click += TakeAllBtn_Click;
+            _takeAllBtn.Content = takeAllTxt;
+            _takeAllBtn.PressedBackground = new SolidBrush(Color.Black);
 
 
             var closeBtn = new Button()
@@ -142,18 +186,22 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             closeBtn.PressedBackground = new SolidBrush(Color.Black);
 
             panel.Widgets.Add(takeBtn);
-            panel.Widgets.Add(takeAllBtn);
+            panel.Widgets.Add(_takeAllBtn);
             panel.Widgets.Add(closeBtn);
         }
 
         private void TakeAllBtn_Click(object sender, EventArgs e)
         {
             _itemsPanel.ResetSelectedItem();
-            foreach (var itemMap in _container.Items(Game))
+
+            var items = _container.Items(Game).ToArray();
+            var count = items.Length;
+
+            for (int i = 0; i < count; i++)
             {
-                TakeItem(itemMap);
+                TakeItem(items[i]);
             }
-            Close();
+            CloseIfEmpty();
         }
 
         private void TakeBtn_Click(object sender, EventArgs e)
@@ -168,11 +216,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _container.RemoveItem(item);
 
             _itemsPanel.Remove(item);
+            CloseIfEmpty();
         }
 
-        protected override void InitWindow(Window window)
+        private void CloseIfEmpty()
         {
-            StandartWindowTitle(window, _container.GetObjectName());
+            if(_container.IsEmpty())
+            {
+                Close();
+            }
         }
 
         private void Pan_TouchDoubleClick(Panel sender, Item item)
@@ -185,8 +237,10 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             if (!Game.GameState.Party.IsObjectNear(_container))
                 this.Close();
 
+            _takeBtn.Enabled = _itemsPanel.Items.Count() > 0;
             _takeBtn.Enabled = _itemsPanel.SelectedItem != null;
 
+            _takeAllBtn.Enabled = _itemsPanel.Items.Count() > 0;
         }
     }
 }

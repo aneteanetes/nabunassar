@@ -72,6 +72,7 @@ namespace Nabunassar.Entities
             entity.Attach(new CursorComponent(Game.GameState.Cursor));
 
             var cursorBounds = new RectangleF(0, 0, 4, 4);
+            cursor.Bounds = cursorBounds;
 
             var gameObj = new MapObject(Game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, "cursor", cursor.OnCollision) { Name = "cursor" };
             gameObj.IsRegisterNoCollision = true;
@@ -241,7 +242,7 @@ namespace Nabunassar.Entities
 
             var glowAnimatedSprite = new AnimatedSprite(glowSpriteSheet, "idle");
 
-            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
+            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectNameTitle(), focusEvent.Position));
             entity.Attach(title);
 
             var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order, title);
@@ -519,7 +520,7 @@ namespace Nabunassar.Entities
 
             if (gameObj.ObjectType.IsInteractive())
             {
-                var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
+                var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectNameTitle(), focusEvent.Position));
                 CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), 1, focusWidgetComp);
                 entity.Attach(focusWidgetComp);
             }

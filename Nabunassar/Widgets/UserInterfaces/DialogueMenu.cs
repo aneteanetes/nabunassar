@@ -28,7 +28,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             _gameObject = gameObject;
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             _font = Content.LoadFont(Fonts.Retron);
             _background = Content.Load<Texture2D>("Assets/Images/Borders/panel-030.png");

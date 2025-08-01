@@ -8,6 +8,8 @@ namespace Nabunassar.Widgets.Views.IconButtons
     {
         private NabunassarGame _game;
 
+        public override bool IsReactOnClick => false;
+
         public MinimapIconButton(NabunassarGame game) : base(game.Strings["UI"]["Minimap"], null)
         {
             _game = game;

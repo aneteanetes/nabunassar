@@ -25,7 +25,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             MakeUnique(x => false);
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             _bitterFont = Content.LoadFont(Fonts.BitterSemiBold);
             _retronFont = Content.LoadFont(Fonts.Retron);
@@ -45,28 +45,45 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         {
             var window = new Window();
 
+            var panel = InnerPanel();
+
+            window.Content = panel;
+
+            return window;
+        }
+
+        private void Inventory_ItemAdded(object sender, Item e)
+        {
+            var viewItem = new ItemView(e, Game.Content);
+            _itemPanel.AddItem(viewItem);
+            _itemPanel.Refresh();
+        }
+
+        public VerticalStackPanel InnerPanel()
+        {
             var panel = new VerticalStackPanel();
+            Game.GameState.Party.Inventory.ItemAdded += Inventory_ItemAdded;
 
             var moneySortGrid = new Grid();
             moneySortGrid.Margin = new Myra.Graphics2D.Thickness(5);
             moneySortGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            var money = new MoneyPanel(Game.GameState.Party.Money,20,true);
+            var money = new MoneyPanel(Game.GameState.Party.Money, 20, true);
             money.HorizontalAlignment = HorizontalAlignment.Left;
 
-            Grid.SetColumn(money,0);
+            Grid.SetColumn(money, 0);
             moneySortGrid.Widgets.Add(money);
 
             var sort = SortBox();
             sort.HorizontalAlignment = HorizontalAlignment.Right;
-            Grid.SetColumn(sort,1);
+            Grid.SetColumn(sort, 1);
             moneySortGrid.Widgets.Add(sort);
 
             panel.Widgets.Add(moneySortGrid);
 
             _filterPanel = ItemFilter();
             _filterPanel.HorizontalAlignment = HorizontalAlignment.Center;
-            _filterPanel.Margin = new Myra.Graphics2D.Thickness(10,5,10,5);
+            _filterPanel.Margin = new Myra.Graphics2D.Thickness(10, 5, 10, 5);
             panel.Widgets.Add(_filterPanel);
 
             var items = _itemPanel;
@@ -78,9 +95,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             weight.Margin = new Myra.Graphics2D.Thickness(5);
             panel.Widgets.Add(weight);
 
-            window.Content = panel;
+            panel.Width = _itemPanel.Width+10;
 
-            return window;
+            return panel;
         }
 
         private Panel WeightBar()
@@ -113,7 +130,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private HorizontalStackPanel ItemFilter()
         {
-            return new HorizontalIconPanel(Game.Content, _iconButtons, x => Game.Desktop.MousePosition.ToVector2());
+            var panel = new HorizontalIconPanel(Game.Content, _iconButtons, x => Game.Desktop.MousePosition.ToVector2());
+
+            panel.Select(_iconButtons.FirstOrDefault());
+
+            return panel;
         }
 
         private void CreateItemFilterIcons()
@@ -137,39 +158,17 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private ComboView SortBox()
         {
-            var dropDown = new ComboView();
+            var dropDown = new ComboViewFocused();
 
-            dropDown.SelectedIndexChanged += DropDown_SelectedIndexChanged;
-            dropDown.SelectedIndex = 0;
-
-            dropDown.Widgets.Add(CreateSortType(Game.Strings["UI"]["SortByType"]));
+            var byType = CreateSortType(Game.Strings["UI"]["SortByType"]);
+            dropDown.Widgets.Add(byType);
             dropDown.Widgets.Add(CreateSortType(Game.Strings["UI"]["SortByAlphabet"]));
             dropDown.Widgets.Add(CreateSortType(Game.Strings["UI"]["SortByNew"]));
 
-            dropDown.ListView.MouseEntered += ListView_MouseEntered;
+            dropDown.SelectedIndexChanged += DropDown_SelectedIndexChanged;
+            dropDown.SelectedItem = byType;
 
             return dropDown;
-        }
-
-        private bool NOLOOSEBLOCK = false;
-
-        private void ListView_MouseEntered(object sender, EventArgs e)
-        {
-            NOLOOSEBLOCK = true;
-        }
-        private void Window_MouseLeft(object sender, EventArgs e)
-        {
-            if (NOLOOSEBLOCK)
-                Game.IsMouseMoveAvailable = false;
-            NOLOOSEBLOCK = false;
-#if DEBUG
-            Console.WriteLine("InventoryWindow mouse block restored.");
-#endif
-        }
-
-        public override void OnAfterAddedWidget(Widget widget)
-        {
-            widget.MouseLeft += Window_MouseLeft;
         }
 
         private void DropDown_SelectedIndexChanged(object sender, EventArgs e)
@@ -184,7 +183,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                     _itemPanel.Order(x=>x.GetObjectName());
                     break;
                 case 2:
-                    _itemPanel.Order(x => x.DateTimeRecived);
+                    _itemPanel.Order(x => x.DateTimeRecived,false);
                     break;
                 default:
                     break;
@@ -208,6 +207,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         public override void Update(GameTime gameTime)
         {
             _itemPanel.Width = _filterPanel.ActualBounds.Size.X;
+        }
+
+        public override void Dispose()
+        {
+            ControlPanel.CloseInventory();
+            base.Dispose();
         }
     }
 }
