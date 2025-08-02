@@ -17,6 +17,7 @@ namespace Nabunassar.Entities.Data
         public Hero(NabunassarGame game)
         {
             _game = game;
+            Creature = new Creature();
         }
 
         public string Tileset { get; set; }

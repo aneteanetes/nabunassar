@@ -104,6 +104,10 @@ namespace Nabunassar.Widgets.Base
 #endif
             if (NOLOOSEBLOCK)
                 NabunassarGame.Game.IsMouseMoveAvailable = false;
+
+            if (!NOLOOSEBLOCK)
+                WidgetOverMouse = null;
+
             NOLOOSEBLOCK = false;
 #if DEBUG
             Console.WriteLine("Mouse block restored.");
@@ -113,10 +117,13 @@ namespace Nabunassar.Widgets.Base
         protected void _widget_MouseEntered(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = false;
+            WidgetOverMouse = sender;
 #if DEBUG
             Console.WriteLine($"{sender} mouse disabled");
 #endif
         }
+
+        public static object WidgetOverMouse = null;
 
         public Action OnDispose { get; set; }
 

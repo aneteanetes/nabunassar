@@ -1,7 +1,9 @@
 ﻿using FontStashSharp;
+using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
+using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
@@ -11,13 +13,11 @@ using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
-    internal class LootWindow : ScreenWidgetWindow
+    internal class LootWindow : TwoSideWindow
     {
         private GameObject _container;
         private FontSystem _font;
         private FontSystem _fontRetron;
-        private Texture2D back;
-        private int minimalHeight = 400;
         private List<ItemView> itemViews = new();
         private ItemPanel _itemsPanel;
 
@@ -45,7 +45,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         {
             _font = Content.LoadFont(Fonts.BitterSemiBold);
             _fontRetron = Content.LoadFont(Fonts.Retron);
-            back = Content.Load<Texture2D>("Assets/Images/Icons/iconopacity50.png");
 
             foreach (var item in _container.Items(Game))
             {
@@ -55,43 +54,40 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             base.LoadContent();
         }
 
-        protected override Window CreateWindow()
+        protected override Widget LeftSide() => ContainerItemsGrid();
+
+        protected override Widget RightSide()
         {
-            var window = new Window();
-
-            var grid = new Grid();
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.2f));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
-
-            var container = ContainerItemsGrid();
-
             var inventoryWindow = new InventoryWindow(Game);
             inventoryWindow.LoadContent();
-            var inventory = inventoryWindow.InnerPanel();
-
-            var split = new Button()
+            _inventory = inventoryWindow.InnerPanel();
+            GetInventoryItemPanel().DblClick = (sender, item) =>
             {
-                Enabled = false,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                Width = 5
+                PutBtn_Click(null, null);
             };
 
-            Grid.SetColumn(container, 0);
-            Grid.SetColumn(split, 1);
-            Grid.SetColumn(inventory, 2);
+            _putBtn = CreateBtn(Game.Strings["UI"]["Put"]);
+            _putBtn.Click += PutBtn_Click;
 
-            grid.Widgets.Add(container);
-            grid.Widgets.Add(split);
-            grid.Widgets.Add(inventory);
+            _inventory.Widgets.Add(_putBtn);
 
-            grid.Width = container.Width + 25 + inventory.Width; 
-
-            window.Content = grid;
-            window.CloseKey = Microsoft.Xna.Framework.Input.Keys.Escape;
-
-            return window;
+            return _inventory;
         }
+
+        private void PutBtn_Click(object sender, EventArgs e)
+        {
+            var invPan = GetInventoryItemPanel();
+            var itemView = invPan.SelectedItemView;
+
+            Game.GameState.Party.Inventory.RemoveItem(itemView.Item);
+            _container.AddItem(itemView.Item);
+            _itemsPanel.AddItem(itemView);
+            invPan.Remove(itemView.Item);
+
+            invPan.ResetSelectedItem();
+        }
+
+        private ItemPanel GetInventoryItemPanel() => _inventory.Widgets.FirstOrDefault(x => x.Is<ItemPanel>()).As<ItemPanel>();
 
         protected override void InitWindow(Window window)
         {
@@ -103,7 +99,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var grid = new Grid();
             grid.MaxHeight = 500;
 
-            _itemsPanel = new ItemPanel(itemViews, _font, null, Pan_TouchDoubleClick);
+            _itemsPanel = new ItemPanel(itemViews, _font, x =>
+            {
+                _container.RemoveItem(x);
+
+            },
+            x =>
+            {
+                _itemsPanel.AddItem(itemViews.FirstOrDefault(v => v.Item == x));
+            }, Pan_TouchDoubleClick);
 
             grid.Width = _itemsPanel.Width;
 
@@ -126,64 +130,41 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private Button _takeBtn;
         private Button _takeAllBtn;
+        private VerticalStackPanel _inventory;
+        private Button _putBtn;
+
+        private Button CreateBtn(string text)
+        {
+            var btn = new Button()
+            {
+                Height = 25,
+                Background = WindowBackground.NinePatch(),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+            };
+            var btnText = new Label()
+            {
+                Text = text,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Font = _fontRetron.GetFont(24),
+            };
+
+            btn.Content = btnText;
+            btn.PressedBackground = new SolidBrush(Color.Black);
+
+            return btn;
+        }
 
         protected void FillButtons(VerticalStackPanel panel)
         {
-            var takeBtn = _takeBtn = new Button()
-            {
-                Height = 25,
-                Background = WindowBackground.NinePatch(),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-            };
-            var takeTxt = new Label()
-            {
-                Text = Game.Strings["UI"]["Take"],
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _fontRetron.GetFont(24),
-            };
-
+            var takeBtn = _takeBtn = CreateBtn(Game.Strings["UI"]["Take"]);
             takeBtn.Click += TakeBtn_Click;
-            takeBtn.Content = takeTxt;
-            takeBtn.PressedBackground = new SolidBrush(Color.Black);
 
-
-            _takeAllBtn = new Button()
-            {
-                Height = 25,
-                Background = WindowBackground.NinePatch(),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-            };
-            var takeAllTxt = new Label()
-            {
-                Text = Game.Strings["UI"]["TakeAll"],
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _fontRetron.GetFont(24),
-            };
-
+            _takeAllBtn = CreateBtn(Game.Strings["UI"]["TakeAll"]);
             _takeAllBtn.Click += TakeAllBtn_Click;
-            _takeAllBtn.Content = takeAllTxt;
-            _takeAllBtn.PressedBackground = new SolidBrush(Color.Black);
 
-
-            var closeBtn = new Button()
-            {
-                Height = 25,
-                Background = WindowBackground.NinePatch(),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-            };
-            var closeBtnTxt = new Label()
-            {
-                Text = Game.Strings["UI"]["Close"],
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _fontRetron.GetFont(24),
-            };
-
+            var closeBtn = CreateBtn(Game.Strings["UI"]["Close"]);
             closeBtn.Click += (x, y) => Close();
-            closeBtn.Content = closeBtnTxt;
-            closeBtn.PressedBackground = new SolidBrush(Color.Black);
 
             panel.Widgets.Add(takeBtn);
             panel.Widgets.Add(_takeAllBtn);
@@ -241,6 +222,21 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _takeBtn.Enabled = _itemsPanel.SelectedItem != null;
 
             _takeAllBtn.Enabled = _itemsPanel.Items.Count() > 0;
+
+            _itemsPanel.Update(gameTime);
+
+            _putBtn.Enabled = Game.GameState.Party.Inventory.Items.Count() > 0
+                && GetInventoryItemPanel().SelectedItem != default;
+
+            _inventory.Widgets.FirstOrDefault(x => x.Is<WeightBar>())
+                .As<WeightBar>()?
+                .RecalculateWeightView();
+        }
+
+        public override void Dispose()
+        {
+            ItemPanel.ResetDragAndDrop();
+            base.Dispose();
         }
     }
 }

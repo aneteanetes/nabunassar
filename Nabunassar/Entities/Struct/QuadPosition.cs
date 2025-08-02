@@ -4,7 +4,7 @@
     {
         First,
         Second,
-        Thrid,
+        Third,
         Fourth
     }
 }

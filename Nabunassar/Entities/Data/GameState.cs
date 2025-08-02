@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Myra.Graphics2D.TextureAtlases;
-using Nabunassar.Entities.Data.Dices;
+﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
 using Nabunassar.Entities.Struct;
@@ -20,6 +18,8 @@ namespace Nabunassar.Entities.Data
         public Minimap Minimap { get; set; }
 
         public TiledBase LoadedMap { get; set; }
+
+        public UIState UIState { get; set; } = new();
 
         public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 

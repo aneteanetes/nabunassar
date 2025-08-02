@@ -2,6 +2,7 @@
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Struct;
 using SharpDX;
+using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Entities.Data.Rankings
 {
@@ -104,6 +105,17 @@ namespace Nabunassar.Entities.Data.Rankings
             5 => Dice.d12,
             6 => Dice.d20,
             _ => new Dice(0),
+        };
+
+        public string GetName(NabunassarGame game) => Value switch
+        {
+            1 => (string)game.Strings["Enums/RankNames"][nameof(Rank.Basic)],
+            2 => (string)game.Strings["Enums/RankNames"][nameof(Rank.Advanced)],
+            3 => (string)game.Strings["Enums/RankNames"][nameof(Rank.Expert)],
+            4 => (string)game.Strings["Enums/RankNames"][nameof(Rank.Master)],
+            5 => (string)game.Strings["Enums/RankNames"][nameof(Rank.GrandMaster)],
+            6 => (string)game.Strings["Enums/RankNames"][nameof(Rank.Ultimate)],
+            _ => (string)game.Strings["Enums/RankNames"][nameof(Rank.None)],
         };
 
         public static implicit operator DiceModifierType(Rank rank) => rank.IsDirty

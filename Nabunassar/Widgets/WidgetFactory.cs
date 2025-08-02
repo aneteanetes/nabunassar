@@ -42,10 +42,5 @@ namespace Nabunassar.Widgets
             var dialogue = new DialogueMenu(Game, gameObject);
             return Game.AddDesktopWidget(dialogue);
         }
-
-        public ItemPanel ItemsContainer(List<ItemView> items, Action<Panel, Item> click, Action<Panel, Item> dblClick)
-        {
-            return new ItemPanel(items, _font, click, dblClick);
-        }
     }
 }

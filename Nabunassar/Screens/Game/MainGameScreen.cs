@@ -120,6 +120,11 @@ namespace Nabunassar.Screens.Game
                 InventoryIconButton.OpenCloseInventory(Game);
             }
 
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.P))
+            {
+                AbilityIconButton.OpenCloseAbilities(Game);
+            }
+
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
             {
 

@@ -6,18 +6,28 @@ namespace Nabunassar.Entities.Data.Affects
 {
     internal class Inventory
     {
-        public bool AddItem(Item item)
+        public void AddItem(Item item)
         {
-            if(Items.Contains(item)) 
-                return false;
+            if (!Items.Contains(item))
+            {
+                Items.Add(item);
 
-            Items.Add(item);
+                item.DateTimeRecived = DateTime.UtcNow;
 
-            item.DateTimeRecived = DateTime.UtcNow;
+                ItemAdded?.Invoke(this, item);
+            }
+        }
 
-            ItemAdded.Invoke(this, item);
+        internal void RemoveItem(Item item)
+        {
+            if (Items.Contains(item))
+            {
+                Items.Remove(item);
 
-            return true;
+                item.DateTimeRecived = null;
+
+                ItemRemoved?.Invoke(this, item);
+            }
         }
 
         public List<Item> Items { get; set; } = new();
@@ -25,5 +35,7 @@ namespace Nabunassar.Entities.Data.Affects
         public int Weight => Items.Sum(x => x.Weight);
 
         public event EventHandler<Item> ItemAdded;
+
+        public event EventHandler<Item> ItemRemoved;
     }
 }

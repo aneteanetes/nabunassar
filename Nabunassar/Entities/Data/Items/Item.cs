@@ -27,7 +27,7 @@ namespace Nabunassar.Entities.Data.Items
 
         public ItemType ItemType { get; set; }
 
-        public DateTime DateTimeRecived { get; set; }
+        public DateTime? DateTimeRecived { get; set; }
 
         public int Weight { get; set; }
 

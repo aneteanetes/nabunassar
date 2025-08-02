@@ -29,9 +29,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         {
             _bitterFont = Content.LoadFont(Fonts.BitterSemiBold);
             _retronFont = Content.LoadFont(Fonts.Retron);
-            _inventoryItemViews = Game.GameState.Party.Inventory.Items.Select(x=>new ItemView(x,Content)).ToList(); 
-            
-            _itemPanel = new ItemPanel(_inventoryItemViews, _bitterFont, null, null);
+            _inventoryItemViews = Game.GameState.Party.Inventory.Items.Select(x=>new ItemView(x,Content)).ToList();
+
+            _itemPanel = new ItemPanel(_inventoryItemViews, _bitterFont, Game.GameState.Party.Inventory.RemoveItem, Game.GameState.Party.Inventory.AddItem);
 
             CreateItemFilterIcons();
         }
@@ -102,30 +102,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private Panel WeightBar()
         {
-            var panel = new Panel();
-
-            _weightBar = new HorizontalProgressBar();
-
-            _weightLabel = new Label()
-            {
-                Font = _bitterFont.GetFont(16),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            RecalculateWeightView();
-
-            panel.Widgets.Add(_weightBar);
-            panel.Widgets.Add(_weightLabel);
-
-            return panel;
-        }
-
-        private void RecalculateWeightView()
-        {
-            _weightBar.Maximum = Game.GameState.Party.Weight;
-            _weightBar.Value = Game.GameState.Party.Inventory.Weight;
-            _weightLabel.Text = $"{_weightBar.Value}/{_weightBar.Maximum}";
+            return new WeightBar(Game,_bitterFont);
         }
 
         private HorizontalStackPanel ItemFilter()
@@ -161,12 +138,26 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var dropDown = new ComboViewFocused();
 
             var byType = CreateSortType(Game.Strings["UI"]["SortByType"]);
+            var byAlpha = CreateSortType(Game.Strings["UI"]["SortByAlphabet"]);
+            var byNew = CreateSortType(Game.Strings["UI"]["SortByNew"]);
             dropDown.Widgets.Add(byType);
-            dropDown.Widgets.Add(CreateSortType(Game.Strings["UI"]["SortByAlphabet"]));
-            dropDown.Widgets.Add(CreateSortType(Game.Strings["UI"]["SortByNew"]));
+            dropDown.Widgets.Add(byAlpha);
+            dropDown.Widgets.Add(byNew);
 
             dropDown.SelectedIndexChanged += DropDown_SelectedIndexChanged;
-            dropDown.SelectedItem = byType;
+
+            switch (Game.GameState.UIState.SelectedInventorySortIndex)
+            {
+                case 1:
+                    dropDown.SelectedItem = byAlpha;
+                    break;
+                case 2:
+                    dropDown.SelectedItem = byNew;
+                    break;
+                default:
+                    dropDown.SelectedItem = byType;
+                    break;
+            }
 
             return dropDown;
         }
@@ -180,14 +171,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                     _itemPanel.Order(x => x.ItemType);
                     break;
                 case 1:
-                    _itemPanel.Order(x=>x.GetObjectName());
+                    _itemPanel.Order(x => x.GetObjectName());
                     break;
                 case 2:
-                    _itemPanel.Order(x => x.DateTimeRecived,false);
+                    _itemPanel.Order(x => x.DateTimeRecived, false);
                     break;
                 default:
                     break;
             }
+            Game.GameState.UIState.SelectedInventorySortIndex = dropDown.SelectedIndex ?? 0;
         }
 
         private Label CreateSortType(string text)
@@ -207,10 +199,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         public override void Update(GameTime gameTime)
         {
             _itemPanel.Width = _filterPanel.ActualBounds.Size.X;
+            _itemPanel.Update(gameTime);
         }
 
         public override void Dispose()
         {
+            ItemPanel.ResetDragAndDrop();
             ControlPanel.CloseInventory();
             base.Dispose();
         }

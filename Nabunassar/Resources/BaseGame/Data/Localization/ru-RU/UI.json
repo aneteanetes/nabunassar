@@ -4,6 +4,7 @@
   "moveto": "Двигаться",
   "spell": "Умения",
   "skill": "Способности",
+  "abilities": "Навыки",
   "attack": "Атаковать",
   "steal": "Кража",
   "lockpick": "Взлом",
@@ -50,5 +51,10 @@
   "Potions": "Зелья",
   "Resource": "Ресурсы",
   "Quest": "Задания",
-  "Empty": "Пусто"
+  "Empty": "Пусто",
+  "Put": "Положить",
+  "PeacefullAbilities": "Мирные",
+  "BattleAbilities": "Боевые",
+  "PartyAbilities": "Способности отряда",
+  "Rank": "Ранг"
 }

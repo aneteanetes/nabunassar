@@ -129,7 +129,7 @@ namespace Nabunassar.Systems
                 party.Select(QuadPosition.Second);
 
             if (keyboard.WasKeyPressed(Keys.D3))
-                party.Select(QuadPosition.Thrid);
+                party.Select(QuadPosition.Third);
 
             if (keyboard.WasKeyPressed(Keys.D4))
                 party.Select(QuadPosition.Fourth);

@@ -1,7 +1,4 @@
-﻿using Nabunassar.Entities.Data.Descriptions;
-using Nabunassar.Entities.Data.Rankings;
-
-namespace Nabunassar.Entities.Data.Dices
+﻿namespace Nabunassar.Entities.Data.Dices
 {
     internal class Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
     {
@@ -21,6 +18,9 @@ namespace Nabunassar.Entities.Data.Dices
         }
 
 #pragma warning disable IDE1006 // Naming Styles
+
+        public static Dice d2 => new(2);
+
         public static Dice d4 => new(4);
 
         public static Dice d6 => new(6);
@@ -167,6 +167,17 @@ namespace Nabunassar.Entities.Data.Dices
                 result = 0;
 
             return new DiceResult(result, [mod], DiceOperation.Substract, roll);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null) 
+                return false;
+
+            if (obj is not Dice dice)
+                return false;
+
+            return dice.Edges == this.Edges;
         }
     }
 }

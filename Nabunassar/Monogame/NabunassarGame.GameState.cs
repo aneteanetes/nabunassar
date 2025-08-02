@@ -17,11 +17,7 @@ namespace Nabunassar
         {
             var party = GameState.Party = new Party(this);
 
-            party.First = new Hero(this)
-            {
-                Tileset = "warrior.png",
-                Creature = new Creature()
-            };
+            party.First = new Hero(this) { Tileset = "warrior.png", };
 
             party.Second = new Hero(this) { Tileset = "rogue.png" };
             party.Third = new Hero(this) { Tileset = "wizard.png" };

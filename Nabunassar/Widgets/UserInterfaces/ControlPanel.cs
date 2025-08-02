@@ -13,6 +13,7 @@ namespace Nabunassar.Widgets.UserInterfaces
     {
         private static HorizontalIconPanel _iconPanel;
         private static InventoryIconButton _inventory;
+        private static AbilityIconButton _abils;
 
         public override bool IsRemovable => false;
 
@@ -27,11 +28,10 @@ namespace Nabunassar.Widgets.UserInterfaces
             var charImage = new TextureRegion(iconAsset, new Rectangle(544, 192, 16, 16));
             var @char = new IconButton(Game.Strings["UI"]["Characters"], charImage);
 
+            _abils = new AbilityIconButton(Game);
+
             var skillsImage = new TextureRegion(iconAsset, new Rectangle(496, 192, 16, 16));
             var skills = new IconButton(Game.Strings["UI"]["skill"], skillsImage);
-
-            var foodImage = new TextureRegion(iconAsset, new Rectangle(528, 288, 16, 16));
-            var food = new IconButton(Game.Strings["UI"]["Food"], foodImage);
 
             _inventory = new InventoryIconButton(Game);
 
@@ -47,8 +47,8 @@ namespace Nabunassar.Widgets.UserInterfaces
             _iconPanel = new HorizontalIconPanel(Content, new List<IconButton>()
             {
                 @char,
+                _abils,
                 skills,
-                food,
                 _inventory,
                 journal,
                 globalMap,
@@ -72,6 +72,14 @@ namespace Nabunassar.Widgets.UserInterfaces
             if (_iconPanel != default)
             {
                 _iconPanel.Close(_inventory);
+            }
+        }
+
+        public static void CloseAbility()
+        {
+            if (_iconPanel != default)
+            {
+                _iconPanel.Close(_abils);
             }
         }
 

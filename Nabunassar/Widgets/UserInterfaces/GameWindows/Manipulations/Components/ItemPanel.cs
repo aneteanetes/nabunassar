@@ -1,8 +1,11 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
+using MonoGame.Extended.Input;
 using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Items;
+using Nabunassar.Entities.Game;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Views;
 
@@ -16,16 +19,20 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private Item _selectedItem;
         private IBrush _defaultPanelBackground;
         private FontSystem _font;
-        private Action<Panel, Item> _click;
-        private Action<Panel, Item> _dblClick;
         private List<ItemView> _itemViews = new();
+        private Action<Item> _onSourceDrop;
+
+        private NabunassarGame Game => NabunassarGame.Game;
+
+        public Action<Panel, Item> DblClick;
 
         public Panel SelectedPanel => _selectedPanel;
         public Item SelectedItem => _selectedItem;
+        public ItemView SelectedItemView => _itemViews.FirstOrDefault(x => x.Item == _selectedItem);
 
         public IEnumerable<ItemView> Items => _itemViews;
 
-        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Panel, Item> click = null, Action<Panel, Item> dblClick = null, int width = 350)
+        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Item> onSourceDrop, Action<Item> onDrop, Action<Panel, Item> dblClick = null, int width = 350)
         {
             MinHeight = 400;
             Width = width;
@@ -35,21 +42,24 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             _itemsPanel = new VerticalStackPanel();
             _itemsPanel.Width = width - 20;
 
+            _onSourceDrop = onSourceDrop;
+
             Content = _itemsPanel;
 
             _font = font;
-            _click = click;
-            _dblClick = dblClick;
+            DblClick = dblClick;
 
             foreach (var itemView in itemViews)
             {
                 AddItem(itemView);
             }
+
+            //this.TouchUp += (s, e) => ItemPanel_TouchUp(_itemsPanel, onSourceDrop,onDrop);
         }
 
         public void AddItem(ItemView item)
         {
-            var panel = CreateItemPanel(item, _font, _click, _dblClick);
+            var panel = CreateItemPanel(item, _font);
             _itemViews.Add(item);
             _itemsPanel.Widgets.Add(panel);
         }
@@ -61,23 +71,22 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             _itemViews.Remove(itemView);
         }
 
-        public Panel CreateItemPanel(ItemView itemView, FontSystem font, Action<Panel, Item> click, Action<Panel, Item> dblClick)
+        public Panel CreateItemPanel(ItemView itemView, FontSystem font)
         {
             var size = 48;
             var pan = new Panel
             {
                 Height = 56,
             };
+            pan.BorderThickness = new Thickness(0, 0, 0, 1);
+            pan.Border = new SolidBrush(Color.White);
             pan.OverBackground = ScreenWidgetWindow.WindowBackground.NinePatch();
             pan.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            pan.TouchDown += (s, e) => Pan_TouchDown(pan, itemView.Item);
+            pan.TouchDown += (s, e) => Pan_TouchUp(pan, itemView.Item);
+            //pan.TouchDown += (s, e) => Pan_TouchDown(pan, itemView);
 
-            if (click != default)
-                pan.TouchDown += (s, e) => click(s.As<Panel>(), itemView.Item);
-
-            if (dblClick != default)
-                pan.TouchDoubleClick += (s, e) => dblClick(s.As<Panel>(), itemView.Item);
+            pan.TouchDoubleClick += (s, e) => DblClick?.Invoke(s.As<Panel>(), itemView.Item);
 
             var grid = new Grid()
             {
@@ -133,14 +142,64 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             return pan;
         }
 
-        private void Pan_TouchDown(Panel sender, Item item)
+        private static Point _mousePos;
+        private static Panel _touchedPanel;
+        private static ItemPanel _touchedItemPanel;
+        private static ItemView _touched;
+        private static List<Widget> _touchedWidgets;
+
+        private void Pan_TouchDown(object sender, ItemView itemView)
         {
-            ResetSelectedItem();
+            var state = MouseExtended.GetState();
+            _mousePos = state.Position; 
+            _touched = itemView;
+            _touchedPanel = itemPanelMap[itemView.Item];
+            _touchedItemPanel = this;
+        }
 
-            _selectedPanel = sender;
-            _selectedItem = item;
+        private void Pan_TouchUp(Panel sender, Item item)
+        {
+            if (!_isDragging)
+            {
+                ResetSelectedItem();
 
-            _selectedPanel.Background = ScreenWidgetWindow.WindowBackground.NinePatch();
+                _selectedPanel = sender;
+                _selectedItem = item;
+
+                _selectedPanel.Background = ScreenWidgetWindow.WindowBackground.NinePatch();
+
+                ResetDragAndDrop();
+            }
+        }
+
+        private void ItemPanel_TouchUp(VerticalStackPanel panel, Action<Item> onSourceDrop, Action<Item> onDrop)
+        {
+            if (_touchedPanel!=null)
+            {
+                if (panel.Widgets.Contains(_touchedPanel))
+                {
+                    MakePanelVisible(_touchedPanel);
+                }
+                else
+                {
+                    _touchedItemPanel._onSourceDrop?.Invoke(_touched.Item);
+                    _touchedItemPanel.Remove(_touched.Item);
+                    this.AddItem(_touched);
+                    onDrop?.Invoke(_touched.Item);
+                }
+                ResetDragAndDrop();
+            }
+        }
+
+        public static void ResetDragAndDrop()
+        {
+            _touchedPanel = null;
+            _touched = null;
+            _touchedWidgets = null;
+            _isDragging = false;
+            _mousePos = Point.Zero;
+
+            NabunassarGame.Game.RemoveDesktopWidgets<ItemDragWidget>();
         }
 
         public void ResetSelectedItem()
@@ -224,6 +283,38 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 ResetSelectedItem();
             };
             _order(_filteredItems ?? _itemViews);
+        }
+
+        private static bool _isDragging = false;
+
+        public void Update(GameTime gameTime)
+        {
+            return;
+            var state = MouseExtended.GetState();
+            if (_touchedItemPanel == this && _mousePos!=Point.Zero && state.Position != _mousePos && !_isDragging)
+            {
+                _isDragging = true;
+                MakePanelInvisible(itemPanelMap[_touched.Item]);
+                var drag = new ItemDragWidget(Game, _touched);
+                Game.AddDesktopWidget(drag);
+            }
+        }
+
+        private void MakePanelInvisible(Panel panel)
+        {
+            panel.BorderThickness = Thickness.Zero;
+            _touchedWidgets = [.. panel.Widgets];
+            panel.Widgets.Clear();
+        }
+
+        private void MakePanelVisible(Panel panel)
+        {
+            panel.BorderThickness = new Thickness(0, 0, 0, 1);
+            if (_touchedWidgets != null)
+                foreach (var widget in _touchedWidgets)
+                {
+                    panel.Widgets.Add(widget);
+                }
         }
     }
 }

@@ -107,14 +107,14 @@ namespace Nabunassar.Entities.Data
         {
             SetPositionOn(First, QuadPosition.First);
             SetPositionOn(Second, QuadPosition.Second);
-            SetPositionOn(Third, QuadPosition.Thrid);
+            SetPositionOn(Third, QuadPosition.Third);
             SetPositionOn(Fourth, QuadPosition.Fourth);
         }
 
         internal void SetPositionOnAllPartyRight()
         {
             SetPositionOn(First, QuadPosition.Fourth);
-            SetPositionOn(Second, QuadPosition.Thrid);
+            SetPositionOn(Second, QuadPosition.Third);
             SetPositionOn(Third, QuadPosition.Second);
             SetPositionOn(Fourth, QuadPosition.First);
         }
@@ -153,7 +153,7 @@ namespace Nabunassar.Entities.Data
                 case QuadPosition.Second:
                     hero.GameObject.SetAbsolutePosition(4, y);
                     break;
-                case QuadPosition.Thrid:
+                case QuadPosition.Third:
                     hero.GameObject.SetAbsolutePosition(12, y);
                     break;
                 case QuadPosition.Fourth:
@@ -212,10 +212,10 @@ namespace Nabunassar.Entities.Data
                     break;
                 case ObjectType.Container:
                     LootWindow.Open(_game, gameObject);
-                    //ScreenWidgetWindow.Open(new ItemContainerWindow(_game, gameObject));
                     break;
                 default:
-                    InformationWindow.Open(NabunassarGame.Game, gameObject);
+                    if (gameObject.ObjectType.IsInteractive())
+                        InformationWindow.Open(NabunassarGame.Game, gameObject);
                     break;
             }
         }
