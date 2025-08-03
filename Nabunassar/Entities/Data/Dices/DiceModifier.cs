@@ -24,10 +24,12 @@ namespace Nabunassar.Entities.Data.Dices
                 return $"{Result} = {Rank.Value}{operString} {Value}";
         }
 
-        public string ToFormulaString()
+        public string ToFormulaString(bool isWithConcretteRank = true)
         {
             var game = NabunassarGame.Game;
             var operString = " " + Operation.ToOperatorString();
+
+            var rankValue = isWithConcretteRank ? $"({Rank.Value})" : "";
 
             if (Type == DiceModifierType.Pure)
             {
@@ -36,12 +38,12 @@ namespace Nabunassar.Entities.Data.Dices
             else if (Type == DiceModifierType.Rank)
             {
                 var entity = game.DataBase.GetEntity(Rank.ObjectId);
-                return $"{operString} {game.Strings["GameTexts"][nameof(Rank)]}({Rank.Value}) {entity.FormulaName}";
+                return $"{operString} {game.Strings["GameTexts"][nameof(Rank)]}{rankValue} {entity.FormulaName}";
             }
             else
             {
                 var entity = game.DataBase.GetEntity(Rank.ObjectId);
-                return $"{game.Strings["GameTexts"][nameof(Rank)]}({Rank.Value})  {entity.FormulaName} {operString} {Value}";
+                return $"{game.Strings["GameTexts"][nameof(Rank)]}{rankValue}  {entity.FormulaName} {operString} {Value}";
             }
         }
     }

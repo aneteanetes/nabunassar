@@ -32,6 +32,7 @@ namespace Nabunassar
             Desktop = new Desktop();
             WidgetFactory = new Widgets.WidgetFactory(this);
             WidgetFactory.LoadContent();
+            ApplyMyraCustomStyle();
 
             //
 

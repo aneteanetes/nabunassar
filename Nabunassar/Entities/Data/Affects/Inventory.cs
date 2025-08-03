@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework.Input;
-using Myra.Events;
-using Nabunassar.Entities.Data.Items;
+﻿using Nabunassar.Entities.Data.Items;
+using System.Collections;
 
 namespace Nabunassar.Entities.Data.Affects
 {
-    internal class Inventory
+    internal class Inventory : IEnumerable<Item>
     {
         public void AddItem(Item item)
         {
@@ -29,6 +28,10 @@ namespace Nabunassar.Entities.Data.Affects
                 ItemRemoved?.Invoke(this, item);
             }
         }
+
+        public IEnumerator<Item> GetEnumerator() => Items.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
 
         public List<Item> Items { get; set; } = new();
 

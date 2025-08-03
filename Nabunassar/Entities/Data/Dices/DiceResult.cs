@@ -159,7 +159,7 @@ namespace Nabunassar.Entities.Data.Dices
             return drawtext;
         }
 
-        public DrawText ToFormula()
+        public DrawText ToFormula(bool isWithDices=true)
         {
             var db = NabunassarGame.Game.DataBase;
             var text = DrawText.Create("");
@@ -168,7 +168,8 @@ namespace Nabunassar.Entities.Data.Dices
 
             var dices = string.Join("", DiceRolls.Select(diceRoll =>
             {
-                return $"{NabunassarGame.Game.Strings["GameTexts"]["Dice"]}({diceRoll.Dice}) {db.GetEntity(diceRoll.Dice.ObjectId).FormulaName} {diceRoll.Operation.ToOperatorString()} ";
+                var concretteDice = isWithDices ? $"({diceRoll.Dice})" : "";
+                return $"{NabunassarGame.Game.Strings["GameTexts"]["Dice"]}{concretteDice} {db.GetEntity(diceRoll.Dice.ObjectId).FormulaName} {diceRoll.Operation.ToOperatorString()} ";
             }));
 
             text.Append(dices + " ");
@@ -176,7 +177,7 @@ namespace Nabunassar.Entities.Data.Dices
 
             foreach (var mod in Modifiers)
             {
-                text.Append(mod.ToFormulaString());
+                text.Append(mod.ToFormulaString(isWithDices));
             }
 
             return text;

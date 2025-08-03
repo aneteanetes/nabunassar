@@ -1,4 +1,5 @@
 ﻿using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct.ImageRegions;
 
 namespace Nabunassar.Entities.Data.Items
@@ -15,6 +16,10 @@ namespace Nabunassar.Entities.Data.Items
             item.Cost = Cost;
             item.Weight = Weight;
             item.ItemType = ItemType;
+            item.ItemSubtype = ItemSubtype;
+            item.Archetype = Archetype;
+            item.IsCombat = IsCombat;
+            item.AbilityName = AbilityName;
 
             return item;
         }
@@ -27,7 +32,15 @@ namespace Nabunassar.Entities.Data.Items
 
         public ItemType ItemType { get; set; }
 
+        public ItemSubtype ItemSubtype { get; set; }
+
+        public Archetype Archetype { get; set; }
+
         public DateTime? DateTimeRecived { get; set; }
+
+        public bool IsCombat { get; set; }
+
+        public string AbilityName { get; set; }
 
         public int Weight { get; set; }
 

@@ -13,8 +13,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         public Iconpanel(IImage iconImage, string name)
         {
             var font = NabunassarGame.Game.Content.LoadFont(Fonts.BitterSemiBold);
-            var size = 48;
-            Height = 56;
+            var size = 52;
+
             BorderThickness = new Thickness(0, 0, 0, 1);
             Border = new SolidBrush(Color.White);
             OverBackground = ScreenWidgetWindow.WindowBackground.NinePatch();
@@ -33,6 +33,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 Width = size,
                 Height = size,
                 VerticalAlignment = VerticalAlignment.Top,
+                Border = new SolidBrush(Color.White),
+                BorderThickness=new Thickness(1),
+                Padding=new Thickness(5)
             };
             grid.Widgets.Add(icon);
             Grid.SetColumn(icon, 0);
@@ -53,6 +56,16 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             Grid.SetColumn(_description, 1);
 
             Widgets.Add(grid);
+        }
+
+        public void Add(Widget widget)
+        {
+            _description.Widgets.Add(widget);
+        }
+
+        public void Remove(Widget widget)
+        {
+            _description.Widgets.Remove(widget);
         }
     }
 }

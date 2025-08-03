@@ -52,7 +52,7 @@
             {
                 var prevAvg = ((int)Math.Round(_previousRolls.Average()));
 
-                var result = NabunassarGame.Random.Next(prevAvg, Edges + 1);
+                var result = NabunassarGame.Randoms.Next(prevAvg, Edges + 1);
                 return new DiceRoll(this, result, operation);
             }
             else
@@ -67,7 +67,7 @@
 
         private DiceRoll PureRoll(DiceOperation operation)
         {
-            var result = NabunassarGame.Random.Next(Edges + 1);
+            var result = NabunassarGame.Randoms.Next(Edges + 1);
 
             return new DiceRoll(this, result, operation);
         }

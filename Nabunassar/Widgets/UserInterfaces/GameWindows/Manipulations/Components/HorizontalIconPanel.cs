@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Widgets.Views.IconButtons;
@@ -13,10 +12,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private List<Image> _buttons = new();
         private Dictionary<IconButton, Image> _iconButtonImages = new();
 
-        public HorizontalIconPanel(NabunassarContentManager content, List<IconButton> iconButtons, Func<Image,Vector2> titlePosition=null)
+        public HorizontalIconPanel(NabunassarContentManager content, List<IconButton> iconButtons, Func<Image,Vector2> titlePosition=null, HorizontalAlignment btnAligment= HorizontalAlignment.Left)
         {
             Background = content.Load<Texture2D>("Assets/Images/Borders/controlpanel_m.png").NinePatch();
             _titlePosition = titlePosition;
+
+            var panel = new HorizontalStackPanel();
+            panel.HorizontalAlignment = btnAligment;
+
+            this.Widgets.Add(panel);
 
             var i = 0;
             foreach (var iconButton in iconButtons)
@@ -24,7 +28,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 var left = i == 0 ? 5 : 0;
                 var right = i == iconButtons.Count - 1 ? 5 : 0;
 
-                var btn = AddButton(this, iconButton, iconButton.OnClick, iconButton.Title, left, right);
+                var btn = AddButton(panel, iconButton, iconButton.OnClick, iconButton.Title, left, right);
                 if (iconButton.IsReactOnClick)
                     _buttons.Add(btn);
                 i++;

@@ -28,7 +28,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
                 : Game.Strings["UI"]["Failure"].ToString();
 
             AddRollResult(informationpanel, rollResult.Complexity, Game.Strings["UI"]["Difficult"]);
-            AddRollResult(informationpanel, rollResult.Roll, Game.Strings["UI"]["Throw"],true);
+            AddRollResult(informationpanel, rollResult.Result, Game.Strings["UI"]["Throw"],true);
             AddTitle(informationpanel, $"{Game.Strings["UI"]["Result"]}: {textResult}", new Thickness(0,15,0,0));
 
             return base.FillInformationWindow(informationpanel);

@@ -130,7 +130,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 var icon = new TextureRegion(texture, info.Item1.ToRectangle());
                 _iconButtons.Add(new InventoryFilterIconButton(info.Item2, icon, _itemPanel, x => x.ItemType == value));
             }
-
         }
 
         private ComboView SortBox()

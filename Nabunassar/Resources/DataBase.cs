@@ -1,9 +1,12 @@
 ﻿using Geranium.Reflection;
 using Nabunassar.Entities;
+using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities;
+using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
+using System.IO;
 
 namespace Nabunassar.Resources
 {
@@ -11,11 +14,11 @@ namespace Nabunassar.Resources
     {
         public const string NotFoundStringConstant = "[String Was Not Found]";
 
-        NabunassarGame _game;
+        NabunassarGame Game;
 
         public DataBase(NabunassarGame game)
         {
-            _game = game;
+            Game = game;
         }
 
         private Dictionary<Guid, IEntity> Entities = new();
@@ -56,11 +59,9 @@ namespace Nabunassar.Resources
             if (@string == null)
                 return NotFoundStringConstant;
 
-            var code = _game.Settings.LanguageCode ?? "ru-RU";
+            var data = GetLocalized<Dictionary<string, string>>(file);
 
-            var data = Get<Dictionary<string, string>>($"Data/Localization/{code}/{file}.json");
-
-            if(data.TryGetValue(@string, out var value))
+            if (data.TryGetValue(@string, out var value))
             {
                 return value;
             }
@@ -71,6 +72,12 @@ namespace Nabunassar.Resources
             }
 
             return NotFoundStringConstant;
+        }
+
+        public T GetLocalized<T>(string file)
+        {
+            var code = Game.Settings.LanguageCode ?? "ru-RU";
+            return Get<T>($"Data/Localization/{code}/{file}.json");
         }
 
         private List<GameObject> _objects;
@@ -90,14 +97,14 @@ namespace Nabunassar.Resources
             }
 
             if (obj != null)
-                obj.ObjectId = _game.Randoms.Next(-10000, -10);
+                obj.ObjectId = Game.Random.Next(-10000, -10);
 
             return obj;
         }
 
         public GameObject GetObjectGround(GroundType groundType)
         {
-            var groundName = groundType + _game.GameState.LoadedMapPostFix;
+            var groundName = groundType + Game.GameState.LoadedMapPostFix;
             var obj = GetObjectInternal(x => x.Name == groundName);
             obj.ObjectType = ObjectType.Ground;
             obj.GroundType = groundType;
@@ -110,7 +117,7 @@ namespace Nabunassar.Resources
             }
 
             if (obj != null)
-                obj.ObjectId = _game.Randoms.Next(-10000, -10);
+                obj.ObjectId = Game.Random.Next(-10000, -10);
 
             return obj;
         }
@@ -140,24 +147,24 @@ namespace Nabunassar.Resources
             }
 
             var newObject = @object.Clone();
-            newObject.Init(_game);
+            newObject.Init(Game);
 
             return newObject;
         }
 
         public T Get<T>(string assetName)
         {
-            return _game.Content.Load<T>(assetName);
+            return Game.Content.Load<T>(assetName);
         }
 
         public T GetById<T>(string assetName, Func<T, bool> idSelector)
         {
-            return _game.Content.Load<List<T>>(assetName).FirstOrDefault(idSelector);
+            return Game.Content.Load<List<T>>(assetName).FirstOrDefault(idSelector);
         }
 
         internal AbilityModel GetAbility(string abilityName)
         {
-            var abilities = _game.Content.Load<List<AbilityModel>>("Data/Abilities/AbilityRegistry.json");
+            var abilities = Game.Content.Load<List<AbilityModel>>("Data/Abilities/AbilityRegistry.json");
             return abilities.FirstOrDefault(x=>x.Name== abilityName);
         }
 
@@ -166,6 +173,67 @@ namespace Nabunassar.Resources
             var item = GetById<Item>("Data/Objects/ItemsRegistry.json", x => x.ObjectId == itemId);
 
             return item.Clone();
+        }
+
+        internal Party CreateRandomParty(NabunassarGame game)
+        {
+            var party = new Party(game);
+
+            party.First = new Hero(game)
+            {
+                Tileset = "warrior.png",
+                Sex = Sex.Male,
+                Name = GetName(Sex.Male),
+                Creature = new Creature()
+                {
+                    Class = Nabunassar.Entities.Game.Enums.Archetype.Warrior
+                }
+            };
+
+            party.Second = new Hero(game)
+            {
+                Tileset = "rogue.png",
+                Sex = Sex.Female,
+                Name = GetName(Sex.Female),
+                Creature = new Creature()
+                {
+                    Class = Nabunassar.Entities.Game.Enums.Archetype.Rogue
+                }
+            };
+            party.Third = new Hero(game)
+            {
+                Tileset = "wizard.png",
+                Sex = Sex.Male,
+                Name = GetName(Sex.Male),
+                Creature = new Creature()
+                {
+                    Class = Nabunassar.Entities.Game.Enums.Archetype.Wizzard
+                }
+            };
+            party.Fourth = new Hero(game)
+            {
+                Tileset = "priest.png",
+                Sex = Sex.Female,
+                Name = GetName(Sex.Female),
+                Creature = new Creature()
+                {
+                    Class = Nabunassar.Entities.Game.Enums.Archetype.Priest
+                }
+            };
+
+            return party;
+        }
+
+        internal string GetName(Sex sex, int idx = -1)
+        {
+            var names = GetLocalized<string[]>("Names/"+sex.ToString());
+
+            if (idx < 0)
+            {
+                idx = Game.Random.Next(0,names.Length-1);
+            }
+
+            return names[idx];
         }
     }
 }

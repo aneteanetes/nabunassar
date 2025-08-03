@@ -133,27 +133,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private VerticalStackPanel _inventory;
         private Button _putBtn;
 
-        private Button CreateBtn(string text)
-        {
-            var btn = new Button()
-            {
-                Height = 25,
-                Background = WindowBackground.NinePatch(),
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-            };
-            var btnText = new Label()
-            {
-                Text = text,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Font = _fontRetron.GetFont(24),
-            };
-
-            btn.Content = btnText;
-            btn.PressedBackground = new SolidBrush(Color.Black);
-
-            return btn;
-        }
+        private Button CreateBtn(string text)=>new DefaultButton(text);
 
         protected void FillButtons(VerticalStackPanel panel)
         {

@@ -42,7 +42,7 @@ namespace Nabunassar.Entities.Game.Stats
             get => Agility.AsDice().Entity(GetStatDescription(nameof(Dialectics)));
         }
 
-        private IEntity GetStatDescription(string stat)
+        public static IEntity GetStatDescription(string stat)
         {
             return NabunassarGame.Game.DataBase.AddEntity(new DescribeEntity()
             {

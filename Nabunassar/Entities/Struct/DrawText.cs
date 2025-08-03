@@ -89,7 +89,7 @@ namespace Nabunassar.Entities.Struct
 
         public DrawText AppendLine(DrawText text = default)
         {
-            var newline = "/n" + text == default ? text._text : "";
+            var newline = "/n" + (text == default ? "" : text._text);
             _text += newline;
             _unformatText += newline;
             return this;

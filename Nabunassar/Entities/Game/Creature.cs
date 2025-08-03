@@ -1,5 +1,6 @@
 ﻿using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Game.Stats;
 using Nabunassar.Entities.Struct;
 
@@ -13,6 +14,8 @@ namespace Nabunassar.Entities.Game
             PrimaryStats = new PrimaryStats(this);
             FormulaName = NabunassarGame.Game.Strings["Entities"][nameof(Creature)];
         }
+
+        public Archetype Class { get; set; }
 
         public PrimaryStats PrimaryStats { get; set; }
 

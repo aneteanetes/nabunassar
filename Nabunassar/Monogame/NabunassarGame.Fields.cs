@@ -18,11 +18,13 @@ using Penumbra;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets;
 using Nabunassar.Localization;
+using System.Net.Http.Headers;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+
         public LocalizedStrings Strings { get; set; }
 
         public WidgetFactory WidgetFactory { get; set; }
@@ -37,9 +39,30 @@ namespace Nabunassar
 
         public CustomCollisionComponent CollisionComponent { get; private set; }
 
-        public static FastRandom Random { get; private set; } = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+        private static FastRandom _random;
 
-        public FastRandom Randoms => Random;
+        public static FastRandom Randoms
+        {
+            get
+            {
+                if (_random == null)
+                {
+                    try
+                    {
+                        _random = new FastRandom(Guid.NewGuid().GetHashCode());
+                    }
+                    catch
+                    {
+                        //safe, but ineffective (and less random) way
+                        _random = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+                    }
+                }
+
+                return _random;
+            }
+        }
+
+        public FastRandom Random => Randoms;
 
         public GameState GameState { get; private set; }
 

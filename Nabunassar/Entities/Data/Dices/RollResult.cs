@@ -12,7 +12,7 @@
                 if (rollMax.Result >= complexityMax.Result)
                 {
                     Complexity = complexityMax;
-                    Roll = rollMax;
+                    Result = rollMax;
 
                     ComplexityInner = complexity;
                     RollInner = roll;
@@ -20,21 +20,21 @@
                 else
                 {
                     Complexity = complexity;
-                    Roll = roll;
+                    Result = roll;
                 }
             }
             else
             {
                 Complexity = complexity;
-                Roll = roll;
+                Result = roll;
             }
 
-            IsSuccess = Roll.Result >= Complexity.Result;
+            IsSuccess = Result.Result >= Complexity.Result;
         }
 
         public DiceResult Complexity { get; private set; }
 
-        public DiceResult Roll { get; private set; }
+        public DiceResult Result { get; private set; }
 
         public bool IsSuccess { get; private set; }
 

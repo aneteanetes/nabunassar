@@ -22,6 +22,7 @@
   "Throw": "Бросок",
   "SkillCheck": "Проверка навыка",
   "Difficult": "Сложность",
+  "Complexity": "Сложность",
   "Result": "Результат",
   "Success": "Успех",
   "Failure": "Провал",
@@ -56,5 +57,12 @@
   "PeacefullAbilities": "Мирные",
   "BattleAbilities": "Боевые",
   "PartyAbilities": "Способности отряда",
-  "Rank": "Ранг"
+  "Rank": "Ранг",
+  "Description": "Описаниe",
+  "Descriptions": "Описания",
+  "Tablets": "Таблички",
+  "FocusForHint": "Наведите для просмотра описания.",
+  "Equip": "Экипировать",
+  "SelectSlot": "Выберите слот:",
+  "Naming": "Наименование"
 }

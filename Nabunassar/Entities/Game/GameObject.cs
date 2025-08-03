@@ -50,7 +50,7 @@ namespace Nabunassar.Entities.Game
             LootTable = game.DataBase.GetById<LootTable>("Data/Objects/LootTables.json", x => x.TableId == LootTableId);
         }
 
-        private IEntity GetLandscapeAbility()
+        public static IEntity GetLandscapeAbility()
         {
             var game = NabunassarGame.Game;
             var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");

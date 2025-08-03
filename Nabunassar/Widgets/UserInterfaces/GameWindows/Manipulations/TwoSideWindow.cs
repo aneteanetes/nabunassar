@@ -14,9 +14,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations
             var window = new Window();
 
             var grid = new Grid();
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.9f));
             grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.2f));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.8f));
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4.9f));
 
             var left = LeftSide();
 

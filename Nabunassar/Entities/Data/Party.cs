@@ -42,10 +42,6 @@ namespace Nabunassar.Entities.Data
         public Party(NabunassarGame game)
         {
             _game = game;
-            First = new Hero(game);
-            Second = new Hero(game);
-            Third = new Hero(game);
-            Fourth = new Hero(game);
         }
 
         public Inventory Inventory { get; set; } = new();

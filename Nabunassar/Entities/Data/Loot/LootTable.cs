@@ -29,7 +29,7 @@ namespace Nabunassar.Entities.Data.Loot
 
                 if (row.Type == LootChance.Percent)
                 {
-                    var isRolled = game.Randoms.Chance(row.Value);
+                    var isRolled = game.Random.Chance(row.Value);
                     if (isRolled)
                         AddItem(row);
                 }

@@ -1,6 +1,9 @@
 [
   {
     "Name": "Landscape",
-    "Icon": "Assets/Images/Icons/Abilities/landscape.png"
+    "Icon": "Assets/Images/Icons/Abilities/landscape.png",
+    "ItemId": 1,
+    "IsCombat": "false",
+    "Slot": "First"
   }
 ]

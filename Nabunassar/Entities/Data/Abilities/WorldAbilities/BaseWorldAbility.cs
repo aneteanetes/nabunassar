@@ -20,12 +20,16 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
             var entity = GetEntity(creature);
 
-            Rank = Rank.Entity(entity);
-            Dice = Dice.Entity(entity);
+            Rank = model.Rank.Entity(entity);
+            Dice = model.Dice.Entity(entity);
 
             Name = Game.Strings["AbilityNames"][model.Name];
             Description = Game.Strings["AbilityDescriptions"][model.Name];
             Icon = model.Icon;
+
+            Slot = model.Slot;
+            IsCombat = model.IsCombat;
+            ItemId = model.ItemId;
         }
 
         private IEntity GetEntity(IEntity creatureEntity)
