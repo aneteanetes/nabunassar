@@ -1,4 +1,5 @@
-﻿using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
@@ -36,6 +37,19 @@ namespace Nabunassar.Entities.Data.Abilities
                     }
                 default:
                     return default;
+            }
+        }
+
+        public AbilityModel Load(NabunassarGame game)
+        {
+            if (!IsCombat)
+            {
+                return CreateWorldAbility(game, new Creature());
+            }
+            else
+            {
+                //return combat ability
+                return null;
             }
         }
     }

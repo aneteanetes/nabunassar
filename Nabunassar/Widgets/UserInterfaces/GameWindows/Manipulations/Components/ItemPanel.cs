@@ -11,7 +11,7 @@ using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
-    internal class ItemPanel : ScrollViewer
+    internal class ItemPanel : ScrollViewer, IDisposable
     {
         private Dictionary<Item, Panel> itemPanelMap = new();
         private VerticalStackPanel _itemsPanel;
@@ -20,6 +20,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private IBrush _defaultPanelBackground;
         private FontSystem _font;
         private List<ItemView> _itemViews = new();
+        private bool _isShortView;
         private Action<Item> _onSourceDrop;
 
         private NabunassarGame Game => NabunassarGame.Game;
@@ -32,8 +33,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
         public IEnumerable<ItemView> Items => _itemViews;
 
-        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Item> onSourceDrop, Action<Item> onDrop, Action<Panel, Item> dblClick = null, int width = 350)
+        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Item> onSourceDrop, Action<Item> onDrop, Action<Panel, Item> dblClick = null, int width = 350, bool isShortView=false)
         {
+            if (isShortView)
+                width = 80;
+
             MinHeight = 400;
             Width = width;
 
@@ -42,6 +46,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             _itemsPanel = new VerticalStackPanel();
             _itemsPanel.Width = width - 20;
 
+            _isShortView = isShortView;
             _onSourceDrop = onSourceDrop;
 
             Content = _itemsPanel;
@@ -51,18 +56,20 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
             foreach (var itemView in itemViews)
             {
-                AddItem(itemView);
+                AddItem(itemView, isShortView);
             }
 
             //this.TouchUp += (s, e) => ItemPanel_TouchUp(_itemsPanel, onSourceDrop,onDrop);
         }
 
-        public void AddItem(ItemView item)
+        private void AddItem(ItemView item, bool isShortView)
         {
-            var panel = CreateItemPanel(item, _font);
+            var panel = CreateItemPanel(item, _font, isShortView);
             _itemViews.Add(item);
             _itemsPanel.Widgets.Add(panel);
         }
+
+        public void AddItem(ItemView item) => AddItem(item, _isShortView);
 
         public void Remove(Item item)
         {
@@ -71,7 +78,62 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             _itemViews.Remove(itemView);
         }
 
-        public Panel CreateItemPanel(ItemView itemView, FontSystem font)
+
+        public event EventHandler<Item> ItemMouseEntered
+        {
+            add
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.MouseEntered += (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+            remove
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.MouseEntered -= (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+        }
+
+        public event EventHandler<Item> ItemMouseLeft
+        {
+            add
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.MouseLeft += (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+            remove
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.MouseLeft -= (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+        }
+
+        public event EventHandler<Item> ItemTouchDown
+        {
+            add
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.TouchDown += (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+            remove
+            {
+                itemPanelMap.ForEach(x =>
+                {
+                    x.Value.TouchDown -= (s, arg) => value?.Invoke(x.Value, x.Key);
+                });
+            }
+        }        
+
+        public Panel CreateItemPanel(ItemView itemView, FontSystem font, bool isShortView)
         {
             var size = 48;
             var pan = new Panel
@@ -81,7 +143,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             pan.BorderThickness = new Thickness(0, 0, 0, 1);
             pan.Border = new SolidBrush(Color.White);
             pan.OverBackground = ScreenWidgetWindow.WindowBackground.NinePatch();
-            pan.HorizontalAlignment = HorizontalAlignment.Stretch;
+            if (!isShortView)
+                pan.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             pan.TouchDown += (s, e) => Pan_TouchUp(pan, itemView.Item);
             //pan.TouchDown += (s, e) => Pan_TouchDown(pan, itemView);
@@ -92,8 +155,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             {
                 Padding = new Thickness(6)
             };
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 2f));
-            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8f));
 
             var icon = new Image()
             {
@@ -105,35 +166,41 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             grid.Widgets.Add(icon);
             Grid.SetColumn(icon, 0);
 
-            var textgold = new Panel()
+            if (!isShortView)
             {
-                Height = 50
-            };
+                grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 2f));
+                grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8f));
 
-            var fontSize = 18;
+                var textgold = new Panel()
+                {
+                    Height = 50
+                };
 
-            Grid.SetColumnSpan(textgold, 2);
+                var fontSize = 18;
 
-            var text = new Label()
-            {
-                Font = font.GetFont(fontSize),
-                Text = itemView.Item.GetObjectName(),
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Wrap = true
-            };
-            textgold.Widgets.Add(text);
+                Grid.SetColumnSpan(textgold, 2);
 
-            var money = new MoneyPanel(itemView.Cost)
-            {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                Padding = new Thickness(0, 5, 0, 0)
-            };
-            textgold.Widgets.Add(money);
+                var text = new Label()
+                {
+                    Font = font.GetFont(fontSize),
+                    Text = itemView.Item.GetObjectName(),
+                    VerticalAlignment = VerticalAlignment.Top,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Wrap = true
+                };
+                textgold.Widgets.Add(text);
 
-            grid.Widgets.Add(textgold);
-            Grid.SetColumn(textgold, 1);
+                var money = new MoneyPanel(itemView.Cost)
+                {
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    Padding = new Thickness(0, 5, 0, 0)
+                };
+                textgold.Widgets.Add(money);
+
+                grid.Widgets.Add(textgold);
+                Grid.SetColumn(textgold, 1);
+            }
 
             pan.Widgets.Add(grid);
 
@@ -184,7 +251,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 {
                     _touchedItemPanel._onSourceDrop?.Invoke(_touched.Item);
                     _touchedItemPanel.Remove(_touched.Item);
-                    this.AddItem(_touched);
+                    this.AddItem(_touched,_isShortView);
                     onDrop?.Invoke(_touched.Item);
                 }
                 ResetDragAndDrop();
@@ -315,6 +382,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 {
                     panel.Widgets.Add(widget);
                 }
+        }
+
+        public void Dispose()
+        {
+            itemPanelMap.Clear();
         }
     }
 }

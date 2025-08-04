@@ -1,6 +1,7 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -28,6 +29,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private FontSystem _fontRetron;
         private ItemPanel _itemPanel;
         private bool _isCombatAbilities;
+        private IBrush _defaultPanelBackground;
 
         public override bool IsModal => true;
 
@@ -46,7 +48,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 itemViews.Add(new ItemView(item, Content));
             }
 
-            _itemPanel = new ItemPanel(itemViews, _fontBitterBold, null, null, TabletDoubleClick);
+            _itemPanel = new ItemPanel(itemViews, _fontBitterBold, null, null, TabletDoubleClick,isShortView:true);
+
+            _defaultPanelBackground = new Panel().Background;
         }
 
         int sideWidth = 350;
@@ -191,6 +195,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var iconpanel = new Iconpanel(view?.Texture, view?.Ability?.Name);
             iconpanel.Width = 425;
 
+            _iconpanels.Add(iconpanel);
+
             var font = _fontBitterBold.GetFont(18);
 
             if (view != null)
@@ -227,17 +233,29 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
                 iconpanel.MouseEntered += (s,e)=> Iconpanel_MouseEntered(view);
                 iconpanel.MouseLeft += Iconpanel_MouseLeft;
+
+                iconpanel.TouchDown += (s,e)=> Iconpanel_TouchDown(iconpanel,view);
             }
 
             return iconpanel;
         }
 
-        private void Iconpanel_MouseLeft(object sender, EventArgs e)
+        private void Iconpanel_TouchDown(Iconpanel sender, AbilityView abilityView)
         {
+            foreach (var iconPanel in _iconpanels)
+            {
+                iconPanel.Background = _defaultPanelBackground;
+            }
+
+            _selectedAbilityView = abilityView;
+            _selectedIconpanel = sender;
+            _selectedIconpanel.Background = _selectedIconpanel.OverBackground;
+
             ResetDescription();
+            ShowDescription(abilityView);
         }
 
-        private void Iconpanel_MouseEntered(AbilityView abilityView)
+        private void ShowDescription(AbilityView abilityView)
         {
             var model = abilityView.Ability;
 
@@ -261,6 +279,25 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             SetDescription(text.ToString());
         }
 
+        private List<Iconpanel> _iconpanels = new();
+        private Iconpanel _selectedIconpanel;
+        private AbilityView _selectedAbilityView;
+
+        private void Iconpanel_MouseLeft(object sender, EventArgs e)
+        {
+            ResetDescription();
+
+            if (_selectedIconpanel != null)
+            {
+                ShowDescription(_selectedAbilityView);
+            }
+        }
+
+        private void Iconpanel_MouseEntered(AbilityView abilityView)
+        {
+            ShowDescription(abilityView);
+        }
+
         private void RefreshAbilitiesView()
         {
             var grid = this.Window.Content.As<Grid>();
@@ -276,18 +313,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private Label _descriptionLabel;
         private string _descriptionDefaultText;
         private Archetype _selectedArchetype;
-        private List<IconButton> _filterButtons;
         private DefaultButton _takeBtn;
         private Hero _selectedHero;
 
         protected override Widget RightSide()
         {
-            var tabs = new TabControl();
-            tabs.TabButtonsHorizontalAligment = HorizontalAlignment.Center;
-            tabs.Width = sideWidth;
-            //tabs.HorizontalAlignment = HorizontalAlignment.Center;
+            var grid = new Grid();
+            grid.MinHeight = 550;
+            grid.Width = sideWidth+100;
 
-            var descriptionTabName = Game.Strings["UI"]["Descriptions"];
             _descriptionLabel = new Label()
             {
                 Text = _descriptionDefaultText = Game.Strings["UI"]["FocusForHint"],
@@ -295,23 +329,90 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 Wrap = true
             };
             ResetDescription();
+
             var descriptionWidget = new ScrollViewer();
+            descriptionWidget.Border=new SolidBrush(Color.White);
+            descriptionWidget.BorderThickness = new Thickness(1);
             descriptionWidget.Content = _descriptionLabel;
-            var descriptionTab = new TabItem(descriptionTabName, descriptionWidget);
-            tabs.Items.Add(descriptionTab);
 
-            var tabletsName = Game.Strings["UI"]["Tablets"];
-            var tabletsWidget = TabletsViewer();
-            var tabletsTab = new TabItem(tabletsName, tabletsWidget);
-            tabs.Items.Add(tabletsTab);
+            Grid.SetColumn(descriptionWidget, 0);
+            Grid.SetRow(descriptionWidget, 0);
+            grid.Widgets.Add(descriptionWidget);
 
-            tabs.MinHeight = 550;
+            var tabletsWidget = _itemPanel;
+            tabletsWidget.Border=new SolidBrush(Color.White);
+            tabletsWidget.BorderThickness=new Thickness(1);
 
-            return tabs;
+            tabletsWidget.ItemMouseEntered += TabletsWidget_ItemMouseEntered;
+            tabletsWidget.ItemMouseLeft += TabletsWidget_ItemMouseLeft;
+            tabletsWidget.ItemTouchDown += TabletsWidget_ItemTouchDown;
+
+            Grid.SetColumn(tabletsWidget, 1);
+            Grid.SetRow(tabletsWidget, 0);
+            grid.Widgets.Add(tabletsWidget);
+
+            _takeBtn = new DefaultButton(Game.Strings["UI"]["Equip"]);
+            _takeBtn.Click += TakeBtn_Click;
+            _takeBtn.VerticalAlignment = VerticalAlignment.Bottom;
+            grid.Widgets.Add(_takeBtn);
+
+            Grid.SetColumnSpan(_takeBtn,2);
+            Grid.SetRow(_takeBtn, 1);
+
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8));
+            grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 2));
+
+            grid.RowsProportions.Add(new Proportion(ProportionType.Part, 9.5f));
+            grid.RowsProportions.Add(new Proportion(ProportionType.Part, 0.5f));
+
+            return grid;
+        }
+
+        private void TabletsWidget_ItemTouchDown(object sender, Item e)
+        {
+            TabletsWidget_ItemMouseEntered(sender, e);
+            _selectedAbilityView = GetAbilityView(e.AbilityName);
+        }
+
+        private void TabletsWidget_ItemMouseLeft(object sender, Item e)
+        {
+            if (_selectedAbilityView == null)
+            {
+                ResetDescription();
+            }
+            else
+            {
+                ShowDescription(_selectedAbilityView);
+            }
+        }
+
+        private void TabletsWidget_ItemMouseEntered(object sender, Item e)
+        {
+            ResetDescription();
+            var abil = GetAbilityView(e.AbilityName);
+            ShowDescription(abil);
+        }
+
+        private Dictionary<string, AbilityView> _abilityViewCache = new();
+
+        private AbilityView GetAbilityView(string abilityName)
+        {
+            if(!_abilityViewCache.TryGetValue(abilityName, out var view))
+            {
+                var model = Game.DataBase.GetAbility(abilityName);
+                var abil = model.Load(Game);
+                var texture = Content.Load<Texture2D>(abil.Icon);
+                view = new AbilityView(abil, texture);
+
+                _abilityViewCache[abilityName] = view;
+            }
+
+            return view;
         }
 
         private void FilterItems()
         {
+            _itemPanel.ResetSelectedItem();
             _itemPanel.Filter(x => x.IsCombat == _isCombatAbilities && x.Archetype == _selectedArchetype);
         }
 
@@ -329,23 +430,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _descriptionLabel.VerticalAlignment = VerticalAlignment.Top;
         }
 
-        private Widget TabletsViewer()
-        {
-            var panel = new Panel();
-            //panel.Background = new SolidBrush(Color.Red);
-
-            var tablets = _itemPanel;
-            //tablets.Background=new SolidBrush(Color.Blue);
-            panel.Widgets.Add(tablets);
-
-            _takeBtn = new DefaultButton(Game.Strings["UI"]["Equip"]);
-            _takeBtn.Click += TakeBtn_Click;
-            _takeBtn.VerticalAlignment = VerticalAlignment.Bottom;
-            panel.Widgets.Add(_takeBtn);
-
-            return panel;
-        }
-
         private void TakeBtn_Click(object sender, EventArgs e)
         {
             TabletDoubleClick(null, _itemPanel.SelectedItem);
@@ -361,6 +445,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var item = _itemPanel.SelectedItem;
             _itemPanel.Remove(item);
             Game.GameState.Party.Inventory.RemoveItem(item);
+
+            _itemPanel.ResetSelectedItem();
 
             item.Destroy();
 
@@ -400,6 +486,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         public override void Dispose()
         {
+            _itemPanel.Dispose();
+            foreach (var abilViewKV in _abilityViewCache)
+            {
+                abilViewKV.Value.Texture.Texture.Dispose();
+            }
+            _abilityViewCache.Clear();
             ControlPanel.CloseAbility();
             base.Dispose();
         }
