@@ -9,6 +9,7 @@ using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Data.Affects;
+using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
@@ -18,6 +19,7 @@ using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;
 using Nabunassar.Widgets.Views.IconButtons;
+using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
@@ -27,9 +29,10 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private Dictionary<Hero, Quad<AbilityView>> _battleAbilityViews = new();
         private FontSystem _fontBitterBold;
         private FontSystem _fontRetron;
-        private ItemPanel _itemPanel;
+        private ItemsPanel _itemPanel;
         private bool _isCombatAbilities;
         private IBrush _defaultPanelBackground;
+        private IImage _disableTexture;
 
         public override bool IsModal => true;
 
@@ -48,9 +51,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 itemViews.Add(new ItemView(item, Content));
             }
 
-            _itemPanel = new ItemPanel(itemViews, _fontBitterBold, null, null, TabletDoubleClick,isShortView:true);
+            _itemPanel = new ItemsPanel(itemViews, _fontBitterBold, null, null, TabletDoubleClick,isShortView:true);
+            _itemPanel.Filter(x => x.Archetype == Game.GameState.Party.First.Creature.Archetype);
 
             _defaultPanelBackground = new Panel().Background;
+
+            _disableTexture = new TextureRegion(Content.Load<Texture2D>("Assets/Tilesets/transparent_packed.png"), new Rectangle(624, 336, 16, 16));
         }
 
         int sideWidth = 350;
@@ -87,6 +93,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             }
         }
 
+        private int _selectedAbilityTab = 0;
+        private int _selectedHeroTab = 0;
+
         protected override Widget LeftSide()
         {
             LoadAbilityViews();
@@ -106,9 +115,11 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var battleTab = new TabItem(battleText, battleWidget);
             tabs.Items.Add(battleTab);
 
+            tabs.SelectedIndex = _selectedAbilityTab;
             tabs.SelectedIndexChanged += (s, e) =>
             {
                 _isCombatAbilities = tabs.SelectedIndex != 0;
+                _selectedAbilityTab = tabs.SelectedIndex.HasValue ? tabs.SelectedIndex.Value : 0;
                 FilterItems();
             };
 
@@ -131,12 +142,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             _selectedHero = Game.GameState.Party.First;
 
+            tabcontrol.SelectedIndex = _selectedHeroTab;
+
             tabcontrol.SelectedIndexChanged += (s, e) =>
             {
                 var idx = tabcontrol.SelectedIndex.Value;
                 var party = Game.GameState.Party;
-                _selectedArchetype = party[idx].Creature.Class;
+                _selectedArchetype = party[idx].Creature.Archetype;
                 _selectedHero = party[idx];
+                _selectedHeroTab = tabcontrol.SelectedIndex.HasValue ? tabcontrol.SelectedIndex.Value : 0;
                 FilterItems();
             };
 
@@ -166,7 +180,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             var heroName = new Label()
             {
-                Text = $"{hero.Name} ({Game.Strings["Enums/Archetypes"][hero.Creature.Class.ToString()+hero.Sex.ToString()]})",
+                Text = $"{hero.Name} ({Game.Strings["Enums/Archetypes"][hero.Creature.Archetype.ToString()+hero.Sex.ToString()]})",
                 Font = _fontBitterBold.GetFont(22),
                 Margin = new Myra.Graphics2D.Thickness(0,7)
             };
@@ -192,7 +206,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private Widget HeroAbilityPanel(AbilityView view)
         {
-            var iconpanel = new Iconpanel(view?.Texture, view?.Ability?.Name);
+            var iconpanel = new Iconpanel(view?.Texture);
             iconpanel.Width = 425;
 
             _iconpanels.Add(iconpanel);
@@ -201,6 +215,22 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             if (view != null)
             {
+                var grid = new Grid();
+                grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8));
+                grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 2));
+
+                var descPanel = new VerticalStackPanel();
+                Grid.SetColumn(descPanel, 0);
+                grid.Widgets.Add(descPanel);
+
+                var nameLabel = new Label()
+                {
+                    Font = font,
+                    Text = view.Ability.Name,
+                    Wrap = true
+                };
+                descPanel.Widgets.Add(nameLabel);
+
                 var text = DrawText.Create(Game.Strings["GameTexts"]["Rank"])
                     .Append(": ")
                     .Append(view.Ability.Rank.GetName(Game));
@@ -210,7 +240,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                     Text = text.ToString(),
                     Font = font
                 };
-                iconpanel.Add(ranklabel);
+                descPanel.Widgets.Add(ranklabel);
 
                 var dicePanel = new HorizontalStackPanel();
 
@@ -229,7 +259,27 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 dicePanel.Height = diceIcon.Size;
                 dicePanel.Widgets.Add(diceIcon);
 
-                iconpanel.Add(dicePanel);
+                descPanel.Widgets.Add(dicePanel);
+
+                var disableBtn = new Image()
+                {
+                    Renderable = _disableTexture,
+                    Color = Globals.BaseColor,
+                    Tooltip = Game.Strings["UI"]["Unequip"],
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    //VerticalAlignment = VerticalAlignment.Top
+                };
+                disableBtn.MouseEntered += (s, e) => disableBtn.Color = Globals.CommonColor;
+                disableBtn.MouseLeft += (s, e) => disableBtn.Color = Globals.BaseColor;
+
+                disableBtn.TouchDown += (s, e) => Unequip(iconpanel, view);
+
+                Grid.SetColumn(disableBtn, 1);
+                grid.Widgets.Add(disableBtn);
+
+                iconpanel.Add(grid);
+
+                //events
 
                 iconpanel.MouseEntered += (s,e)=> Iconpanel_MouseEntered(view);
                 iconpanel.MouseLeft += Iconpanel_MouseLeft;
@@ -264,6 +314,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var text = DrawText.Create($"{Game.Strings["UI"]["Naming"]}: {model.Name}")
                 .AppendLine()
                 .AppendLine()
+                .Append(abilityView.Ability.GetSlotDescription(Game))
+                .AppendLine()
+                .AppendLine()
                 .Append($"{Game.Strings["UI"]["Description"]}: {model.Description}")
                 .AppendLine()
                 .AppendLine()
@@ -271,8 +324,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 .AppendLine()
                 .Append(roll.Result.ToFormula(false))
                 .AppendLine()
-                .Append($"{Game.Strings["UI"]["Complexity"]}:")
                 .AppendLine()
+                .Append($"{Game.Strings["UI"]["Complexity"]}:")
                 .AppendLine()
                 .Append(roll.Complexity.ToFormula(false));
 
@@ -462,7 +515,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
                 var currentAbility = _selectedHero.Creature.WorldAbilities[abilityModel.Slot];
                 if (currentAbility != null)
-                    AddItem(currentAbility.ItemId);
+                    AddItemToInventory(currentAbility.ItemId);
 
                 _selectedHero.Creature.WorldAbilities[abilityModel.Slot] = ability;
             }
@@ -470,7 +523,22 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             RefreshAbilitiesView();
         }
 
-        private void AddItem(int itemId)
+        private void Unequip(Iconpanel iconpanel, AbilityView view)
+        {
+            AddItemToInventory(view.Ability.ItemId);
+
+            if (view.Ability.IsCombat)
+            {
+            }
+            else
+            {
+                _selectedHero.Creature.WorldAbilities[view.Ability.Slot] = null;
+            }
+
+            RefreshAbilitiesView();
+        }
+
+        private void AddItemToInventory(int itemId)
         {
             var item = Game.DataBase.GetItem(itemId);
             var view = new ItemView(item, Content);
@@ -487,10 +555,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         public override void Dispose()
         {
             _itemPanel.Dispose();
-            foreach (var abilViewKV in _abilityViewCache)
-            {
-                abilViewKV.Value.Texture.Texture.Dispose();
-            }
             _abilityViewCache.Clear();
             ControlPanel.CloseAbility();
             base.Dispose();

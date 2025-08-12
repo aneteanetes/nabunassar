@@ -31,12 +31,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _retronFont = Content.LoadFont(Fonts.Retron);
             _inventoryItemViews = Game.GameState.Party.Inventory.Items.Select(x=>new ItemView(x,Content)).ToList();
 
-            _itemPanel = new ItemPanel(_inventoryItemViews, _bitterFont, Game.GameState.Party.Inventory.RemoveItem, Game.GameState.Party.Inventory.AddItem);
+            _itemPanel = new ItemsPanel(_inventoryItemViews, _bitterFont, Game.GameState.Party.Inventory.RemoveItem, Game.GameState.Party.Inventory.AddItem);
 
             CreateItemFilterIcons();
         }
 
-        private ItemPanel _itemPanel;
+        private ItemsPanel _itemPanel;
         private Label _weightLabel;
         private HorizontalProgressBar _weightBar;
         private HorizontalStackPanel _filterPanel;
@@ -203,7 +203,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         public override void Dispose()
         {
-            ItemPanel.ResetDragAndDrop();
+            ItemsPanel.ResetDragAndDrop();
             ControlPanel.CloseInventory();
             base.Dispose();
         }

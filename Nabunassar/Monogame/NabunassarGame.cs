@@ -52,7 +52,7 @@ namespace Nabunassar
 
             GraphicsDeviceManagerInitialization();
 
-            var audioVolume= (float)Audio.Volume;
+            var audioVolume = (float)Audio.Volume;
             MediaPlayer.Volume = audioVolume;
 
             this.Activated += (_, __) =>
@@ -72,7 +72,7 @@ namespace Nabunassar
             Window.Position = new Microsoft.Xna.Framework.Point(500, 500);
             //Window.IsBorderless = true;
 
-            
+
             IsMouseVisible = true;
 
             // fixing framerate
@@ -196,10 +196,10 @@ namespace Nabunassar
             //graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
-            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Resolution.Width, Resolution.Height);
             Camera = new OrthographicCamera(viewportAdapter);
 
-            DataBase=new DataBase(this);
+            DataBase = new DataBase(this);
 
             var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
@@ -259,7 +259,7 @@ namespace Nabunassar
             }
             return movementDirection;
         }
-        
+
         private void AdjustZoom()
         {
             var state = Keyboard.GetState();

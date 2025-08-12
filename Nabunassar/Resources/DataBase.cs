@@ -186,7 +186,7 @@ namespace Nabunassar.Resources
                 Name = GetName(Sex.Male),
                 Creature = new Creature()
                 {
-                    Class = Nabunassar.Entities.Game.Enums.Archetype.Warrior
+                    Archetype = Nabunassar.Entities.Game.Enums.Archetype.Warrior
                 }
             };
 
@@ -197,7 +197,7 @@ namespace Nabunassar.Resources
                 Name = GetName(Sex.Female),
                 Creature = new Creature()
                 {
-                    Class = Nabunassar.Entities.Game.Enums.Archetype.Rogue
+                    Archetype = Nabunassar.Entities.Game.Enums.Archetype.Rogue
                 }
             };
             party.Third = new Hero(game)
@@ -207,7 +207,7 @@ namespace Nabunassar.Resources
                 Name = GetName(Sex.Male),
                 Creature = new Creature()
                 {
-                    Class = Nabunassar.Entities.Game.Enums.Archetype.Wizzard
+                    Archetype = Nabunassar.Entities.Game.Enums.Archetype.Wizard
                 }
             };
             party.Fourth = new Hero(game)
@@ -217,7 +217,7 @@ namespace Nabunassar.Resources
                 Name = GetName(Sex.Female),
                 Creature = new Creature()
                 {
-                    Class = Nabunassar.Entities.Game.Enums.Archetype.Priest
+                    Archetype = Nabunassar.Entities.Game.Enums.Archetype.Priest
                 }
             };
 

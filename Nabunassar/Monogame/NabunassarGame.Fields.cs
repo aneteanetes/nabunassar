@@ -1,29 +1,30 @@
 ﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Monogame.Extended;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
+using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
-using Penumbra;
-using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets;
-using Nabunassar.Localization;
-using System.Net.Http.Headers;
+using Penumbra;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        private RenderTarget2D _backBuffer;
+        private RenderTarget2D _grayscaleMapBuffer;
+        private Effect _grayscaleMapShader;
 
         public LocalizedStrings Strings { get; set; }
 

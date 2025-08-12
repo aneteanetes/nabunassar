@@ -6,10 +6,12 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
@@ -19,7 +21,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private FontSystem _font;
         private FontSystem _fontRetron;
         private List<ItemView> itemViews = new();
-        private ItemPanel _itemsPanel;
+        private ItemsPanel _itemsPanel;
 
         public LootWindow(NabunassarGame game, GameObject container) : base(game)
         {
@@ -87,7 +89,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             invPan.ResetSelectedItem();
         }
 
-        private ItemPanel GetInventoryItemPanel() => _inventory.Widgets.FirstOrDefault(x => x.Is<ItemPanel>()).As<ItemPanel>();
+        private ItemsPanel GetInventoryItemPanel() => _inventory.Widgets.FirstOrDefault(x => x.Is<ItemsPanel>()).As<ItemsPanel>();
 
         protected override void InitWindow(Window window)
         {
@@ -99,7 +101,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             var grid = new Grid();
             grid.MaxHeight = 500;
 
-            _itemsPanel = new ItemPanel(itemViews, _font, x =>
+            _itemsPanel = new ItemsPanel(itemViews, _font, x =>
             {
                 _container.RemoveItem(x);
 
@@ -177,6 +179,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _container.RemoveItem(item);
 
             _itemsPanel.Remove(item);
+
+            Game.GameState.AddMessage(DrawText.Create($"{Game.Strings["Got"]}: {item.GetObjectName()} ({item.GetCount()})"));
+
             CloseIfEmpty();
         }
 
@@ -215,7 +220,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         public override void Dispose()
         {
-            ItemPanel.ResetDragAndDrop();
+            ItemsPanel.ResetDragAndDrop();
             base.Dispose();
         }
     }

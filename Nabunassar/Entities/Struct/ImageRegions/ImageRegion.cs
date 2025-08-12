@@ -1,4 +1,6 @@
-﻿namespace Nabunassar.Entities.Struct.ImageRegions
+﻿using Myra.Graphics2D.TextureAtlases;
+
+namespace Nabunassar.Entities.Struct.ImageRegions
 {
     internal record struct ImageRegion(int x, int y, int width, int height, string texture = null)
     {
@@ -14,5 +16,11 @@
         public readonly int Height { get; } = height;
 
         public Rectangle ToRectangle()=>new Rectangle(X, Y, Width, Height);
+
+        public TextureRegion ToTextureRegion(NabunassarGame game)
+        {
+            var texture = game.Content.LoadTexture(Texture);
+            return new TextureRegion(texture, new Rectangle(X, Y, Width, Height));
+        }
     }
 }

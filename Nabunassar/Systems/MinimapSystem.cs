@@ -28,8 +28,8 @@ namespace Nabunassar.Systems
             {
                 var minimap = minimapMapper.Get(entity);
 
-                Game.GraphicsDevice.SetRenderTarget(minimap.Texture);
-                Game.GraphicsDevice.Clear(Color.Black);
+                Game.SetRenderTarget(minimap.Texture);
+                Game.ClearRenderTarget(Color.Black);
                 sb = Game.BeginDraw(false);
 
                 Color dotColor = Color.White;
@@ -42,7 +42,7 @@ namespace Nabunassar.Systems
 
                 sb.End();
                 
-                Game.GraphicsDevice.SetRenderTarget(null);
+                Game.SetRenderTarget(null);
 
                 //debug draw
                 //sb = Game.BeginDraw();

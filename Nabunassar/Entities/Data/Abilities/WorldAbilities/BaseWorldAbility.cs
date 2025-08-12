@@ -30,6 +30,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             Slot = model.Slot;
             IsCombat = model.IsCombat;
             ItemId = model.ItemId;
+            Archetype = model.Archetype;
+            IsUsableInWorld = model.IsUsableInWorld;
         }
 
         private IEntity GetEntity(IEntity creatureEntity)

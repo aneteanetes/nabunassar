@@ -7,14 +7,18 @@
         "Type": "Guaranteed"
       },
       {
-        "ItemId": 2,
-        "Type": "Percent",
-        "Value": 50
+        "ItemId": 3,
+        "Type": "Guaranteed"
       },
       {
         "ItemId": 2,
         "Type": "Percent",
-        "Value": 90
+        "Value": 25
+      },
+      {
+        "ItemId": 2,
+        "Type": "Percent",
+        "Value": 20
       },
       {
         "ItemId": 2,

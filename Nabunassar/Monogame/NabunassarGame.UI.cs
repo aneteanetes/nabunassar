@@ -1,4 +1,5 @@
-﻿using Myra.Graphics2D.Brushes;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI.Styles;
 using Nabunassar.Resources;
 
@@ -8,25 +9,22 @@ namespace Nabunassar
     {
         public void ApplyMyraCustomStyle()
         {
-			Stylesheet.Current.TabControlStyle.TabItemStyle.Background = new SolidBrush(Color.Transparent);
-            Stylesheet.Current.TabControlStyle.TabItemStyle.PressedBackground = new SolidBrush(Globals.CommonColor);
-            Stylesheet.Current.TabControlStyle.ContentStyle.Background = new SolidBrush(Color.Transparent);
-			Stylesheet.Current.TabControlStyle.TabItemStyle.LabelStyle.Font = Content.LoadFont(Fonts.Retron).GetFont(18);
+            var tabControlStyle = Stylesheet.Current.TabControlStyle;
 
-            // Stylesheet.Current.LabelStyle.TextColor = Color.Green;
+
+            tabControlStyle.TabItemStyle.Background = new SolidBrush(Color.Transparent);
+            tabControlStyle.TabItemStyle.PressedBackground = new SolidBrush(Globals.CommonColor);
+            tabControlStyle.ContentStyle.Background = new SolidBrush(Color.Transparent);
+			tabControlStyle.TabItemStyle.LabelStyle.Font = Content.LoadFont(Fonts.Retron).GetFont(18);
+
+            var retronFont = Content.LoadFont(Fonts.Retron);
+            var tooltipBackground = Content.Load<Texture2D>("Assets/Images/Borders/panel-transparent-center-022_colored_white.png");
+
+            var tooltipStyle = Stylesheet.Current.TooltipStyle;
+
+            tooltipStyle.Background = tooltipBackground.NinePatch();
+            tooltipStyle.Font = retronFont.GetFont(18);
+            tooltipStyle.Padding = new Myra.Graphics2D.Thickness(9);
         }
     }
 }
-
-
-/*<TabControlStyles>
-		<TabControlStyle ButtonSpacing="0">
-			<TabItemStyle OverBackground="button-over" Padding="5, 0" PressedBackground="list-selection">
-				<LabelStyle Font="default-font" TextColor="white" DisabledTextColor="gray" />
-			</TabItemStyle>
-			<ContentStyle Background="window" Padding="5" />
-			<CloseButtonStyle OverBackground="button-over" Padding="5, 0" PressedBackground="button-red">
-				<ImageStyle Image="icon-close" />
-			</CloseButtonStyle>
-		</TabControlStyle>
-	</TabControlStyles>*/

@@ -1,5 +1,6 @@
 ﻿using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 
 namespace Nabunassar
 {
@@ -19,7 +20,10 @@ namespace Nabunassar
 
             EntityFactory.CreateParty(GameState.Party, pos);
 
-            //party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party, party.First.Creature);
+#if DEBUG
+            var revealModel = DataBase.GetAbility("Reveal");
+            party.Third.Creature.WorldAbilities.First = new RevealAbility(Game, party.Third.Creature, revealModel);
+#endif
         }
 
         public void ChangeGameActive()

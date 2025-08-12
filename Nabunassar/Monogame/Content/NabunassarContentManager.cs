@@ -100,6 +100,8 @@ namespace Nabunassar.Monogame.Content
             return base.Load<T>(assetName);
         }
 
+        public Texture2D LoadTexture(string assetName) => Load<Texture2D>(assetName);
+
         private T ParseJsonStream<T>(Stream stream)
         {
             T jsonDeserialized;

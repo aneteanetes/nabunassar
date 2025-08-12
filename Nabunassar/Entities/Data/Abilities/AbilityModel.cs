@@ -3,6 +3,7 @@ using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities
@@ -25,19 +26,28 @@ namespace Nabunassar.Entities.Data.Abilities
 
         public QuadPosition Slot { get; set; }
 
+        public Archetype Archetype { get; set; }
+
+        public bool IsUsableInWorld { get; set; }
+
         public virtual RollResult GetFormula() => default;
 
         public BaseWorldAbility CreateWorldAbility(NabunassarGame game, Creature creature)
         {
-            switch (Name+ "Ability")
+            switch (Name + "Ability")
             {
                 case nameof(LandscapeAbility):
-                    {
-                        return new LandscapeAbility(game, game.GameState.Party, creature, this);
-                    }
+                    return new LandscapeAbility(game, game.GameState.Party, creature, this);
+                case nameof(RevealAbility):
+                    return new RevealAbility(game, creature, this);
                 default:
-                    return default;
+                    throw new NotImplementedException($"Ability {Name} instantiating is not implemented!");
             }
+        }
+
+        public string GetSlotDescription(NabunassarGame game)
+        {
+            return $"{game.Strings["UI"]["Slot"]}: {game.Strings["UI"][Slot.ToString()]}";
         }
 
         public AbilityModel Load(NabunassarGame game)

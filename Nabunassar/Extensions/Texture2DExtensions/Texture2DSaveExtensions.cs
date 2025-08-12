@@ -5,7 +5,7 @@ namespace Nabunassar.Extensions.Texture2DExtensions
 {
     internal static class Texture2DSaveExtensions
     {
-        internal static unsafe void MakeScreenshot(this Texture2D texure)
+        internal static unsafe string MakeScreenshot(this Texture2D texure)
         {
             var screenshotDir = "Screenshots";
 
@@ -24,6 +24,8 @@ namespace Nabunassar.Extensions.Texture2DExtensions
             {
                 writer.WriteJpg(ptr, texure.Width, texure.Height, ColorComponents.RedGreenBlueAlpha, file, 95);
             }
+
+            return path;
         }
     }
 }

@@ -231,8 +231,9 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         {
             AddAction(panel, new SpellsRadialAction(this));
 
-
             List<SkillAbilityRadialAction> skillActions = new();
+
+            SkillAbilityRadialAction.ResetCounters();
 
             foreach (var abil in Game.GameState.Party.GetWorldAbilities(GameObject))
             {

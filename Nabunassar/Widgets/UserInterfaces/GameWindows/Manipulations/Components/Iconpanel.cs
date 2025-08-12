@@ -8,11 +8,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
     internal class Iconpanel : Panel
     {
-        private VerticalStackPanel _description;
+        private Grid _description;
 
-        public Iconpanel(IImage iconImage, string name)
+        public Grid Content => _description;
+
+        public Iconpanel(IImage iconImage)
         {
-            var font = NabunassarGame.Game.Content.LoadFont(Fonts.BitterSemiBold);
             var size = 52;
 
             BorderThickness = new Thickness(0, 0, 0, 1);
@@ -40,17 +41,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             grid.Widgets.Add(icon);
             Grid.SetColumn(icon, 0);
 
-            _description = new VerticalStackPanel();
-
-            var fontSize = 18;
-
-            var text = new Label()
-            {
-                Font = font.GetFont(fontSize),
-                Text = name,
-                Wrap = true
-            };
-            _description.Widgets.Add(text);
+            _description = new Grid();
 
             grid.Widgets.Add(_description);
             Grid.SetColumn(_description, 1);

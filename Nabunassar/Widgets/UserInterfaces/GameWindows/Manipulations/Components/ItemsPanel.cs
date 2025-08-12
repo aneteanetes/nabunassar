@@ -3,15 +3,16 @@ using Geranium.Reflection;
 using MonoGame.Extended.Input;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Items;
-using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Views;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
-    internal class ItemPanel : ScrollViewer, IDisposable
+    internal class ItemsPanel : ScrollViewer, IDisposable
     {
         private Dictionary<Item, Panel> itemPanelMap = new();
         private VerticalStackPanel _itemsPanel;
@@ -33,7 +34,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 
         public IEnumerable<ItemView> Items => _itemViews;
 
-        public ItemPanel(List<ItemView> itemViews, FontSystem font, Action<Item> onSourceDrop, Action<Item> onDrop, Action<Panel, Item> dblClick = null, int width = 350, bool isShortView=false)
+        public ItemsPanel(List<ItemView> itemViews, FontSystem font, Action<Item> onSourceDrop, Action<Item> onDrop, Action<Panel, Item> dblClick = null, int width = 350, bool isShortView=false)
         {
             if (isShortView)
                 width = 80;
@@ -67,6 +68,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             var panel = CreateItemPanel(item, _font, isShortView);
             _itemViews.Add(item);
             _itemsPanel.Widgets.Add(panel);
+            Refresh();
         }
 
         public void AddItem(ItemView item) => AddItem(item, _isShortView);
@@ -136,10 +138,18 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         public Panel CreateItemPanel(ItemView itemView, FontSystem font, bool isShortView)
         {
             var size = 48;
-            var pan = new Panel
+
+            var container = new VerticalStackPanel();
+
+            var pan = new Panel();
+            if(!isShortView)
             {
-                Height = 56,
-            };
+                pan.Height = 56;
+            }
+            else
+            {
+                pan.Height = 64;
+            }
             pan.BorderThickness = new Thickness(0, 0, 0, 1);
             pan.Border = new SolidBrush(Color.White);
             pan.OverBackground = ScreenWidgetWindow.WindowBackground.NinePatch();
@@ -171,7 +181,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                 grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 2f));
                 grid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 8f));
 
-                var textgold = new Panel()
+                var textgold = new Grid()
                 {
                     Height = 50
                 };
@@ -189,6 +199,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                     Wrap = true
                 };
                 textgold.Widgets.Add(text);
+                Grid.SetColumn(text, 0);
+                Grid.SetRow(text,0);
+                Grid.SetColumnSpan(text,2);
 
                 var money = new MoneyPanel(itemView.Cost)
                 {
@@ -197,21 +210,79 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
                     Padding = new Thickness(0, 5, 0, 0)
                 };
                 textgold.Widgets.Add(money);
+                Grid.SetColumn(money, 1);
+                Grid.SetRow(money, 1);
 
                 grid.Widgets.Add(textgold);
                 Grid.SetColumn(textgold, 1);
+
+                AddItemDetailsLong(textgold,itemView);
+            }
+            else
+            {
+                AddItemDetailsShort(pan, itemView);
             }
 
             pan.Widgets.Add(grid);
 
             itemPanelMap[itemView.Item] = pan;
 
+            container.Widgets.Add(pan);
+
             return pan;
+        }
+
+        private void AddItemDetailsLong(Grid grid, ItemView itemView)
+        {
+            if (itemView.Item.ItemSubtype == ItemSubtype.Tablet)
+            {
+                if (itemView.Item.TryGetAbility(out var ability))
+                {
+                    var panel = new Panel();
+                    panel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+                    var tabletSlot = new TabletSlot(Game, ability);
+                    tabletSlot.VerticalAlignment = VerticalAlignment.Center;
+                    panel.Widgets.Add(tabletSlot);
+
+                    var info = ability.Archetype.GetInfo(Game);
+
+                    var texture = info.Item1.ToTextureRegion(Game);
+                    var classImage = new Image()
+                    {
+                        Renderable = texture,
+                        Width = 20,
+                        Height = 20,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Tooltip = info.Item2
+                    };
+                    panel.Widgets.Add(classImage);
+
+                    Grid.SetColumn(panel, 0);
+                    Grid.SetRow(panel, 1);
+                    grid.Widgets.Add(panel);
+                }
+            }
+        }
+
+        private void AddItemDetailsShort(Panel pan, ItemView itemView)
+        {
+
+            if (itemView.Item.ItemSubtype == ItemSubtype.Tablet)
+            {
+                if (itemView.Item.TryGetAbility(out var ability))
+                {
+                    var tabletSlot = new TabletSlot(Game, ability);
+                    tabletSlot.HorizontalAlignment = HorizontalAlignment.Center;
+                    pan.Widgets.Add(tabletSlot);
+                }
+            }
         }
 
         private static Point _mousePos;
         private static Panel _touchedPanel;
-        private static ItemPanel _touchedItemPanel;
+        private static ItemsPanel _touchedItemPanel;
         private static ItemView _touched;
         private static List<Widget> _touchedWidgets;
 

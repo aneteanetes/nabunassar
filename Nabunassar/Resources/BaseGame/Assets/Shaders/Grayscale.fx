@@ -1,5 +1,5 @@
 ﻿float ColourAmount;
-Texture coloredTexture;
+texture coloredTexture;
 
 sampler coloredTextureSampler = sampler_state
 {

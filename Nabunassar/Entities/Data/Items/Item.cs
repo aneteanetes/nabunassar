@@ -1,4 +1,7 @@
-﻿using Nabunassar.Entities.Game;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
+using Nabunassar.Entities.Data.Abilities;
+using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct.ImageRegions;
 
@@ -43,6 +46,34 @@ namespace Nabunassar.Entities.Data.Items
         public string AbilityName { get; set; }
 
         public int Weight { get; set; }
+
+        public bool IsStack { get; set; } = false;
+
+        public int Count { get; set; }
+
+        public int GetCount()
+        {
+            if (IsStack)
+                return Count;
+
+            return 1;
+        }
+
+        public bool TryGetAbility(out AbilityModel ability)
+        {
+            if (AbilityName.IsNotEmpty())
+            {
+                var game = NabunassarGame.Game;
+
+                var model = game.DataBase.GetAbility(AbilityName);
+                ability = model.Load(game);
+
+                return true;
+            }
+
+            ability = null;
+            return false;
+        }
 
         public override string GetObjectName()
         {

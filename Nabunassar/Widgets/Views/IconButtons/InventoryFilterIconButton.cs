@@ -6,11 +6,11 @@ namespace Nabunassar.Widgets.Views.IconButtons
 {
     internal class InventoryFilterIconButton : IconButton
     {
-        private ItemPanel _itemPanel;
+        private ItemsPanel _itemPanel;
         private Func<Item, bool> _filter;
 
 
-        public InventoryFilterIconButton(string title, TextureRegion icon, ItemPanel itemPanel, Func<Item, bool> filter=null) : base(title, icon)
+        public InventoryFilterIconButton(string title, TextureRegion icon, ItemsPanel itemPanel, Func<Item, bool> filter=null) : base(title, icon)
         {
             _filter = filter;
             _itemPanel = itemPanel;

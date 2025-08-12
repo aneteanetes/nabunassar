@@ -1,27 +1,31 @@
-﻿using Geranium.Reflection;
-using Nabunassar.Entities.Data.Dices;
+﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Stats;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
-using Nabunassar.Struct;
+using Nabunassar.Widgets.UserEffects;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 {
-    internal class LandscapeAbility : BaseWorldAbility
+    internal class RevealAbility : BaseWorldAbility
     {
-        private IDistanceMeter _distanceMeter;
-
-        public LandscapeAbility(NabunassarGame game, IDistanceMeter distanceMeter, Creature creature, AbilityModel model) : base(game, model, creature)
+        public RevealAbility(NabunassarGame game, Creature creature, AbilityModel model) : base(game, model, creature)
         {
-            _distanceMeter = distanceMeter;
         }
 
         protected override void Execute(GameObject gameObject)
         {
-            if (gameObject == default)
-                return;
+            Game.IsMouseVisible = false;
+
+            Game.AddDesktopWidget(new RevealCircle(Game));
+            Game.RemoveDesktopWidgets<TitleWidget>();
+        }
+
+        public void CastReveal()
+        {
+            GameObject gameObject = null;
 
             var roll = Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
 
@@ -51,13 +55,6 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 .Append("!");
 
             Game.GameState.AddRollMessage(text, roll);
-
-            if (roll.IsSuccess)
-            {
-                gameObject.Destroy();
-#warning landscape get resources
-                // take resources
-            }
         }
 
         public override RollResult GetFormula()
@@ -83,25 +80,12 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public override Result<bool> IsActive(GameObject gameObject)
         {
-            var value = _distanceMeter.IsObjectNear(gameObject);
-            if (value.Message.IsNotEmpty())
-                return value;
-
-            var result = new Result<bool>(value);
-
-            if (!value)
-                result.Message = Game.Strings["GameTexts"]["TooAway"];
-
-            return result;
+            return true;
         }
 
         public override bool IsApplicable(GameObject gameObject)
         {
-            if (gameObject == default)
-                return true;
-
-            var objType = gameObject.ObjectType;
-            return objType is not ObjectType.NPC && objType is not ObjectType.Container;
+            return true;
         }
     }
 }

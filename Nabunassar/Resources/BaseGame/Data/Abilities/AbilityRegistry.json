@@ -4,6 +4,17 @@
     "Icon": "Assets/Images/Icons/Abilities/landscape.png",
     "ItemId": 1,
     "IsCombat": "false",
-    "Slot": "First"
+    "Slot": "First",
+    "Archetype": "Warrior",
+    "IsUsableInWorld": true,
+  },
+  {
+    "Name": "Reveal",
+    "Icon": "Assets/Images/Icons/Abilities/reveal.png",
+    "ItemId": 3,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Wizard",
+    "IsUsableInWorld": true
   }
 ]

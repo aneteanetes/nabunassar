@@ -15,7 +15,7 @@ namespace Nabunassar.Entities.Game
             FormulaName = NabunassarGame.Game.Strings["Entities"][nameof(Creature)];
         }
 
-        public Archetype Class { get; set; }
+        public Archetype Archetype { get; set; }
 
         public PrimaryStats PrimaryStats { get; set; }
 

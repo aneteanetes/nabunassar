@@ -1,4 +1,5 @@
 ﻿using AssetManagementBase;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using Myra;
 using Myra.Graphics2D.UI;
@@ -33,6 +34,14 @@ namespace Nabunassar
             WidgetFactory = new Widgets.WidgetFactory(this);
             WidgetFactory.LoadContent();
             ApplyMyraCustomStyle();
+
+            // backbuffer
+            
+            _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+            _grayscaleMapBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+
+            // shaders
+            _grayscaleMapShader = Content.Load<Effect>("Assets/Shaders/GrayscaleMap.fx");
 
             //
 

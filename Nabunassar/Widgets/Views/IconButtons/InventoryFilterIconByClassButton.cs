@@ -9,7 +9,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
     {
         public Archetype Archetype { get; set; }
 
-        public InventoryFilterIconByClassButton(Archetype archetype, string title, TextureRegion icon, ItemPanel itemPanel, Func<Item, bool> filter=null) : base(title, icon,itemPanel,filter)
+        public InventoryFilterIconByClassButton(Archetype archetype, string title, TextureRegion icon, ItemsPanel itemPanel, Func<Item, bool> filter=null) : base(title, icon,itemPanel,filter)
         {
             Archetype = archetype;
         }
