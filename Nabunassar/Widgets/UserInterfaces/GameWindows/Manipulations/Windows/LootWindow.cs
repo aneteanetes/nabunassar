@@ -180,7 +180,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
             _itemsPanel.Remove(item);
 
-            Game.GameState.AddMessage(DrawText.Create($"{Game.Strings["Got"]}: {item.GetObjectName()} ({item.GetCount()})"));
+            Game.GameState.AddMessage(DrawText.Create($"{Game.Strings["UI"]["Got"]}: {item.GetObjectName()} ({item.GetCount()})"));
 
             CloseIfEmpty();
         }

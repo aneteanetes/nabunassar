@@ -1,4 +1,7 @@
-﻿using Nabunassar.Entities;
+﻿using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
+using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 
@@ -31,6 +34,14 @@ namespace Nabunassar
             IsGameActive = !IsGameActive;
             if (!IsGameActive)
                 GameState.Cursor.SetCursor("cursor");
+        }
+
+        public IEnumerable<ICollisionActor> QuerySpace(string layerName, IShapeF shape)
+        {
+            var layer = Game.CollisionComponent.Layers[layerName];
+            var actors = layer.Space.Query(shape.BoundingRectangle);
+
+            return actors.Where(x => shape.Intersects(x.Bounds));
         }
     }
 }

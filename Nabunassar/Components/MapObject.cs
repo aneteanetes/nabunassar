@@ -3,8 +3,8 @@ using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components.Abstract;
-using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Map;
 using Nabunassar.Struct;
 using System.Diagnostics;
 
@@ -297,6 +297,48 @@ namespace Nabunassar.Components
         public List<MapObject> Dependant { get; internal set; } = new();
 
         public Action OnDestroy { get; set; }
+
+        public MinimapPoint MinimapPoint { get; internal set; }
+
+        public bool IsVisible { get; internal set; } = true;
+
+        /// <summary>
+        /// Show hidden object
+        /// </summary>
+        public void Reveal()
+        {
+            if (!IsVisible)
+            {
+                IsVisible = true;
+                MinimapPoint.IsVisible = true;
+
+                var render = this.Entity.Get<RenderComponent>();
+                if (render != null)
+                {
+                    render.Opacity = 0;
+                    render.OpacityTimer = TimeSpan.FromSeconds(1);
+                }
+
+                Game.EntityFactory.RemoveCollistion(this);
+
+                if (GameObject?.GetPropertyValue<bool>("NoBounds") == true)
+                {
+                    LayerName = "ground";
+                }
+                else
+                {
+                    LayerName = "revealed";
+                }
+
+                Game.EntityFactory.AddCollistion(this);
+
+
+                foreach (var dependant in this.Dependant)
+                {
+                    dependant.Reveal();
+                }
+            }
+        }
 
         public void Destroy()
         {

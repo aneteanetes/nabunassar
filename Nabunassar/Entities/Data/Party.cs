@@ -9,7 +9,6 @@ using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows;
@@ -196,6 +195,11 @@ namespace Nabunassar.Entities.Data
             DirectionRender.Position = to;
         }
 
+        public Vector2 GetOrigin()
+        {
+            return this.MapObject.BoundsOrigin;
+        }
+
         public void Interact(GameObject gameObject, Vector2 mouseScreenPosition)
         {
             switch (gameObject.ObjectType)
@@ -217,6 +221,8 @@ namespace Nabunassar.Entities.Data
         }
 
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+
+        public RectangleF RevealArea => this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(3);
 
         public RectangleF PartyMenuRectangle
         {

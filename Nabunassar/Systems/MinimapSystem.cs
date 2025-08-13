@@ -34,7 +34,7 @@ namespace Nabunassar.Systems
 
                 Color dotColor = Color.White;
 
-                foreach (var point in minimap.Points)
+                foreach (var point in minimap.Points.Where(x => x.IsVisible))
                 {
                     dotColor = GetPointColor(dotColor, point);
                     sb.DrawPoint(point.Position, dotColor);
@@ -61,6 +61,9 @@ namespace Nabunassar.Systems
                     break;
                 case Struct.ObjectType.Object:
                     dotColor = Color.Gray;
+                    break;
+                case Struct.ObjectType.Container:
+                    dotColor = Color.DarkGreen;
                     break;
                 case Struct.ObjectType.Player:
                     dotColor = Color.Red;

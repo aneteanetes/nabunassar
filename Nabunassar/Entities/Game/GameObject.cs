@@ -1,6 +1,4 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+﻿using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
@@ -10,12 +8,13 @@ using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Data.Loot;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;
-using Nabunassar.Entities.Struct.ImageRegions;
 using Nabunassar.Struct;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Nabunassar.Entities.Game
 {
+    [DebuggerDisplay("{Name}")]
     internal class GameObject : Propertied, IDistanceMeter, IClonable<GameObject>
     {
         public virtual GameObject Clone(GameObject instance = null)
@@ -35,12 +34,10 @@ namespace Nabunassar.Entities.Game
             obj.BattlerId = BattlerId;
             obj.LootTableId = LootTableId;
 
-            var landscape = GetLandscapeAbility();
+            obj.LandscapeComplexity = LandscapeComplexity.Entity(GetAbilityEntity("Landscape"));
 
-            obj.LandscapeDice = LandscapeDice.Entity(landscape);
-            obj.LandscapeRank = LandscapeRank.Entity(landscape);
-
-            
+            if (RevealComplexity != null)
+                obj.RevealComplexity = RevealComplexity.Entity(GetAbilityEntity("Reveal"));
 
             return obj;
         }
@@ -50,10 +47,10 @@ namespace Nabunassar.Entities.Game
             LootTable = game.DataBase.GetById<LootTable>("Data/Objects/LootTables.json", x => x.TableId == LootTableId);
         }
 
-        public static IEntity GetLandscapeAbility()
+        public static IEntity GetAbilityEntity(string abilityName)
         {
             var game = NabunassarGame.Game;
-            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
+            var landScapeAbilityModel = game.DataBase.GetAbility(abilityName);
 
             return game.DataBase.AddEntity(new DescribeEntity()
             {
@@ -61,13 +58,17 @@ namespace Nabunassar.Entities.Game
             });
         }
 
+        #region skills
+
+        public RankDice LandscapeComplexity { get; set; } = RankDice.BaseD4;
+
+        public RankDice RevealComplexity { get; set; }
+
+        #endregion
+
         public GroundType GroundType { get; set; }
 
         public Battler Battler { get; set; }
-
-        public Rank LandscapeRank { get; set; } = Rank.Basic;
-
-        public Dice LandscapeDice { get; set; } = Dice.d4;
 
         public RollResult RollResult { get; set; }
 
@@ -110,6 +111,7 @@ namespace Nabunassar.Entities.Game
 
         [JsonIgnore]
         protected LootTable LootTable { get; set; }
+
 
         protected List<Item> _items;
 
@@ -208,6 +210,11 @@ namespace Nabunassar.Entities.Game
             }
 
             return name;
+        }
+
+        public void Reveal()
+        {
+            MapObject?.Reveal();
         }
     }
 }

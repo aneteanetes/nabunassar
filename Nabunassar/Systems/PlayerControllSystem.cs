@@ -1,16 +1,16 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
+using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Geranium.Reflection;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
-using Nabunassar.Components.Effects;
 
 namespace Nabunassar.Systems
 {
@@ -162,7 +162,7 @@ namespace Nabunassar.Systems
                 {
                     var mouseScreenPos = mouse.Position.ToVector2();
 
-                    party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedMapObject, mouseScreenPos);
+                    party.MoveTo(targetPosition, Game.GameState.Cursor.FocusedGameObject, mouseScreenPos);
                 }
 
                 if (gameobj.IsMoving)
@@ -189,7 +189,7 @@ namespace Nabunassar.Systems
         private void SelectObjectByMouse(GameTime gameTime, MouseStateExtended mouse)
         {
             var cursor = Game.GameState.Cursor;
-            var radialMenuGameObject = cursor.FocusedMapObject;
+            var radialMenuGameObject = cursor.FocusedGameObject;
 
             var mousePos = Game.Camera.ScreenToWorld(mouse.Position.ToVector2());
             var mouseRect = new RectangleF(mousePos, new SizeF(2, 2));
@@ -197,6 +197,7 @@ namespace Nabunassar.Systems
             if (Game.GameState.Party.PartyMenuRectangle.Intersects(mouseRect))
             {
                 RadialMenu.Open(Game, Game.GameState.Party.GameObject, new Vector2(mouse.X, mouse.Y));
+                return;
             }
 
             if (radialMenuGameObject == null)

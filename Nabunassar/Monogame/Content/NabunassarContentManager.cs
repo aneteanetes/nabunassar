@@ -50,6 +50,7 @@ namespace Nabunassar.Monogame.Content
 
             settings.Converters.Add(new DiceJsonConverter());
             settings.Converters.Add(new RankJsonConverter());
+            settings.Converters.Add(new RankDiceJsonConverter());
             settings.Converters.Add(new ImageRegionJsonConverter());
             settings.Converters.Add(new MoneyJsonConverter());
 

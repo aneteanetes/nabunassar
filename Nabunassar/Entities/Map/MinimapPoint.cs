@@ -13,5 +13,7 @@ namespace Nabunassar.Entities.Map
         public GroundType GroundType { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsVisible { get; set; }
     }
 }

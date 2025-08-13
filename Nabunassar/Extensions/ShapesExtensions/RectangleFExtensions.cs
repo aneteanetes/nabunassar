@@ -1,10 +1,11 @@
-﻿using MonoGame.Extended;
+﻿using FontStashSharp;
+using MonoGame.Extended;
 
 namespace Nabunassar
 {
     internal static class RectangleFExtensions
     {
-        public static Vector2[] ToPolygon(this RectangleF rect, bool fromZero=true)
+        public static Vector2[] ToPolygon(this RectangleF rect, bool fromZero = true)
         {
             if (fromZero)
             {
@@ -38,7 +39,52 @@ namespace Nabunassar
             var newX = rect.X + rect.Width / 2 - newWidth / 2;
             var newY = rect.Y + rect.Height / 2 - newHeight / 2;
 
-            return new RectangleF(newX,newY,newWidth, newHeight);
+            return new RectangleF(newX, newY, newWidth, newHeight);
+        }
+
+        public static RectangleF MultipleX(this RectangleF rect, float multiplier)
+        {
+            var newWidth = rect.Width * multiplier;
+
+            var newX = rect.X + rect.Width / 2 - newWidth / 2;
+
+            return new RectangleF(newX, rect.Y, newWidth, rect.Height);
+        }
+
+        public static RectangleF MultipleY(this RectangleF rect, float multiplier)
+        {
+            var newHeight = rect.Height * multiplier;
+
+            var newY = rect.Y + rect.Height / 2 - newHeight / 2;
+
+            return new RectangleF(rect.X, newY, rect.Width, newHeight);
+        }
+
+        public static Vector2 GetOrigin(this RectangleF rect)
+        {
+            var boundsOriginX = rect.Position.X + rect.BoundingRectangle.Width / 2;
+            var boundsOriginY = rect.Position.Y + rect.BoundingRectangle.Height / 2;
+            return new Vector2(boundsOriginX, boundsOriginY);
+
+        }
+
+        public static bool InBounds(this RectangleF rect, Vector2 point, out Vector2 newPosition)
+        {
+            if (rect.Intersects(new RectangleF(point, new SizeF(1, 1))))
+            {
+                newPosition = point;
+                return true;
+            }
+            else
+            {
+                newPosition.X = Math.Max(point.X, rect.X);
+                newPosition.Y = Math.Max(point.Y, rect.Y);
+
+                newPosition.X = Math.Min(newPosition.X, rect.X + rect.Width);
+                newPosition.Y = Math.Min(newPosition.Y, rect.Y + rect.Height);
+
+                return false;
+            }
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Nabunassar.Entities.Data.Dices
+﻿using Geranium.Reflection;
+using Newtonsoft.Json;
+
+namespace Nabunassar.Entities.Data.Dices
 {
     internal class Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
     {
@@ -178,6 +181,22 @@
                 return false;
 
             return dice.Edges == this.Edges;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Edges.GetHashCode() + this.LuckyRoll.GetHashCode() + this.ObjectId.GetHashCode();
+        }
+
+        public static Dice Parse(string s)
+        {
+            if (s.IsEmpty() || !s.Contains("d"))
+                throw new JsonSerializationException($"Dice expression is wrong! It must be 'dX', passed value: {s}");
+
+            if (!int.TryParse(s.Replace("d", ""), out var diceNumber))
+                throw new JsonSerializationException($"Dice expression is wrong! It must be 'dX', passed value: {s}");
+
+            return new Dice(diceNumber);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Nabunassar.Entities.Game
 {
     internal class Cursor
     {
-        public GameObject FocusedMapObject { get; set; }
+        public GameObject FocusedGameObject { get; set; }
 
         public SpriteSheet SpriteSheet { get; set; }
 
@@ -38,13 +38,13 @@ namespace Nabunassar.Entities.Game
             var mouse = MouseExtended.GetState();
             var mousePosition = mouse.Position.ToVector2();
 
-            FocusedMapObject = anotherGameObject;
+            FocusedGameObject = anotherGameObject;
         }
 
         internal void OnNoCollistion()
         {
 
-            FocusedMapObject = default;
+            FocusedGameObject = default;
         }
     }
 }

@@ -42,6 +42,8 @@ namespace Nabunassar.ECS
         {
             var keyboardState = KeyboardExtended.GetState();
 
+            var canUpdateOpacity = this.IsUpdateAvailable(gameTime, 150);
+
             foreach (var entityId in ActiveEntities)
             {
                 var effect = _effectMapper.Get(entityId);
@@ -51,8 +53,22 @@ namespace Nabunassar.ECS
                 var render = _renderMapper.Get(entityId);
                 if (render != null)
                 {
+                    if (render.OpacityTimer != default && canUpdateOpacity)
+                    {
+                        render.Opacity += gameTime.ElapsedGameTime.TotalSeconds;
+
+                        var color = render.Sprite.Color;
+                        render.Sprite.Color = new Color(color, ((float)render.Opacity)*255);
+
+                        if (render.Opacity >= render.OpacityTimer.TotalSeconds/10)
+                        {
+                            render.OpacityTimer = default;
+                            render.Opacity = 1;
+                        }
+                    }
+
                     //updating effect
-                    if(render.IsEffect && isGlowNeedDisable)
+                    if (render.IsEffect && isGlowNeedDisable)
                         render.Sprite.IsVisible = false;
 
                     // updating animations
@@ -72,6 +88,11 @@ namespace Nabunassar.ECS
 
             foreach (var entity in entities)
             {
+                var mapObj = _gameObjectMapper.Get(entity);
+                if (mapObj != null)
+                    if (!mapObj.IsVisible)
+                        continue;
+
                 var descriptor = _descriptorMapper.Get(entity);
 
                 if (descriptor.Name?.Contains("hero") ?? false)
@@ -80,6 +101,9 @@ namespace Nabunassar.ECS
                 var render = _renderMapper.Get(entity);
                 if (render != null && render.Sprite.IsVisible)
                 {
+                    if (render.OpacityTimer != default && render.Opacity == 0)
+                        continue;
+
                     var effect = _effectMapper.Get(entity);
                     if (effect != default)
                     {
@@ -106,6 +130,9 @@ namespace Nabunassar.ECS
                     var mapObj = _gameObjectMapper.Get(entity);
                     if (mapObj != null && mapObj.Bounds != default)
                     {
+                        if (mapObj.Dependant.IsNotEmpty()) // object have complex collision
+                            continue;
+
                         var color = mapObj.BoundsColor;
 
                         if (color == default)
@@ -124,6 +151,7 @@ namespace Nabunassar.ECS
                             var party = _partyMapper.Get(entity);
                             sb.DrawRectangle(party.DistanceMeterRectangle, Color.Purple);
                             sb.DrawRectangle(party.PartyMenuRectangle, Color.LightSkyBlue);
+                            sb.DrawRectangle(party.RevealArea, Color.LimeGreen);
                         }
                     }
                 }

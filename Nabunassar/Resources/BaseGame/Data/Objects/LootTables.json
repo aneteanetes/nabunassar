@@ -3,14 +3,6 @@
     "TableId": 1,
     "Rows": [
       {
-        "ItemId": 1,
-        "Type": "Guaranteed"
-      },
-      {
-        "ItemId": 3,
-        "Type": "Guaranteed"
-      },
-      {
         "ItemId": 2,
         "Type": "Percent",
         "Value": 25
@@ -26,4 +18,13 @@
       }
     ]
   },
+  {
+    "TableId": 2,
+    "Rows": [
+      {
+        "ItemId": 1,
+        "Type": "Guaranteed"
+      }
+    ]
+  }
 ]

@@ -19,49 +19,54 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         {
             Game.IsMouseVisible = false;
 
-            Game.AddDesktopWidget(new RevealCircle(Game));
+            Game.AddDesktopWidget(new RevealCircle(Game,this));
             Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
-        public void CastReveal()
+        public void CastReveal(List<GameObject> objs)
         {
-            GameObject gameObject = null;
+            foreach (var obj in objs)
+            {
+                obj.Reveal();
+            }
 
-            var roll = Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
+            //GameObject gameObject = null;
 
-            var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
-            var commonColor = Globals.BaseColor;
+            //var roll = Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
 
-            var ui = Game.Strings["UI"].FineTuning();
+            //var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
+            //var commonColor = Globals.BaseColor;
 
-            var resultText = roll.IsSuccess
-                ? ui["SUCCESS"].ToString()
-                : ui["FAILURE"].ToString();
+            //var ui = Game.Strings["UI"].FineTuning();
 
-            var text = DrawText.Create("")
-                .Font(Fonts.BitterBold)
-                .Size(16)
-                .Color(commonColor)
-                .Append(ui["SkillCheck"])
-                .AppendSpace()
-                .Color("#a2a832".AsColor())
-                .Append(Name).AppendSpace()
-                .Color(commonColor)
-                .Append(": ")
-                .Append($"{ui["difficult"]}: {roll.Complexity.ToDrawText(commonColor)}, {ui["throw"]}: {roll.Result.ToDrawText(commonColor)}: ")
-                .Color(resultColor)
-                .Append($" {resultText}")
-                .Color(commonColor)
-                .Append("!");
+            //var resultText = roll.IsSuccess
+            //    ? ui["SUCCESS"].ToString()
+            //    : ui["FAILURE"].ToString();
 
-            Game.GameState.AddRollMessage(text, roll);
+            //var text = DrawText.Create("")
+            //    .Font(Fonts.BitterBold)
+            //    .Size(16)
+            //    .Color(commonColor)
+            //    .Append(ui["SkillCheck"])
+            //    .AppendSpace()
+            //    .Color("#a2a832".AsColor())
+            //    .Append(Name).AppendSpace()
+            //    .Color(commonColor)
+            //    .Append(": ")
+            //    .Append($"{ui["difficult"]}: {roll.Complexity.ToDrawText(commonColor)}, {ui["throw"]}: {roll.Result.ToDrawText(commonColor)}: ")
+            //    .Color(resultColor)
+            //    .Append($" {resultText}")
+            //    .Color(commonColor)
+            //    .Append("!");
+
+            //Game.GameState.AddRollMessage(text, roll);
         }
 
         public override RollResult GetFormula()
         {
             return Roll(
-                Rank.d2.Entity(GameObject.GetLandscapeAbility()),
-                Dice.d2.Entity(GameObject.GetLandscapeAbility()),
+                Rank.d2.Entity(GameObject.GetAbilityEntity("Reveal")),
+                Dice.d2.Entity(GameObject.GetAbilityEntity("Reveal")),
                 this.Rank,
                 this.Dice,
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Agility))));

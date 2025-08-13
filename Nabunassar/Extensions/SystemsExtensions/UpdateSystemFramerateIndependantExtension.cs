@@ -7,6 +7,9 @@ namespace Nabunassar
     {
         private static Dictionary<object, double> updatesCache = new();
 
+        public static bool CanUpdate(this IUpdateSystem system, GameTime gameTime, double delayMilliseconds)
+            => IsUpdateAvailable(system, gameTime, delayMilliseconds);
+
         public static bool IsUpdateAvailable(this IUpdateSystem system, GameTime gameTime, double delayMilliseconds)
             => IsUpdateAvailable(system.As<object>(), gameTime, delayMilliseconds);
 

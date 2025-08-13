@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
@@ -6,7 +7,11 @@ using MonoGame.Extended.Particles;
 using MonoGame.Extended.Particles.Modifiers;
 using MonoGame.Extended.Particles.Profiles;
 using Myra.Graphics2D.UI;
+using Nabunassar.Components;
+using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Game;
 using Nabunassar.Widgets.Base;
+using System.Drawing.Printing;
 using ParticleEffect = MonoGame.Extended.Particles.ParticleEffect;
 
 namespace Nabunassar.Widgets.UserEffects
@@ -15,11 +20,13 @@ namespace Nabunassar.Widgets.UserEffects
     {
         private Texture2D _particleTexture;
         private ParticleEffect _particleEffect;
+        private RevealAbility _revealAbility;
 
         public override bool IsModal => true;
 
-        public RevealCircle(NabunassarGame game) : base(game)
+        public RevealCircle(NabunassarGame game, RevealAbility ability) : base(game)
         {
+            _revealAbility = ability;
         }
 
         private static float _radius = 50;
@@ -28,6 +35,7 @@ namespace Nabunassar.Widgets.UserEffects
         private float _gravityStrength = 5000;
         private Range<float> _scale = new Range<float>(1f, 1.9f);
         private Range<float> _scaleForGravity = new Range<float>(0.2f, .7f);
+        private CircleF _revealArea = default;
 
         public override void LoadContent()
         {
@@ -37,6 +45,8 @@ namespace Nabunassar.Widgets.UserEffects
             var circleTexture = Content.LoadTexture("Assets/Images/Interface/circleblend400.png");
 
             Game.GrayscaleMapActivate(circleTexture, () => new Rectangle(_circlePos, new Size(100, 100)), () => _dissapearingTimer);
+
+            _revealArea = new CircleF(Vector2.Zero, 50);
 
             var textureRegion = new Texture2DRegion(_particleTexture);
             _particleEffect = new ParticleEffect()
@@ -101,7 +111,11 @@ namespace Nabunassar.Widgets.UserEffects
                 ]
             };
 
+            var partyOrigin = Game.GameState.Party.GetOrigin();
 
+            partyOrigin = Game.Camera.WorldToScreen(partyOrigin);
+
+            Mouse.SetPosition(((int)partyOrigin.X), ((int)partyOrigin.Y));
         }
 
         protected override Widget CreateWidget()
@@ -138,7 +152,10 @@ namespace Nabunassar.Widgets.UserEffects
             _mouse = MouseExtended.GetState();
 
             _mousepos = _mouse.Position.ToVector2();
+            BoundMousePos();
             _particleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+            _revealArea.Position = Game.Camera.ScreenToWorld(_mousepos);
 
             if (!_isDissapearing)
             {
@@ -146,14 +163,7 @@ namespace Nabunassar.Widgets.UserEffects
 
                 if (_mouse.WasButtonPressed(MouseButton.Left))
                 {
-                    _particleEffect.Emitters.Remove(_particleEffect.Emitters.FirstOrDefault());
-                    foreach (var emmiter in _particleEffect.Emitters)
-                    {
-                        emmiter.LifeSpan = TimeSpan.FromSeconds(1);
-                    }
-
-                    _particleEffect.Trigger(_mousepos);
-                    _isDissapearing = true;
+                    CastDissapear();
                 }
             }
 
@@ -173,13 +183,50 @@ namespace Nabunassar.Widgets.UserEffects
             }
         }
 
+        private void CastDissapear()
+        {
+            _particleEffect.Emitters.Remove(_particleEffect.Emitters.FirstOrDefault());
+            foreach (var emmiter in _particleEffect.Emitters)
+            {
+                emmiter.LifeSpan = TimeSpan.FromSeconds(1);
+            }
+
+            _particleEffect.Trigger(_mousepos);
+            _isDissapearing = true;
+
+            var objs = Game.QuerySpace("hidden", _revealArea)
+                .Select(x => x as MapObject)
+                .GroupBy(x => x.GameObject)
+                .Select(x => x.Key)
+                .Where(x => x.RevealComplexity != null)
+                .ToList();
+
+            _revealAbility.CastReveal(objs);
+        }
+
+        private void BoundMousePos()
+        {
+            var pos = Game.Camera.ScreenToWorld(_mousepos);
+            if (!Game.GameState.Party.RevealArea.InBounds(pos, out var newPos))
+            {
+                var newScreenPosition = Game.Camera.WorldToScreen(newPos);
+                _mousepos = newScreenPosition;
+                Mouse.SetPosition(((int)newScreenPosition.X), ((int)newScreenPosition.Y));
+            }
+        }
+
         private Point _circlePos;
-        private float _grayIntensive=0;
 
         public override void Draw(GameTime gameTime)
         {
             var sb = Game.BeginDraw();
             sb.Draw(_particleEffect);
+
+            if (Game.IsDrawBounds)
+            {
+                sb.DrawCircle(_revealArea, 50, Color.LightCyan);
+            }
+
             sb.End();
         }
     }

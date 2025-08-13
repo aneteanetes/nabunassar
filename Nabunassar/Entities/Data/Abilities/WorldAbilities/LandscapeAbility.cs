@@ -23,7 +23,10 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (gameObject == default)
                 return;
 
-            var roll = Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
+            var landRank = gameObject.LandscapeComplexity.Rank;
+            var landDice = gameObject.LandscapeComplexity.Dice;
+
+            var roll = Roll(landRank, landDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
 
             var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
             var commonColor = Globals.BaseColor;
@@ -63,8 +66,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         public override RollResult GetFormula()
         {
             return Roll(
-                Rank.d2.Entity(GameObject.GetLandscapeAbility()),
-                Dice.d2.Entity(GameObject.GetLandscapeAbility()),
+                Rank.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
+                Dice.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
                 this.Rank,
                 this.Dice,
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Agility))));
