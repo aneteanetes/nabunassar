@@ -43,8 +43,8 @@ namespace Nabunassar.Entities.Game
 
         internal void OnNoCollistion()
         {
-
-            FocusedGameObject = default;
+            if (FocusedGameObject != default)
+                FocusedGameObject = default;
         }
     }
 }

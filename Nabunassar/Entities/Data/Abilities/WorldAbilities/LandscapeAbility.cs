@@ -104,7 +104,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 return true;
 
             var objType = gameObject.ObjectType;
-            return objType is not ObjectType.NPC && objType is not ObjectType.Container;
+            return objType is not ObjectType.NPC && objType is not ObjectType.Container && objType is not ObjectType.Player;
         }
     }
 }

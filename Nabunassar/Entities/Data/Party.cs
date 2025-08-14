@@ -220,9 +220,9 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(2f);
 
-        public RectangleF RevealArea => this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(3);
+        public RectangleF RevealArea => DistanceMeterRectangle;//this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(3);
 
         public RectangleF PartyMenuRectangle
         {

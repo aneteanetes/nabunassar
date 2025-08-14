@@ -62,7 +62,7 @@ namespace Monogame.Extended
                 AddCollisionBetweenLayer(layer, otherLayer);
         }
 
-        private Dictionary<MapObject, bool> _registerNoCollistion = new();
+        private Dictionary<ICollisionActor, bool> _registerNoCollistion = new();
 
         /// <summary>
         /// Update the collision tree and process collisions.
@@ -78,25 +78,28 @@ namespace Monogame.Extended
             {
                 layer.Reset();
             }
-            _registerNoCollistion.Clear();
+
+            //reset dictionary values
+            var @enum = _registerNoCollistion.GetEnumerator();
+            while(@enum.MoveNext())
+            {
+                _registerNoCollistion[@enum.Current.Key] = false;
+            }
 
             foreach (var (firstLayer, secondLayer) in _layerCollision)
             {
                 foreach (var actor in firstLayer.Space)
                 {
-                    var gameObject = actor.As<MapObject>();
-                    if (gameObject != default && gameObject.IsRegisterNoCollision)
-                    {
-                        _registerNoCollistion[gameObject] = false;
-                    }
-                    
                     var collisions = secondLayer.Space.Query(actor.Bounds.BoundingRectangle);
                     foreach (var other in collisions)
                     {
                         if (actor != other && actor.Bounds.Intersects(other.Bounds))
                         {
-                            if (gameObject != default && _registerNoCollistion.ContainsKey(gameObject))
-                                _registerNoCollistion[gameObject] = true;
+                            if (_registerNoCollistion.ContainsKey(actor))
+                                _registerNoCollistion[actor] = true;
+
+                            if (_registerNoCollistion.ContainsKey(other))
+                                _registerNoCollistion[other] = true;
 
                             var penetrationVector = CalculatePenetrationVector(actor.Bounds, other.Bounds);
 
@@ -115,7 +118,7 @@ namespace Monogame.Extended
                 }
             }
 
-            _registerNoCollistion.Where(x => !x.Value).ForEach(x => x.Key.OnNoCollision());
+            _registerNoCollistion.Where(x => x.Value == false).ForEach(x => x.Key.As<MapObject>().OnNoCollision());
         }
 
         /// <summary>
@@ -125,6 +128,9 @@ namespace Monogame.Extended
         /// <param name="target">Target to insert.</param>
         public void Insert(ICollisionActor target)
         {
+            if (target is MapObject mapObject && mapObject.IsRegisterNoCollision)
+                _registerNoCollistion.Add(mapObject, false);
+
             var layerName = target.LayerName ?? DEFAULT_LAYER_NAME;
             if (!_layers.TryGetValue(layerName, out var layer))
             {
