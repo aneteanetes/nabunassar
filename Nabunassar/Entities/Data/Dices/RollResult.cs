@@ -16,6 +16,8 @@
 
                     ComplexityInner = complexity;
                     RollInner = roll;
+
+                    IsAutoSuccess = true;
                 }
                 else
                 {
@@ -31,6 +33,8 @@
 
             IsSuccess = Result.Result >= Complexity.Result;
         }
+
+        public bool IsAutoSuccess { get; internal set; }
 
         public DiceResult Complexity { get; private set; }
 

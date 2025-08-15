@@ -18,7 +18,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         private VerticalStackPanel _itemsPanel;
         private Panel _selectedPanel;
         private Item _selectedItem;
-        private IBrush _defaultPanelBackground;
         private FontSystem _font;
         private List<ItemView> _itemViews = new();
         private bool _isShortView;
@@ -344,7 +343,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         {
             if (_selectedPanel != null)
             {
-                _selectedPanel.Background = _defaultPanelBackground;
+                _selectedPanel.Background = default;
                 _selectedItem = null;
             }
 
@@ -428,14 +427,16 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         public void Update(GameTime gameTime)
         {
             return;
-            var state = MouseExtended.GetState();
-            if (_touchedItemPanel == this && _mousePos!=Point.Zero && state.Position != _mousePos && !_isDragging)
-            {
-                _isDragging = true;
-                MakePanelInvisible(itemPanelMap[_touched.Item]);
-                var drag = new ItemDragWidget(Game, _touched);
-                Game.AddDesktopWidget(drag);
-            }
+            //drag logic
+
+            //var state = MouseExtended.GetState();
+            //if (_touchedItemPanel == this && _mousePos!=Point.Zero && state.Position != _mousePos && !_isDragging)
+            //{
+            //    _isDragging = true;
+            //    MakePanelInvisible(itemPanelMap[_touched.Item]);
+            //    var drag = new ItemDragWidget(Game, _touched);
+            //    Game.AddDesktopWidget(drag);
+            //}
         }
 
         private void MakePanelInvisible(Panel panel)

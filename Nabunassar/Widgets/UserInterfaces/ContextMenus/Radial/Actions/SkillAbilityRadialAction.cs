@@ -51,9 +51,9 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
 
         public override void OnClick()
         {
-            Menu.Close();
             _ability.Cast(Menu.GameObject);
             base.OnClick();
+            this.Close();
         }
 
         internal static void ResetCounters()

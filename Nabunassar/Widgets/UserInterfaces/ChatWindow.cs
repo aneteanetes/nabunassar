@@ -5,6 +5,7 @@ using MonoGame.Extended.Input;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
@@ -14,6 +15,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 {
     internal class ChatWindow : ScreenWidgetWindow
     {
+        private static FontSystem _fontBitterBold;
         private static FontSystem _font;
         private Texture2D chatborder;
         private Texture2D chatborderBlack;
@@ -29,6 +31,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         public override void LoadContent()
         {
+            _fontBitterBold = Content.LoadFont(Fonts.BitterBold);
             _font = Game.Content.LoadFont(Fonts.Retron);
             chatborder = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm.png");
             chatborderBlack = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm_b.png");
@@ -135,10 +138,14 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         private static Label AddMessageLabel(string message)
         {
+            message = DrawText.Create("").Font(Fonts.BitterBold).Size(16).Append(message).ToString();
+
             var label = new Label()
             {
                 Wrap = true,
-                Text = message,
+                Text = $"{DateTime.Now:HH:mm:ss}: {message}",
+                TextColor = Globals.BaseColor,
+                Font = _font.GetFont(16),
                 Padding = new Myra.Graphics2D.Thickness(0, 5, 0, 0),
             };
 

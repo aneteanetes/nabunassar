@@ -9,9 +9,8 @@ using MonoGame.Extended.Particles.Profiles;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
-using Nabunassar.Entities.Game;
+using Nabunassar.Shaders;
 using Nabunassar.Widgets.Base;
-using System.Drawing.Printing;
 using ParticleEffect = MonoGame.Extended.Particles.ParticleEffect;
 
 namespace Nabunassar.Widgets.UserEffects
@@ -21,6 +20,7 @@ namespace Nabunassar.Widgets.UserEffects
         private Texture2D _particleTexture;
         private ParticleEffect _particleEffect;
         private RevealAbility _revealAbility;
+        private GrayscaleMapShader _postProcessor;
 
         public override bool IsModal => true;
 
@@ -42,9 +42,8 @@ namespace Nabunassar.Widgets.UserEffects
             _particleTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
             _particleTexture.SetData(new[] { Color.White });
 
-            var circleTexture = Content.LoadTexture("Assets/Images/Interface/circleblend400.png");
-
-            Game.GrayscaleMapActivate(circleTexture, () => new Rectangle(_circlePos, new Size(100, 100)), () => _dissapearingTimer);
+            _postProcessor = new GrayscaleMapShader(Game, () => new Rectangle(_circlePos, new Size(100, 100)), () => _dissapearingTimer);
+            _postProcessor.Enable();
 
             _revealArea = new CircleF(Vector2.Zero, 50);
 
@@ -65,19 +64,6 @@ namespace Nabunassar.Widgets.UserEffects
                         },
                         Modifiers =
                         {
-                            //new AgeModifier
-                            //{
-                            //    Interpolators =
-                            //    {
-                            //        new ColorInterpolator
-                            //        {
-                            //            StartValue = new HslColor(0.33f, 0.5f, 0.5f),
-                            //            EndValue = new HslColor(0.5f, 0.9f, 1.0f)
-                            //        }
-                            //    }
-                            //},
-                            //new RotationModifier {RotationRate = -2.1f},
-                            //new RectangleContainerModifier {Width = 800, Height = 480},
                             new LinearGravityModifier {Direction = -Vector2.UnitY, Strength = _gravityStrength},
                         }
                     },
@@ -90,22 +76,6 @@ namespace Nabunassar.Widgets.UserEffects
                             Quantity = 50,
                             Rotation = new Range<float>(-1f, 1f),
                             Scale = _scale
-                        },
-                        Modifiers =
-                        {
-                            //new AgeModifier
-                            //{
-                            //    Interpolators =
-                            //    {
-                            //        new ColorInterpolator
-                            //        {
-                            //            StartValue = new HslColor(0.33f, 0.5f, 0.5f),
-                            //            EndValue = new HslColor(0.5f, 0.9f, 1.0f)
-                            //        }
-                            //    }
-                            //},
-                            //new RotationModifier {RotationRate = -2.1f},
-                            //new RectangleContainerModifier {Width = 800, Height = 480},
                         }
                     }
                 ]
@@ -144,7 +114,6 @@ namespace Nabunassar.Widgets.UserEffects
                 if (_dissapearingTimer >= 1)
                 {
                     this.Close();
-                    Game.GrayscaleMapDisable();
                     return;
                 }
             }
@@ -228,6 +197,12 @@ namespace Nabunassar.Widgets.UserEffects
             }
 
             sb.End();
+        }
+
+        public override void Close()
+        {
+            _postProcessor.Dispose();
+            base.Close();
         }
     }
 }

@@ -28,6 +28,17 @@ namespace Nabunassar.Monogame.Viewport
             return h / 2 - height / 2;
         }
 
+        public Vector2 Origin()
+        {
+            return new Vector2(this.Width / 2, this.Height / 2);
+        }
+
+        public int OriginPixel()
+        {
+            var pos = Origin();
+            return Width * ((int)pos.Y) + ((int)pos.X);
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is PossibleResolution res))
@@ -42,6 +53,11 @@ namespace Nabunassar.Monogame.Viewport
         }
 
         public override string ToString() => $"{Width}x{Height}";
+
+        internal Vector2 ToVector2()
+        {
+            return new Vector2(Width, Height);
+        }
 
         public static implicit operator Rectangle(PossibleResolution res) => new Rectangle(0, 0, res.Width, res.Height);
     }

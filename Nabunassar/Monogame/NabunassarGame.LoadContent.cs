@@ -19,7 +19,7 @@ namespace Nabunassar
         {
             var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
             var y = SelectedMonitorBounds.h / 2 - Settings.HeightPixel / 2;
-            Window.Position = new Microsoft.Xna.Framework.Point(x, y);
+            Window.Position = new Point(x, y);
 
             FrameCounter = new FrameCounter();
             ResourceLoader = new ResourceLoader(this.Settings);
@@ -38,10 +38,6 @@ namespace Nabunassar
             // backbuffer
             
             _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
-            _grayscaleMapBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
-
-            // shaders
-            _grayscaleMapShader = Content.Load<Effect>("Assets/Shaders/GrayscaleMap.fx");
 
             //
 

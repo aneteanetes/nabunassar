@@ -1,11 +1,9 @@
-﻿using Cyotek.Drawing.BitmapFont;
-using FontStashSharp;
+﻿using FontStashSharp;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
-using System.IO.IsolatedStorage;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 {
@@ -26,6 +24,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
             var textResult = rollResult.IsSuccess
                 ? Game.Strings["UI"]["Success"].ToString()
                 : Game.Strings["UI"]["Failure"].ToString();
+
+            if (rollResult.IsAutoSuccess)
+                textResult = Game.Strings["UI"]["Success (Guaranteed)"].ToString();
 
             AddRollResult(informationpanel, rollResult.Complexity, Game.Strings["UI"]["Difficult"]);
             AddRollResult(informationpanel, rollResult.Result, Game.Strings["UI"]["Throw"],true);

@@ -8,8 +8,8 @@ namespace MonoGame.Effect
 {
 	public class ShaderCompilerException : Exception
 	{
-	    public ShaderCompilerException()
-	        : base("A shader failed to compile!")
+	    public ShaderCompilerException(string errs=null)
+	        : base(errs ?? "A shader failed to compile!")
 	    {	        
 	    }
 	}

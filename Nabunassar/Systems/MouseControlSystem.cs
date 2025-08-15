@@ -76,7 +76,6 @@ namespace Nabunassar.Systems
             if (party == null)
                 return;
 
-#warning landscape crash - party dont have MapObject (how?)
             var partyGameObject = party.Entity.Get<MapObject>();
             if (partyGameObject.IsMoving)
             {

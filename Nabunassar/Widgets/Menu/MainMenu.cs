@@ -124,6 +124,7 @@ internal partial class MainMenu : ScreenWidget
 
     private void Back_Click(object sender, EventArgs e)
     {
+        MainGameScreen.GlobalBlurShader.Disable();
         Game.RemoveDesktopWidgets<MainMenu>();
         Game.ChangeGameActive();
     }

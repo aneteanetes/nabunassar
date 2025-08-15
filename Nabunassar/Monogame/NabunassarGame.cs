@@ -211,10 +211,14 @@ namespace Nabunassar
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
         {
+            _screenLoaded = false;
+
             var screen = typeof(TScreen).New(this).As<BaseGameScreen>();
 
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
+
+            transition.Completed += (s,e)=> _screenLoaded = true;
 
             RemoveDesktopWidgets();
 

@@ -18,7 +18,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             Creature = creature;
             Game = game;
 
-            var entity = GetEntity(creature);
+            var entity = GetEntity(creature,model.Name);
 
             Rank = model.Rank.Entity(entity);
             Dice = model.Dice.Entity(entity);
@@ -34,15 +34,14 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             IsUsableInWorld = model.IsUsableInWorld;
         }
 
-        private IEntity GetEntity(IEntity creatureEntity)
+        private IEntity GetEntity(IEntity creatureEntity, string abilityNameToken)
         {
             var game = NabunassarGame.Game;
             var strings = game.Strings.FineTuning();
-            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
 
             return game.DataBase.AddEntity(new DescribeEntity()
             {
-                FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][landScapeAbilityModel.Name]} {creatureEntity.FormulaName}"
+                FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][abilityNameToken]} {creatureEntity.FormulaName}"
             });
         }
 

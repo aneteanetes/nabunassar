@@ -25,6 +25,7 @@
   "Complexity": "Сложность",
   "Result": "Результат",
   "Success": "Успех",
+  "Success (Guaranteed)": "Успех (гарант.)",
   "Failure": "Провал",
   "ThrowResult": "Результат броска",
   "Formula": "Формула",
@@ -72,5 +73,7 @@
   "Third": "Третий",
   "Fourth": "Четвёртый",
   "Got": "Получено",
-  "Screenshot was created": "Скриншот сохранён"
+  "Screenshot was created": "Скриншот сохранён",
+  "Revealed": "Обнаружено",
+  "Nothing is found": "Ничего не найдено"
 }

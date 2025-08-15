@@ -1,10 +1,8 @@
 ﻿using FontStashSharp;
 using Microsoft.Xna.Framework.Graphics;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Items;
-using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
@@ -37,8 +35,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         }
 
         private ItemsPanel _itemPanel;
-        private Label _weightLabel;
-        private HorizontalProgressBar _weightBar;
         private HorizontalStackPanel _filterPanel;
 
         protected override Window CreateWindow()

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Screens.Transitions;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Resources;
+using Nabunassar.Shaders;
 
 namespace Nabunassar
 {
@@ -8,16 +10,16 @@ namespace Nabunassar
     {
         public bool IsDrawBounds { get; internal set; }
 
-        internal RenderTarget2D BackRenderTarget = null;
+        private RenderTarget2D _backRenderTarget = null;
 
         public void SetRenderTarget(RenderTarget2D target=null)
         {
             if (target == null)
             {
-                if (BackRenderTarget == null)
+                if (_backRenderTarget == null)
                     GraphicsDevice.SetRenderTarget(null);
                 else
-                    GraphicsDevice.SetRenderTarget(BackRenderTarget);
+                    GraphicsDevice.SetRenderTarget(_backRenderTarget);
             
             }
             else
@@ -31,14 +33,27 @@ namespace Nabunassar
             GraphicsDevice.Clear(color);
         }
 
-        Effect _globalEffect = null;
+        public RenderTarget2D GetBackBuffer()
+        {
+            return Game._backBuffer;
+        }
+
+        public void SetRenderTargetBackBuffer(RenderTarget2D target=null)
+        {
+            Game._backRenderTarget = target ?? Game._backBuffer;
+        }
+
+        public void ClearRenderTargetBackBuffer()
+        {
+            Game._backRenderTarget = null;
+        }
 
         public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState=null, bool isTransformMatrix = true, Effect effect = default)
         {
             var transformMatrix = Camera.GetViewMatrix();
             this.SpriteBatch.Begin(isCameraDependant ? transformMatrix : null);
 
-            var sb = this.SpriteBatch.GetSpriteBatch(samplerState, sortMode, blendState, isTransformMatrix, effect ?? _globalEffect);
+            var sb = this.SpriteBatch.GetSpriteBatch(samplerState, sortMode, blendState, isTransformMatrix, effect);
             return sb;
         }
 
@@ -47,9 +62,9 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
-            if (_grayscaleMapTexture != null)
+            if (PostProcessShaders.Count > 0)
             {
-                DrawGrayscaleMap();
+                ActivateBackBuffer();
             }
 
             Game.Penumbra.BeginDraw();
@@ -57,16 +72,19 @@ namespace Nabunassar
 
             base.Draw(gameTime);
 
-            if(_grayscaleMapTexture!=null)
+            if (PostProcessShaders.Count > 0)
             {
-                BackRenderTarget = null;
-                SetRenderTarget(null);
-                ClearRenderTarget(Color.Black);
-                var sb = BeginDraw(false,effect: _grayscaleMapShader);
-                sb.Draw(_backBuffer, Game.Resolution, Color.White);
+                for (int i = 0; i < PostProcessShaders.Count; i++)
+                {
+                    var postProcessor = PostProcessShaders[i];
+                    postProcessor.Draw(gameTime, i == PostProcessShaders.Count - 1);
+                }
             }
 
             SpriteBatch.End();
+
+            if (_screenLoaded)
+                Game.Desktop.Render();
 
             if (isDrawFPS)
                 DrawFPS();
@@ -75,40 +93,36 @@ namespace Nabunassar
                 DrawPositions();
         }
 
-        private Texture2D _grayscaleMapTexture;
-        private Func<float> _grayscaleGrayIntensive;
-        private Func<Rectangle> _grayscaleMapDestination;
+        public bool IsPostEffects = false;
 
-        public void GrayscaleMapActivate(Texture2D texturePattern, Func<Rectangle> destination, Func<float> grayIntensive)
+        private List<PostProcessShader> PostProcessShaders = new();
+
+        public void AddPostProcessor(PostProcessShader shader)
         {
-            _grayscaleMapTexture = texturePattern;
-            _grayscaleMapDestination = destination;
-            _grayscaleGrayIntensive = grayIntensive;
+            if (!shader.IsLoaded)
+            {
+                shader.LoadContent();
+                shader.IsLoaded = true;
+            }
+            PostProcessShaders.Add(shader);
         }
 
-        public void GrayscaleMapDisable()
+        private void ActivateBackBuffer()
         {
-            _grayscaleMapTexture = null;
-            _grayscaleMapDestination = null;
-            _globalEffect = null;
-        }
-
-        public void DrawGrayscaleMap()
-        {
-            Game.SetRenderTarget(_grayscaleMapBuffer);
-            Game.ClearRenderTarget(Color.Transparent);
-
-            var sb = BeginDraw();
-            sb.Draw(_grayscaleMapTexture, _grayscaleMapDestination(), Color.White);
-            sb.End();
-
-            BackRenderTarget = _backBuffer;
-
+            IsPostEffects = true;
+            _backRenderTarget = _backBuffer;
             Game.SetRenderTarget(null);
             Game.ClearRenderTarget(Color.Transparent);
+        }
 
-            _grayscaleMapShader.Parameters["patternTexture"].SetValue(_grayscaleMapBuffer);
-            _grayscaleMapShader.Parameters["grayIntensive"].SetValue(_grayscaleGrayIntensive());
+        public void DisablePostEffects(PostProcessShader shader = null)
+        {
+            _backRenderTarget = null;
+            IsPostEffects = false;
+            if (shader != null)
+                PostProcessShaders.Remove(shader);
+            else
+                PostProcessShaders.Clear();
         }
 
         public void DrawFPS()

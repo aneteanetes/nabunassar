@@ -5,6 +5,7 @@ using MonoGame.Extended.Input;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Shaders;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Menu;
@@ -19,6 +20,7 @@ namespace Nabunassar.Screens.Game
     internal class MainGameScreen : BaseGameScreen
     {
         TiledMap _tiledMap;
+        public static GaussianBlur GlobalBlurShader;
 
         public MainGameScreen(NabunassarGame game) : base(game)
         {
@@ -26,6 +28,8 @@ namespace Nabunassar.Screens.Game
 
         public override void LoadContent()
         {
+            GlobalBlurShader = new GaussianBlur(Game,1.5f);            
+
             _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
 
             Game.Camera.Zoom = 4;
@@ -87,8 +91,6 @@ namespace Nabunassar.Screens.Game
             _tiledMap = null;
         }
 
-        private bool isEsc = false;
-
         private bool logWindow = false;
 
         public void InitGameUI()
@@ -116,11 +118,13 @@ namespace Nabunassar.Screens.Game
             {
                 if (Game.IsDesktopWidgetExist<MainMenu>())
                 {
+                    GlobalBlurShader.Disable();
                     Game.RemoveDesktopWidgets<MainMenu>();
                     Game.ChangeGameActive();
                 }
                 else
                 {
+                    GlobalBlurShader.Enable();
                     Game.AddDesktopWidget(new MainMenu(Game, true));
                     Game.ChangeGameActive();
                 }
@@ -183,14 +187,14 @@ namespace Nabunassar.Screens.Game
                 _isMakingScreenShot = false;
                 Game.SetRenderTarget(_screenShotTarget);
                 Game.ClearRenderTarget(Color.Black);
-                Game.BackRenderTarget = _screenShotTarget;
+                Game.SetRenderTargetBackBuffer(_screenShotTarget);
             }
 
             base.Draw(gameTime);
 
             if (_isMakingScreenShot==false)
             {
-                Game.BackRenderTarget = null;
+                Game.ClearRenderTargetBackBuffer();
                 Game.SetRenderTarget(null);
             }
         }

@@ -45,6 +45,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         public void Close()
         {
             Menu.Close();
+            Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
         public virtual void OnClick()

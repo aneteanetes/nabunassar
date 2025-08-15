@@ -28,8 +28,6 @@ namespace Nabunassar.Screens.Abstract
             Game.SpriteBatch.End();
 
             Game.Penumbra.Draw(gameTime);
-
-            Game.Desktop.Render();
         }
     }
 }

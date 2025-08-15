@@ -22,9 +22,9 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        private bool _screenLoaded = false;
+
         private RenderTarget2D _backBuffer;
-        private RenderTarget2D _grayscaleMapBuffer;
-        private Effect _grayscaleMapShader;
 
         public LocalizedStrings Strings { get; set; }
 
