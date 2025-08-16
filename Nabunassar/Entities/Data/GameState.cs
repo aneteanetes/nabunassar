@@ -1,14 +1,18 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Entities.Map;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
+using System;
 
 namespace Nabunassar.Entities.Data
 {
     internal class GameState
     {
+        public bool IsActive { get; set; } = false;
+
         public Party Party { get; set; }
 
         public Cursor Cursor { get; set; } = new();
@@ -20,6 +24,10 @@ namespace Nabunassar.Entities.Data
         public TiledBase LoadedMap { get; set; }
 
         public UIState UIState { get; set; } = new();
+
+        public Calendar Calendar { get; set; } = new();
+
+        public int PrayerCounts { get; set; } = 1;
 
         public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 
@@ -36,6 +44,14 @@ namespace Nabunassar.Entities.Data
         public void AddRollMessage(DrawText text, RollResult rollResult)
         {
             ChatWindow.AddRollMessage(text.ToString(), rollResult);
+        }
+
+        internal void Update(GameTime gameTime)
+        {
+            if (!IsActive)
+                return;
+
+            Calendar.Update(gameTime);
         }
     }
 }

@@ -98,6 +98,7 @@ namespace Nabunassar.Screens.Game
             Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
             Game.AddDesktopWidget(new ChatWindow(Game));
             Game.AddDesktopWidget(new ControlPanel(Game));
+            Game.AddDesktopWidget(new GameDateTime(Game));
         }
 
         private bool? _isMakingScreenShot = null;

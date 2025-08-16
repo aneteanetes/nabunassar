@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Widgets.Base;
-using Nabunassar.Widgets.Menu;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views.IconButtons;
 

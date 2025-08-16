@@ -13,6 +13,7 @@ using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.Extended.ViewportAdapters;
+using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
@@ -265,37 +266,6 @@ namespace Nabunassar
             {
                 Camera.ZoomOut(zoomPerTick);
             }
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            if (!IsActive)
-                return;
-
-            DebugUpdate(gameTime);
-
-            MouseExtended.Update();
-            KeyboardExtended.Update();
-
-            Penumbra.Transform = Camera.GetViewMatrix();
-
-            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
-
-            const float movementSpeed = 200;
-            Camera.Move(MoveCamera() * movementSpeed * gameTime.GetElapsedSeconds());
-
-            var mouseState = Mouse.GetState();
-            _mousePosition = new Vector2(mouseState.X, mouseState.Y);
-            _worldPosition = Camera.ScreenToWorld(_mousePosition);
-
-            if (IsGameActive)
-            {
-                CollisionComponent.Update(gameTime);
-                WorldGame.Update(gameTime);
-            }
-
-            base.Update(gameTime);
         }
     }
 }

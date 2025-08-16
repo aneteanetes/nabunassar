@@ -23,6 +23,8 @@ namespace Nabunassar
 
             EntityFactory.CreateParty(GameState.Party, pos);
 
+            GameState.IsActive = true;
+
 #if DEBUG
             var revealModel = DataBase.GetAbility("Reveal");
             party.Third.Creature.WorldAbilities.First = new RevealAbility(Game, party.Third.Creature, revealModel);
