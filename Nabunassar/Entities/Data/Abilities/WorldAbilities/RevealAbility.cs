@@ -31,7 +31,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             foreach (var obj in objs)
             {
                 var rankDice = obj.RevealComplexity;
-                var roll = Roll(rankDice.Rank, rankDice.Dice, this.Rank, this.Dice, this.Creature.PrimaryStats.IntelligenceDice);
+                var roll = Roll(rankDice.Rank, rankDice.Dice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.IntelligenceDice);
 
                 if (roll.IsSuccess)
                 {
@@ -76,8 +76,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             return Roll(
                 Rank.d2.Entity(GameObject.GetAbilityEntity("Reveal")),
                 Dice.d2.Entity(GameObject.GetAbilityEntity("Reveal")),
-                this.Rank,
-                this.Dice,
+                this.AbilityRank,
+                this.AbilityDice,
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.IntelligenceDice))));
         }
 

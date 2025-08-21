@@ -5,6 +5,7 @@ using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Resources;
 
 namespace Nabunassar.Entities.Data.Abilities
 {
@@ -16,9 +17,9 @@ namespace Nabunassar.Entities.Data.Abilities
 
         public string Description { get; set; }
 
-        public Rank Rank { get; set; } = Rank.Basic;
+        public Rank AbilityRank { get; set; } = Rank.Basic;
 
-        public Dice Dice { get; set; } = Dice.d4;
+        public Dice AbilityDice { get; set; } = Dice.d4;
 
         public int ItemId { get; set; }
 
@@ -41,6 +42,8 @@ namespace Nabunassar.Entities.Data.Abilities
                 case nameof(RevealAbility):
                     return new RevealAbility(game, creature, this);
                 default:
+                    case nameof(PrayerAbility):
+                    return new PrayerAbility(game, creature, this);
                     throw new NotImplementedException($"Ability {Name} instantiating is not implemented!");
             }
         }
@@ -48,6 +51,15 @@ namespace Nabunassar.Entities.Data.Abilities
         public string GetSlotDescription(NabunassarGame game)
         {
             return $"{game.Strings["UI"]["Slot"]}: {game.Strings["UI"][Slot.ToString()]}";
+        }
+
+        public IEntity PercentEntity()
+        {
+            var game = NabunassarGame.Game;
+            return DataBase.AddEntity(new DescribeEntity()
+            {
+                FormulaName = game.Strings["Entities"]["Chance 100%"]
+            });
         }
 
         public AbilityModel Load(NabunassarGame game)

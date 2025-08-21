@@ -1,23 +1,22 @@
 ﻿using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Dices.Terms;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Resources;
 using SharpDX;
 using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Entities.Data.Rankings
 {
-    internal class Rank
+    internal class Rank : DiceTerm
     {
         public int Value { get; }
 
-        public bool IsDirty { get; }
-
         public Guid ObjectId { get; }
 
-        public Rank(int rank, bool isDirty = false, Guid objectId = default)
+        public Rank(int rank, Guid objectId = default)
         {
             Value = rank;
-            IsDirty = isDirty;
             ObjectId = objectId;
         }
 
@@ -28,20 +27,62 @@ namespace Nabunassar.Entities.Data.Rankings
 
         public Rank Entity(IEntity entity) => FromEntity(entity, this);
 
+        /// <summary>
+        /// 0
+        /// </summary>
         public static Rank None = new Rank(0);
+        /// <summary>
+        /// 1
+        /// </summary>
         public static Rank Basic = new Rank(1);
+        /// <summary>
+        /// 2
+        /// </summary>
         public static Rank Advanced = new Rank(2);
+        /// <summary>
+        /// 3
+        /// </summary>
         public static Rank Expert = new Rank(3);
+        /// <summary>
+        /// 4
+        /// </summary>
         public static Rank Master = new Rank(4);
+        /// <summary>
+        /// 5
+        /// </summary>
         public static Rank GrandMaster = new Rank(5);
+        /// <summary>
+        /// 6
+        /// </summary>
         public static Rank Ultimate = new Rank(6);
 
+        /// <summary>
+        /// 0
+        /// </summary>
         public static Rank d2 = None;
+        /// <summary>
+        /// 1
+        /// </summary>
         public static Rank d4 = Basic;
+        /// <summary>
+        /// 2
+        /// </summary>
         public static Rank d6 = Advanced;
+        /// <summary>
+        /// 3
+        /// </summary>
         public static Rank d8 = Expert;
+        /// <summary>
+        /// 4
+        /// </summary>
         public static Rank d10 = Master;
+        /// <summary>
+        /// 5
+        /// </summary>
         public static Rank d12 = GrandMaster;
+        /// <summary>
+        /// 6
+        /// </summary>
         public static Rank d20 = Ultimate;
 
         //public static DiceResult operator -(int val, Rank rank)
@@ -51,12 +92,9 @@ namespace Nabunassar.Entities.Data.Rankings
         //    return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
         //}
 
-        public static DiceModifier operator -(Rank rank, int val)
+        public static DiceTerm operator -(Rank rank, int val)
         {
-            var result = rank.Value - val;
-            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Substract,rank);
-
-            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
+            return new DiceTermOperation(DiceOperation.Substract, rank, new DiceTermUnary(val));
         }
 
         //public static Rank operator +(int val, Rank rank)
@@ -64,24 +102,20 @@ namespace Nabunassar.Entities.Data.Rankings
         //    return new Rank(rank.Value + val, true);
         //}
 
-        public static DiceModifier operator +(Rank rank, int val)
+        public static DiceTerm operator +(Rank rank, int val)
         {
-            var result = rank.Value + val;
-            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Add,rank);
-            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Substract, [new DiceRoll(default, result, rank)]);
+            return new DiceTermOperation(DiceOperation.Add, rank, new DiceTermUnary(val));
         }
 
-        public static DiceModifier operator *(Rank rank, int val)
+        public static DiceTerm operator *(Rank rank, int val)
         {
-            var result = rank.Value * val;
-            return new DiceModifier(result,val, DiceModifierType.RankModified, DiceOperation.Multiply, rank);
-            //return new DiceResult(result, [new DiceModifier(val, DiceModifierType.Pure)], DiceOperation.Multiply, [new DiceRoll(default, result, rank)]);
+            return new DiceTermOperation(DiceOperation.Multiply, rank, new DiceTermUnary(val));
         }
 
-        public static implicit operator DiceModifier(Rank rank)
-        {
-            return new DiceModifier(rank.Value, rank.Value, DiceModifierType.Rank, DiceOperation.Unary, rank);
-        }
+        //public static implicit operator DiceModifier(Rank rank)
+        //{
+        //    return new DiceModifier(rank.Value, rank.Value, DiceModifierType.Rank, DiceOperation.Unary, rank);
+        //}
 
         public Dice AsDice() => (Dice)this;
 
@@ -118,8 +152,28 @@ namespace Nabunassar.Entities.Data.Rankings
             _ => (string)game.Strings["Enums/RankNames"][nameof(Rank.None)],
         };
 
-        public static implicit operator DiceModifierType(Rank rank) => rank.IsDirty
-                    ? DiceModifierType.RankModified
-                    : DiceModifierType.Rank;
+        public override int GetValue(bool isMax = false)
+        {
+            return this.Value;
+        }
+
+        public override string ToFormula()
+        {
+            var game = NabunassarGame.Game;
+            var entity = DataBase.GetEntity(ObjectId);
+
+            var desc = "";
+            if (game != null)
+            {
+                desc = $" ({game.Strings["GameTexts"][nameof(Rank)]} {entity.FormulaName})";
+            }
+
+            return $"{Value}{desc}";
+        }
+
+        public override string ToValue(bool isMax = false)
+        {
+            return Value.ToString();
+        }
     }
 }

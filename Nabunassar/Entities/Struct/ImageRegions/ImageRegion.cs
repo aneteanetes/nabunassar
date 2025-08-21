@@ -15,7 +15,7 @@ namespace Nabunassar.Entities.Struct.ImageRegions
         public readonly int Width { get; } = width;
         public readonly int Height { get; } = height;
 
-        public Rectangle ToRectangle()=>new Rectangle(X, Y, Width, Height);
+        public Rectangle ToRectangle() => new Rectangle(X, Y, Width, Height);
 
         public TextureRegion ToTextureRegion(NabunassarGame game)
         {

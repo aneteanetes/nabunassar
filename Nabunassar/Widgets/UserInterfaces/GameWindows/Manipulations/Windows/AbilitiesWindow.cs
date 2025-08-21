@@ -7,19 +7,12 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities;
-using Nabunassar.Entities.Data.Abilities.WorldAbilities;
-using Nabunassar.Entities.Data.Affects;
-using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Items;
-using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
-using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;
-using Nabunassar.Widgets.Views.IconButtons;
-using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 {
@@ -233,7 +226,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
                 var text = DrawText.Create(Game.Strings["GameTexts"]["Rank"])
                     .Append(": ")
-                    .Append(view.Ability.Rank.GetName(Game));
+                    .Append(view.Ability.AbilityRank.GetName(Game));
 
                 var ranklabel = new Label()
                 {
@@ -252,7 +245,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 };
                 dicePanel.Widgets.Add(diceText);
 
-                var diceIcon = new DiceIcon(Game, view.Ability.Dice, true);
+                var diceIcon = new DiceIcon(Game, view.Ability.AbilityDice, true);
                 diceIcon.VerticalAlignment = VerticalAlignment.Center;
                 diceIcon.Size = 24;
 
@@ -322,12 +315,12 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 .AppendLine()
                 .Append($"{Game.Strings["UI"]["Formula"]}:")
                 .AppendLine()
-                .Append(roll.Result.ToFormula(false))
+                .Append(roll.Result.ToFormula())
                 .AppendLine()
                 .AppendLine()
                 .Append($"{Game.Strings["UI"]["Complexity"]}:")
                 .AppendLine()
-                .Append(roll.Complexity.ToFormula(false));
+                .Append(roll.Complexity.ToFormula());
 
             SetDescription(text.ToString());
         }

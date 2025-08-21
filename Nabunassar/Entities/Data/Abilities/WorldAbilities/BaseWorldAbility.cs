@@ -1,6 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
@@ -20,8 +21,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
             var entity = GetEntity(creature,model.Name);
 
-            Rank = model.Rank.Entity(entity);
-            Dice = model.Dice.Entity(entity);
+            AbilityRank = model.AbilityRank.Entity(entity);
+            AbilityDice = model.AbilityDice.Entity(entity);
 
             Name = Game.Strings["AbilityNames"][model.Name];
             Description = Game.Strings["AbilityDescriptions"][model.Name];
@@ -39,7 +40,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             var game = NabunassarGame.Game;
             var strings = game.Strings.FineTuning();
 
-            return game.DataBase.AddEntity(new DescribeEntity()
+            return DataBase.AddEntity(new DescribeEntity()
             {
                 FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][abilityNameToken]} {creatureEntity.FormulaName}"
             });

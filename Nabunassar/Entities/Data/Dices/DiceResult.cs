@@ -1,186 +1,135 @@
-﻿using Nabunassar.Entities.Data.Rankings;
+﻿using Geranium.Reflection;
+using info.lundin.math;
+using Nabunassar.Entities.Data.Dices.Terms;
+using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Resources;
+using Nabunassar.Systems;
+using SharpDX;
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal class DiceResult(int result, DiceModifier[] modifiers, DiceOperation operation, params DiceRoll[] diceThrows)
+    internal class DiceResult
     {
-        public  DiceOperation Operation { get; } = operation;
+        public bool IsMax { get; set; }
 
-        public  DiceRoll[] DiceRolls { get; } = diceThrows;
+        public DiceTermExpression Terms { get; set; }
 
-        public  DiceModifier[] Modifiers { get; } = modifiers == default ? [] : modifiers;
-
-        public  int Result { get; } = result;
-
-        public DiceResult Maximum()
+        public DiceResult(DiceTerm root=default)
         {
-            var diceRolls = DiceRolls.Select(r => r.Dice.MaxRoll(r.Operation));
-            var diceResult = diceRolls.Sum(dr => dr.Result);
-            var modifiers = Modifiers.Sum(x=>x.Result);
-            return new DiceResult(diceResult + modifiers, Modifiers, Operation, diceRolls.ToArray());
+            Terms = new DiceTermExpression();
+            if (root != default)
+                Terms.Root = new DiceTermOperation(DiceOperation.Dices, root);
         }
 
-        public static DiceResult operator +(DiceResult diceResult, Dice dice)
+        public DiceResult(DiceTerm term, DiceOperation operation)
         {
-            var diceRoll = dice.Roll(DiceOperation.Add);
-            var result = diceResult.Result + diceRoll.Result;
-            var dices = RecreateDiceRollArray(diceResult, diceRoll);
-
-            return new DiceResult(result, diceResult.Modifiers, DiceOperation.Add, dices);
+            Terms.Add(term, operation);
         }
 
-        public static DiceResult operator -(DiceResult diceResult, Dice dice)
+        public DiceResult(DiceTerm left, DiceOperation operation, DiceTerm right)
         {
-            var diceRoll = dice.Roll(DiceOperation.Add);
-            var result = diceResult.Result - diceRoll.Result;
-            var dices = RecreateDiceRollArray(diceResult, diceRoll);
-
-            return new DiceResult(result, diceResult.Modifiers, DiceOperation.Substract, dices);
-        }
-
-        public static DiceResult operator *(int dicesCount, DiceResult diceResult)
-        {
-            var result = diceResult.Result + dicesCount;
-            var modifiers = RecreateModifiersArray(diceResult, new DiceModifier(dicesCount, dicesCount, DiceModifierType.Pure, DiceOperation.Multiply));
-
-            return new DiceResult(result, modifiers, DiceOperation.Add, diceResult.DiceRolls);
-        }
-
-        public static DiceResult operator *(DiceModifier mod, DiceResult diceResult)
-        {
-            var result = diceResult.Result + mod.Result;
-            var modifiers = RecreateModifiersArray(diceResult, mod);
-
-            return new DiceResult(result, modifiers, DiceOperation.Add, diceResult.DiceRolls);
-        }
-
-        public static DiceResult operator +(int value, DiceResult diceResult)
-        {
-            var result = diceResult.Result + value;
-            var modifiers = RecreateModifiersArray(diceResult, new DiceModifier(value, value, DiceModifierType.Pure, DiceOperation.Add));
-
-            return new DiceResult(result, modifiers, DiceOperation.Add, diceResult.DiceRolls);
-        }
-
-        public static DiceResult operator -(int value, DiceResult diceResult)
-        {
-            var result = diceResult.Result - value;
-            if (result < 0)
-                result = 0;
-
-            var modifiers = RecreateModifiersArray(diceResult, new DiceModifier(value, value, DiceModifierType.Pure, DiceOperation.Substract));
-
-            return new DiceResult(result, modifiers, DiceOperation.Substract, diceResult.DiceRolls);
-        }
-
-        public static DiceResult operator +(DiceModifier modifier, DiceResult diceResult)
-        {
-            var result = diceResult.Result + modifier.Result;
-            var modifiers = RecreateModifiersArray(diceResult, modifier);
-
-            return new DiceResult(result, modifiers, DiceOperation.Add, diceResult.DiceRolls);
-        }
-
-        public static DiceResult operator -(DiceModifier modifier, DiceResult diceResult)
-        {
-            var result = diceResult.Result - modifier.Result;
-            if (result < 0)
-                result = 0;
-
-            var modifiers = RecreateModifiersArray(diceResult, modifier);
-
-            return new DiceResult(result, modifiers, DiceOperation.Substract, diceResult.DiceRolls);
-        }
-
-        public static implicit operator Rank(DiceResult diceResult) => new Rank(diceResult.Result);
-
-        private static DiceRoll[] RecreateDiceRollArray(DiceResult diceResult, DiceRoll diceRoll)
-        {
-            var dices = new DiceRoll[diceResult.DiceRolls.Length + 1];
-            Array.Copy(diceResult.DiceRolls, dices, diceResult.DiceRolls.Length);
-            dices[^1] = diceRoll;
-            return dices;
-        }
-
-        private static DiceModifier[] RecreateModifiersArray(DiceResult diceResult, DiceModifier diceModifier)
-        {
-            var modifiers = new DiceModifier[diceResult.DiceRolls.Length + 1];
-            Array.Copy(diceResult.Modifiers, modifiers, diceResult.Modifiers.Length);
-            modifiers[^1] = diceModifier;
-            return modifiers;
-        }
-
-        public override string ToString() => ToDrawText().ToUnformatString();
-
-        public DrawText ToDrawText(Color resetColor = default, bool isFull=false)
-        {
-            var operationChar = "";
-            switch (Operation)
+            Terms = new DiceTermExpression()
             {
-                case DiceOperation.Add:
-                    operationChar = " + ";
-                    break;
-                case DiceOperation.Substract:
-                    operationChar = " - ";
-                    break;
-                case DiceOperation.Multiply:
-                    operationChar = " * ";
-                    break;
-                default:
-                    break;
-            }
+                Root = new DiceTermOperation(operation, right, left)
+            };
+        }
 
-            var diceResult = string.Join(operationChar, DiceRolls.Select(x => x.Result));
+        public int ToValue() => Terms.GetValue(IsMax);
 
-            var modifier = "";
-
-            if (isFull)
-            {
-                foreach (var mod in Modifiers)
-                {
-                    modifier += Operation.ToOperatorString()+" (" + mod.ToString() + ")";
-                }
-            }
-            else
-                modifier = $"+ {Modifiers.Sum(x => x.Result)}";
-
+        public DrawText ToString(Color resetColor = default)
+        {
             var drawtext = DrawText.Create("")
                 .Color(Color.Yellow)
-                .Append(Result.ToString());
+                .Append(ToValue().ToString());
 
-            if (resetColor == default)
-                drawtext = drawtext.ResetColor();
-            else
+            if (resetColor != default)
                 drawtext = drawtext.Color(resetColor);
+            else
+                drawtext = drawtext.ResetColor();
 
-            drawtext = drawtext.Append($" = ({diceResult}) {modifier}");
+            drawtext = drawtext.Append(" = ").Append(Terms.ToValue(IsMax));
 
             return drawtext;
         }
 
-        public DrawText ToFormula(bool isWithDices=true)
+        public DrawText ToFormula()
         {
-            var db = NabunassarGame.Game.DataBase;
-            var text = DrawText.Create("");
+            return DrawText.Create("").Append(Terms.ToFormula());
+        }
 
-            var opStr = Operation.ToOperatorString();
+        public static DiceResult operator +(Rank rank, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(rank, DiceOperation.Add);
+            return diceResult;
+        }
 
-            var dices = string.Join("", DiceRolls.Select(diceRoll =>
-            {
-                var concretteDice = isWithDices ? $"({diceRoll.Dice})" : "";
-                return $"{NabunassarGame.Game.Strings["GameTexts"]["Dice"]}{concretteDice} {db.GetEntity(diceRoll.Dice.ObjectId).FormulaName} {diceRoll.Operation.ToOperatorString()} ";
-            }));
+        public static DiceResult operator -(DiceResult diceResult, Rank rank)
+        {
+            diceResult.Terms.Add(rank, DiceOperation.Substract);
+            return diceResult;
+        }
 
-            text.Append(dices + " ");
+        public static DiceResult operator *(DiceResult diceResult, Rank rank)
+        {
+            diceResult.Terms.Add(rank, DiceOperation.Multiply);
+            return diceResult;
+        }
 
+        public static DiceResult operator +(DiceResult diceResult, Dice dice)
+        {
+            diceResult.Terms.Add(dice.Roll(), DiceOperation.Add);
+            return diceResult;
+        }
 
-            foreach (var mod in Modifiers)
-            {
-                text.Append(mod.ToFormulaString(isWithDices));
-            }
+        public static DiceResult operator -(DiceResult diceResult, Dice dice)
+        {
+            diceResult.Terms.Add(dice.Roll(), DiceOperation.Substract);
+            return diceResult;
+        }
 
-            return text;
+        public static DiceResult operator *(int dicesCount, DiceResult diceResult)
+        {
+            var multipleDiceTerm = new DiceTermMultiply(new DiceTermUnary(dicesCount), diceResult.Terms.Root);
+            diceResult.Terms.Add(multipleDiceTerm, DiceOperation.Add);
+            return diceResult;
+        }
+
+        public static DiceResult operator *(DiceTerm mod, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(mod, DiceOperation.Multiply);
+            return diceResult;
+        }
+
+        public static DiceResult operator +(int value, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(new DiceTermUnary(value), DiceOperation.Add);
+            return diceResult;
+        }
+
+        public static DiceResult operator -(int value, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(new DiceTermUnary(value), DiceOperation.Substract);
+            return diceResult;
+        }
+
+        public static DiceResult operator +(DiceTerm modifier, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(modifier, DiceOperation.Add);
+            return diceResult;
+        }
+
+        public static DiceResult operator -(DiceTerm modifier, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(modifier, DiceOperation.Substract);
+            return diceResult;
+        }
+
+        public static implicit operator Rank(DiceResult diceResult) => new Rank(diceResult.ToValue());
+
+        public override string ToString()
+        {
+            return this.ToString(Color.White).ToUnformatString();
         }
     }
 }

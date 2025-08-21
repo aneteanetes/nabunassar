@@ -74,6 +74,16 @@ namespace Nabunassar.Entities.Struct
             return this;
         }
 
+        public DrawText Append(IEnumerable<string> texts)
+        {
+            foreach (var text in texts)
+            {
+                Append(text);
+            }
+
+            return this;
+        }
+
         public DrawText AppendSpace()
         {
             _text += " ";

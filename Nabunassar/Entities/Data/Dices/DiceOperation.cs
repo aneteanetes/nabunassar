@@ -5,15 +5,16 @@
         Add,
         Substract,
         Multiply,
-        Unary
+        Unary,
+        Dices
     }
 
     internal static class DiceOperationExtensions
     {
         public static string ToOperatorString(this DiceOperation operation) => operation switch
         {
-            DiceOperation.Add => "+",
-            DiceOperation.Substract => "-",
+            DiceOperation.Add => " + ",
+            DiceOperation.Substract => " - ",
             DiceOperation.Multiply => " * ",
             _ => "",
         };

@@ -4,47 +4,47 @@
     {
         public RollResult(DiceResult complexity, DiceResult roll, bool isAutoMax = false)
         {
+            Calculate(complexity, roll, isAutoMax);
+        }
+
+        protected virtual void Calculate(DiceResult complexity, DiceResult roll, bool isAutoMax)
+        {
+            Complexity = complexity;
+            Result = roll;
+
             if (isAutoMax)
             {
-                var complexityMax = complexity.Maximum();
-                var rollMax = roll.Maximum();
+                complexity.IsMax = true;
+                roll.IsMax = true;
 
-                if (rollMax.Result >= complexityMax.Result)
+                var complexityMax = complexity.ToValue();
+                var rollMax = roll.ToValue();
+
+                if (rollMax >= complexityMax)
                 {
-                    Complexity = complexityMax;
-                    Result = rollMax;
-
-                    ComplexityInner = complexity;
-                    RollInner = roll;
-
                     IsAutoSuccess = true;
                 }
                 else
                 {
-                    Complexity = complexity;
-                    Result = roll;
+                    complexity.IsMax = false;
+                    roll.IsMax = false;
                 }
             }
-            else
-            {
-                Complexity = complexity;
-                Result = roll;
-            }
 
-            IsSuccess = Result.Result >= Complexity.Result;
+            IsSuccess = Result.ToValue() >= Complexity.ToValue();
         }
 
         public bool IsAutoSuccess { get; internal set; }
 
-        public DiceResult Complexity { get; private set; }
+        public DiceResult Complexity { get; protected set; }
 
-        public DiceResult Result { get; private set; }
+        public DiceResult Result { get; protected set; }
 
-        public bool IsSuccess { get; private set; }
+        public bool IsSuccess { get; protected set; }
 
-        private DiceResult ComplexityInner { get; set; }
+        protected DiceResult ComplexityInner { get; set; }
 
-        private DiceResult RollInner { get; set; }
+        protected DiceResult RollInner { get; set; }
 
     }
 }

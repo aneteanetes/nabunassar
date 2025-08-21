@@ -28,6 +28,9 @@ namespace Nabunassar
 #if DEBUG
             var revealModel = DataBase.GetAbility("Reveal");
             party.Third.Creature.WorldAbilities.First = new RevealAbility(Game, party.Third.Creature, revealModel);
+
+            var prayerModel = DataBase.GetAbility("Prayer");
+            party.Fourth.Creature.WorldAbilities.First = new PrayerAbility(Game, party.Third.Creature, prayerModel);
 #endif
         }
 

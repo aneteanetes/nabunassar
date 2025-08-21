@@ -6,7 +6,7 @@
     "IsCombat": "false",
     "Slot": "First",
     "Archetype": "Warrior",
-    "IsUsableInWorld": true,
+    "IsUsableInWorld": true
   },
   {
     "Name": "Reveal",
@@ -15,6 +15,15 @@
     "IsCombat": "false",
     "Slot": "First",
     "Archetype": "Wizard",
+    "IsUsableInWorld": true
+  },
+  {
+    "Name": "Prayer",
+    "Icon": "Assets/Images/Icons/Abilities/prayer.png",
+    "ItemId": 4,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Priest",
     "IsUsableInWorld": true
   }
 ]

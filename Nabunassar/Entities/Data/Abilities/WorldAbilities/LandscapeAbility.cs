@@ -26,7 +26,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             var landRank = gameObject.LandscapeComplexity.Rank;
             var landDice = gameObject.LandscapeComplexity.Dice;
 
-            var roll = Roll(landRank, landDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
+            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.AgilityDice);
 
             var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
             var commonColor = Globals.BaseColor;
@@ -47,7 +47,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 .Append(Name).AppendSpace()
                 .Color(commonColor)
                 .Append(": ")
-                .Append($"{ui["difficult"]}: {roll.Complexity.ToDrawText(commonColor)}, {ui["throw"]}: {roll.Result.ToDrawText(commonColor)}: ")
+                .Append($"{ui["difficult"]}: {roll.Complexity.ToString(commonColor)}, {ui["throw"]}: {roll.Result.ToString(commonColor)}: ")
                 .Color(resultColor)
                 .Append($" {resultText}")
                 .Color(commonColor)
@@ -68,16 +68,13 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             return Roll(
                 Rank.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
                 Dice.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
-                this.Rank,
-                this.Dice,
+                this.AbilityRank,
+                this.AbilityDice,
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Agility))));
         }
 
         private RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
         {
-            //var @lock = ((int)Rank.Advanced) * 2 + Dice.d12;
-            //var user = ((int)Rank.Advanced) + Dice.d12 + Dice.d8;
-
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 

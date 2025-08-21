@@ -1,6 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Resources;
 
 namespace Nabunassar.Entities.Game.Stats
 {
@@ -44,7 +45,7 @@ namespace Nabunassar.Entities.Game.Stats
 
         public static IEntity GetStatDescription(string stat)
         {
-            return NabunassarGame.Game.DataBase.AddEntity(new DescribeEntity()
+            return DataBase.AddEntity(new DescribeEntity()
             {
                 FormulaName = NabunassarGame.Game.Strings["GameTexts"][stat]
             });

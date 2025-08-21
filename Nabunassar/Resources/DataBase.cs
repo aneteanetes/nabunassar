@@ -21,14 +21,14 @@ namespace Nabunassar.Resources
             Game = game;
         }
 
-        private Dictionary<Guid, IEntity> Entities = new();
+        private static Dictionary<Guid, IEntity> Entities = new();
 
-        public IEntity AddEntity(IEntity entity)
+        public static IEntity AddEntity(IEntity entity)
         {
             return Entities[entity.ObjectId] = entity;
         }
 
-        public IEntity GetEntity(Guid id)
+        public static IEntity GetEntity(Guid id)
         {
             if(Entities.ContainsKey(id)) 
                 return Entities[id];

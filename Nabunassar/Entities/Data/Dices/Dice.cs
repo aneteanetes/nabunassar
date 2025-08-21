@@ -1,9 +1,13 @@
 ﻿using Geranium.Reflection;
+using info.lundin.math;
+using Nabunassar.Entities.Data.Dices.Terms;
+using Nabunassar.Entities.Data.Rankings;
+using Nabunassar.Resources;
 using Newtonsoft.Json;
 
 namespace Nabunassar.Entities.Data.Dices
 {
-    internal class Dice(int edges = 1, Guid objectId =default, int luckyRoll = 0)
+    internal class Dice(int edges = 1, Guid objectId = default, int luckyRoll = 0) : DiceTerm
     {
         public int Edges { get; } = edges;
 
@@ -36,6 +40,27 @@ namespace Nabunassar.Entities.Data.Dices
 
         public static Dice d20 => new(20);
 
+        public static Dice d100
+        {
+            get
+            {
+                var dice = new Dice(100);
+
+                var game = NabunassarGame.Game;
+                if (game != null)
+                {
+                    var chanceEntity = DataBase.AddEntity(new DescribeEntity()
+                    {
+                        FormulaName = game.Strings["Entities"]["Chance 100%"]
+                    });
+
+                    return dice.Entity(chanceEntity);
+                }
+
+                return dice.Entity(new DescribeEntity() { FormulaName = "%" });
+            }
+        }
+
         public static Dice FromEntity(IEntity entity, Dice dice)
         {
             return new Dice(dice.Edges, entity.ObjectId, dice.LuckyRoll);
@@ -45,22 +70,22 @@ namespace Nabunassar.Entities.Data.Dices
 
 #pragma warning restore IDE1006 // Naming Styles
 
-        public DiceRoll Roll(DiceOperation operation)
+        public DiceRoll Roll()
         {
             if (LuckyRoll == 0)
-                return PureRoll(operation);
+                return PureRoll();
 
             //lucky dice rolling
             if (rollsCounter == LuckyRoll)
             {
                 var prevAvg = ((int)Math.Round(_previousRolls.Average()));
 
-                var result = NabunassarGame.Randoms.Next(prevAvg, Edges + 1);
-                return new DiceRoll(this, result, operation);
+                var result = NabunassarGame.Randoms.Next(prevAvg, Edges);
+                return new DiceRoll(this, result);
             }
             else
             {
-                var value = PureRoll(operation);
+                var value = PureRoll();
                 _previousRolls[rollsCounter] = value.Result;
                 rollsCounter++;
 
@@ -68,108 +93,96 @@ namespace Nabunassar.Entities.Data.Dices
             }
         }
 
-        private DiceRoll PureRoll(DiceOperation operation)
+        private DiceRoll PureRoll()
         {
-            var result = NabunassarGame.Randoms.Next(Edges + 1);
+            var result = NabunassarGame.Randoms.Next(1,Edges);
 
-            return new DiceRoll(this, result, operation);
+            return new DiceRoll(this, result);
         }
 
-        public DiceRoll MaxRoll(DiceOperation operation)
+        public DiceRoll RollMax()
         {
-            return new DiceRoll(this,Edges, operation);
+            return new DiceRoll(this,Edges);
         }
 
         public static DiceResult operator +(Dice one, Dice another)
         {
-            var oneRoll = one.Roll(DiceOperation.Add);
-            var anotherRoll = another.Roll(DiceOperation.Add);
+            var oneRoll = one.Roll();
+            var anotherRoll = another.Roll();
 
-            return new DiceResult(oneRoll.Result + anotherRoll.Result, default, DiceOperation.Add, oneRoll, anotherRoll);
+            return new DiceResult(oneRoll, DiceOperation.Add, anotherRoll);
         }
 
         public static DiceResult operator -(Dice one, Dice another)
         {
-            var oneRoll = one.Roll(DiceOperation.Substract);
-            var twoRoll = another.Roll(DiceOperation.Substract);
+            var oneRoll = one.Roll();
+            var twoRoll = another.Roll();
 
-            var result = oneRoll.Result - twoRoll.Result;
-            if(result<0)
-                result = 0;
+            var valueResult = oneRoll.Result - twoRoll.Result;
+            if(valueResult<0)
+                valueResult = 0;
 
-            return new DiceResult(result, default, DiceOperation.Substract, oneRoll, twoRoll);
+            return new DiceResult(oneRoll, DiceOperation.Substract, twoRoll);
         }
 
         public static DiceResult operator *(int dicesCount, Dice dice)
         {
-            List<DiceRoll> rolls = new();
+            var term = new DiceTermMultiply(new DiceTermUnary(dicesCount), dice);
+            return new DiceResult(term);
+        }
 
-            var value = 0;
-            for (int i = 0; i < dicesCount; i++)
-            {
-                var roll = dice.Roll(DiceOperation.Add);
-                value += roll.Result;
-            }
-
-            return new DiceResult(value, default, DiceOperation.Add, [.. rolls]);
+        public static DiceResult operator *(Dice dice, int multiplier)
+        {
+            var roll = dice.Roll();
+            return new DiceResult(roll, DiceOperation.Multiply, new DiceTermUnary(multiplier));
         }
 
         public static DiceResult operator +(int value, Dice dice)
         {
-            var modifier = value;
-            var roll = dice.Roll( DiceOperation.Add);
-
-            var result = roll.Result + modifier;
-
-            return new DiceResult(result, [new DiceModifier(value,value, DiceModifierType.Pure, DiceOperation.Add)], DiceOperation.Add, roll);
+            var roll = dice.Roll();
+            return new DiceResult(roll, DiceOperation.Add, new DiceTermUnary(value));
         }
 
         public static DiceResult operator -(int value, Dice dice)
         {
-            var modifier = value;
-            var roll = dice.Roll(DiceOperation.Substract);
-
-            var result = roll.Result - modifier;
-            if (result < 0)
-                result = 0;
-
-            return new DiceResult(result, [new DiceModifier(value,value, DiceModifierType.Pure, DiceOperation.Substract)], DiceOperation.Substract, roll);
+            var roll = dice.Roll();
+            return new DiceResult(roll, DiceOperation.Add, new DiceTermUnary(value));
         }
 
-        public static DiceResult operator *(DiceModifier mod, Dice dice)
+        public static DiceResult operator *(Rank rank, Dice dice)
         {
-            List<DiceRoll> rolls = new();
-
-            var value = 0;
-            for (int i = 0; i < mod.Result; i++)
-            {
-                var roll = dice.Roll(DiceOperation.Add);
-                value += roll.Result;
-            }
-
-            return new DiceResult(value, [mod], DiceOperation.Add, [.. rolls]);
+            var term = new DiceTermMultiply(rank, dice);
+            return new DiceResult(term);
         }
 
-        public static DiceResult operator +(DiceModifier mod, Dice dice)
+        public static DiceResult operator *(DiceTerm mod, Dice dice)
         {
-            var modifier = mod.Result;
-            var roll = dice.Roll(DiceOperation.Add);
-
-            var result = roll.Result + modifier;
-
-            return new DiceResult(result, [mod], DiceOperation.Add, roll);
+            var term = new DiceTermMultiply(mod, dice);
+            return new DiceResult(term);
         }
 
-        public static DiceResult operator -(DiceModifier mod, Dice dice)
+        public static DiceResult operator +(Rank rank, Dice dice)
         {
-            var modifier = mod.Result;
-            var roll = dice.Roll(DiceOperation.Substract);
+            var roll = dice.Roll();
+            return new DiceResult(rank, DiceOperation.Add, roll);
+        }
 
-            var result = roll.Result - modifier;
-            if (result < 0)
-                result = 0;
+        public static DiceResult operator +(DiceTerm mod, Dice dice)
+        {
+            var roll = dice.Roll();
+            return new DiceResult(mod, DiceOperation.Add, roll);
+        }
 
-            return new DiceResult(result, [mod], DiceOperation.Substract, roll);
+        public static DiceResult operator -(Dice dice, Rank rank)
+        {
+            var roll = dice.Roll();
+            return new DiceResult(dice, DiceOperation.Add, rank);
+        }
+
+        public static DiceResult operator -(DiceTerm mod, Dice dice)
+        {
+            var roll = dice.Roll();
+            return new DiceResult(mod, DiceOperation.Substract, roll);
         }
 
         public override bool Equals(object obj)
@@ -197,6 +210,28 @@ namespace Nabunassar.Entities.Data.Dices
                 throw new JsonSerializationException($"Dice expression is wrong! It must be 'dX', passed value: {s}");
 
             return new Dice(diceNumber);
+        }
+
+        public override int GetValue(bool isMax = false)
+        {
+            DiceRoll roll;
+
+            if (isMax)
+                roll = RollMax();
+            else
+                roll = Roll();
+
+            return roll.Result;
+        }
+
+        public override string ToFormula()
+        {
+            return this.ToString();
+        }
+
+        public override string ToValue(bool isMax = false)
+        {
+            return GetValue(isMax).ToString();
         }
     }
 }

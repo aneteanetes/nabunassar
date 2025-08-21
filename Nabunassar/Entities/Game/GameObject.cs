@@ -8,6 +8,7 @@ using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Data.Loot;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -52,7 +53,7 @@ namespace Nabunassar.Entities.Game
             var game = NabunassarGame.Game;
             var landScapeAbilityModel = game.DataBase.GetAbility(abilityName);
 
-            return game.DataBase.AddEntity(new DescribeEntity()
+            return DataBase.AddEntity(new DescribeEntity()
             {
                 FormulaName = game.Strings["AbilityNames"][landScapeAbilityModel.Name] + " " + game.Strings["Entities"]["GameObject"].ToLower()
             });

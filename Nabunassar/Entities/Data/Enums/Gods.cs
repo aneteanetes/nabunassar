@@ -10,10 +10,10 @@
         Ailul,
         Tamus,
         Shamadj,
-        Ava,
+        Aval,
         Ziran,
         Teshrin,
-        Negral,
-        Tiamat = Shamadj
+        Nergal,
+        //Tiamat = Shamadj
     }
 }
