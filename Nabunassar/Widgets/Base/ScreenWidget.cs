@@ -1,12 +1,16 @@
-﻿using Myra.Graphics2D.UI;
+﻿using Geranium.Reflection;
+using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Monogame.Content;
+using System.Diagnostics.Tracing;
 
 namespace Nabunassar.Widgets.Base
 {
     internal abstract class ScreenWidget : IGameComponent, IDrawable, IUpdateable, IDisposable
     {
         public NabunassarGame Game { get; private set; }
+
+        internal static bool NOLOOSEBLOCK = false;
 
         protected NabunassarContentManager Content => Game.Content;
 
@@ -16,6 +20,8 @@ namespace Nabunassar.Widgets.Base
         public event EventHandler<EventArgs> UpdateOrderChanged;
         public event EventHandler<EventArgs> DrawOrderChanged;
         public event EventHandler<EventArgs> VisibleChanged;
+
+        public virtual bool IsModal => false;
 
         public virtual bool IsRemovable => true;
 
@@ -40,15 +46,17 @@ namespace Nabunassar.Widgets.Base
 
         public Widget GetWidgetReference() => UIWidget;
 
-        protected virtual void LoadContent() { }
+        public virtual void LoadContent() { }
 
         protected virtual void UnloadContent() { }
 
         public virtual void Initialize() { }
 
-        protected abstract Widget InitWidget();
+        protected abstract Widget CreateWidget();
 
-        public MapObject MapObject { get; private set; }
+        public virtual void OnAfterAddedWidget(Widget widget) { }
+
+        public MapObject MapObject { get; protected set; }
 
         protected virtual bool IsMouseMovementAvailableWithThisActivedWidget => false;
 
@@ -57,7 +65,9 @@ namespace Nabunassar.Widgets.Base
         public Widget Load()
         {
             LoadContent();
-            UIWidget = InitWidget();
+            UIWidget = CreateWidget();
+            UIWidget.IsModal = IsModal;
+            UIWidget.Tag = this.GetType().Name;
 
             if (!IsMouseMovementAvailableWithThisActivedWidget && !bindedWidgets.Contains(UIWidget))
             {
@@ -67,10 +77,10 @@ namespace Nabunassar.Widgets.Base
             return UIWidget;
         }
 
-        public void BindWidgetBlockMouse(Widget widget, bool withDispose = true)
+        public virtual void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock = false)
         {
             widget.MouseEntered += _widget_MouseEntered;
-            widget.MouseLeft += _widget_MouseLeft;
+            widget.MouseLeft += twoSideBlock ? _widget_MouseEntered : _widget_MouseLeft;
 
             if (withDispose)
                 OnDispose += () =>
@@ -89,12 +99,31 @@ namespace Nabunassar.Widgets.Base
         protected void _widget_MouseLeft(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = true;
+#if DEBUG
+            Console.WriteLine($"{sender} mouse active");
+#endif
+            if (NOLOOSEBLOCK)
+                NabunassarGame.Game.IsMouseMoveAvailable = false;
+
+            if (!NOLOOSEBLOCK)
+                WidgetOverMouse = null;
+
+            NOLOOSEBLOCK = false;
+#if DEBUG
+            Console.WriteLine("Mouse block restored.");
+#endif
         }
 
         protected void _widget_MouseEntered(object sender, EventArgs e)
         {
             Game.IsMouseMoveAvailable = false;
+            WidgetOverMouse = sender;
+#if DEBUG
+            Console.WriteLine($"{sender} mouse disabled");
+#endif
         }
+
+        public static object WidgetOverMouse = null;
 
         public Action OnDispose { get; set; }
 

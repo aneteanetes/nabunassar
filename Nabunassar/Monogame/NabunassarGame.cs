@@ -13,6 +13,7 @@ using MonoGame.Extended.Input;
 using MonoGame.Extended.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using MonoGame.Extended.ViewportAdapters;
+using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
@@ -52,7 +53,7 @@ namespace Nabunassar
 
             GraphicsDeviceManagerInitialization();
 
-            var audioVolume= (float)Audio.Volume;
+            var audioVolume = (float)Audio.Volume;
             MediaPlayer.Volume = audioVolume;
 
             this.Activated += (_, __) =>
@@ -72,7 +73,7 @@ namespace Nabunassar
             Window.Position = new Microsoft.Xna.Framework.Point(500, 500);
             //Window.IsBorderless = true;
 
-            
+
             IsMouseVisible = true;
 
             // fixing framerate
@@ -196,24 +197,12 @@ namespace Nabunassar
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
-            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, Resolution.Width, Resolution.Height);
             Camera = new OrthographicCamera(viewportAdapter);
 
-            DataBase=new DataBase(this);
+            DataBase = new DataBase(this);
 
-            var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
-            CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
-
-            var objectsLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("objects", objectsLayer);
-
-            var groundLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("ground", groundLayer);
-
-            var cursorLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("cursor", cursorLayer);
-
-            CollisionComponent.AddCollisionBetweenLayer(cursorLayer, objectsLayer);
+            InitializeCollisions();
 
             InitGameWorlds();
 
@@ -223,10 +212,14 @@ namespace Nabunassar
         public void SwitchScreen<TScreen>(Transition transition = default)
             where TScreen : BaseGameScreen
         {
+            _screenLoaded = false;
+
             var screen = typeof(TScreen).New(this).As<BaseGameScreen>();
 
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
+
+            transition.Completed += (s,e)=> _screenLoaded = true;
 
             RemoveDesktopWidgets();
 
@@ -259,7 +252,7 @@ namespace Nabunassar
             }
             return movementDirection;
         }
-        
+
         private void AdjustZoom()
         {
             var state = Keyboard.GetState();
@@ -273,37 +266,6 @@ namespace Nabunassar
             {
                 Camera.ZoomOut(zoomPerTick);
             }
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            if (!IsActive)
-                return;
-
-            DebugUpdate(gameTime);
-
-            MouseExtended.Update();
-            KeyboardExtended.Update();
-
-            Penumbra.Transform = Camera.GetViewMatrix();
-
-            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
-
-            const float movementSpeed = 200;
-            Camera.Move(MoveCamera() * movementSpeed * gameTime.GetElapsedSeconds());
-
-            var mouseState = Mouse.GetState();
-            _mousePosition = new Vector2(mouseState.X, mouseState.Y);
-            _worldPosition = Camera.ScreenToWorld(_mousePosition);
-
-            if (IsGameActive)
-            {
-                CollisionComponent.Update(gameTime);
-                WorldGame.Update(gameTime);
-            }
-
-            base.Update(gameTime);
         }
     }
 }

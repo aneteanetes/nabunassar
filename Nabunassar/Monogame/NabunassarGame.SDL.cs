@@ -18,11 +18,12 @@ namespace Nabunassar
             DESKTOPVERTRES = 117
         }
 
+#pragma warning disable CA1416 // Validate platform compatibility
         static double GetWindowsScreenScalingFactor(bool percentage = true)
         {
             //Create Graphics object from the current windows handle
             Graphics GraphicsObject = Graphics.FromHwnd(IntPtr.Zero);
-            //Get Handle to the device context associated with this Graphics object
+                              //Get Handle to the device context associated with this Graphics object
             IntPtr DeviceContextHandle = GraphicsObject.GetHdc();
             //Call GetDeviceCaps with the Handle to retrieve the Screen Height
             int LogicalScreenHeight = GetDeviceCaps(DeviceContextHandle, (int)DeviceCap.VERTRES);
@@ -40,6 +41,7 @@ namespace Nabunassar
             //Return the Scaling Factor
             return ScreenScalingFactor;
         }
+#pragma warning restore CA1416 // Validate platform compatibility
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr LoadLibraryW(string lpszLib);

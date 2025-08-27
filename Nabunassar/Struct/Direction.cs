@@ -144,7 +144,7 @@ namespace Nabunassar
 
         public static Direction Rangom(this Direction dir)
         {            
-            switch (NabunassarGame.Random.Next(0, 9))
+            switch (NabunassarGame.Randoms.Next(0, 9))
             {
                 case 1: return Direction.Up;
                 case 2: return Direction.Down;
@@ -233,5 +233,37 @@ namespace Nabunassar
 
             return isLess ? less(a, b) : more(a, b);
         }
+
+        public static Direction Move(this Direction direction, bool isClockwise = true)
+        {
+            var idx = DirectionClock[direction];
+
+            if (isClockwise)
+            {
+                idx++;
+                if (idx > 7)
+                    idx = 0;
+            }
+            else
+            {
+                idx--;
+                if (idx < 0)
+                    idx = 7;
+            }
+
+            return DirectionClock.FirstOrDefault(kv => kv.Value == idx).Key;
+        }
+
+        private static Dictionary<Direction, int> DirectionClock = new()
+        {
+            { Direction.Up, 0 },
+            { Direction.UpRight, 1 },
+            { Direction.Right, 2 },
+            { Direction.RightDown, 3 },
+            { Direction.Down, 4 },
+            { Direction.LeftDown, 5 },
+            { Direction.Left, 6 },
+            { Direction.LeftUp, 7 },
+        };
     }
 }

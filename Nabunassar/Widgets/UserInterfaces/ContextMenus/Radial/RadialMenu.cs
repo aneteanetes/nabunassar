@@ -50,7 +50,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             game.GameState.Cursor.SetCursor("cursor");
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             if (CircleTexture == default)
             {
@@ -74,6 +74,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 ActionIcons["lockpick"] = new TextureRegion(CursorTileset, new Rectangle(304, 16, 16, 16));
                 ActionIcons["enter"] = new TextureRegion(CursorTileset, new Rectangle(256, 16, 16, 16));
                 ActionIcons["trap"] = new TextureRegion(MainTileset, new Rectangle(432, 192, 16, 16));
+                ActionIcons["open"] = new TextureRegion(MainTileset, new Rectangle(704, 144, 16, 16));
 
                 ActionIcons["trapsearch"] = new TextureRegion(TrapsTileset, new Rectangle(32, 0, 16, 16));
                 ActionIcons["disarmtrap"] = new TextureRegion(TrapsTileset, new Rectangle(0, 0, 16, 16));
@@ -94,7 +95,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         private Panel _globalPanel;
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             Game.DisableMouseSystems();
 
@@ -134,6 +135,9 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                     break;
                 case ObjectType.Door:
                     FillDoorActions(panel);
+                    break;
+                case ObjectType.Container:
+                    FillContainerActions(panel);
                     break;
                 default:
                     break;
@@ -206,6 +210,16 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             AddAction(panel, new TrapsRadialAction(this));
         }
 
+        private void FillContainerActions(Panel panel)
+        {
+            if (GameObject.GetPropertyValue<bool>("IsLocked"))
+                AddAction(panel, new LockpickRadialAction(this));
+
+            AddAction(panel, new AttackRadialAction(this));
+            AddAction(panel, new TrapsRadialAction(this));
+            AddAction(panel, new OpenRadialAction(this));
+        }
+
         private void FillNPCActions(Panel panel)
         {
             AddAction(panel, new SpeakToRadialAction(this));
@@ -217,8 +231,9 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         {
             AddAction(panel, new SpellsRadialAction(this));
 
-
             List<SkillAbilityRadialAction> skillActions = new();
+
+            SkillAbilityRadialAction.ResetCounters();
 
             foreach (var abil in Game.GameState.Party.GetWorldAbilities(GameObject))
             {
@@ -232,7 +247,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
                 skillActions.Add(new SkillAbilityRadialAction(this, abil, iconName, new TextureRegion(abilIconTexture))
                 {
-                    IsDisabled = !isEnable
+                    IsEnabled = isEnable
                 });
             }
 
@@ -306,7 +321,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                         innerIcon.HorizontalAlignment = HorizontalAlignment.Center;
                         innerIcon.VerticalAlignment = VerticalAlignment.Center;
 
-                        if (innerAction.IsDisabled)
+                        if (!innerAction.IsEnabled)
                         {
                             innerIcon.Color = Color.Gray;
                         }
@@ -343,7 +358,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 {
                     innerActionsWidgets.ForEach(iactw => iactw.Visible = true);
                 }
-                Btn_MouseEntered(sender, @event, title,!action.IsDisabled);
+                Btn_MouseEntered(sender, @event, title,action.IsEnabled);
             };
             btn.MouseLeft += (sender, @event) =>
             {
@@ -379,7 +394,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             btnContent.Height = btn.Height;
             btnContent.Widgets.Add(icon);
 
-            if (action.IsDisabled)
+            if (!action.IsEnabled)
             {
                 btn.Enabled = false;
                 btn.Background = btn.OverBackground;

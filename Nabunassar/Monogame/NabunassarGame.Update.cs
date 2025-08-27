@@ -1,12 +1,47 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.Input;
-using Nabunassar.Monogame.SpriteBatch;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        protected override void Update(GameTime gameTime)
+        {
+            if (!IsActive)
+                return;
+
+            if (IsGameActive)
+                GameState.Update(gameTime);
+
+#if DEBUG
+            DebugUpdate(gameTime);
+#endif
+
+            MouseExtended.Update();
+            KeyboardExtended.Update();
+
+            Penumbra.Transform = Camera.GetViewMatrix();
+
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            FrameCounter.Update(deltaTime, gameTime.IsRunningSlowly);
+
+            const float movementSpeed = 200;
+            Camera.Move(MoveCamera() * movementSpeed * gameTime.GetElapsedSeconds());
+
+            var mouseState = Mouse.GetState();
+            _mousePosition = new Vector2(mouseState.X, mouseState.Y);
+            _worldPosition = Camera.ScreenToWorld(_mousePosition);
+
+            if (IsGameActive)
+            {
+                CollisionComponent.Update(gameTime);
+                WorldGame.Update(gameTime);
+            }
+
+            base.Update(gameTime);
+        }
+
         public void DebugUpdate(GameTime gameTime)
         {
             light.Position = MouseExtended.GetState().Position.ToVector2();
@@ -52,7 +87,7 @@ namespace Nabunassar
 
             AdjustZoom();
 
-            Game.DesktopContainer.Update();
+            Game.Desktop.Update();
         }
     }
 }

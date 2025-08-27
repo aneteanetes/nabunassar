@@ -12,6 +12,23 @@ namespace Nabunassar.Entities.Struct
 
         public virtual T Fourth { get; set; }
 
+        public QuadPosition GetPosition(T item)
+        {
+            if (item.Equals(First))
+                return QuadPosition.First;
+
+            if (item.Equals(Second))
+                return QuadPosition.Second;
+
+            if (item.Equals(Third))
+                return QuadPosition.Third;
+
+            if (item.Equals(Fourth))
+                return QuadPosition.Fourth;
+
+            return QuadPosition.First;
+        }
+
         public virtual IEnumerator<T> GetEnumerator()
         {
             yield return First;
@@ -56,11 +73,31 @@ namespace Nabunassar.Entities.Struct
 
         public T this[QuadPosition quadPosition]
         {
+            set
+            {
+                switch (quadPosition)
+                {
+                    case QuadPosition.First:
+                        First = value;
+                        break;
+                    case QuadPosition.Second:
+                        Second = value;
+                        break;
+                    case QuadPosition.Third:
+                        Third = value;
+                        break;
+                    case QuadPosition.Fourth:
+                        Fourth = value;
+                        break;
+                    default:
+                        break;
+                }
+            }
             get => quadPosition switch
             {
                 QuadPosition.First => First,
                 QuadPosition.Second => Second,
-                QuadPosition.Thrid => Third,
+                QuadPosition.Third => Third,
                 QuadPosition.Fourth => Fourth,
                 _ => First,
             };

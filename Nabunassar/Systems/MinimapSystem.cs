@@ -28,13 +28,13 @@ namespace Nabunassar.Systems
             {
                 var minimap = minimapMapper.Get(entity);
 
-                Game.GraphicsDevice.SetRenderTarget(minimap.Texture);
-                Game.GraphicsDevice.Clear(Color.Black);
+                Game.SetRenderTarget(minimap.Texture);
+                Game.ClearRenderTarget(Color.Black);
                 sb = Game.BeginDraw(false);
 
                 Color dotColor = Color.White;
 
-                foreach (var point in minimap.Points)
+                foreach (var point in minimap.Points.Where(x => x.IsVisible))
                 {
                     dotColor = GetPointColor(dotColor, point);
                     sb.DrawPoint(point.Position, dotColor);
@@ -42,7 +42,7 @@ namespace Nabunassar.Systems
 
                 sb.End();
                 
-                Game.GraphicsDevice.SetRenderTarget(null);
+                Game.SetRenderTarget(null);
 
                 //debug draw
                 //sb = Game.BeginDraw();
@@ -61,6 +61,9 @@ namespace Nabunassar.Systems
                     break;
                 case Struct.ObjectType.Object:
                     dotColor = Color.Gray;
+                    break;
+                case Struct.ObjectType.Container:
+                    dotColor = Color.DarkGreen;
                     break;
                 case Struct.ObjectType.Player:
                     dotColor = Color.Red;

@@ -1,62 +1,75 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
+﻿using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Base;
 using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Items;
+using Nabunassar.Entities.Data.Loot;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Nabunassar.Entities.Game
 {
+    [DebuggerDisplay("{Name}")]
     internal class GameObject : Propertied, IDistanceMeter, IClonable<GameObject>
     {
-        public GameObject Clone()
+        public virtual GameObject Clone(GameObject instance = null)
         {
-            var obj = new GameObject
-            {
-                ObjectId = ObjectId,
-                Name = Name,
-                Cursor = Cursor,
-                Image = Image,
-                ObjectType = ObjectType,
-                Dialogue = Dialogue,
-                Portrait = Portrait,
-                Battler = Battler,
-                DangerRating = DangerRating,
-                Reputation = Reputation,
-                BattlerId = BattlerId
-            };
+            var obj = instance ?? new GameObject();
 
-            var landscape = GetLandscapeAbility();
+            obj.ObjectId = ObjectId;
+            obj.Name = Name;
+            obj.Cursor = Cursor;
+            obj.Image = Image;
+            obj.ObjectType = ObjectType;
+            obj.Dialogue = Dialogue;
+            obj.Portrait = Portrait;
+            obj.Battler = Battler;
+            obj.DangerRating = DangerRating;
+            obj.Reputation = Reputation;
+            obj.BattlerId = BattlerId;
+            obj.LootTableId = LootTableId;
 
-            obj.LandscapeDice = LandscapeDice.Entity(landscape);
-            obj.LandscapeRank = LandscapeRank.Entity(landscape);
+            obj.LandscapeComplexity = LandscapeComplexity.Entity(GetAbilityEntity("Landscape"));
+
+            if (RevealComplexity != null)
+                obj.RevealComplexity = RevealComplexity.Entity(GetAbilityEntity("Reveal"));
 
             return obj;
         }
 
-        private IEntity GetLandscapeAbility()
+        public void Init(NabunassarGame game)
+        {
+            LootTable = game.DataBase.GetById<LootTable>("Data/Objects/LootTables.json", x => x.TableId == LootTableId);
+        }
+
+        public static IEntity GetAbilityEntity(string abilityName)
         {
             var game = NabunassarGame.Game;
-            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
+            var landScapeAbilityModel = game.DataBase.GetAbility(abilityName);
 
-            return game.DataBase.AddEntity(new DescribeEntity()
+            return DataBase.AddEntity(new DescribeEntity()
             {
                 FormulaName = game.Strings["AbilityNames"][landScapeAbilityModel.Name] + " " + game.Strings["Entities"]["GameObject"].ToLower()
             });
         }
 
+        #region skills
+
+        public RankDice LandscapeComplexity { get; set; } = RankDice.BaseD4;
+
+        public RankDice RevealComplexity { get; set; }
+
+        #endregion
+
         public GroundType GroundType { get; set; }
 
         public Battler Battler { get; set; }
-
-        public Rank LandscapeRank { get; set; } = Rank.Basic;
-
-        public Dice LandscapeDice { get; set; } = Dice.d4;
 
         public RollResult RollResult { get; set; }
 
@@ -95,6 +108,40 @@ namespace Nabunassar.Entities.Game
 
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(2);
 
+        public int LootTableId { get; set; }
+
+        [JsonIgnore]
+        protected LootTable LootTable { get; set; }
+
+
+        protected List<Item> _items;
+
+        public List<Item> Items(NabunassarGame game)
+        {
+            if (_items == null)
+            {
+                _items = LootTable.Generate(game);
+            }
+
+            return _items;
+        }
+
+        public bool RemoveItem(Item item)
+        {
+            if (_items.Contains(item))
+                _items.Remove(item);
+
+            return true;
+        }
+
+        public bool AddItem(Item item)
+        {
+            if (!_items.Contains(item))
+                _items.Add(item);
+
+            return true;
+        }
+
         public Result<bool> IsObjectNear(GameObject gameObject)
         {
             if (gameObject == null)
@@ -125,34 +172,50 @@ namespace Nabunassar.Entities.Game
                 }
             }
         }
-    }
 
-    internal static class GameObjectMethods
-    {
-        public static string GetObjectName(this GameObject obj)
+        public virtual string GetObjectName()
         {
-            if (obj == null)
-                return string.Empty;
-
             var game = NabunassarGame.Game;
 
             var objectNames = game.Strings["ObjectNames"];
 
             string token = null;
 
-            if (obj.Name != null)
-                token = obj.Name;
+            if (Name != null)
+                token = Name;
 
-            if (token == null && obj.ObjectId > 0)
-                token = obj.ObjectId.ToString();
+            if (token == null && ObjectId > 0)
+                token = ObjectId.ToString();
 
             if (token == null)
-                token = obj.ObjectType.ToString();
+                token = ObjectType.ToString();
 
-            if (token==null && obj.ObjectType == ObjectType.Ground)
-                token = obj.GroundType.ToString();
+            if (token == null && ObjectType == ObjectType.Ground)
+                token = GroundType.ToString();
 
-            return objectNames[token];
+            var name = objectNames[token].ToString();
+
+            return name;
+        }
+
+        internal bool IsEmpty() => _items.Count == 0;
+
+        internal string GetObjectNameTitle()
+        {
+            var game = NabunassarGame.Game;
+            var name = GetObjectName();
+
+            if (this.ObjectType == ObjectType.Container && _items != null && _items.Count == 0)
+            {
+                name += $"{Environment.NewLine}({game.Strings["UI"]["Empty"]})";
+            }
+
+            return name;
+        }
+
+        public void Reveal()
+        {
+            MapObject?.Reveal();
         }
     }
 }

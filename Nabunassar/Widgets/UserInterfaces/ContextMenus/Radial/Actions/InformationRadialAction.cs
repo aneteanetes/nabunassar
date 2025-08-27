@@ -8,6 +8,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
     {
         public InformationRadialAction(RadialMenu menu) : base(menu, Direction.Up,"info")
         {
+            IsEnabled = true;
         }
 
         public override void OnClick()

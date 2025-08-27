@@ -1,6 +1,7 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
@@ -8,12 +9,6 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
     internal abstract class BaseWorldAbility : AbilityModel
     {
         public int Value { get; set; }
-
-        public Rank Rank { get; set; } = Rank.Basic;
-
-        public Dice Dice { get; set; } = Dice.d4;
-
-        public string Description { get; set; }
 
         public Creature Creature { get; private set; }
 
@@ -24,25 +19,30 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             Creature = creature;
             Game = game;
 
-            var entity = GetEntity(creature);
+            var entity = GetEntity(creature,model.Name);
 
-            Rank = Rank.Entity(entity);
-            Dice = Dice.Entity(entity);
+            AbilityRank = model.AbilityRank.Entity(entity);
+            AbilityDice = model.AbilityDice.Entity(entity);
 
             Name = Game.Strings["AbilityNames"][model.Name];
             Description = Game.Strings["AbilityDescriptions"][model.Name];
             Icon = model.Icon;
+
+            Slot = model.Slot;
+            IsCombat = model.IsCombat;
+            ItemId = model.ItemId;
+            Archetype = model.Archetype;
+            IsUsableInWorld = model.IsUsableInWorld;
         }
 
-        private IEntity GetEntity(IEntity creatureEntity)
+        private IEntity GetEntity(IEntity creatureEntity, string abilityNameToken)
         {
             var game = NabunassarGame.Game;
             var strings = game.Strings.FineTuning();
-            var landScapeAbilityModel = game.DataBase.GetAbility("Landscape");
 
-            return game.DataBase.AddEntity(new DescribeEntity()
+            return DataBase.AddEntity(new DescribeEntity()
             {
-                FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][landScapeAbilityModel.Name]} {creatureEntity.FormulaName}"
+                FormulaName = $"{strings["Entities"]["Skill"]} {strings["AbilityNames"][abilityNameToken]} {creatureEntity.FormulaName}"
             });
         }
 

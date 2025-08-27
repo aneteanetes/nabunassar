@@ -15,10 +15,12 @@ namespace Nabunassar.Widgets.UserInterfaces
         private static FontSystem _font;
         private string _text;
         private Color _color;
+        HorizontalAlignment? _horizontalAlignment;
+        VerticalAlignment? _verticalAlignment;
 
         protected override bool IsMouseMovementAvailableWithThisActivedWidget => true;
 
-        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default) : base(game)
+        public TitleWidget(NabunassarGame game, string text, Vector2 position, Color color = default, HorizontalAlignment? horizontalAlignment = null, VerticalAlignment? verticalAlignment= null) : base(game)
         {
             _color = color;
             if(_color ==default)
@@ -26,11 +28,14 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             _position =position;
             _text=text ?? "[Title not found!]";
+
+            _horizontalAlignment = horizontalAlignment;
+            _verticalAlignment = verticalAlignment;
         }
 
         protected virtual string GetText() => _text;
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             if(_backgroundImage == null)
             {
@@ -41,7 +46,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             base.LoadContent();
         }
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             var panel = new Panel();
 
@@ -56,21 +61,45 @@ namespace Nabunassar.Widgets.UserInterfaces
             labelText.OverBackground = backNormal;
             labelText.Font = compiledFont;
             labelText.TextColor = _color;
+            labelText.TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center;
 
             labelText.Text = GetText();
-            labelText.Top = -45;
+            //labelText.Top = -45;
 
             float sexteenPixels = Game.Camera.WorldToScreen(new Vector2(16)).X;
             var textMeasure = compiledFont.MeasureString(labelText.Text).X + 20;
 
             labelText.Left = (int)(sexteenPixels / 2 - textMeasure / 2);
 
+            if (_horizontalAlignment != null)
+                panel.HorizontalAlignment = _horizontalAlignment.Value;
+
+            if (_verticalAlignment != null)
+                panel.VerticalAlignment = _verticalAlignment.Value;
+
             panel.Left = ((int)_position.X);
             panel.Top = ((int)_position.Y);
+            panel.Top -= 45;
 
             panel.Widgets.Add(labelText);
 
             return panel;
+        }
+
+        public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock = false)
+        {
+            return;
+        }
+
+        public override void Dispose()
+        {
+            UnloadContent();
+            Game.Components.Remove(this);
+            OnDispose?.Invoke();
+            base.MapObject = null;
+
+            if (!IsRemoved)
+                Game.RemoveDesktopWidget(this);
         }
 
         private Label labelText;

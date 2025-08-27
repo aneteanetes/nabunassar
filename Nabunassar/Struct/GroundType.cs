@@ -4,6 +4,7 @@
     {
         Dirt,
         Road,
-        Grass
+        Grass,
+        Footprints
     }
 }

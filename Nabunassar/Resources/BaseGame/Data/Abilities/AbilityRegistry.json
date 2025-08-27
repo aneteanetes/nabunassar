@@ -1,6 +1,29 @@
 [
   {
     "Name": "Landscape",
-    "Icon": "Assets/Images/Icons/Abilities/landscape.png"
+    "Icon": "Assets/Images/Icons/Abilities/landscape.png",
+    "ItemId": 1,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Warrior",
+    "IsUsableInWorld": true
+  },
+  {
+    "Name": "Reveal",
+    "Icon": "Assets/Images/Icons/Abilities/reveal.png",
+    "ItemId": 3,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Wizard",
+    "IsUsableInWorld": true
+  },
+  {
+    "Name": "Prayer",
+    "Icon": "Assets/Images/Icons/Abilities/prayer.png",
+    "ItemId": 4,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Priest",
+    "IsUsableInWorld": true
   }
 ]

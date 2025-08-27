@@ -1,5 +1,6 @@
 ﻿using MonoGame.Extended.ECS;
 using Nabunassar.Components;
+using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Game;
 
 namespace Nabunassar.Entities.Data
@@ -7,7 +8,9 @@ namespace Nabunassar.Entities.Data
     internal class Hero
     {
         private NabunassarGame _game;
-        
+
+        public Sex Sex { get; set; }
+
         public Entity Entity { get; set; }
 
         public MapObject GameObject { get; set; }
@@ -17,6 +20,7 @@ namespace Nabunassar.Entities.Data
         public Hero(NabunassarGame game)
         {
             _game = game;
+            Creature = new Creature();
         }
 
         public string Tileset { get; set; }

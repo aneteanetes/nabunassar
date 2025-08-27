@@ -28,5 +28,9 @@ namespace Nabunassar.Components
         public Sprite Sprite { get; set; }
 
         public float Rotation { get; set; }
+
+        public double Opacity { get; set; } = 1;
+
+        public TimeSpan OpacityTimer { get; set; }
     }
 }

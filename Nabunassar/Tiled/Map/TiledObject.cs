@@ -68,6 +68,12 @@ namespace Nabunassar.Tiled.Map
 
         public TiledTileset Tileset { get; set; }
 
+        public override void Dispose()
+        {
+            Tileset = null;
+            base.Dispose();
+        }
+
     }
 
     public class TiledObjectProperty

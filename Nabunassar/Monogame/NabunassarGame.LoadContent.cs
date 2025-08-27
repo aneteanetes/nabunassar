@@ -1,4 +1,5 @@
 ﻿using AssetManagementBase;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using Myra;
 using Myra.Graphics2D.UI;
@@ -8,6 +9,7 @@ using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Screens;
 using Nabunassar.Struct;
+using Nabunassar.Widgets;
 
 namespace Nabunassar
 {
@@ -17,7 +19,7 @@ namespace Nabunassar
         {
             var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
             var y = SelectedMonitorBounds.h / 2 - Settings.HeightPixel / 2;
-            Window.Position = new Microsoft.Xna.Framework.Point(x, y);
+            Window.Position = new Point(x, y);
 
             FrameCounter = new FrameCounter();
             ResourceLoader = new ResourceLoader(this.Settings);
@@ -28,20 +30,24 @@ namespace Nabunassar
 
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-            DesktopContainer = new Desktop();
-            Desktop = new Panel();
-            DesktopContainer.Widgets.Add(Desktop);
-            Dialogues = new Widgets.WidgetFactory(this);
+            Desktop = new Desktop();
+            WidgetFactory = new Widgets.WidgetFactory(this);
+            WidgetFactory.LoadContent();
+            ApplyMyraCustomStyle();
+
+            // backbuffer
+            
+            _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
 
             //
+
+            Strings = new LocalizedStrings(this);
 
             SwitchScreen<MainMenuScreen>();
 
             Game.InitializeGameState();
 
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
-
-            Strings = new LocalizedStrings(this);
 
             LoadPenumbra();
 

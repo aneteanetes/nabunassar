@@ -1,7 +1,9 @@
-﻿using Nabunassar.Entities;
+﻿using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
+using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
-using Nabunassar.Entities.Game;
 
 namespace Nabunassar
 {
@@ -15,23 +17,21 @@ namespace Nabunassar
 
         public void RunGameState()
         {
-            var party = GameState.Party = new Party(this);
-
-            party.First = new Hero(this)
-            {
-                Tileset = "warrior.png",
-                Creature = new Creature()
-            };
-
-            party.Second = new Hero(this) { Tileset = "rogue.png" };
-            party.Third = new Hero(this) { Tileset = "wizard.png" };
-            party.Fourth = new Hero(this) { Tileset = "priest.png" };
+            var party = GameState.Party = DataBase.CreateRandomParty(this);
 
             var pos = new Vector2(175, 230);
 
             EntityFactory.CreateParty(GameState.Party, pos);
 
-            party.First.Creature.WorldAbilities.First = new LandscapeAbility(this, party, party.First.Creature);
+            GameState.IsActive = true;
+
+#if DEBUG
+            var revealModel = DataBase.GetAbility("Reveal");
+            party.Third.Creature.WorldAbilities.First = new RevealAbility(Game, party.Third.Creature, revealModel);
+
+            var prayerModel = DataBase.GetAbility("Prayer");
+            party.Fourth.Creature.WorldAbilities.First = new PrayerAbility(Game, party.Third.Creature, prayerModel);
+#endif
         }
 
         public void ChangeGameActive()
@@ -39,6 +39,14 @@ namespace Nabunassar
             IsGameActive = !IsGameActive;
             if (!IsGameActive)
                 GameState.Cursor.SetCursor("cursor");
+        }
+
+        public IEnumerable<ICollisionActor> QuerySpace(string layerName, IShapeF shape)
+        {
+            var layer = Game.CollisionComponent.Layers[layerName];
+            var actors = layer.Space.Query(shape.BoundingRectangle);
+
+            return actors.Where(x => shape.Intersects(x.Bounds));
         }
     }
 }

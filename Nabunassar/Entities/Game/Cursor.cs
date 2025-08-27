@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
@@ -8,11 +9,13 @@ namespace Nabunassar.Entities.Game
 {
     internal class Cursor
     {
-        public GameObject FocusedMapObject { get; set; }
+        public GameObject FocusedGameObject { get; set; }
 
         public SpriteSheet SpriteSheet { get; set; }
 
         public AnimatedSprite AnimatedSprite { get; set; }
+
+        public RectangleF Bounds { get; set; }
 
         public List<SpriteSheetAnimation> Animations { get; set; } = new();
 
@@ -28,8 +31,6 @@ namespace Nabunassar.Entities.Game
             Cursors[name] = mouseCursor;
         }
 
-        public static Queue<FocusEvent> FocusEvents = new();
-
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject another)
         {
             var anotherGameObject = another.GameObject;
@@ -37,45 +38,13 @@ namespace Nabunassar.Entities.Game
             var mouse = MouseExtended.GetState();
             var mousePosition = mouse.Position.ToVector2();
 
-            if (FocusedMapObject == default)
-            {
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = true,
-                    Object = anotherGameObject,
-                    Position = mousePosition
-                });
-            }
-            else if (FocusedMapObject != anotherGameObject)
-            {
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = false,
-                    Object = FocusedMapObject,
-                    Position = mousePosition
-                });
-
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = true,
-                    Object = anotherGameObject,
-                    Position = mousePosition
-                });
-            }
-
-            FocusedMapObject = anotherGameObject;
+            FocusedGameObject = anotherGameObject;
         }
 
         internal void OnNoCollistion()
         {
-            if (FocusedMapObject != default)
-                FocusEvents.Enqueue(new FocusEvent()
-                {
-                    IsFocused = false,
-                    Object = FocusedMapObject,
-                });
-
-            FocusedMapObject = default;
+            if (FocusedGameObject != default)
+                FocusedGameObject = default;
         }
     }
 }

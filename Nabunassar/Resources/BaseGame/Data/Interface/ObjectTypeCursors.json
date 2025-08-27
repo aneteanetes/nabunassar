@@ -3,5 +3,6 @@
   "Tree":"info",
   "Wall":"cursor",
   "Object":"cursor",
-  "NPC":"speak"
+  "NPC": "speak",
+  "Container": "hand"
 }

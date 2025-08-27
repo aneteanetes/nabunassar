@@ -10,7 +10,6 @@ using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
-using Nabunassar.Widgets.UserInterfaces.GameWindows;
 using System.Text;
 
 namespace Nabunassar.Widgets.UserInterfaces
@@ -29,7 +28,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             _gameObject = gameObject;
         }
 
-        protected override void LoadContent()
+        public override void LoadContent()
         {
             _font = Content.LoadFont(Fonts.Retron);
             _background = Content.Load<Texture2D>("Assets/Images/Borders/panel-030.png");
@@ -44,7 +43,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
         private Panel _globalPanel;
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             Game.RemoveDesktopWidgets<TitleWidget>();
             Game.DisableMouseSystems();

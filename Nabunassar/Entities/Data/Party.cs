@@ -1,13 +1,17 @@
-﻿using MonoGame.Extended;
+﻿using Geranium.Reflection;
+using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
+using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows;
 
 namespace Nabunassar.Entities.Data
 {
@@ -16,6 +20,8 @@ namespace Nabunassar.Entities.Data
         public ActionQueue ActionQueue { get; set; } = new();
 
         public Entity Entity { get; set; }
+
+        public Money Money { get; set; } = new Money(0,0,0);
 
         public MapObject MapObject { get; set; }
 
@@ -35,11 +41,9 @@ namespace Nabunassar.Entities.Data
         public Party(NabunassarGame game)
         {
             _game = game;
-            First = new Hero(game);
-            Second = new Hero(game);
-            Third = new Hero(game);
-            Fourth = new Hero(game);
         }
+
+        public Inventory Inventory { get; set; } = new();
 
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject other)
         {
@@ -98,14 +102,14 @@ namespace Nabunassar.Entities.Data
         {
             SetPositionOn(First, QuadPosition.First);
             SetPositionOn(Second, QuadPosition.Second);
-            SetPositionOn(Third, QuadPosition.Thrid);
+            SetPositionOn(Third, QuadPosition.Third);
             SetPositionOn(Fourth, QuadPosition.Fourth);
         }
 
         internal void SetPositionOnAllPartyRight()
         {
             SetPositionOn(First, QuadPosition.Fourth);
-            SetPositionOn(Second, QuadPosition.Thrid);
+            SetPositionOn(Second, QuadPosition.Third);
             SetPositionOn(Third, QuadPosition.Second);
             SetPositionOn(Fourth, QuadPosition.First);
         }
@@ -144,7 +148,7 @@ namespace Nabunassar.Entities.Data
                 case QuadPosition.Second:
                     hero.GameObject.SetAbsolutePosition(4, y);
                     break;
-                case QuadPosition.Thrid:
+                case QuadPosition.Third:
                     hero.GameObject.SetAbsolutePosition(12, y);
                     break;
                 case QuadPosition.Fourth:
@@ -191,6 +195,11 @@ namespace Nabunassar.Entities.Data
             DirectionRender.Position = to;
         }
 
+        public Vector2 GetOrigin()
+        {
+            return this.MapObject.BoundsOrigin;
+        }
+
         public void Interact(GameObject gameObject, Vector2 mouseScreenPosition)
         {
             switch (gameObject.ObjectType)
@@ -201,13 +210,32 @@ namespace Nabunassar.Entities.Data
                 case ObjectType.NPC:
                     SpeakTo(gameObject);
                     break;
+                case ObjectType.Container:
+                    LootWindow.Open(_game, gameObject);
+                    break;
                 default:
+                    if (gameObject.ObjectType.IsInteractive())
+                        InformationWindow.Open(NabunassarGame.Game, gameObject);
                     break;
             }
         }
 
+        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(2f);
 
-        public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3);
+        public RectangleF RevealArea => DistanceMeterRectangle;//this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(3);
+
+        public RectangleF PartyMenuRectangle
+        {
+            get
+            {
+                var bounds = this.MapObject.Bounds.As<RectangleF>();
+                var height = 10;
+                var width = 14;
+                return new RectangleF(bounds.X-7, bounds.Y-4, bounds.Width+ width, bounds.Height+ height);
+            }
+        }
+
+        public int Weight { get; internal set; } = 95;
 
         public Result<bool> IsObjectNear(GameObject gameObject)
         {
@@ -232,7 +260,7 @@ namespace Nabunassar.Entities.Data
                     ChangeViewDirection(direction);
                     gameObject.MapObject.ViewDirection = direction.Opposite();
 
-                    _game.Dialogues.OpenDialogue(gameObject);
+                    _game.WidgetFactory.OpenDialogue(gameObject);
                 }
                 //else
                 //{

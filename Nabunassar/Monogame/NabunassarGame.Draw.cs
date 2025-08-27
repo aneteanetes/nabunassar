@@ -1,12 +1,52 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Screens.Transitions;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Resources;
+using Nabunassar.Shaders;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
         public bool IsDrawBounds { get; internal set; }
+
+        private RenderTarget2D _backRenderTarget = null;
+
+        public void SetRenderTarget(RenderTarget2D target=null)
+        {
+            if (target == null)
+            {
+                if (_backRenderTarget == null)
+                    GraphicsDevice.SetRenderTarget(null);
+                else
+                    GraphicsDevice.SetRenderTarget(_backRenderTarget);
+            
+            }
+            else
+            {
+                GraphicsDevice.SetRenderTarget(target);
+            }
+        }
+
+        public void ClearRenderTarget(Color color)
+        {
+            GraphicsDevice.Clear(color);
+        }
+
+        public RenderTarget2D GetBackBuffer()
+        {
+            return Game._backBuffer;
+        }
+
+        public void SetRenderTargetBackBuffer(RenderTarget2D target=null)
+        {
+            Game._backRenderTarget = target ?? Game._backBuffer;
+        }
+
+        public void ClearRenderTargetBackBuffer()
+        {
+            Game._backRenderTarget = null;
+        }
 
         public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState=null, bool isTransformMatrix = true, Effect effect = default)
         {
@@ -22,18 +62,67 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
+            if (PostProcessShaders.Count > 0)
+            {
+                ActivateBackBuffer();
+            }
+
             Game.Penumbra.BeginDraw();
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
 
+            if (PostProcessShaders.Count > 0)
+            {
+                for (int i = 0; i < PostProcessShaders.Count; i++)
+                {
+                    var postProcessor = PostProcessShaders[i];
+                    postProcessor.Draw(gameTime, i == PostProcessShaders.Count - 1);
+                }
+            }
+
             SpriteBatch.End();
+
+            if (_screenLoaded)
+                Game.Desktop.Render();
 
             if (isDrawFPS)
                 DrawFPS();
 
             if (isDrawCoords)
                 DrawPositions();
+        }
+
+        public bool IsPostEffects = false;
+
+        private List<PostProcessShader> PostProcessShaders = new();
+
+        public void AddPostProcessor(PostProcessShader shader)
+        {
+            if (!shader.IsLoaded)
+            {
+                shader.LoadContent();
+                shader.IsLoaded = true;
+            }
+            PostProcessShaders.Add(shader);
+        }
+
+        private void ActivateBackBuffer()
+        {
+            IsPostEffects = true;
+            _backRenderTarget = _backBuffer;
+            Game.SetRenderTarget(null);
+            Game.ClearRenderTarget(Color.Transparent);
+        }
+
+        public void DisablePostEffects(PostProcessShader shader = null)
+        {
+            _backRenderTarget = null;
+            IsPostEffects = false;
+            if (shader != null)
+                PostProcessShaders.Remove(shader);
+            else
+                PostProcessShaders.Clear();
         }
 
         public void DrawFPS()

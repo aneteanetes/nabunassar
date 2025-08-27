@@ -2,17 +2,25 @@
 using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using Nabunassar.Entities.Struct;
+using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Shaders;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.GameWindows;
+using Nabunassar.Widgets.Views.IconButtons;
+using SDL2;
+using static SDL2.SDL;
 
 namespace Nabunassar.Screens.Game
 {
     internal class MainGameScreen : BaseGameScreen
     {
         TiledMap _tiledMap;
+        public static GaussianBlur GlobalBlurShader;
 
         public MainGameScreen(NabunassarGame game) : base(game)
         {
@@ -20,13 +28,17 @@ namespace Nabunassar.Screens.Game
 
         public override void LoadContent()
         {
+            GlobalBlurShader = new GaussianBlur(Game,1.5f);            
+
+            _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
             Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
-            Game.GameState.LoadedMap = _tiledMap;
+            Game.GameState.LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) };
             Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)
@@ -74,9 +86,10 @@ namespace Nabunassar.Screens.Game
             Game.RunGameState();
 
             InitGameUI();
-        }
 
-        private bool isEsc = false;
+            _tiledMap.Dispose();
+            _tiledMap = null;
+        }
 
         private bool logWindow = false;
 
@@ -84,44 +97,106 @@ namespace Nabunassar.Screens.Game
         {
             Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
             Game.AddDesktopWidget(new ChatWindow(Game));
+            Game.AddDesktopWidget(new ControlPanel(Game));
+            Game.AddDesktopWidget(new GameDateTime(Game));
         }
+
+        private bool? _isMakingScreenShot = null;
+        private RenderTarget2D _screenShotTarget = null;
 
         public override void Update(GameTime gameTime)
         {
+            if (_isMakingScreenShot == false)
+            {
+                var path = _screenShotTarget.MakeScreenshot();
+                Game.GameState.AddMessage(DrawText.Create("").Color(Color.Yellow).Append(Game.Strings["UI"]["Screenshot was created"] + $": {path}"));
+                _isMakingScreenShot = null;
+            }
+
             var keyboardState = KeyboardExtended.GetState();
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (!isEsc && Game.Desktop.Widgets.Count == 0)
+                if (Game.IsDesktopWidgetExist<MainMenu>())
                 {
-                    isEsc = true;
-                    Game.AddDesktopWidget(new MainMenu(Game));
+                    GlobalBlurShader.Disable();
+                    Game.RemoveDesktopWidgets<MainMenu>();
                     Game.ChangeGameActive();
                 }
-                else if (Game.Desktop.Widgets.Count == 1 && Game.IsDesktopWidgetExist<MainMenu>())
+                else
                 {
-                    isEsc = false;
-                    Game.RemoveDesktopWidgets<MainMenu>();
+                    GlobalBlurShader.Enable();
+                    Game.AddDesktopWidget(new MainMenu(Game, true));
                     Game.ChangeGameActive();
                 }
             }
 
+            while (SDL.SDL_PollEvent(out var _event) != 0)
+            {
+                if (_event.type == SDL_EventType.SDL_KEYDOWN)
+                {
+                    if (_event.key.keysym.sym == SDL_Keycode.SDLK_PRINTSCREEN)
+                    {
+                        _isMakingScreenShot = true;
+                    }
+                }
+                if (_event.type == SDL_EventType.SDL_KEYUP)
+                {
+                    if (_event.key.keysym.sym == SDL_Keycode.SDLK_PRINTSCREEN)
+                    {
+                        _isMakingScreenShot = true;
+                    }
+                }
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
+            {
+                Console.WriteLine("XNA_space");
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.PrintScreen))
+            {
+                Console.WriteLine("XNA_printscreen");
+            }
+
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
             {
-                if (!Game.IsDesktopWidgetExist<MinimapWindow>())
-                {
-                    Game.AddDesktopWidget(new MinimapWindow(Game));
-                }
-                else
-                {
-                    Game.RemoveDesktopWidgets<MinimapWindow>();
-                }
+                MinimapIconButton.OpenCloseMiniMap(Game);
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.I))
+            {
+                InventoryIconButton.OpenCloseInventory(Game);
+            }
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.P))
+            {
+                AbilityIconButton.OpenCloseAbilities(Game);
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.L) && keyboardState.IsControlDown())
             {
 
                 logWindow = !logWindow;
+            }
+        }
+
+        public override void Draw(GameTime gameTime)
+        {
+            if (_isMakingScreenShot == true)
+            {
+                _isMakingScreenShot = false;
+                Game.SetRenderTarget(_screenShotTarget);
+                Game.ClearRenderTarget(Color.Black);
+                Game.SetRenderTargetBackBuffer(_screenShotTarget);
+            }
+
+            base.Draw(gameTime);
+
+            if (_isMakingScreenShot==false)
+            {
+                Game.ClearRenderTargetBackBuffer();
+                Game.SetRenderTarget(null);
             }
         }
     }

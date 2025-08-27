@@ -1,6 +1,8 @@
 ﻿using Geranium.Reflection;
-using Nabunassar.Entities.Data.Formulas;
+using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Stats;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
@@ -11,7 +13,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
     {
         private IDistanceMeter _distanceMeter;
 
-        public LandscapeAbility(NabunassarGame game, IDistanceMeter distanceMeter, Creature creature) : base(game, game.DataBase.GetAbility("Landscape"), creature)
+        public LandscapeAbility(NabunassarGame game, IDistanceMeter distanceMeter, Creature creature, AbilityModel model) : base(game, model, creature)
         {
             _distanceMeter = distanceMeter;
         }
@@ -21,7 +23,10 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (gameObject == default)
                 return;
 
-            var roll = SkillCheck.Roll(gameObject.LandscapeRank, gameObject.LandscapeDice, this.Rank, this.Dice, this.Creature.PrimaryStats.AgilityDice);
+            var landRank = gameObject.LandscapeComplexity.Rank;
+            var landDice = gameObject.LandscapeComplexity.Dice;
+
+            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.AgilityDice);
 
             var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
             var commonColor = Globals.BaseColor;
@@ -42,7 +47,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 .Append(Name).AppendSpace()
                 .Color(commonColor)
                 .Append(": ")
-                .Append($"{ui["difficult"]}: {roll.Complexity.ToDrawText(commonColor)}, {ui["throw"]}: {roll.Roll.ToDrawText(commonColor)}: ")
+                .Append($"{ui["difficult"]}: {roll.Complexity.ToString(commonColor)}, {ui["throw"]}: {roll.Result.ToString(commonColor)}: ")
                 .Color(resultColor)
                 .Append($" {resultText}")
                 .Color(commonColor)
@@ -56,6 +61,24 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 #warning landscape get resources
                 // take resources
             }
+        }
+
+        public override RollResult GetFormula()
+        {
+            return Roll(
+                Rank.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
+                Dice.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
+                this.AbilityRank,
+                this.AbilityDice,
+                Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Agility))));
+        }
+
+        private RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
+        {
+            var checkValue = checkRank * 2 + checkDice;
+            var skillValue = skillRank + skillDice + characteristicdDice;
+
+            return new RollResult(checkValue, skillValue, true);
         }
 
         public override Result<bool> IsActive(GameObject gameObject)
@@ -78,7 +101,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 return true;
 
             var objType = gameObject.ObjectType;
-            return objType is not ObjectType.NPC;
+            return objType is not ObjectType.NPC && objType is not ObjectType.Container && objType is not ObjectType.Player;
         }
     }
 }

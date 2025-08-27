@@ -13,5 +13,11 @@
         }
 
         public Vector2[] Vertices { get; set; }
+
+        public override void Dispose()
+        {
+            Vertices = null;
+            base.Dispose();
+        }
     }
 }

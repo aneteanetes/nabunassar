@@ -8,7 +8,7 @@ namespace Nabunassar.Widgets.Base
         {
         }
 
-        protected override Widget InitWidget()
+        protected override Widget CreateWidget()
         {
             return new Panel() { Width = 1, Height = 1 };
         }

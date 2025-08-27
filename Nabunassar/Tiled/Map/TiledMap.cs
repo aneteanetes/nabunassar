@@ -340,5 +340,39 @@ namespace Nabunassar.Tiled.Map
         }
 
         public List<TiledLayer> Layers { get; set; } = new List<TiledLayer>();
+
+        public override void Dispose()
+        {
+            foreach (var obj in Objects)
+            {
+                obj.Dispose();
+            }
+            foreach (var npc in NPCs)
+            {
+                npc.Dispose();
+            }
+            foreach (var tileset in Tilesets)
+            {
+                tileset.Dispose();
+            }
+            foreach (var layer in Layers)
+            {
+                layer.Dispose();
+            }
+
+            Layers.Clear();
+            Layers = null;
+
+            Objects.Clear();
+            Objects = null;
+
+            NPCs.Clear();
+            NPCs = null;
+
+            Tilesets.Clear();
+            Tilesets = null;
+
+            base.Dispose();
+        }
     }
 }

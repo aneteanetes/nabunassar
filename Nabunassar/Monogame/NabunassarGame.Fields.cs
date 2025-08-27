@@ -1,31 +1,34 @@
 ﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using Monogame.Extended;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Screens;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
+using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
 using Nabunassar.Resources;
 using Nabunassar.Struct;
-using Penumbra;
-using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets;
-using Nabunassar.Localization;
+using Penumbra;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        private bool _screenLoaded = false;
+
+        private RenderTarget2D _backBuffer;
+
         public LocalizedStrings Strings { get; set; }
 
-        public WidgetFactory Dialogues { get; set; }
+        public WidgetFactory WidgetFactory { get; set; }
 
         public PenumbraComponent Penumbra { get; set; }
 
@@ -37,9 +40,30 @@ namespace Nabunassar
 
         public CustomCollisionComponent CollisionComponent { get; private set; }
 
-        public static FastRandom Random { get; private set; } = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+        private static FastRandom _random;
 
-        public FastRandom Randoms => Random;
+        public static FastRandom Randoms
+        {
+            get
+            {
+                if (_random == null)
+                {
+                    try
+                    {
+                        _random = new FastRandom(Guid.NewGuid().GetHashCode());
+                    }
+                    catch
+                    {
+                        //safe, but ineffective (and less random) way
+                        _random = new FastRandom(int.Parse(new string(DateTime.UtcNow.Ticks.ToString().Take(8).ToArray())));
+                    }
+                }
+
+                return _random;
+            }
+        }
+
+        public FastRandom Random => Randoms;
 
         public GameState GameState { get; private set; }
 
@@ -59,9 +83,7 @@ namespace Nabunassar
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop DesktopContainer = null;
-
-        public Panel Desktop = null;
+        public Desktop Desktop = null;
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 

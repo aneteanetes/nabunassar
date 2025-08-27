@@ -1,0 +1,44 @@
+[
+  {
+    "ObjectId": 1,
+    "Name": "LandscapeTablet",
+    "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
+    "Image": "Assets/Images/Objects/snow/snowchest_s.png",
+    "Icon": "Assets/Tilesets/transparent_packed.png",
+    "IconRegion": "(0,224,16,16)",
+    "Cost": "10g,25s,5c",
+    "Weight": "1",
+    "ItemType": "Accessories",
+    "ItemSubtype": "Tablet",
+    "Archetype": "Warrior",
+    "IsCombat": false,
+    "AbilityName": "Landscape"
+  },
+  {
+    "ObjectId": 3,
+    "Name": "RevealTablet",
+    "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
+    "Image": "Assets/Images/Objects/snow/snowchest_s.png",
+    "Icon": "Assets/Tilesets/transparent_packed.png",
+    "IconRegion": "(0,224,16,16)",
+    "Cost": "8g,5s,50c",
+    "Weight": "1",
+    "ItemType": "Accessories",
+    "ItemSubtype": "Tablet",
+    "Archetype": "Wizard",
+    "IsCombat": false,
+    "AbilityName": "Reveal"
+  },
+  {
+    "ObjectId": 2,
+    "Name": "OldSnowRustySword",
+    "Portrait": "Assets/Images/Objects/snow/oldsword_m.jpg",
+    "Image": "Assets/Images/Objects/snow/oldsword_s.png",
+    "Icon": "Assets/Tilesets/transparent_packed.png",
+    "IconRegion": "(528,112,16,16)",
+    "Cost": "15s,56c",
+    "Weight": "2",
+    "ItemType": "Weapon",
+    "ItemSubtype": "Sword"
+  }
+]

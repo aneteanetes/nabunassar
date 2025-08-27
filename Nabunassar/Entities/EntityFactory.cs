@@ -13,7 +13,6 @@ using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
 using Penumbra;
-using SharpFont.PostScript;
 
 namespace Nabunassar.Entities
 {
@@ -41,7 +40,7 @@ namespace Nabunassar.Entities
             var entity = CreateEntity("cursor");
             var cursor = Game.GameState.Cursor;
 
-            cursor.FocusedMapObject = null;
+            cursor.FocusedGameObject = null;
 
             var cursorImg = Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0028.png");
             var cursorDefault = MouseCursor.FromTexture2D(cursorImg, 0, 0);
@@ -55,11 +54,14 @@ namespace Nabunassar.Entities
             var cursorSpeakTexture = Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0050.png");
             var cursorSpeak = MouseCursor.FromTexture2D(cursorSpeakTexture, 0, 0);
 
+            var cursorHand = MouseCursor.FromTexture2D(Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0176.png"), 0, 0);
+
             cursor.DefineCursor("cursor", cursorDefault);
 
             cursor.DefineCursor("enter", cursorEnter);
             cursor.DefineCursor("info", cursorInfo);
             cursor.DefineCursor("speak", cursorSpeak);
+            cursor.DefineCursor("hand", cursorHand);
 
             cursor.SetCursor("cursor");
 
@@ -69,6 +71,7 @@ namespace Nabunassar.Entities
             entity.Attach(new CursorComponent(Game.GameState.Cursor));
 
             var cursorBounds = new RectangleF(0, 0, 4, 4);
+            cursor.Bounds = cursorBounds;
 
             var gameObj = new MapObject(Game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, "cursor", cursor.OnCollision) { Name = "cursor" };
             gameObj.IsRegisterNoCollision = true;
@@ -151,7 +154,7 @@ namespace Nabunassar.Entities
                 AddOnMinimap(entity.Id,position, ObjectType.Ground,null, groundType);
             }
 
-            var tileComp = new TileComponent(polygon);
+            var tileComp = new TileComponent(polygon.CopyBase());
             entity.Attach(tileComp);
 
             return entity;
@@ -238,7 +241,7 @@ namespace Nabunassar.Entities
 
             var glowAnimatedSprite = new AnimatedSprite(glowSpriteSheet, "idle");
 
-            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
+            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectNameTitle(), focusEvent.Position));
             entity.Attach(title);
 
             var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order, title);
@@ -260,7 +263,7 @@ namespace Nabunassar.Entities
 
             var bounds = new RectangleF(new Vector2(6,0), new Vector2(20, 6));
 
-            var mapObject = new MapObject(Game, position, ObjectType.Player, partyEntity, bounds, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
+            var mapObject = new MapObject(Game, position, ObjectType.Player, partyEntity, bounds,"player", onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
             partyEntity.Attach(mapObject);
             AddCollistion(mapObject);
 
@@ -382,6 +385,8 @@ namespace Nabunassar.Entities
 
             gameObj.MergeProperties(_object);
 
+            objType = gameObj.ObjectType;
+
             var descriptor = "";
 
             if (objType == ObjectType.Pathing)
@@ -407,14 +412,17 @@ namespace Nabunassar.Entities
 
             // mapObj
 
-            var mapObject = new MapObject(Game, position, objType, entity, layer: "objects")
+            bool isVisible = gameObj.RevealComplexity == null;
+
+            var mapObject = new MapObject(Game, position, objType, entity, layer: isVisible ? "objects" : "hidden")
             {
-                Name = descriptor
+                Name = descriptor,
+                IsVisible = isVisible
             };
             entity.Attach(mapObject);
 
             // minimap
-            AddOnMinimap(entity.Id, position, objType.IsInteractive() ? ObjectType.Object : ObjectType.Border);
+            mapObject.MinimapPoint = AddOnMinimap(entity.Id, position, objType.IsInteractive() ? ObjectType.Object : ObjectType.Border, isVisible: isVisible);
 
             Color color = GetColorFromTile(_object);
 
@@ -444,6 +452,7 @@ namespace Nabunassar.Entities
                     entityDownpart.Attach(renderDownPart);
 
                     var downMapObj = new MapObject(Game, Vector2.Zero, ObjectType.None, entityDownpart);
+                    downMapObj.Parent = mapObject;
                     mapObject.Dependant.Add(downMapObj);
                     downMapObj.OnDestroy += () => entityDownpart.Destroy();
                 }
@@ -475,24 +484,29 @@ namespace Nabunassar.Entities
 
                     var dummyDiscriptor = $"obj {_object.gid} bound({i})";
                     var dummyEntity = CreateEntity(dummyDiscriptor);
-                    var complexCollision = new MapObject(Game, gameObjectPosition, ObjectType.Object, entity, bounds, "objects")
+                    var complexCollision = new MapObject(Game, gameObjectPosition, ObjectType.Object, entity, bounds, isVisible ? "objects" : "hidden")
                     {
                         Name = dummyDiscriptor
                     };
                     dummyEntity.Attach(complexCollision);
-                    AddCollistion(complexCollision);
+
+                    //if (isVisible)
+                        AddCollistion(complexCollision);
                     i++;
 
-                    complexCollision.OnDestroy = ()=>Game.DestoryEntity(dummyEntity);
-
+                    complexCollision.OnDestroy = () => Game.DestoryEntity(dummyEntity);
+                    complexCollision.Parent = mapObject;
                     mapObject.Dependant.Add(complexCollision);
                 }
+                mapObject.Bounds = new RectangleF(position, size);
             }
             else
             {
                 mapObject.Bounds = new RectangleF(Vector2.Zero, size);
                 mapObject.Position = mapObject.Position;
-                AddCollistion(mapObject);
+
+                //if (isVisible)
+                    AddCollistion(mapObject);
             }
 
             var isHavePolygons = _object.IsHavePolygons();
@@ -515,8 +529,8 @@ namespace Nabunassar.Entities
 
             if (gameObj.ObjectType.IsInteractive())
             {
-                var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectName(), focusEvent.Position));
-                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), -1, focusWidgetComp);
+                var focusWidgetComp = new FocusWidgetComponent(gameObj, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectNameTitle(), focusEvent.Position));
+                CreateGlowOutline(_object, gameObj, descriptor, entity, position, _object.Tileset.TextureAtlasGlow.CreateSprite(id), 1, focusWidgetComp);
                 entity.Attach(focusWidgetComp);
             }
 
@@ -607,18 +621,27 @@ namespace Nabunassar.Entities
             Game.CollisionComponent.Insert(gameObject);
         }
 
-        public void AddOnMinimap(int entityId, Vector2 gamePosition, ObjectType objectType, string toolTip = default, GroundType groundType = GroundType.Dirt)
+        public void RemoveCollistion(MapObject gameObject)
+        {
+            Game.CollisionComponent.Remove(gameObject);
+        }
+
+        public MinimapPoint AddOnMinimap(int entityId, Vector2 gamePosition, ObjectType objectType, string toolTip = default, GroundType groundType = GroundType.Dirt, bool isVisible=true)
         {
             var minimap = Game.GameState.Minimap;
 
-            minimap.Add(new MinimapPoint()
+            var point = new MinimapPoint()
             {
                 Position = minimap.TransformPosition(gamePosition),
                 Name = toolTip ?? Guid.NewGuid().ToString(),
                 ObjectType = objectType,
                 EntityId = entityId,
-                GroundType = groundType
-            });
+                GroundType = groundType,
+                IsVisible = isVisible
+            };
+            minimap.Add(point);
+
+            return point;
         }
 
         internal void CreateMinimap(TiledMap _tiledMap)

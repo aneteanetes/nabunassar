@@ -1,14 +1,12 @@
 [
   {
     "Name": "RoadSnow",
-    "LandscapeRank": "Master",
-    "LandscapeDice": "d12",
+    "LandscapeComplexity": "4d12",
     "Portrait": "Assets/Images/Objects/grounds/snowroad.jpg"
   },
   {
     "Name": "GrassSnow",
-    "LandscapeRank": "Expert",
-    "LandscapeDice": "d8",
+    "LandscapeComplexity": "3d8",
     "Portrait": "Assets/Images/Objects/grounds/snowgrass.jpg"
   },
   {
@@ -77,5 +75,34 @@
     "Portrait": "Assets/Images/Objects/snow/snowwall_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowwall_s.png",
     "ObjectType": "Wall"
+  },
+  {
+    "ObjectId": 12,
+    "Name": "SnowChest",
+    "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
+    "Image": "Assets/Images/Objects/snow/snowchest_s.png",
+    "ObjectType": "Container",
+    "LootTableId": 1
+  },
+  {
+    "ObjectId": 13,
+    "RevealComplexity": "1d4",
+    "Name": "SnowFootprints",
+    "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/footprints_m.jpg",
+    "Image": "Assets/Images/Objects/snow/footprints_s.png",
+    "ObjectType": "Ground",
+    "GroundType": "Footprints"
+  },
+  {
+    "ObjectId": 14,
+    "RevealComplexity": "1d4",
+    "Name": "SnowWoodenBox",
+    "Cursor": "Pointer",
+    "Portrait": "Assets/Images/Objects/snow/woodenbox_m.jpg",
+    "Image": "Assets/Images/Objects/snow/woodenbox_s.png",
+    "ObjectType": "Container",
+    "LootTableId": 2
   }
 ]
