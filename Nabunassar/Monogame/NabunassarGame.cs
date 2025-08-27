@@ -96,7 +96,7 @@ namespace Nabunassar
                 Settings.HeightPixel = ((int)(Settings.HeightPixel / windowsScale));
             }
 
-            if (Settings.WidthHeightAutomated && monitor.w != originSize.X && (Settings.WindowMode == WindowMode.FullScreenSoftware || Settings.WindowMode == WindowMode.WindowedScaled))
+            if (Settings.WindowMode == WindowMode.FullScreenSoftware || Settings.WindowMode == WindowMode.WindowedScaled)
             {
                 Settings.WidthPixel = monitor.w;
                 Settings.HeightPixel = monitor.h;
@@ -179,7 +179,7 @@ namespace Nabunassar
             }
 
             graphics.SynchronizeWithVerticalRetrace = false;
-            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -193,7 +193,7 @@ namespace Nabunassar
             IsMouseVisible = !state.IsConnected;
             Settings.IsGamePadConnected = state.IsConnected;
 
-            //graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
             graphics.ApplyChanges();
 
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice,Resolution.Width, Resolution.Height);
