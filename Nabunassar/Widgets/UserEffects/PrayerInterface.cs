@@ -2,6 +2,7 @@
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Input;
+using Myra.Events;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
@@ -112,6 +113,8 @@ namespace Nabunassar.Widgets.UserEffects
             var panel = new Panel() { Width = Game.Resolution.Width, Height = Game.Resolution.Height };
             panel.Background = new SolidBrush(new Color(Color.Black, 150));
 
+            panel.TouchDown += Panel_TouchDown;
+
             var descriptionPanel = new Panel()
             {
                 Background = ScreenWidgetWindow.WindowBackground.NinePatch(),
@@ -156,6 +159,7 @@ namespace Nabunassar.Widgets.UserEffects
                 };
                 img.TouchDown += (s, e) =>
                 {
+                    e.StopPropagation();
                     Select(img, god, true);
                 };
                 imgPanel.Widgets.Add(img);
@@ -188,6 +192,11 @@ namespace Nabunassar.Widgets.UserEffects
             panel.Widgets.Add(imgPanel);
 
             return panel;
+        }
+
+        private void Panel_TouchDown(object sender, MyraEventArgs e)
+        {
+            this.Close();
         }
 
         private void SetDescription(Gods god)

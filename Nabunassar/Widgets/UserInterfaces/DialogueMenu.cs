@@ -252,7 +252,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             return btn;
         }
 
-        private void SelectReplica(object sender, EventArgs e, DialogueReplica replica)
+        private void SelectReplica(object sender, MyraEventArgs e, DialogueReplica replica)
         {
             var round = replica.Select();
             SetSpeakerText(round.Text);

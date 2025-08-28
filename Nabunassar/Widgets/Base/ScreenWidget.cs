@@ -1,5 +1,6 @@
 ﻿using Geranium.Reflection;
 using MonoGame.Extended;
+using Myra.Events;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Monogame.Content;
@@ -101,14 +102,14 @@ namespace Nabunassar.Widgets.Base
             widget.MouseLeft -= _widget_MouseLeft;
         }
 
-        protected void _widget_MouseLeft(object sender, EventArgs e)
+        protected void _widget_MouseLeft(object sender, MyraEventArgs e)
         {
-            Game.IsMouseMoveAvailable = true;
+            Game.IsMouseMoveAvailable.Value = true;
 #if DEBUG
             Console.WriteLine($"{sender} mouse active");
 #endif
             if (NOLOOSEBLOCK)
-                NabunassarGame.Game.IsMouseMoveAvailable = false;
+                NabunassarGame.Game.IsMouseMoveAvailable.Value = false;
 
             if (!NOLOOSEBLOCK)
                 WidgetOverMouse = null;
@@ -119,9 +120,9 @@ namespace Nabunassar.Widgets.Base
 #endif
         }
 
-        protected void _widget_MouseEntered(object sender, EventArgs e)
+        protected void _widget_MouseEntered(object sender, MyraEventArgs e)
         {
-            Game.IsMouseMoveAvailable = false;
+            Game.IsMouseMoveAvailable.Value = false;
             WidgetOverMouse = sender;
 #if DEBUG
             Console.WriteLine($"{sender} mouse disabled");
@@ -140,7 +141,7 @@ namespace Nabunassar.Widgets.Base
             Game.Components.Remove(this);
             OnDispose?.Invoke();
             MapObject = null;
-            Game.IsMouseMoveAvailable = true;
+            Game.IsMouseMoveAvailable.Value = true;
 
             if (!IsRemoved)
                 Game.RemoveDesktopWidget(this);

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
+using Myra.Events;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
@@ -108,7 +109,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             return _globalPanel;
         }
 
-        private void GlobalPanel_TouchDown(object sender, EventArgs e)
+        private void GlobalPanel_TouchDown(object sender, MyraEventArgs e)
         {
             QueueForClosing = true;
         }
@@ -368,8 +369,16 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                 }
                 Btn_MouseLeft(sender, @event);
             };
-            btn.TouchDown += (s, e) => QueueForClosing = false; //здесь можно отменить закрытие по клику
-            btn.Click += (s, e) => action.OnClick(); // а здесь обрабатывается событие по клику на кнопке
+            btn.TouchDown += (s, e) =>
+            {
+                e.StopPropagation();
+                QueueForClosing = false; //здесь можно отменить закрытие по клику
+            };
+            btn.Click += (s, e) =>
+            {
+                action.OnClick(); // а здесь обрабатывается событие по клику на кнопке
+                e.StopPropagation();
+            };
             btn.FocusedBackground = new TextureRegion(CircleTextureFocused, new Rectangle(0, 0, CircleWidthHeight, CircleWidthHeight));
             btn.OverBackground = btn.FocusedBackground;
             btn.PressedBackground = btn.OverBackground;
@@ -627,13 +636,13 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         private TitleWidget _titleWidget;
 
-        private void Btn_MouseLeft(object sender, EventArgs e)
+        private void Btn_MouseLeft(object sender, MyraEventArgs e)
         {
             var btn = sender.As<Button>();
             Game.RemoveDesktopWidgets<TitleWidget>();
         }
 
-        private void Btn_MouseEntered(object sender, EventArgs e, string text, bool isEnabled=true)
+        private void Btn_MouseEntered(object sender, MyraEventArgs e, string text, bool isEnabled=true)
         {
             var btn = sender.As<Button>();
             var parent = btn.Parent;

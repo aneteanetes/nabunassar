@@ -215,6 +215,7 @@ namespace Nabunassar.Entities.Game
 
         public void Reveal()
         {
+            RevealComplexity = null;
             MapObject?.Reveal();
         }
     }

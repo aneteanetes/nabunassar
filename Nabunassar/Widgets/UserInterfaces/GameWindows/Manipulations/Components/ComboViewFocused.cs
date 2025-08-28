@@ -10,7 +10,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
             this.ListView.MouseEntered += this.ListView_MouseEntered;
         }
 
-        private void ListView_MouseEntered(object sender, EventArgs e)
+        private void ListView_MouseEntered(object sender, MyraEventArgs e)
         {
             ScreenWidget.NOLOOSEBLOCK = true;
         }

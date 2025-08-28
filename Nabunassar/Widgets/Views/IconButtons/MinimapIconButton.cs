@@ -27,7 +27,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
             {
                 game.RemoveDesktopWidgets<MinimapWindow>();
                 if (isControlBtn)
-                    game.IsMouseMoveAvailable = false;
+                    game.IsMouseMoveAvailable.Value = false;
             }
         }
 

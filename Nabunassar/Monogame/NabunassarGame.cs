@@ -210,6 +210,8 @@ namespace Nabunassar
 
             DataBase = new DataBase(this);
 
+            IsMouseMoveAvailable = new GameLoopFeatureValue<bool>(this, true);
+
             InitializeCollisions();
 
             InitGameWorlds();

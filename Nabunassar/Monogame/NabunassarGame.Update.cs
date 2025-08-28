@@ -14,6 +14,11 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
+            foreach (var feature in FeatureValues)
+            {
+                feature.Update(gameTime);
+            }
+
             if (IsMakingScreenShot == false)
             {
                 var path = _screenShotTarget.MakeScreenshot();
@@ -23,7 +28,6 @@ namespace Nabunassar
 
             if (IsGameActive)
                 GameState.Update(gameTime);
-
 #if DEBUG
             DebugUpdate(gameTime);
 #endif
@@ -42,6 +46,8 @@ namespace Nabunassar
             var mouseState = Mouse.GetState();
             _mousePosition = new Vector2(mouseState.X, mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
+
+            Game.Desktop.Update();
 
             if (IsGameActive)
             {
@@ -99,8 +105,6 @@ namespace Nabunassar
             }
 
             AdjustZoom();
-
-            Game.Desktop.Update();
         }
     }
 }

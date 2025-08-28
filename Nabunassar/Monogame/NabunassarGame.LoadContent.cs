@@ -6,6 +6,7 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Content;
 using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
+using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Native;
 using Nabunassar.Screens;
@@ -16,6 +17,7 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+
         protected override void LoadContent()
         {
             var x = SelectedMonitorBounds.w / 2 - Settings.WidthPixel / 2;
@@ -30,6 +32,7 @@ namespace Nabunassar
             // myra  & desktops
 
             MyraEnvironment.Game = this;
+            MyraEnvironment.EventHandlingModel = Myra.Events.EventHandlingStrategy.EventBubbling;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             Desktop = new Desktop();
 

@@ -1,6 +1,7 @@
 using FontStashSharp;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Events;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -139,29 +140,29 @@ internal partial class MainMenu : ScreenWidget
         widget.BringToFront();
     }
 
-    private void Back_Click(object sender, EventArgs e)
+    private void Back_Click(object sender, MyraEventArgs e)
     {
         MainGameScreen.GlobalBlurShader.Disable();
         Game.RemoveDesktopWidgets<MainMenu>();
         Game.ChangeGameActive();
     }
 
-    private void NewGame_Click(object sender, EventArgs e)
+    private void NewGame_Click(object sender, MyraEventArgs e)
     {
         Game.SwitchScreen<MainGameScreen>();
     }
 
-    private void NewGame_MouseLeft(object sender, EventArgs e)
+    private void NewGame_MouseLeft(object sender, MyraEventArgs e)
     {
         sender.As<Button>().Content.As<Label>().TextColor = Globals.CommonColor;
     }
 
-    private void NewGame_MouseEntered(object sender, EventArgs e)
+    private void NewGame_MouseEntered(object sender, MyraEventArgs e)
     {
         sender.As<Button>().Content.As<Label>().TextColor = Globals.CommonColorLight;
     }
 
-    private void _menuQuit_Selected(object sender, EventArgs e)
+    private void _menuQuit_Selected(object sender, MyraEventArgs e)
     {
         Game.Exit();
     }

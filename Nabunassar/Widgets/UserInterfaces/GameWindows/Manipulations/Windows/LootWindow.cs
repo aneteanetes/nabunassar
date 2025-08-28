@@ -76,7 +76,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             return _inventory;
         }
 
-        private void PutBtn_Click(object sender, EventArgs e)
+        private void PutBtn_Click(object sender, MyraEventArgs e)
         {
             var invPan = GetInventoryItemPanel();
             var itemView = invPan.SelectedItemView;
@@ -153,7 +153,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             panel.Widgets.Add(closeBtn);
         }
 
-        private void TakeAllBtn_Click(object sender, EventArgs e)
+        private void TakeAllBtn_Click(object sender, MyraEventArgs e)
         {
             _itemsPanel.ResetSelectedItem();
 
@@ -167,7 +167,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             CloseIfEmpty();
         }
 
-        private void TakeBtn_Click(object sender, EventArgs e)
+        private void TakeBtn_Click(object sender, MyraEventArgs e)
         {
             TakeItem(_itemsPanel.SelectedItem);
             _itemsPanel.ResetSelectedItem();

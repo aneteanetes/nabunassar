@@ -32,13 +32,21 @@ namespace Nabunassar.Widgets.UserInterfaces
             ChatWindowWidget = this;
             Exists = true;
 
-            var scaleFactor = game.Scale.ToVector2().NormalizedCopy().X;
+            var scaleFactor = 1;
+
+            var scaleVector = game.Scale.ToVector2();
+            if (scaleVector.X != 1)
+            {
+                scaleVector.Normalize();
+                scaleFactor = ((int)scaleVector.X);
+            }
 
             minimalTop = (int)(minimalTop * scaleFactor);
             minimalHeight = (int)(minimalHeight * scaleFactor);
             messageBoxWidth = (int)(messageBoxWidth * scaleFactor);
 
-            minimalTop += minimalHeight;
+            if (scaleFactor != 1)
+                minimalTop += minimalHeight;
         }
 
         public override void LoadContent()
@@ -110,7 +118,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             return window;
         }
 
-        private void Scrollcontainer_TouchUp(object sender, EventArgs e)
+        private void Scrollcontainer_TouchUp(object sender, MyraEventArgs e)
         {
             var scroll = sender.As<ScrollViewer>();
             var r = _verticalScrollbarThumbAccessor.GetValue(scroll).As<Rectangle>();
@@ -128,7 +136,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             }
         }
 
-        private void Scrollcontainer_TouchDown(object sender, EventArgs e)
+        private void Scrollcontainer_TouchDown(object sender, MyraEventArgs e)
         {
             var scroll = sender.As<ScrollViewer>();
             var r = _verticalScrollbarThumbAccessor.GetValue(scroll).As<Rectangle>();
@@ -208,17 +216,17 @@ namespace Nabunassar.Widgets.UserInterfaces
             ChatWindowWidget.BindWidgetBlockMouse(label, false);
         }
 
-        private static void Label_MouseLeft(object sender, EventArgs e)
+        private static void Label_MouseLeft(object sender, MyraEventArgs e)
         {
             NabunassarGame.Game.GameState.Cursor.SetCursor();
         }
 
-        private static void Label_MouseEntered(object sender, EventArgs e)
+        private static void Label_MouseEntered(object sender, MyraEventArgs e)
         {
             NabunassarGame.Game.GameState.Cursor.SetCursor("info");
         }
 
-        private void TitlePanel_TouchDoubleClick(object sender, EventArgs e)
+        private void TitlePanel_TouchDoubleClick(object sender, MyraEventArgs e)
         {
             SetWindowPosition(minimalTop);
             SetScrollDown();
@@ -240,7 +248,7 @@ namespace Nabunassar.Widgets.UserInterfaces
         private bool isResizing = false;
 
 
-        private void TitlePanel_TouchDown(object sender, EventArgs e)
+        private void TitlePanel_TouchDown(object sender, MyraEventArgs e)
         {
             isResizing = true;
         }

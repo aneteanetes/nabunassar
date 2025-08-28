@@ -26,7 +26,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             var landRank = gameObject.LandscapeComplexity.Rank;
             var landDice = gameObject.LandscapeComplexity.Dice;
 
-            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.AgilityDice);
+            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.StrengthDice);
 
             var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
             var commonColor = Globals.BaseColor;
@@ -70,7 +70,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 Dice.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
                 this.AbilityRank,
                 this.AbilityDice,
-                Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Agility))));
+                Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Strength))));
         }
 
         private RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)

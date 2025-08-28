@@ -157,7 +157,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             return dropDown;
         }
 
-        private void DropDown_SelectedIndexChanged(object sender, EventArgs e)
+        private void DropDown_SelectedIndexChanged(object sender, MyraEventArgs e)
         {
             var dropDown = sender as ListView;
             switch (dropDown.SelectedIndex)

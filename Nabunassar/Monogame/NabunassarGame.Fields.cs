@@ -10,6 +10,7 @@ using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
+using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Monogame.Viewport;
@@ -23,6 +24,8 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public HashSet<IFeatured> FeatureValues { get; internal set; } = new();
+
         public static bool? IsMakingScreenShot = null;
 
         private RenderTarget2D _screenShotTarget = null;
@@ -38,7 +41,7 @@ namespace Nabunassar
 
         public PenumbraComponent Penumbra { get; set; }
 
-        public bool IsMouseMoveAvailable { get; internal set; } = true;
+        public GameLoopFeatureValue<bool> IsMouseMoveAvailable { get; internal set; }
 
         public bool IsGameActive { get; set; } = true;
 

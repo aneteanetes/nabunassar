@@ -1,6 +1,7 @@
 ﻿using Geranium.Reflection;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using Nabunassar.Components;
@@ -13,10 +14,15 @@ namespace Nabunassar.Systems
 {
     internal class MapObjectFocusSystem : BaseSystem
     {
+        private FocusWidgetComponent _focusedWidgetComponent;
+        private HashSet<string> _focusingLayers;
+        private KeyValuePair<string, Layer>[] _availableLayers;
         private ComponentMapper<FocusWidgetComponent> focusWidgetMapper;
 
         public MapObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusWidgetComponent)))
         {
+            _focusingLayers = ["revealed", "objects"];
+            _availableLayers = Game.CollisionComponent.Layers.Where(x => _focusingLayers.Contains(x.Key)).ToArray();
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -24,8 +30,6 @@ namespace Nabunassar.Systems
             focusWidgetMapper = mapperService.GetMapper<FocusWidgetComponent>();
 
         }
-
-        private FocusWidgetComponent _focusedWidgetComponent;
 
         public override void Update(GameTime gameTime, bool isSystem)
         {
@@ -43,11 +47,8 @@ namespace Nabunassar.Systems
 
             var bounds = new RectangleF(mousePos, new SizeF(2, 2));
 
-            foreach (var layerItem in Game.CollisionComponent.Layers)
+            foreach (var layerItem in _availableLayers)
             {
-                if (layerItem.Key == "cursor")
-                    continue;
-
                 var layer = layerItem.Value;
 
                 actor = layer.Space.Query(bounds).FirstOrDefault();

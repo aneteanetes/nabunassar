@@ -329,7 +329,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private Iconpanel _selectedIconpanel;
         private AbilityView _selectedAbilityView;
 
-        private void Iconpanel_MouseLeft(object sender, EventArgs e)
+        private void Iconpanel_MouseLeft(object sender, MyraEventArgs e)
         {
             ResetDescription();
 
@@ -476,7 +476,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _descriptionLabel.VerticalAlignment = VerticalAlignment.Top;
         }
 
-        private void TakeBtn_Click(object sender, EventArgs e)
+        private void TakeBtn_Click(object sender, MyraEventArgs e)
         {
             TabletDoubleClick(null, _itemPanel.SelectedItem);
         }
