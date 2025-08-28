@@ -48,10 +48,13 @@ namespace Nabunassar
             Game._backRenderTarget = null;
         }
 
-        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState=null, bool isTransformMatrix = true, Effect effect = default)
+        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, SamplerState samplerState = null, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState=null, bool isTransformMatrix = true, Effect effect = default, Matrix? matrix=null)
         {
             var transformMatrix = Camera.GetViewMatrix();
-            this.SpriteBatch.Begin(isCameraDependant ? transformMatrix : null);
+
+            this.SpriteBatch.Begin(isCameraDependant
+                ? transformMatrix
+                : matrix);
 
             var sb = this.SpriteBatch.GetSpriteBatch(samplerState, sortMode, blendState, isTransformMatrix, effect);
             return sb;
@@ -61,6 +64,16 @@ namespace Nabunassar
         {
             if (!IsActive)
                 return;
+
+            if (IsMakingScreenShot == true)
+            {
+                IsMakingScreenShot = false;
+                Game.SetRenderTarget(_screenShotTarget);
+                Game.ClearRenderTarget(Color.Black);
+                Game.SetRenderTargetBackBuffer(_screenShotTarget);
+            }
+
+            base.Draw(gameTime);
 
             if (PostProcessShaders.Count > 0)
             {
@@ -91,6 +104,12 @@ namespace Nabunassar
 
             if (isDrawCoords)
                 DrawPositions();
+
+            if (IsMakingScreenShot == false)
+            {
+                Game.ClearRenderTargetBackBuffer();
+                Game.SetRenderTarget(null);
+            }
         }
 
         public bool IsPostEffects = false;

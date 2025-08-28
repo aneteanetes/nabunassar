@@ -16,6 +16,7 @@ using MonoGame.Extended.ViewportAdapters;
 using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.Viewport;
+using Nabunassar.Native;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Struct;
@@ -29,6 +30,8 @@ namespace Nabunassar
 
         public NabunassarGame(GameSettings settings)
         {
+            Game = this;
+
             if (!settings.IsInitialized)
                 throw new Exception("Settings is not initialized!");
 
@@ -81,6 +84,7 @@ namespace Nabunassar
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
 
             ScreenManager = new MonoGame.Extended.Screens.ScreenManager();
+            ScreenManager.UpdateOrder = 10;
             this.Components.Add(this.ScreenManager);
         }
 
@@ -92,9 +96,14 @@ namespace Nabunassar
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
+                Game.OSPlatform = OSPlatform.Windows;
                 var windowsScale = GetWindowsScreenScalingFactor(false);
                 Settings.WidthPixel = ((int)(Settings.WidthPixel / windowsScale));
                 Settings.HeightPixel = ((int)(Settings.HeightPixel / windowsScale));
+            }
+            else
+            {
+                Game.OSPlatform = OSPlatform.Linux;
             }
 
             if (Settings.WindowMode == WindowMode.FullScreenSoftware || Settings.WindowMode == WindowMode.WindowedScaled)
@@ -185,7 +194,6 @@ namespace Nabunassar
 
         protected override void Initialize()
         {
-            Game = this;
             this.Window.Title = Settings.GameTitle;
 
             SetMonitor(Settings.MonitorIndex);
@@ -219,7 +227,7 @@ namespace Nabunassar
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
 
-            transition.Completed += (s,e)=> _screenLoaded = true;
+            transition.Completed += (s, e) => _screenLoaded = true;
 
             RemoveDesktopWidgets();
 
@@ -266,6 +274,12 @@ namespace Nabunassar
             {
                 Camera.ZoomOut(zoomPerTick);
             }
+        }
+
+        protected override void OnExiting(object sender, ExitingEventArgs args)
+        {
+            PrintScreenHandler.End();
+            base.OnExiting(sender, args);
         }
     }
 }

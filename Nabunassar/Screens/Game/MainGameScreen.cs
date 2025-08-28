@@ -8,12 +8,9 @@ using Nabunassar.Screens.Abstract;
 using Nabunassar.Shaders;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
-using Nabunassar.Widgets.Menu;
 using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.GameWindows;
 using Nabunassar.Widgets.Views.IconButtons;
-using SDL2;
-using static SDL2.SDL;
 
 namespace Nabunassar.Screens.Game
 {
@@ -22,6 +19,7 @@ namespace Nabunassar.Screens.Game
         TiledMap _tiledMap;
         public static GaussianBlur GlobalBlurShader;
 
+
         public MainGameScreen(NabunassarGame game) : base(game)
         {
         }
@@ -29,8 +27,6 @@ namespace Nabunassar.Screens.Game
         public override void LoadContent()
         {
             GlobalBlurShader = new GaussianBlur(Game,1.5f);            
-
-            _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
 
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
@@ -101,52 +97,16 @@ namespace Nabunassar.Screens.Game
             Game.AddDesktopWidget(new GameDateTime(Game));
         }
 
-        private bool? _isMakingScreenShot = null;
-        private RenderTarget2D _screenShotTarget = null;
-
         public override void Update(GameTime gameTime)
         {
-            if (_isMakingScreenShot == false)
-            {
-                var path = _screenShotTarget.MakeScreenshot();
-                Game.GameState.AddMessage(DrawText.Create("").Color(Color.Yellow).Append(Game.Strings["UI"]["Screenshot was created"] + $": {path}"));
-                _isMakingScreenShot = null;
-            }
-
             var keyboardState = KeyboardExtended.GetState();
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
             {
-                if (Game.IsDesktopWidgetExist<MainMenu>())
-                {
-                    GlobalBlurShader.Disable();
-                    Game.RemoveDesktopWidgets<MainMenu>();
-                    Game.ChangeGameActive();
-                }
+                if (!Game.GameState.EscapeSwitch)
+                    SettingsIconButton.OpenCloseSettings(Game);
                 else
-                {
-                    GlobalBlurShader.Enable();
-                    Game.AddDesktopWidget(new MainMenu(Game, true));
-                    Game.ChangeGameActive();
-                }
-            }
-
-            while (SDL.SDL_PollEvent(out var _event) != 0)
-            {
-                if (_event.type == SDL_EventType.SDL_KEYDOWN)
-                {
-                    if (_event.key.keysym.sym == SDL_Keycode.SDLK_PRINTSCREEN)
-                    {
-                        _isMakingScreenShot = true;
-                    }
-                }
-                if (_event.type == SDL_EventType.SDL_KEYUP)
-                {
-                    if (_event.key.keysym.sym == SDL_Keycode.SDLK_PRINTSCREEN)
-                    {
-                        _isMakingScreenShot = true;
-                    }
-                }
+                    Game.GameState.EscapeSwitch = false;
             }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
@@ -178,25 +138,6 @@ namespace Nabunassar.Screens.Game
             {
 
                 logWindow = !logWindow;
-            }
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            if (_isMakingScreenShot == true)
-            {
-                _isMakingScreenShot = false;
-                Game.SetRenderTarget(_screenShotTarget);
-                Game.ClearRenderTarget(Color.Black);
-                Game.SetRenderTargetBackBuffer(_screenShotTarget);
-            }
-
-            base.Draw(gameTime);
-
-            if (_isMakingScreenShot==false)
-            {
-                Game.ClearRenderTargetBackBuffer();
-                Game.SetRenderTarget(null);
             }
         }
     }

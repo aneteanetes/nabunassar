@@ -78,7 +78,6 @@ namespace Nabunassar
 				return;
 			}
 
-
 			var entrydll = Assembly.GetExecutingAssembly().Location;
 			var root = Path.GetDirectoryName(entrydll);
 

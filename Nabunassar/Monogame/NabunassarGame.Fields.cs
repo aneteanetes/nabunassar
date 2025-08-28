@@ -17,11 +17,17 @@ using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Nabunassar.Widgets;
 using Penumbra;
+using System.Runtime.InteropServices;
 
 namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
+        public static bool? IsMakingScreenShot = null;
+
+        private RenderTarget2D _screenShotTarget = null;
+        public OSPlatform OSPlatform { get; private set; }
+
         private bool _screenLoaded = false;
 
         private RenderTarget2D _backBuffer;
@@ -83,7 +89,7 @@ namespace Nabunassar
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop Desktop = null;
+        public Desktop Desktop { get; private set; }
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 
@@ -94,9 +100,11 @@ namespace Nabunassar
         public Matrix ResolutionMatrix;
         private Point originSize { get; set; }
 
-        private Microsoft.Xna.Framework.Vector3 Scale = default;
+        public Microsoft.Xna.Framework.Vector3 Scale { get; private set; }
 
         public PossibleResolution Resolution { get; set; }
+
+        public PossibleResolution Viewport {  get; set; }
 
         public static System.Numerics.Matrix4x4 ResolutionScaleMatrix { get; set; }
         public static Action<PossibleResolution> ChangeResolution { get; set; }

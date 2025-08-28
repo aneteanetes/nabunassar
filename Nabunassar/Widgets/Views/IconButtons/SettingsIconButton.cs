@@ -1,12 +1,16 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
+using Nabunassar.Screens.Game;
 using Nabunassar.Widgets.Menu;
+using Nabunassar.Widgets.UserInterfaces;
 
 namespace Nabunassar.Widgets.Views.IconButtons
 {
     internal class SettingsIconButton : IconButton
     {
         private NabunassarGame _game;
+
+        public override bool IsReactOnClick => false;
 
         public SettingsIconButton(NabunassarGame game) : base(game.Strings["UI"]["Minimap"], null)
         {
@@ -17,8 +21,29 @@ namespace Nabunassar.Widgets.Views.IconButtons
 
         public override void OnClick()
         {
-            _game.AddDesktopWidget(new MainMenu(_game, true));
-            _game.ChangeGameActive();
+            Open(_game);
+        }
+
+        private static void Open(NabunassarGame game)
+        {
+            MainGameScreen.GlobalBlurShader.Enable();
+            game.AddDesktopWidget(new MainMenu(game, true));
+            game.RemoveDesktopWidgets<TitleWidget>();
+            game.ChangeGameActive();
+        }
+
+        public static void OpenCloseSettings(NabunassarGame game)
+        {
+            if (game.IsDesktopWidgetExist<MainMenu>())
+            {
+                MainGameScreen.GlobalBlurShader.Disable();
+                game.RemoveDesktopWidgets<MainMenu>();
+                game.ChangeGameActive();
+            }
+            else
+            {
+                Open(game);
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
+using Myra;
+using Nabunassar.Entities.Struct;
+using Nabunassar.Extensions.Texture2DExtensions;
 
 namespace Nabunassar
 {
@@ -10,6 +13,13 @@ namespace Nabunassar
         {
             if (!IsActive)
                 return;
+
+            if (IsMakingScreenShot == false)
+            {
+                var path = _screenShotTarget.MakeScreenshot();
+                Game.GameState.AddMessage(DrawText.Create("").Color(Color.Yellow).Append(Game.Strings["UI"]["Screenshot was created"] + $": {path}"));
+                IsMakingScreenShot = null;
+            }
 
             if (IsGameActive)
                 GameState.Update(gameTime);
@@ -55,7 +65,10 @@ namespace Nabunassar
                 isDrawCoords = !isDrawCoords;
 
             if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.B))
+            {
                 IsDrawBounds = !IsDrawBounds;
+                MyraEnvironment.DrawWidgetsFrames = !MyraEnvironment.DrawWidgetsFrames;
+            }
 
             if (keyboardState.IsControlDown() && keyboardState.WasKeyPressed(Keys.Y))
             {

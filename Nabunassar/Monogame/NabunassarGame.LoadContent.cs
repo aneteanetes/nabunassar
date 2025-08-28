@@ -7,6 +7,7 @@ using Nabunassar.Content;
 using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.SpriteBatch;
+using Nabunassar.Native;
 using Nabunassar.Screens;
 using Nabunassar.Struct;
 using Nabunassar.Widgets;
@@ -31,13 +32,18 @@ namespace Nabunassar
             MyraEnvironment.Game = this;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             Desktop = new Desktop();
+
+            var vectorScale = new Vector2(this.Scale.X, this.Scale.Y);
+            //MyraEnvironment.Scale = vectorScale.NormalizedCopy();
+
             WidgetFactory = new Widgets.WidgetFactory(this);
             WidgetFactory.LoadContent();
             ApplyMyraCustomStyle();
 
             // backbuffer
-            
-            _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+            Game.Viewport = new Monogame.Viewport.PossibleResolution(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
+            _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Viewport.Width, Game.Viewport.Height);
+            _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
 
             //
 
@@ -50,6 +56,8 @@ namespace Nabunassar
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
 
             LoadPenumbra();
+
+            PrintScreenHandler.Start();
 
             base.LoadContent();
         }

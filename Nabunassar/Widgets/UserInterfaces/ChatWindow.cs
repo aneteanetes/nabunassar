@@ -1,6 +1,7 @@
 ﻿using FontStashSharp;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using MonoGame.Extended.Input;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
@@ -15,29 +16,37 @@ namespace Nabunassar.Widgets.UserInterfaces
 {
     internal class ChatWindow : ScreenWidgetWindow
     {
-        private static FontSystem _fontBitterBold;
+        private int minimalHeight = 150;
+        private int minimalTop = 890;
+        private int messageBoxWidth = 550;
+        private FieldInfo _verticalScrollbarThumbAccessor;
         private static FontSystem _font;
         private Texture2D chatborder;
         private Texture2D chatborderBlack;
         private TextureRegion resizeImage;
-        private Texture2D pixel;
-        private Texture2D sliderknob;
         private static ChatWindow ChatWindowWidget;
+        public static bool Exists { get; private set; }
 
         public ChatWindow(NabunassarGame game) : base(game)
         {
             ChatWindowWidget = this;
+            Exists = true;
+
+            var scaleFactor = game.Scale.ToVector2().NormalizedCopy().X;
+
+            minimalTop = (int)(minimalTop * scaleFactor);
+            minimalHeight = (int)(minimalHeight * scaleFactor);
+            messageBoxWidth = (int)(messageBoxWidth * scaleFactor);
+
+            minimalTop += minimalHeight;
         }
 
         public override void LoadContent()
         {
-            _fontBitterBold = Content.LoadFont(Fonts.BitterBold);
             _font = Game.Content.LoadFont(Fonts.Retron);
             chatborder = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm.png");
             chatborderBlack = Game.Content.Load<Texture2D>("Assets/Images/Borders/panel-border-007sm_b.png");
             resizeImage = new TextureRegion(Game.Content.Load<Texture2D>("Assets/Tilesets/cursor_tilemap_packed.png"), new Rectangle(64, 96, 16, 16));
-            pixel = Game.Content.Load<Texture2D>("Assets/Images/pixel.png");
-            sliderknob = Game.Content.Load<Texture2D>("Assets/Images/Borders/sliderknob.png");
             base.LoadContent();
 
             _verticalScrollbarThumbAccessor = typeof(ScrollViewer).GetField("_verticalScrollbarThumb", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -66,7 +75,7 @@ namespace Nabunassar.Widgets.UserInterfaces
 
             messageBox = new VerticalStackPanel();
             messageBox.MinHeight = minimalHeight;
-            messageBox.Width = 550;
+            messageBox.Width = messageBoxWidth;
 
             //messageBox = new VerticalStackPanel();
 
@@ -236,15 +245,10 @@ namespace Nabunassar.Widgets.UserInterfaces
             isResizing = true;
         }
 
-        private int minimalHeight = 150;
-        private static int minimalTop = 895;
-        private FieldInfo _verticalScrollbarThumbAccessor;
-
         public PropertyInfo ThumbPositionAccessor { get; private set; }
 
         public override void Update(GameTime gameTime)
         {
-
             var mouse = MouseExtended.GetState();
             if (mouse.WasButtonReleased(MouseButton.Left))
                 isResizing = false;
@@ -273,7 +277,6 @@ namespace Nabunassar.Widgets.UserInterfaces
             Window.Top = y;
 
             scrollcontainer.Height = minimalTop + minimalHeight - y;
-
 
             if (scrollcontainer.Height < minimalHeight)
                 scrollcontainer.Height = minimalHeight;

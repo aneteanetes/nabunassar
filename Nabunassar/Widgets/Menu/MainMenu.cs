@@ -46,12 +46,20 @@ internal partial class MainMenu : ScreenWidget
 
     protected override Widget CreateWidget()
     {
-        var panel = new Panel();
+        var container = new Panel();
+        container.HorizontalAlignment = HorizontalAlignment.Stretch;
+        container.VerticalAlignment = VerticalAlignment.Stretch;
+
+        var panel = new VerticalStackPanel();
+        panel.Spacing = 25;
+        panel.Margin = new Myra.Graphics2D.Thickness(0, 0, 0, 15);
+        panel.HorizontalAlignment = HorizontalAlignment.Center;
+        panel.VerticalAlignment = VerticalAlignment.Bottom;
 
         var backNormal = new NinePatchRegion(backimgnorm, new Rectangle(0, 0, 48, 48), new Myra.Graphics2D.Thickness(12));
         var backPressed = new NinePatchRegion(backimgfocus, new Rectangle(0, 0, 48, 48), new Myra.Graphics2D.Thickness(12));
 
-        var top = -300;
+        //var top = -300;
 
         var newGame = new Button()
         {
@@ -60,9 +68,11 @@ internal partial class MainMenu : ScreenWidget
             Background = backNormal,
             OverBackground = backNormal,
             PressedBackground = backPressed,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Bottom,
+            //Margin = new Myra.Graphics2D.Thickness(15),
+            //HorizontalAlignment = HorizontalAlignment.Center,
+            //VerticalAlignment = VerticalAlignment.Center,
         };
+
         newGame.MouseEntered += NewGame_MouseEntered;
         newGame.MouseLeft += NewGame_MouseLeft;
         var newgametext = new Label()
@@ -76,13 +86,13 @@ internal partial class MainMenu : ScreenWidget
         };
         newGame.Click += NewGame_Click;
         newGame.Content = newgametext;
-        newGame.Top = top;
+        //newGame.Top = top;
         panel.Widgets.Add(newGame);
 
         var load = newGame.Clone().As<Button>();
         var loadtext = newgametext.Clone().As<Label>();
         loadtext.Text = Game.Strings["UI"]["Load"];
-        load.Top = top+=75;
+        //load.Top = top+=75;
         load.Content = loadtext;
         load.MouseEntered += NewGame_MouseEntered;
         load.MouseLeft += NewGame_MouseLeft;
@@ -94,7 +104,7 @@ internal partial class MainMenu : ScreenWidget
             var backtext = newgametext.Clone().As<Label>();
             backtext.Text = Game.Strings["UI"]["Back"];
             back.Content = backtext;
-            back.Top = top += 75;
+            //back.Top = top += 75;
             back.Click += Back_Click;
             back.MouseEntered += NewGame_MouseEntered;
             back.MouseLeft += NewGame_MouseLeft;
@@ -105,16 +115,23 @@ internal partial class MainMenu : ScreenWidget
         var quittext = newgametext.Clone().As<Label>();
         quittext.Text = Game.Strings["UI"]["Exit"];
         quit.Content = quittext;
-        quit.Top = top += 75;
+        //quit.Top = top += 75;
         quit.Click += _menuQuit_Selected;
         quit.MouseEntered += NewGame_MouseEntered;
         quit.MouseLeft += NewGame_MouseLeft;
         panel.Widgets.Add(quit);
 
         if (_isInGame)
-            panel.IsModal = true;
+            container.IsModal = true;
 
-        return panel;
+        container.Widgets.Add(panel);
+
+
+        Grid.SetRow(newGame, 0);
+        Grid.SetRow(load, 1);
+        Grid.SetRow(quit, 2);
+
+        return container;
     }
 
     public override void OnAfterAddedWidget(Widget widget)

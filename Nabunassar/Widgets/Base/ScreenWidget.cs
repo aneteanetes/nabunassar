@@ -1,4 +1,5 @@
 ﻿using Geranium.Reflection;
+using MonoGame.Extended;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Monogame.Content;
@@ -35,6 +36,8 @@ namespace Nabunassar.Widgets.Base
 
         public Vector2 Position { get; set; }
 
+        protected float ScaleFactor { get; private set; }
+
         public ScreenWidget(NabunassarGame game)
         {
             Game = game;
@@ -42,6 +45,8 @@ namespace Nabunassar.Widgets.Base
             UpdateOrderChanged?.Invoke(null, null);
             DrawOrderChanged?.Invoke(null, null);
             VisibleChanged?.Invoke(null, null);
+
+            ScaleFactor = game.Scale.ToVector2().NormalizedCopy().X;
         }
 
         public Widget GetWidgetReference() => UIWidget;
@@ -143,6 +148,7 @@ namespace Nabunassar.Widgets.Base
 
         public virtual void Close()
         {
+            Game.GameState.EscapeSwitch = true;
             Dispose();
         }
 

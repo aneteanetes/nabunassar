@@ -9,12 +9,19 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 {
     internal class MinimapWindow : ScreenWidgetWindow
     {
+        private static Vector2 _windowPosition;
+
         private FontSystem _font;
         private Texture2D _background;
+        private int _leftOffset;
+        private int _topOffset;
+
 
         public MinimapWindow(NabunassarGame game) : base(game)
         {
             MakeUnique(x => false);
+            _leftOffset = 10;
+            _topOffset = 40;
         }
 
         public override void LoadContent()
@@ -23,8 +30,6 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             _background = Content.Load<Texture2D>("Assets/Images/Borders/windowbackground.png");
             base.LoadContent();
         }
-
-        private static Vector2 _windowPosition;
 
         protected override Window CreateWindow()
         {
@@ -51,8 +56,13 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
             window.Content = map;
 
+            //window.HorizontalAlignment = HorizontalAlignment.Right;
+            //window.VerticalAlignment = VerticalAlignment.Bottom;
+
             if (Position != default)
-                _windowPosition = new Vector2(Position.X - ((map.Width ?? 0)+10), Position.Y - ((map.Height ?? 0) + 40));
+            {                
+                _windowPosition = new Vector2(Game.Desktop.LayoutBounds.Width - ((map.Width ?? 0) + _leftOffset), Game.Desktop.LayoutBounds.Height - ((map.Height ?? 0) + _topOffset));
+            }
 
             return window;
         }
@@ -67,5 +77,20 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
             if (this.Position == default)
                 this.Position = new Vector2(1);
         }
+
+        //public override void Update(GameTime gameTime)
+        //{
+        //    if (this.Window.HorizontalAlignment == HorizontalAlignment.Right && this.Window.ContainerBounds.Size.X > 1)
+        //    {
+        //        _windowPosition = new Vector2(this.Window.ContainerBounds.Size.X, this.Window.ContainerBounds.Size.Y);
+        //        this.Window.HorizontalAlignment = HorizontalAlignment.Left;
+        //        this.Window.VerticalAlignment = VerticalAlignment.Top;
+        //        this.Position = _windowPosition;
+        //        this.Window.Left = ((int)_windowPosition.X) - this.Window.Width.Value;
+        //        this.Window.Top = ((int)_windowPosition.Y) - this.Window.Height.Value;
+        //    }
+
+        //    base.Update(gameTime);
+        //}
     }
 }

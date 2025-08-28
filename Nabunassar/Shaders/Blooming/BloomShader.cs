@@ -612,14 +612,14 @@ namespace Nabunassar.Shaders.Blooming
         {
             var backBuffer = Game.GetBackBuffer();
 
-            var bloom = Draw(backBuffer, Game.Resolution.Width, Game.Resolution.Height);
+            var bloom = Draw(backBuffer, Game.Viewport.Width, Game.Viewport.Height);
 
             Game.GraphicsDevice.SetRenderTarget(null);
             Game.GraphicsDevice.Clear(Color.Black);
 
             var sb = Game.BeginDraw(false,blendState: BlendState.Additive);
-            sb.Draw(bloom, Game.Resolution, Color.White);
-            sb.Draw(backBuffer, Game.Resolution, Color.White);
+            sb.Draw(bloom, Game.Viewport, Color.White);
+            sb.Draw(backBuffer, Game.Viewport, Color.White);
             sb.End();
         }
     }

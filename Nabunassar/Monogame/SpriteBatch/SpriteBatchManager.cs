@@ -28,7 +28,7 @@ namespace Nabunassar.Monogame.SpriteBatch
 
         public void Begin(Matrix? resolutionMatrix = default)
         {
-            _resolutionMatrix = resolutionMatrix == default ? _game.ResolutionMatrix : resolutionMatrix;
+            _resolutionMatrix = resolutionMatrix;// == default ? _game.ResolutionMatrix : resolutionMatrix;
             isBegined = true;
         }
 

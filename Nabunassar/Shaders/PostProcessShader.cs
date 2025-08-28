@@ -18,7 +18,7 @@ namespace Nabunassar.Shaders
             Shader = LoadShader(shaderPath);
 
             if (_bufferOfBuffers == null)
-                _bufferOfBuffers = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+                _bufferOfBuffers = new RenderTarget2D(Game.GraphicsDevice, Game.Viewport.Width, Game.Viewport.Height);
         }
 
         public virtual void LoadContent() {
@@ -68,14 +68,14 @@ namespace Nabunassar.Shaders
             }
 
             var sb = Game.BeginDraw(false, effect: Shader);            
-            sb.Draw(backBuffer, Game.Resolution, Color.White);
+            sb.Draw(backBuffer, Game.Viewport, Color.White);
             sb.End();
 
             if (!isLast)
             {
                 Game.GraphicsDevice.SetRenderTarget(backBuffer);
                 sb = Game.BeginDraw(false);
-                sb.Draw(_bufferOfBuffers, Game.Resolution, Color.White);
+                sb.Draw(_bufferOfBuffers, Game.Viewport, Color.White);
                 sb.End();
             }
         }

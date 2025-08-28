@@ -31,6 +31,8 @@ namespace Nabunassar.Entities.Data
 
         public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 
+        public bool EscapeSwitch { get; internal set; }
+
         public void Log(string message)
         {
             OnLog?.Invoke(message);
@@ -38,12 +40,14 @@ namespace Nabunassar.Entities.Data
 
         public void AddMessage(DrawText text)
         {
-            ChatWindow.AddMessage(text.ToString());
+            if (ChatWindow.Exists)
+                ChatWindow.AddMessage(text.ToString());
         }
 
         public void AddRollMessage(DrawText text, RollResult rollResult)
         {
-            ChatWindow.AddRollMessage(text.ToString(), rollResult);
+            if (ChatWindow.Exists)
+                ChatWindow.AddRollMessage(text.ToString(), rollResult);
         }
 
         internal void Update(GameTime gameTime)
