@@ -6,10 +6,15 @@ using Myra.Events;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Enums;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Resources;
 using Nabunassar.Shaders.Blooming;
 using Nabunassar.Widgets.Base;
+using Nabunassar.Widgets.Views.DescriptionTolltip;
+using Nabunassar.Widgets.Views.StatusEffects;
+using SharpFont;
 
 namespace Nabunassar.Widgets.UserEffects
 {
@@ -32,13 +37,17 @@ namespace Nabunassar.Widgets.UserEffects
             {11,new Point(740,180) },
             {12,new Point(950,180) },
         };
-        Texture2D background;
         private BloomShader _bloom;
         private FontSystem _retron;
         private Label _godName;
         private VerticalStackPanel _description;
         private Gods? _selected;
         private Image _selectedImage;
+        Panel _mainPanel = null;
+        DescriptionPanel _judgePanel;
+        DescriptionPanel _blessingPanel;
+        DescriptionPanel _blessingEffectPanel1;
+        DescriptionPanel _blessingEffectPanel2;
 
         public override bool IsModal => true;
 
@@ -57,7 +66,6 @@ namespace Nabunassar.Widgets.UserEffects
             var gods = typeof(Gods).GetAllValues<Gods>()
                 .ToArray();
 
-            background = Content.LoadTexture($"Assets/Images/Icons/Gods/_background.png");
 
             for (int i = 0; i < 12; i++)
             {
@@ -83,6 +91,12 @@ namespace Nabunassar.Widgets.UserEffects
             {
                 this.Close();
             }
+
+
+            if (_blessingEffectPanel1 != null)
+                _blessingEffectPanel1.Top = _blessingPanel.Top + _blessingPanel.Bounds.Height + 30;
+            if (_blessingEffectPanel2 != null)
+                _blessingEffectPanel2.Top = _blessingEffectPanel1.Top + _blessingEffectPanel1.Bounds.Height + 30;
 
             var mouse = MouseExtended.GetState();
 
@@ -110,8 +124,8 @@ namespace Nabunassar.Widgets.UserEffects
 
         protected override Widget CreateWidget()
         {
-            var panel = new Panel() { Width = Game.Resolution.Width, Height = Game.Resolution.Height };
-            panel.Background = new SolidBrush(new Color(Color.Black, 150));
+            var panel = _mainPanel = new Panel() { Width = Game.Resolution.Width, Height = Game.Resolution.Height };
+            panel.Background = new SolidBrush(new Color(Color.Black, 190));
 
             panel.TouchDown += Panel_TouchDown;
 
@@ -140,22 +154,22 @@ namespace Nabunassar.Widgets.UserEffects
                 Point pos = GetPositionByGod(((int)god));
                 var texture = Content.LoadTexture($"Assets/Images/Icons/Gods/Runes/{god}.png");
 
-                var img =new Image()
+                var img = new Image()
                 {
                     Renderable = new TextureRegion(texture),
                     Margin = new Myra.Graphics2D.Thickness(25),
-                    Height = 60*2,
-                    Width = 54*2,
+                    Height = 60 * 2,
+                    Width = 54 * 2,
                 };
                 img.Height += 25;
                 img.Width += 25;
                 img.MouseEntered += (s, e) =>
                 {
-                    Select(img,god);
+                    Select(img, god);
                 };
                 img.MouseLeft += (s, e) =>
                 {
-                    Select(img,null);
+                    Select(img, null);
                 };
                 img.TouchDown += (s, e) =>
                 {
@@ -187,11 +201,279 @@ namespace Nabunassar.Widgets.UserEffects
                 VerticalAlignment = VerticalAlignment.Center,
                 Top = 50
             };
+            AddRankDescriptions();
+            UpdJudjement();
+            UpdBlessing();
+            Worship();
+
             panel.Widgets.Add(_description);
 
             panel.Widgets.Add(imgPanel);
 
             return panel;
+        }
+
+        private void UpdJudjement(Gods? godValue=null)
+        {
+            var data = Description.Create(Game.Strings["GameTexts"]["Judgment"].ToString(), Color.Yellow);
+            data.Append(DescriptionPosition.Right, $"{Game.Strings["GameTexts"]["Rank"]} {_prayerAbility.AbilityRank.Value}", Color.Gray, data.TextSizeTitle);
+            data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Effect"], Color.Gray);
+
+            var god = godValue ?? _selected;
+            var element = god == null ? Elements.Physical : god.Value.GodElement();
+            var color = god == null ? Globals.BaseColorLight : god.Value.GodColor();
+            var dice = _prayerAbility.AbilityRank.AsDice();
+
+            var damageType = element == Elements.Physical
+                ? Game.Strings["GameTexts"]["SelectedDamageType"]
+                : Game.Strings["ElementDamageTexts"][element.ToString()];
+
+            var text = DrawText.Create(Game.Strings["EffectsTexts"]["Judgment"]).Color(color).Append(dice.ToFormula() + " " +damageType.ToLower()).ResetColor().Append(".");
+
+            data.Append(DescriptionPosition.Center, text);
+
+            if (_judgePanel != null)
+            {
+                _mainPanel.Widgets.Remove(_judgePanel);
+            }
+            _mainPanel.Widgets.Add(_judgePanel = new DescriptionPanel(Game, data)
+            {
+                Left = 200,
+                Top = 450
+            });
+        }
+
+        private void UpdBlessing(Gods? godValue = null)
+        {
+            var data = Description.Create(Game.Strings["GameTexts"]["Blessing"].ToString(), Color.Orange);
+            data.Append(DescriptionPosition.Right, $"{Game.Strings["GameTexts"]["Rank"]} {_prayerAbility.AbilityRank.Value}", Color.Gray, data.TextSizeTitle);
+            data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Boon"], Color.Gray);
+
+            var god = godValue ?? _selected;
+
+            var descriptionToken = god == null
+                ? Game.Strings["GameTexts"]["BlessingOfGods"]
+                : Game.Strings["EffectsTexts"]["BlessingOf" + god.Value.ToString()];
+
+            var text = descriptionToken.ToString()
+                .Replace("{RankDice}", _prayerAbility.AbilityRank.AsDice().ToString());
+
+            data.Append(DescriptionPosition.Center, text);
+
+            if (_blessingPanel != null)
+            {
+                _mainPanel.Widgets.Remove(_blessingPanel);
+            }
+            _mainPanel.Widgets.Add(_blessingPanel = new DescriptionPanel(Game, data)
+            {
+                Top = 450,
+                Left = 1400
+            });
+
+            if (god != null)
+            {
+                var additional1 = BlessingAdditionalEffect(god.Value);
+                if (_blessingEffectPanel1 != null)
+                {
+                    _mainPanel.Widgets.Remove(_blessingEffectPanel1);
+                }
+                if (additional1 != null)
+                {
+                    additional1.Top = _blessingPanel.Top + _blessingPanel.Bounds.Height + 30;
+                    additional1.Left = 1400;
+
+                    _mainPanel.Widgets.Add(_blessingEffectPanel1 = additional1);
+                }
+
+                var additional2 = BlessingAdditionalEffect2(god.Value);
+                if (_blessingEffectPanel2 != null)
+                {
+                    _mainPanel.Widgets.Remove(_blessingEffectPanel2);
+                }
+                if (additional2 != null)
+                {
+                    additional2.Top = _blessingEffectPanel1.Top + _blessingEffectPanel1.Bounds.Height + 30;
+                    additional2.Left = 1400;
+
+                    _mainPanel.Widgets.Add(_blessingEffectPanel2 = additional2);
+                }
+                else _blessingEffectPanel2 = null;
+            }
+        }
+
+        private DescriptionPanel BlessingAdditionalEffect(Gods god)
+        {
+            DescriptionBuilder data = null;
+
+            switch (god)
+            {
+                case Gods.Nasho:
+                    data = Description.Create(Game.Strings["GameTexts"]["Soar"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Boon"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Soar"]);
+                    break;
+                case Gods.Sabu:
+                    data = Description.Create(Game.Strings["GameTexts"]["Defence"], "#6285de".AsColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Characteristic"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Defence"]);
+                    break;
+                case Gods.Rohati:
+                    data = Description.Create(Game.Strings["GameTexts"]["Disease"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Condition"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Disease"]);
+                    break;
+                case Gods.Nisa:
+                    data = Description.Create(Game.Strings["GameTexts"]["Bleeding"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Condition"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Bleeding"]);
+                    break;
+                case Gods.Haya:
+                    data = Description.Create(Game.Strings["GameTexts"]["MagicOfLife"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["MagicSchool"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["MagicOfLife"]);
+                    break;
+                case Gods.Ailul:
+                    data = Description.Create(Game.Strings["GameTexts"]["Rage"], Color.Red);
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Condition"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Rage"]);
+                    break;
+                case Gods.Tamus:
+                    data = Description.Create(Game.Strings["GameTexts"]["Machine"], Color.Orange);
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Characteristic"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Machine"]);
+                    break;
+                case Gods.Shamadj:
+                    data = Description.Create(Game.Strings["GameTexts"]["SeaWater"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Boon"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["SeaWater"].ToString().Replace("{RankDice}", _prayerAbility.AbilityRank.AsDice().ToString()));
+                    break;
+                case Gods.Aval:
+                    data = Description.Create(Game.Strings["GameTexts"]["MagicOfLight"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["MagicSchool"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["MagicOfLight"]);
+                    break;
+                case Gods.Ziran:
+                    return null;
+                case Gods.Teshrin:
+                    data = Description.Create(Game.Strings["GameTexts"]["Night"], god.GodColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["TimesOfDay"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Night"]);
+                    break;
+                case Gods.Nergal:
+                    data = Description.Create(Game.Strings["GameTexts"]["MortalHit"], "#821ed9".AsColor());
+                    data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Characteristic"], Color.Gray);
+                    data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["MortalHit"]);
+                    data.SetProportion(0.9, 0.1);
+                    break;
+                default:
+                    break;
+            }          
+
+            return new DescriptionPanel(Game, data);
+        }
+
+        private DescriptionPanel BlessingAdditionalEffect2(Gods god)
+        {
+            if (god != Gods.Rohati)
+                return null;
+
+            var data = Description.Create(Game.Strings["GameTexts"]["Poison"], "#40FD14".AsColor());
+            data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["Condition"], Color.Gray);
+            data.Append(DescriptionPosition.Center, Game.Strings["EffectsTexts"]["Poison"]);
+
+            return new DescriptionPanel(Game, data);
+        }
+
+        private void Worship()
+        {
+            var data = Description.Create(Game.Strings["GameTexts"]["Worship"].ToString());
+            data.AppendLine(DescriptionPosition.Left, Game.Strings["GameTexts"]["PartyEffect"], Color.Gray);
+
+            var text = $"{Game.Strings["EffectsTexts"]["Worship"]}: {Game.GameState.PrayerCounter}/100";
+
+            data.Append(DescriptionPosition.Center, text);
+
+            _mainPanel.Widgets.Add(new DescriptionPanel(Game, data)
+            {
+                Left = 200,
+                Top = 625
+            });
+        }
+
+        private void AddRankDescriptions()
+        {
+            var formulaText = _prayerAbility.GetFormula().Complexity.ToFormula().ToString();
+
+            var text = DrawText.Create($"{Game.Strings["GameTexts"]["Rank"]} 1: ")
+                .Append(Game.Strings["GameTexts"]["PrayerRank1"].ToString().Replace("{formula}", formulaText))
+                .Append(JudgementText(0));
+
+            var labelRank1 = new Label()
+            {
+                Text = text.ToString(),
+                TextColor = Globals.BaseColor,
+                Wrap = true,
+                Width = ((int)(Game.Resolution.Width*0.4)),
+                Font = _retron.GetFont(32),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            var judg = new StatusEffect(Game, "Assets/Images/Icons/Effects/sun.png", Color.LightGoldenrodYellow,null);
+            _description.Widgets.Add(labelRank1);
+
+            var labelRank2 = labelRank1.CloneAs<Label>();
+            labelRank2.Text = DrawText.Create($"{Game.Strings["GameTexts"]["Rank"]} 2: {Game.Strings["GameTexts"]["PrayerRank2"]}")
+                .Append(JudgementText(2)).ToString();
+            labelRank2.TextColor = GetColorForRank(2);
+            _description.Widgets.Add(labelRank2);
+
+            var labelRank3 = labelRank1.CloneAs<Label>();
+            labelRank3.Text = $"{Game.Strings["GameTexts"]["Rank"]} 3: {Game.Strings["GameTexts"]["PrayerRank3"]}";
+            labelRank3.TextColor = GetColorForRank(3);
+            _description.Widgets.Add(labelRank3);
+
+            var labelRank4 = labelRank1.CloneAs<Label>();
+            labelRank4.Text = DrawText.Create($"{Game.Strings["GameTexts"]["Rank"]} 4: {Game.Strings["GameTexts"]["PrayerRank4"]}")
+                .Append(BlessingText()).ToString();
+            labelRank4.TextColor = GetColorForRank(4);
+            _description.Widgets.Add(labelRank4);
+
+            var labelRank5 = labelRank1.CloneAs<Label>();
+            labelRank5.Text = $"{Game.Strings["GameTexts"]["Rank"]} 5: {Game.Strings["GameTexts"]["PrayerRank5"]}";
+            labelRank5.TextColor = GetColorForRank(5);
+            _description.Widgets.Add(labelRank5);
+        }
+
+        private Color GetColorForRank(int  rank)
+        {
+            return _prayerAbility.AbilityRank.Value >= rank ? Globals.BaseColor : Color.Gray;
+        }
+
+        private DrawText JudgementText(int rank)
+        {
+            var color = IsAvailableByRank(rank)
+                ? Color.Yellow
+                : "#a6a86f".AsColor();
+
+            return DrawText.Create("").Color(color)
+                .Append($"[{Game.Strings["GameTexts"]["Judgment"]}]")
+                .ResetColor().Append(".");
+        }
+
+        private DrawText BlessingText()
+        {
+            var color = IsAvailableByRank(4)
+                ? Color.Orange
+                : "#bda873".AsColor();
+
+            return DrawText.Create("").Color(color)
+                .Append($"[{Game.Strings["GameTexts"]["Blessing"]}]")
+                .ResetColor().Append(".");
+        }
+
+        private bool IsAvailableByRank(int rank)
+        {
+            return _prayerAbility.AbilityRank.Value >= rank;
         }
 
         private void Panel_TouchDown(object sender, MyraEventArgs e)
@@ -201,7 +483,6 @@ namespace Nabunassar.Widgets.UserEffects
 
         private void SetDescription(Gods god)
         {
-            //_description
         }
 
         private void Select(Image img, Gods? god, bool isSelection = false)
@@ -233,6 +514,9 @@ namespace Nabunassar.Widgets.UserEffects
 
             img.Color = Color.Gray;
             _godName.Text = Game.Strings["GodNames"][god.ToString()];
+
+            UpdJudjement(god);
+            UpdBlessing(god);
         }
 
         public override void Close()

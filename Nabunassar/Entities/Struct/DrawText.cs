@@ -12,8 +12,8 @@ namespace Nabunassar.Entities.Struct
 
         private DrawText(string text)
         {
-            _text = Escape(text);
-            _unformatText = text;
+            _text = text;
+            _unformatText = Escape(text);
         }
 
         private string Escape(string text)
@@ -153,7 +153,7 @@ namespace Nabunassar.Entities.Struct
             return this;
         }
 
-        public DrawText Image(string imagepath)
+        public DrawText AppendImage(string imagepath)
         {
             _text += $"/i[{imagepath}]";
             return this;

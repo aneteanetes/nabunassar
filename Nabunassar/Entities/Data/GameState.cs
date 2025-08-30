@@ -27,7 +27,7 @@ namespace Nabunassar.Entities.Data
 
         public Calendar Calendar { get; set; } = new();
 
-        public int PrayerCounts { get; set; } = 1;
+        public int PrayerCounter { get; set; } = 0;
 
         public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 

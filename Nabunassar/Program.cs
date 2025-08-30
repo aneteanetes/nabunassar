@@ -1,10 +1,8 @@
-﻿global using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
-global using Myra.Events;
+﻿global using Myra.Events;
+global using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Microsoft.Extensions.Configuration;
 using Nabunassar;
 using Nabunassar.Content.Compiler;
-using Nabunassar.Entities.Data.Dices;
-using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Monogame.Settings;
 
 var config = new ConfigurationBuilder()

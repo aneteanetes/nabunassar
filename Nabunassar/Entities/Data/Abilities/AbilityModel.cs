@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
@@ -47,6 +48,8 @@ namespace Nabunassar.Entities.Data.Abilities
                     throw new NotImplementedException($"Ability {Name} instantiating is not implemented!");
             }
         }
+
+        internal virtual Description GetDescriptionData() => null;
 
         public string GetSlotDescription(NabunassarGame game)
         {

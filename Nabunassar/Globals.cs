@@ -9,5 +9,8 @@ namespace Nabunassar
 
         private static Color _baseColor = "#cfc6b8".AsColor();
         public static Color BaseColor => _baseColor;
+
+        private static Color _baseColorLight = "#ebe6df".AsColor();
+        public static Color BaseColorLight => _baseColorLight;
     }
 }

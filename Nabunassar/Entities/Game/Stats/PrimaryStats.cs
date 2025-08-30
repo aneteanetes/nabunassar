@@ -25,7 +25,7 @@ namespace Nabunassar.Entities.Game.Stats
 
         public Dice StrengthDice
         {
-            get => Agility.AsDice().Entity(GetStatDescription(nameof(Strength)));
+            get => Strength.AsDice().Entity(GetStatDescription(nameof(Strength)));
         }
 
         public Dice AgilityDice
@@ -35,12 +35,12 @@ namespace Nabunassar.Entities.Game.Stats
 
         public Dice IntelligenceDice
         {
-            get => Agility.AsDice().Entity(GetStatDescription(nameof(Intelligence)));
+            get => Intelligence.AsDice().Entity(GetStatDescription(nameof(Intelligence)));
         }
 
         public Dice DialecticsDice
         {
-            get => Agility.AsDice().Entity(GetStatDescription(nameof(Dialectics)));
+            get => Dialectics.AsDice().Entity(GetStatDescription(nameof(Dialectics)));
         }
 
         public static IEntity GetStatDescription(string stat)

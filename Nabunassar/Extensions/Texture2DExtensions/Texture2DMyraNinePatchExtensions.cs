@@ -8,10 +8,10 @@ namespace Nabunassar
         private static Dictionary<Texture2D, NinePatchRegion> _ninePatch = new();
         private static Dictionary<Texture2D, NinePatchRegion> _ninePatchDouble = new();
 
-        internal static NinePatchRegion NinePatch(this Texture2D texture)
+        internal static NinePatchRegion NinePatch(this Texture2D texture, int size = 12)
         {
             if(!_ninePatch.ContainsKey(texture))
-                _ninePatch[texture] = new NinePatchRegion(texture, new Rectangle(0, 0, 48, 48), new Myra.Graphics2D.Thickness(12));
+                _ninePatch[texture] = new NinePatchRegion(texture, new Rectangle(0, 0, 48, 48), new Myra.Graphics2D.Thickness(size));
 
             return _ninePatch[texture];
         }
