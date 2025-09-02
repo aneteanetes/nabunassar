@@ -1,5 +1,6 @@
 ﻿using Geranium.Reflection;
 using MonoGame.Extended.ECS.Systems;
+using Nabunassar.Monogame.Interfaces;
 
 namespace Nabunassar
 {
@@ -13,8 +14,16 @@ namespace Nabunassar
         public static bool IsUpdateAvailable(this IUpdateSystem system, GameTime gameTime, double delayMilliseconds)
             => IsUpdateAvailable(system.As<object>(), gameTime, delayMilliseconds);
 
+        public static bool CanUpdate(this IUpdateable updateable, GameTime gameTime, double delayMilliseconds)
+            => IsUpdateAvailable(updateable, gameTime, delayMilliseconds);
+
         public static bool IsUpdateAvailable(this IUpdateable updateable, GameTime gameTime, double delayMilliseconds)
             => IsUpdateAvailable(updateable.As<object>(), gameTime, delayMilliseconds);
+        public static bool CanUpdate(this IFeatured featured, GameTime gameTime, double delayMilliseconds)
+            => IsUpdateAvailable(featured, gameTime, delayMilliseconds);
+
+        public static bool IsUpdateAvailable(this IFeatured featured, GameTime gameTime, double delayMilliseconds)
+            => IsUpdateAvailable(featured.As<object>(), gameTime, delayMilliseconds);
 
         public static bool IsUpdateAvailable(this object obj, GameTime gameTime, double delayMilliseconds)
         {
@@ -25,6 +34,22 @@ namespace Nabunassar
 
             updatesCache[obj] += gameTime.ElapsedGameTime.TotalMilliseconds;
             if (updatesCache[obj] < delayMilliseconds)
+            {
+                return false;
+            }
+            updatesCache[obj] = 0;
+            return true;
+        }
+
+        public static bool CanUpdate(this object obj, GameTime gameTime, TimeSpan updateTime)
+        {
+            if (!updatesCache.ContainsKey(obj))
+            {
+                updatesCache.Add(obj, 0);
+            }
+
+            updatesCache[obj] += gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (updatesCache[obj] < updateTime.TotalMilliseconds)
             {
                 return false;
             }

@@ -34,7 +34,11 @@ namespace Nabunassar.Screens.Game
             Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
 
             _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
-            Game.GameState.LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) };
+            Game.GameState.Location = new Entities.Data.Locations.Location(Game)
+            {
+                Region = Entities.Data.Locations.Region.Underdead,
+                LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) },
+            };
             Game.EntityFactory.CreateMinimap(_tiledMap);
 
             foreach (var tileset in _tiledMap.Tilesets)
@@ -95,6 +99,8 @@ namespace Nabunassar.Screens.Game
             Game.AddDesktopWidget(new ChatWindow(Game));
             Game.AddDesktopWidget(new ControlPanel(Game));
             Game.AddDesktopWidget(new GameDateTime(Game));
+            Game.AddDesktopWidget(new PartyConditions(Game));
+            Game.AddDesktopWidget(new PartyPlates(Game));
         }
 
         public override void Update(GameTime gameTime)

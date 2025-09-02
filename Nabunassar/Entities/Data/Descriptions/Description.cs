@@ -20,7 +20,7 @@ namespace Nabunassar.Entities.Data.Descriptions
                 Left = new DescriptionPart()
                 {
                     Text = name,
-                    Color = color == default ? Globals.BaseColorLight : color
+                    Color = color == default ? DescriptionBuilder.StaticDefaultColor : color
                 }
             };
             return new DescriptionBuilder(new Description(), titleRow);
@@ -58,7 +58,7 @@ namespace Nabunassar.Entities.Data.Descriptions
 
         public string Text { get; set; }
 
-        public Color Color { get; set; } = Globals.BaseColor;
+        public Color Color { get; set; }
 
         public int Size { get; set; }
 
@@ -80,6 +80,10 @@ namespace Nabunassar.Entities.Data.Descriptions
         public int TextSizeTitle { get; private set; }
 
         public int TextSizeDefault { get; private set; }
+
+        public Color DefaultColor { get; set; } = StaticDefaultColor;
+
+        public static Color StaticDefaultColor { get; set; } = Globals.BaseColor;
 
         public DescriptionBuilder(Description description, DescriptionRow currentRow, int titleFontSize = 26, int textFontSize = 18)
         {
@@ -149,7 +153,7 @@ namespace Nabunassar.Entities.Data.Descriptions
             return new DescriptionPart()
             {
                 Text = text,
-                Color = color == default ? Globals.BaseColorLight : color,
+                Color = color == default ? DefaultColor : color,
                 Size = size < 1 ? TextSizeDefault : size,
                 Position = position
             };

@@ -16,7 +16,7 @@ namespace Nabunassar.Widgets.Base
 
         protected NabunassarContentManager Content => Game.Content;
 
-        protected Widget UIWidget;
+        public Widget UIWidget { get; private set; }
 
         public event EventHandler<EventArgs> EnabledChanged;
         public event EventHandler<EventArgs> UpdateOrderChanged;

@@ -46,7 +46,7 @@ namespace Nabunassar.Struct
         /// <returns></returns>
         internal static string ObjectTypeInLoadedMap(this ObjectType objectType)
         {
-            return objectType.ToString() + NabunassarGame.Game.GameState.LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
+            return objectType.ToString() + NabunassarGame.Game.GameState.Location.LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
         }
     }
 }

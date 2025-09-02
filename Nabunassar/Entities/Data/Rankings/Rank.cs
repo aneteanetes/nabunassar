@@ -27,6 +27,8 @@ namespace Nabunassar.Entities.Data.Rankings
 
         public Rank Entity(IEntity entity) => FromEntity(entity, this);
 
+        public RankEnum Enum => (RankEnum)Value;
+
         /// <summary>
         /// 0
         /// </summary>

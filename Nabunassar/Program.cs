@@ -1,7 +1,7 @@
-﻿global using Myra.Events;
+﻿global using Nabunassar;
+global using Myra.Events;
 global using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using Microsoft.Extensions.Configuration;
-using Nabunassar;
 using Nabunassar.Content.Compiler;
 using Nabunassar.Monogame.Settings;
 

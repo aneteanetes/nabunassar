@@ -38,5 +38,13 @@
   "Night": "Ночь",
   "MortalHit": "Смертельный удар",
   "Characteristic": "Характеристика",
-  "TimesOfDay": "Время суток"
+  "TimesOfDay": "Время суток",
+  "DoPray": "Произнести молитву",
+  "Action": "Действе",
+  "Application": "Применение",
+  "OnHit": "При атаке",
+  "WorhipPointsTaken": "Получено очков поклонения",
+  "Got": "Получено",
+  "GotHeShe": "Получил(а)",
+  "Charge": "Заряд"
 }

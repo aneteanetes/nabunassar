@@ -29,6 +29,8 @@ namespace Nabunassar
         public static bool? IsMakingScreenShot = null;
 
         private RenderTarget2D _screenShotTarget = null;
+
+        public Texture2D PixelTexture { get; private set; }
         public OSPlatform OSPlatform { get; private set; }
 
         private bool _screenLoaded = false;

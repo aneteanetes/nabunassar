@@ -50,6 +50,8 @@ namespace Nabunassar
 
             //
 
+            PixelTexture = new Texture2D(GraphicsDevice, 1, 1);
+
             Strings = new LocalizedStrings(this);
 
             SwitchScreen<MainMenuScreen>();

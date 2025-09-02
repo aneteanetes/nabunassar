@@ -21,9 +21,15 @@ namespace Nabunassar.Entities.Struct
             return text.Replace("/", "//");
         }
 
-        public static DrawText Create(string text)
+        public static DrawText Create(string text, Color color = default)
         {
-            var dt = new DrawText(text);
+            var dt = new DrawText("");
+
+            if(color!=default)
+                dt = dt.Color(color);
+
+            dt = dt.Append(text);
+
             return dt;
         }
 

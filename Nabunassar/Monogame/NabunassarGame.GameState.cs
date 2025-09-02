@@ -12,6 +12,7 @@ namespace Nabunassar
         public void InitializeGameState()
         {
             GameState = new GameState();
+            GameState.Init();
             EntityFactory.CreateCursor();
         }
 

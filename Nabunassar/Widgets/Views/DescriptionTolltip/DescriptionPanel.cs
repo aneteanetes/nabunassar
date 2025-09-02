@@ -8,7 +8,7 @@ namespace Nabunassar.Widgets.Views.DescriptionTolltip
     {
         public DescriptionPanel(NabunassarGame game, Description description)
         {
-            var texture = game.Content.LoadTexture("Assets/Images/Borders/descriptionpanel.png");
+            var texture = game.Content.LoadTexture("Assets/Images/Borders/descriptionpanel1.png");
             Background = texture.NinePatch(16);
 
             Width = 300;

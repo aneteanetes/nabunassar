@@ -1,11 +1,17 @@
-﻿using Nabunassar.Entities.Data.Dices;
+﻿using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.Dices;
+using Nabunassar.Entities.Data.Effects;
+using Nabunassar.Entities.Data.Locations;
+using Nabunassar.Entities.Data.Praying;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Entities.Map;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
 using System;
+using System.Drawing.Printing;
 
 namespace Nabunassar.Entities.Data
 {
@@ -21,15 +27,17 @@ namespace Nabunassar.Entities.Data
 
         public Minimap Minimap { get; set; }
 
-        public TiledBase LoadedMap { get; set; }
+        public Location Location { get; set; }
 
         public UIState UIState { get; set; } = new();
 
         public Calendar Calendar { get; set; } = new();
 
-        public int PrayerCounter { get; set; } = 0;
+        public TypedHashSet<BaseEffect> PartyEffects { get; set; } = new();
 
-        public string LoadedMapPostFix => LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
+        public PrayState Prayers { get; set; } = new PrayState();
+
+        public string LoadedMapPostFix => Location.LoadedMap.GetPropertyValue<string>("AreaObjectPostfix");
 
         public bool EscapeSwitch { get; internal set; }
 
@@ -56,6 +64,23 @@ namespace Nabunassar.Entities.Data
                 return;
 
             Calendar.Update(gameTime);
+        }
+
+        public void Init()
+        {
+            Calendar.OnNewDay += ResetPrayers;
+        }
+
+        private void ResetPrayers()
+        {
+            var priests = Party.Where(x=>x.Creature.Archetype== Game.Enums.Archetype.Priest).ToList();
+            foreach (var priest in priests)
+            {
+                var prayerAbil = priest.Creature.WorldAbilities.FirstOrDefault(x => x.GetType() == typeof(PrayerAbility));
+
+                if (prayerAbil.AbilityRank.Value >= 3)
+                    priest.Creature.IsPrayerAvailable = true;
+            }
         }
     }
 }

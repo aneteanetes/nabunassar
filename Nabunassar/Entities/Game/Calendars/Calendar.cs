@@ -33,14 +33,17 @@ namespace Nabunassar.Entities.Game.Calendars
             {
                 time -= TimeSpan.FromDays(time.Days);
                 Days++;
+                OnNewDay?.Invoke();
 
                 if (Days > 30)
                 {
                     Months++;
+                    OnNewMonth?.Invoke();
                     if (Months > 12)
                     {
                         Months = 1;
                         Year++;
+                        OnNewYear?.Invoke();
                     }
                 }
             }
@@ -107,5 +110,9 @@ namespace Nabunassar.Entities.Game.Calendars
             return text.ToString();
         }
         // 8:15 Пн, Месяц Капли, 1201г.
+
+        public event Action OnNewDay;
+        public event Action OnNewMonth;
+        public event Action OnNewYear;
     }
 }
