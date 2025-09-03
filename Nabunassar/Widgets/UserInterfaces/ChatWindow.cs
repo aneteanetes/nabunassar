@@ -125,9 +125,9 @@ namespace Nabunassar.Widgets.UserInterfaces
             var thumbPosition = ThumbPositionAccessor.GetValue(scroll).As<Point>();
             r.Y += thumbPosition.Y;
 
-            if (Game.Desktop.TouchPosition != null)
+            if (Game.MyraDesktop.TouchPosition != null)
             {
-                var touchPosition = scroll.ToLocal(Game.Desktop.TouchPosition.Value);
+                var touchPosition = scroll.ToLocal(Game.MyraDesktop.TouchPosition.Value);
 
                 if (!r.Contains(touchPosition))
                 {
@@ -143,7 +143,7 @@ namespace Nabunassar.Widgets.UserInterfaces
             var thumbPosition = ThumbPositionAccessor.GetValue(scroll).As<Point>();
             r.Y += thumbPosition.Y;
 
-            var touchPosition = scroll.ToLocal(Game.Desktop.TouchPosition.Value);
+            var touchPosition = scroll.ToLocal(Game.MyraDesktop.TouchPosition.Value);
 
             if (r.Contains(touchPosition))
             {

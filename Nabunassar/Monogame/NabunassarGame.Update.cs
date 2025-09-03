@@ -47,7 +47,7 @@ namespace Nabunassar
             _mousePosition = new Vector2(mouseState.X, mouseState.Y);
             _worldPosition = Camera.ScreenToWorld(_mousePosition);
 
-            Game.Desktop.Update();
+            Game.MyraDesktop.Update();
 
             if (IsGameActive)
             {

@@ -36,6 +36,8 @@ namespace Nabunassar.Widgets.Views.DescriptionTolltip
 
             foreach (var row in description)
             {
+                bool isSpan = row.Count() == 1;
+
                 foreach (var part in row)
                 {
                     var label = new Label()
@@ -58,6 +60,9 @@ namespace Nabunassar.Widgets.Views.DescriptionTolltip
                     {
                         Grid.SetColumnSpan(label, 2);
                     }
+
+                    if (isSpan)
+                        Grid.SetColumnSpan(label, 2);
 
                     //RowsProportions.Add(new Proportion(ProportionType.Auto, rowCounter));
                     Widgets.Add(label);

@@ -1,28 +1,49 @@
-﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Interfaces;
+using Nabunassar.Widgets.UserInterfaces.Combat;
+using Nabunassar.Widgets.Views.StatusEffects;
 
 namespace Nabunassar.Widgets.UserInterfaces.PartyUI
 {
-    internal class HeroPortrait : Panel, IFeatured
+    internal class HeroPortrait : Grid, IFeatured
     {
+
+        private int currentFrame = 0;
+        private List<TextureRegion> _frames = new();
+        private NabunassarGame _game;
+        private Hero _hero;
         private Image _portrait;
+        private bool _isInited;
+        private Grid _effectGrid;
+        private List<StatusEffectWidget> _effectWidgets = new();
+        private HPLine _hpLine;
 
         public HeroPortrait(NabunassarGame game, Hero hero)
         {
+            _game = game;
+            _hero = hero;
+
             var imageWidth = 100;
             var imageHeight = 88;
+            var effectGridWidth = 50;
 
-            this.Width = imageWidth+10;
+            this.Width = (imageWidth+10)+ effectGridWidth;
             this.Height = 150;
+
+            ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.69f));
+            ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.31f));
 
             var roundedTexture = game.Content.LoadTexture("Assets/Images/Borders/conditionbackground.png");
             var roundedBackground = roundedTexture.NinePatch(16);
 
-            Background = roundedBackground;
+            var portraitPanel = new VerticalStackPanel();
+            portraitPanel.VerticalAlignment = VerticalAlignment.Stretch;
+            portraitPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            portraitPanel.Background = roundedBackground;
 
             var texture = game.Content.Load<Texture2D>("Assets/Tilesets/" + hero.Tileset);
             var imageBorder = new Panel()
@@ -38,7 +59,7 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
                 Height = imageHeight,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                //Margin = new Myra.Graphics2D.Thickness(5)
+                //Background = new SolidBrush(Color.Red)
             };
 
             _frames.Add(new TextureRegion(texture, new Rectangle(0, 31, 16, 14)));
@@ -47,17 +68,80 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
             _frames.Add(new TextureRegion(texture, new Rectangle(48, 31, 16, 14)));
 
             imageBorder.Widgets.Add(_portrait);
+            portraitPanel.Widgets.Add(imageBorder);
 
-            Widgets.Add(imageBorder);
+            portraitPanel.Widgets.Add(_hpLine = new HPLine(game, hero.Creature));
+
+            Grid.SetColumn(portraitPanel, 0);
+            Widgets.Add(portraitPanel);
+
+            _effectGrid = new Grid();
+            //_effectGrid.Background = new SolidBrush(Color.Green);
+            _effectGrid.HorizontalAlignment = HorizontalAlignment.Right;
+            _effectGrid.VerticalAlignment = VerticalAlignment.Top;
+
+            _effectGrid.Width = effectGridWidth;
+            _effectGrid.Height = Height;
+            //_effectGrid.Left = _effectGrid.Width.Value;
+
+            Grid.SetColumn(_effectGrid, 1);
+            Widgets.Add(_effectGrid);
         }
-
-        private int currentFrame = 0;
-        private List<TextureRegion> _frames = new();
 
         public void Update(GameTime gameTime)
         {
-            //return;
-            if(this.CanUpdate(gameTime, TimeSpan.FromSeconds(0.3)))
+            if (_hero.Creature.Effects.IsChanged || !_isInited)
+            {
+                _isInited = true;
+
+                _effectWidgets.Clear();
+                _effectGrid.Widgets.Clear();
+
+                var effects = _hero.Creature.Effects.OrderBy(x=>x.Type).ToArray();
+
+                var column = 0;
+                var row = 0;
+
+                foreach (var effect in effects)
+                {
+                    var effectWidget = new StatusEffectWidget(_game, effect, new MonoGame.Extended.Size(25, 25));
+                    _effectGrid.Widgets.Add(effectWidget);
+                    _effectWidgets.Add(effectWidget);
+
+                    Grid.SetRow(effectWidget, row);
+                    Grid.SetColumn(effectWidget, column);
+
+                    effectWidget.MouseEntered += EffectWidget_MouseEntered;
+
+                    row++;
+
+                    if (row >= 5)
+                    {
+                        row = 0;
+                        column++;
+                    }
+                }
+            }
+
+            _hpLine.Update(gameTime);
+
+            foreach (var effectWidget in _effectWidgets)
+            {
+                effectWidget.Update(gameTime);
+            }
+
+            return;
+            AnimatePortraits(gameTime);
+        }
+
+        private void EffectWidget_MouseEntered(object sender, MyraEventArgs e)
+        {
+            Console.WriteLine();
+        }
+
+        private void AnimatePortraits(GameTime gameTime)
+        {
+            if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(0.3)))
             {
                 currentFrame++;
                 if (currentFrame == _frames.Count)

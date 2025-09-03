@@ -103,7 +103,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private HorizontalStackPanel ItemFilter()
         {
-            var panel = new HorizontalIconPanel(Game.Content, _iconButtons, x => Game.Desktop.MousePosition.ToVector2());
+            var panel = new HorizontalIconPanel(Game.Content, _iconButtons, x => Game.MyraDesktop.MousePosition.ToVector2());
 
             panel.Select(_iconButtons.FirstOrDefault());
 

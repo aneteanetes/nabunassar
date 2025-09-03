@@ -53,6 +53,7 @@ namespace Nabunassar.Widgets.UserEffects
         DescriptionPanel _blessingEffectPanel1;
         DescriptionPanel _blessingEffectPanel2;
         private GameButton _acceptBtn;
+        private DescriptionPanel _worshipPanel;
 
         public override bool IsModal => true;
 
@@ -108,6 +109,8 @@ namespace Nabunassar.Widgets.UserEffects
                 _blessingEffectPanel1.Top = _blessingPanel.Top + _blessingPanel.Bounds.Height + 30;
             if (_blessingEffectPanel2 != null)
                 _blessingEffectPanel2.Top = _blessingEffectPanel1.Top + _blessingEffectPanel1.Bounds.Height + 30;
+
+            _worshipPanel.Top = _judgePanel.Top + _judgePanel.Bounds.Height + 30;
 
             var mouse = MouseExtended.GetState();
 
@@ -399,10 +402,9 @@ namespace Nabunassar.Widgets.UserEffects
         {
             var worship = new Worship(Game);
 
-            _mainPanel.Widgets.Add(new DescriptionPanel(Game, worship.GetDescription())
+            _mainPanel.Widgets.Add(_worshipPanel = new DescriptionPanel(Game, worship.GetDescription())
             {
-                Left = 200,
-                Top = 625
+                Left = 200
             });
         }
 

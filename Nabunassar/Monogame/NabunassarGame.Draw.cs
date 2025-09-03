@@ -97,7 +97,7 @@ namespace Nabunassar
             SpriteBatch.End();
 
             if (_screenLoaded)
-                Game.Desktop.Render();
+                Game.MyraDesktop.Render();
 
             if (isDrawFPS)
                 DrawFPS();

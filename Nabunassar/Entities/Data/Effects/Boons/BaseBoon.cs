@@ -17,6 +17,8 @@ namespace Nabunassar.Entities.Data.Effects.Boons
 
         protected virtual Color GetNameColor() => default;
 
+        public override EffectType Type => EffectType.Boon;
+
         protected abstract DrawText GetBody(LocalizedStrings strings);
 
         public override Description GetDescription()

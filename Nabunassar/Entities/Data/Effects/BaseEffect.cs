@@ -14,13 +14,15 @@ namespace Nabunassar.Entities.Data.Effects
             game.FeatureValues.Add(this);
         }
 
+        public virtual EffectType Type => EffectType.Condition;
+
         public virtual string IconPath => "";
 
         public virtual Color IconColor => Color.White;
 
         public abstract Description GetDescription();
 
-        public int Charges { get; set; }
+        public int Charges { get; set; } = 1;
 
         public virtual void Merge(IStackable other) { }
 

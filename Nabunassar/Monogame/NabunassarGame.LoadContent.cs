@@ -34,7 +34,7 @@ namespace Nabunassar
             MyraEnvironment.Game = this;
             MyraEnvironment.EventHandlingModel = Myra.Events.EventHandlingStrategy.EventBubbling;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
-            Desktop = new Desktop();
+            MyraDesktop = new Desktop();
 
             var vectorScale = new Vector2(this.Scale.X, this.Scale.Y);
             //MyraEnvironment.Scale = vectorScale.NormalizedCopy();

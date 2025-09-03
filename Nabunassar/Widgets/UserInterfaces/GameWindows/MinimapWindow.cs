@@ -61,7 +61,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows
 
             if (Position != default)
             {                
-                _windowPosition = new Vector2(Game.Desktop.LayoutBounds.Width - ((map.Width ?? 0) + _leftOffset), Game.Desktop.LayoutBounds.Height - ((map.Height ?? 0) + _topOffset));
+                _windowPosition = new Vector2(Game.MyraDesktop.LayoutBounds.Width - ((map.Width ?? 0) + _leftOffset), Game.MyraDesktop.LayoutBounds.Height - ((map.Height ?? 0) + _topOffset));
             }
 
             return window;

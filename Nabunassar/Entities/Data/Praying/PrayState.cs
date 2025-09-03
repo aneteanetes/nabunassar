@@ -15,7 +15,7 @@ namespace Nabunassar.Entities.Data.Praying
             });
         }
 
-        public PrayResult Add(int prayValue)
+        public PrayResult AddWorshipPoints(int prayValue)
         {
             PrayerCounter += prayValue;
 

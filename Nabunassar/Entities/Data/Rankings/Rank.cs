@@ -114,6 +114,11 @@ namespace Nabunassar.Entities.Data.Rankings
             return new DiceTermOperation(DiceOperation.Multiply, rank, new DiceTermUnary(val));
         }
 
+        public static DiceTerm operator *(Rank rank, DiceTerm term)
+        {
+            return new DiceTermOperation(DiceOperation.Multiply, rank, term);
+        }
+
         //public static implicit operator DiceModifier(Rank rank)
         //{
         //    return new DiceModifier(rank.Value, rank.Value, DiceModifierType.Rank, DiceOperation.Unary, rank);

@@ -9,6 +9,8 @@ namespace Nabunassar.Entities.Data.Effects.PartyEffects
         {
         }
 
+        public override EffectType Type => EffectType.Boon;
+
         public override string IconPath => "Assets/Images/Icons/Effects/sun.png";
         public override Color IconColor => Color.Yellow;
 

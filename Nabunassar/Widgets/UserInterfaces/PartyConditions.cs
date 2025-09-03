@@ -8,6 +8,7 @@ namespace Nabunassar.Widgets.UserInterfaces
     {
         private HorizontalStackPanel _panel;
         private List<StatusEffectWidget> _effectWidgets = new();
+        private bool _isInited = false;
 
         public override bool IsRemovable => false;
 
@@ -31,8 +32,10 @@ namespace Nabunassar.Widgets.UserInterfaces
             var gameTimeWidget = Game.GetDesktopWidget<GameDateTime>().UIWidget;
             _panel.Left = (gameTimeWidget.ActualBounds.Size.X+ gameTimeWidget.MBPWidth) * -1;
 
-            if (Game.GameState.PartyEffects.IsChanged)
+            if (Game.GameState.PartyEffects.IsChanged || !_isInited)
             {
+                _isInited = true;
+
                 _effectWidgets.Clear();
                 _panel.Widgets.Clear();
 

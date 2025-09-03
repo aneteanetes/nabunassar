@@ -54,7 +54,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
             if (AbilityRank.Value > 0)
             {
-                var addResult = Game.GameState.Prayers.Add(roll.Complexity.ToValue());
+                var addResult = Game.GameState.Prayers.AddWorshipPoints(roll.Complexity.ToValue());
                 if (addResult == Praying.PrayResult.Equal100AndReseted)
                 {
                     Game.GameState.PartyEffects.Remove<Worship>();
@@ -86,7 +86,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         private void AddJudgment(Gods god)
         {
             var jugj = new Judgment(Game, god, AbilityRank, AbilityDice);
-            Creature.Boons.Add(jugj);
+            Creature.Effects.Add(jugj);
             var msg = DrawText.Create("").Color(Color.Yellow).Append(Creature.HeroLink.Name).ResetColor().Append($" {Game.Strings["GameTexts"]["GotHeShe"].ToLower()} {Game.Strings["GameTexts"]["Charge"].ToLower()} ").Color(god.GodColor()).Append($"[{jugj.GetName(Game.Strings["Effects/EffectNames"])}]").ResetColor().Append(" !");
             Game.GameState.AddMessage(msg);
         }

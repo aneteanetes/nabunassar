@@ -94,7 +94,7 @@ namespace Nabunassar
 
         public OrthographicCamera Camera { get; private set; }
 
-        public Desktop Desktop { get; private set; }
+        public Desktop MyraDesktop { get; private set; }
 
         public AudioOptions Audio { get; set; } = new AudioOptions();
 

@@ -40,11 +40,11 @@ namespace Nabunassar
 
                         if (widgetWindow.IsModal)
                         {
-                            windowWidget.ShowModal(Desktop, pos);
+                            windowWidget.ShowModal(MyraDesktop, pos);
                         }
                         else
                         {
-                            windowWidget.Show(Desktop, pos);
+                            windowWidget.Show(MyraDesktop, pos);
                         }
                         widget.OnAfterAddedWidget(windowWidget);
 
@@ -60,7 +60,7 @@ namespace Nabunassar
                 else
                 {
                     _screenWidgets.Add(widget);
-                    Desktop.Widgets.Add(uiWidget);
+                    MyraDesktop.Widgets.Add(uiWidget);
                     widget.OnAfterAddedWidget(uiWidget);
                 }
 
@@ -89,12 +89,12 @@ namespace Nabunassar
         public void RemoveDesktopWidgets()
         {
             _screenWidgets.Clear();
-            var notWindowWidgets = Desktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
+            var notWindowWidgets = MyraDesktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
             if (notWindowWidgets.Length>0)
             {
                 foreach (var notWidowWidget in notWindowWidgets)
                 {
-                    Desktop.Widgets.Remove(notWidowWidget);
+                    MyraDesktop.Widgets.Remove(notWidowWidget);
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace Nabunassar
             if (uiWidget is Window windowWidget)
                 windowWidget.Close();
             else
-                Desktop.Widgets.Remove(uiWidget);
+                MyraDesktop.Widgets.Remove(uiWidget);
 
             _screenWidgets.Remove(widget);
             widget.IsRemoved = true;
