@@ -1,6 +1,7 @@
 ﻿using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Entities.Data.ComplexValues;
 using Nabunassar.Entities.Data.Effects;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game.Enums;
@@ -12,13 +13,16 @@ namespace Nabunassar.Entities.Game
 {
     internal class Creature : IEntity
     {
-        public Creature(Hero hero=default)
+        public Creature(Archetype archetype, Hero hero=default)
         {
             ObjectId = Guid.NewGuid();
             PrimaryStats = new PrimaryStats(this);
             FormulaName = NabunassarGame.Game.Strings["Entities"][nameof(Creature)];
             HeroLink = hero;
             HPNow = HPMax;
+            ArmorClassBase = NabunassarGame.Game.DataBase.GetFromDictionary<int>("Data/Formulas/BaseArmorClassByArchetype.json", archetype.ToString());
+            ArmorClass = new ComplexValue<int>();
+            ArmorClass.AddValue(ArmorClassBase, ComplexValueType.Base);
         }
 
         public Hero HeroLink { get; private set; }
@@ -60,6 +64,14 @@ namespace Nabunassar.Entities.Game
         public string FormulaName {  get; set; }
 
         public bool IsPrayerAvailable { get; set; }
+
+        public ComplexValue<int> ArmorClass { get; internal set; } = new();
+
+        public int ArmorClassBase { get; }
+
+        public int WillPoints { get; set; }
+
+        public int ArmorClassCD => ((int)Math.Ceiling(ArmorClass.GetValueExcept(ComplexValueType.Base) / 2d));
 
         public void OnAfterBattle()
         {

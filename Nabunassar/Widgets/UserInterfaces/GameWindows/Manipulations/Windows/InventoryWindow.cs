@@ -36,6 +36,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private ItemsPanel _itemPanel;
         private HorizontalStackPanel _filterPanel;
+        private ComboViewFocused _sortDropDown;
 
         protected override Window CreateWindow()
         {
@@ -130,31 +131,31 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
 
         private ComboView SortBox()
         {
-            var dropDown = new ComboViewFocused();
+            _sortDropDown = new ComboViewFocused(this);
 
             var byType = CreateSortType(Game.Strings["UI"]["SortByType"]);
             var byAlpha = CreateSortType(Game.Strings["UI"]["SortByAlphabet"]);
             var byNew = CreateSortType(Game.Strings["UI"]["SortByNew"]);
-            dropDown.Widgets.Add(byType);
-            dropDown.Widgets.Add(byAlpha);
-            dropDown.Widgets.Add(byNew);
+            _sortDropDown.Widgets.Add(byType);
+            _sortDropDown.Widgets.Add(byAlpha);
+            _sortDropDown.Widgets.Add(byNew);
 
-            dropDown.SelectedIndexChanged += DropDown_SelectedIndexChanged;
+            _sortDropDown.SelectedIndexChanged += DropDown_SelectedIndexChanged;
 
             switch (Game.GameState.UIState.SelectedInventorySortIndex)
             {
                 case 1:
-                    dropDown.SelectedItem = byAlpha;
+                    _sortDropDown.SelectedItem = byAlpha;
                     break;
                 case 2:
-                    dropDown.SelectedItem = byNew;
+                    _sortDropDown.SelectedItem = byNew;
                     break;
                 default:
-                    dropDown.SelectedItem = byType;
+                    _sortDropDown.SelectedItem = byType;
                     break;
             }
 
-            return dropDown;
+            return _sortDropDown;
         }
 
         private void DropDown_SelectedIndexChanged(object sender, MyraEventArgs e)
@@ -201,6 +202,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         {
             ItemsPanel.ResetDragAndDrop();
             ControlPanel.CloseInventory();
+            _sortDropDown.Dispose();
             base.Dispose();
         }
     }

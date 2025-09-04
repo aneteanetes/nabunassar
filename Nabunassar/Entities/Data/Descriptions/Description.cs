@@ -4,8 +4,19 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Nabunassar.Entities.Data.Descriptions
 {
+    /// <summary>
+    /// <see cref="Description.Create(string, Color)"/>>
+    /// </summary>
     internal class Description : IEnumerable<DescriptionRow>
     {
+        /// <summary>
+        /// <see cref="Description.Create(string, Color)"/>>
+        /// </summary>
+        private Description()
+        {
+
+        }
+
         public List<DescriptionRow> Rows { get; set; } = [];
 
         public float ProportionLeft { get; internal set; }

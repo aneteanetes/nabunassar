@@ -3,16 +3,19 @@ using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
-    internal class ComboViewFocused : ComboView
+    internal class ComboViewFocused : ComboView, IDisposable
     {
-        public ComboViewFocused()
+        private ScreenWidget _parentWidget;
+
+        public ComboViewFocused(ScreenWidget parentWidget)
         {
-            this.ListView.MouseEntered += this.ListView_MouseEntered;
+            _parentWidget = parentWidget;
+            parentWidget.BindWidgetBlockMouse(this.ListView);
         }
 
-        private void ListView_MouseEntered(object sender, MyraEventArgs e)
+        public void Dispose()
         {
-            ScreenWidget.NOLOOSEBLOCK = true;
+            _parentWidget.UnBindWidgetBlockMouse(this.ListView);
         }
     }
 }

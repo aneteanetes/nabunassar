@@ -13,6 +13,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
         {
             _game = game;
             _weightBar = new HorizontalProgressBar();
+            _weightBar.Filler = new SolidBrush(Globals.BaseColor);
 
             _weightLabel = new Label()
             {

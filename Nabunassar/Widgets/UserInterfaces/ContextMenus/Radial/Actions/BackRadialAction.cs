@@ -12,6 +12,7 @@
 
         public override void OnClick()
         {
+            Game.RemoveDesktopWidgets<TitleWidget>();
             Menu.Fullfill(null, null, Menu.GameObject);
         }
     }

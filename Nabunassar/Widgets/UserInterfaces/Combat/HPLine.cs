@@ -8,10 +8,12 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
     internal class HPLine : HorizontalStackPanel, IFeatured
     {
         private HorizontalProgressBar _bar;
+        private NabunassarGame _game;
         private Creature _creature;
 
-        public HPLine(NabunassarGame game, Creature creature)
+        public HPLine(NabunassarGame game, Creature creature, int width=75)
         {
+            _game = game;
             _creature = creature;
 
             _bar = new HorizontalProgressBar();
@@ -19,7 +21,7 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
             _bar.Maximum = _creature.HPMax;
             _bar.Minimum = 0;
             _bar.Value = _bar.Maximum;
-            _bar.Width = 75;
+            _bar.Width = width;
             _bar.Height = 8;
             _bar.VerticalAlignment= VerticalAlignment.Center;
 
@@ -43,6 +45,8 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
         {
             _bar.Maximum = _creature.HPMax;
             _bar.Value = _creature.HPNow;
+
+            this.Tooltip = $"{_game.Strings["GameTexts"]["Health"]}: {_creature.HPNow}/{_creature.HPMax}";
         }
     }
 }

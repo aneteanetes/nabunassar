@@ -4,6 +4,7 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Widgets.UserInterfaces.Combat;
+using Nabunassar.Widgets.Views;
 using Nabunassar.Widgets.Views.StatusEffects;
 
 namespace Nabunassar.Widgets.UserInterfaces.PartyUI
@@ -20,18 +21,20 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
         private Grid _effectGrid;
         private List<StatusEffectWidget> _effectWidgets = new();
         private HPLine _hpLine;
+        private ArmorClassWidget _acWidget;
+        private WillPointsWidget _wpWidget;
 
         public HeroPortrait(NabunassarGame game, Hero hero)
         {
             _game = game;
             _hero = hero;
 
-            var imageWidth = 100;
-            var imageHeight = 88;
+            var imageWidth = 75;
+            var imageHeight = ((int)Math.Round(0.88 * imageWidth));
             var effectGridWidth = 50;
 
-            this.Width = (imageWidth+10)+ effectGridWidth;
-            this.Height = 150;
+            this.Width = (imageWidth + 10) + effectGridWidth;
+            this.Height = 130;
 
             ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.69f));
             ColumnsProportions.Add(new Proportion(ProportionType.Part, 0.31f));
@@ -48,13 +51,16 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
             var texture = game.Content.Load<Texture2D>("Assets/Tilesets/" + hero.Tileset);
             var imageBorder = new Panel()
             {
-                Width = imageWidth+10,
-                Height = imageHeight+10,
-                Background = roundedBackground
+                Width = imageWidth + 10,
+                Height = imageHeight + 10,
+                Background = roundedBackground,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Myra.Graphics2D.Thickness(0, 3, 0, 0)
             };
             _portrait = new Image()
             {
-                Renderable = new TextureRegion(texture, new Rectangle(0, 31, 16, 14)),
+                Renderable = new TextureRegion(texture, new Rectangle(0, 31, 16, 13)),
                 Width = imageWidth,
                 Height = imageHeight,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -62,15 +68,18 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
                 //Background = new SolidBrush(Color.Red)
             };
 
-            _frames.Add(new TextureRegion(texture, new Rectangle(0, 31, 16, 14)));
-            _frames.Add(new TextureRegion(texture, new Rectangle(16, 31, 16, 14)));
-            _frames.Add(new TextureRegion(texture, new Rectangle(32, 31, 16, 14)));
-            _frames.Add(new TextureRegion(texture, new Rectangle(48, 31, 16, 14)));
+            _frames.Add(new TextureRegion(texture, new Rectangle(0, 31, 16, 13)));
+            _frames.Add(new TextureRegion(texture, new Rectangle(16, 31, 16, 13)));
+            _frames.Add(new TextureRegion(texture, new Rectangle(32, 31, 16, 13)));
+            _frames.Add(new TextureRegion(texture, new Rectangle(48, 31, 16, 13)));
 
             imageBorder.Widgets.Add(_portrait);
             portraitPanel.Widgets.Add(imageBorder);
 
-            portraitPanel.Widgets.Add(_hpLine = new HPLine(game, hero.Creature));
+            portraitPanel.Widgets.Add(_hpLine = new HPLine(game, hero.Creature, 60));
+            
+            Grid statGrid = FillStatsPoints(game, hero);
+            portraitPanel.Widgets.Add(statGrid);
 
             Grid.SetColumn(portraitPanel, 0);
             Widgets.Add(portraitPanel);
@@ -86,6 +95,27 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
 
             Grid.SetColumn(_effectGrid, 1);
             Widgets.Add(_effectGrid);
+        }
+
+        private Grid FillStatsPoints(NabunassarGame game, Hero hero)
+        {
+            var statGrid = new Grid();
+            statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4f));
+            statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1f));
+            statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4f));
+            statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1f));
+
+            _acWidget = new ArmorClassWidget(game, hero.Creature);
+            _acWidget.HorizontalAlignment = HorizontalAlignment.Center;
+            _acWidget.Margin=new Myra.Graphics2D.Thickness(3,0,0,0);
+            Grid.SetColumn(_acWidget, 0);
+            statGrid.Widgets.Add(_acWidget);
+
+            _wpWidget = new WillPointsWidget(game, hero.Creature);
+            _wpWidget.HorizontalAlignment = HorizontalAlignment.Center;
+            Grid.SetColumn(_wpWidget, 2);
+            statGrid.Widgets.Add(_wpWidget);
+            return statGrid;
         }
 
         public void Update(GameTime gameTime)
@@ -130,8 +160,16 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
                 effectWidget.Update(gameTime);
             }
 
+            UpdateStats(gameTime);
+
             return;
             AnimatePortraits(gameTime);
+        }
+
+        private void UpdateStats(GameTime gameTime)
+        {
+            _acWidget.Update(gameTime);
+            _wpWidget.Update(gameTime);
         }
 
         private void EffectWidget_MouseEntered(object sender, MyraEventArgs e)

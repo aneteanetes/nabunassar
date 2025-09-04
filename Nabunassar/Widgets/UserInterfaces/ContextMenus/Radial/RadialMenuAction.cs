@@ -50,7 +50,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         public virtual void OnClick()
         {
-            if(InnerActions.IsNotEmpty())
+            Game.RemoveDesktopWidgets<TitleWidget>();
+            if (InnerActions.IsNotEmpty())
                 Menu.Fullfill(InnerActions, this);
             //Close();
             //Open(Game, GameObject, Position);

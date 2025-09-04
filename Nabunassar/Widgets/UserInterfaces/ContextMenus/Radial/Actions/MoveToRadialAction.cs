@@ -12,7 +12,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
         public override void OnClick()
         {
             Game.GameState.Party.MoveTo(Game.Camera.ScreenToWorld(Menu.Position));
-            Menu.Close();
+            base.Close();
         }
     }
 }

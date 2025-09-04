@@ -179,46 +179,46 @@ namespace Nabunassar.Resources
         {
             var party = new Party(game);
 
-            party.First = new Hero(game)
+            party.First = new Hero(game, Nabunassar.Entities.Game.Enums.Archetype.Warrior)
             {
                 Tileset = "warrior.png",
                 Sex = Sex.Male,
                 Name = GetName(Sex.Male)
             };
-            party.First.Creature = new Creature(party.First)
+            party.First.Creature = new Creature( Nabunassar.Entities.Game.Enums.Archetype.Warrior, party.First)
             {
                 Archetype = Nabunassar.Entities.Game.Enums.Archetype.Warrior
             };
 
-            party.Second = new Hero(game)
+            party.Second = new Hero(game, Nabunassar.Entities.Game.Enums.Archetype.Rogue)
             {
                 Tileset = "rogue.png",
                 Sex = Sex.Female,
                 Name = GetName(Sex.Female),
             };
-            party.Second.Creature = new Creature(party.Second)
+            party.Second.Creature = new Creature(Nabunassar.Entities.Game.Enums.Archetype.Rogue,party.Second)
             {
                 Archetype = Nabunassar.Entities.Game.Enums.Archetype.Rogue
             };
 
-            party.Third = new Hero(game)
+            party.Third = new Hero(game, Nabunassar.Entities.Game.Enums.Archetype.Wizard)
             {
                 Tileset = "wizard.png",
                 Sex = Sex.Male,
                 Name = GetName(Sex.Male)
             };
-            party.Third.Creature = new Creature(party.Third)
+            party.Third.Creature = new Creature(Nabunassar.Entities.Game.Enums.Archetype.Wizard, party.Third)
             {
                 Archetype = Nabunassar.Entities.Game.Enums.Archetype.Wizard
             };
 
-            party.Fourth = new Hero(game)
+            party.Fourth = new Hero(game, Nabunassar.Entities.Game.Enums.Archetype.Priest)
             {
                 Tileset = "priest.png",
                 Sex = Sex.Female,
                 Name = GetName(Sex.Female)
             };
-            party.Fourth.Creature = new Creature(party.Fourth)
+            party.Fourth.Creature = new Creature(Nabunassar.Entities.Game.Enums.Archetype.Priest, party.Fourth)
             {
                 Archetype = Nabunassar.Entities.Game.Enums.Archetype.Priest
             };

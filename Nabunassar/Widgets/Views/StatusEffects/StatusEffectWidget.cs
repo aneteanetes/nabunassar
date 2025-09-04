@@ -68,7 +68,6 @@ namespace Nabunassar.Widgets.Views.StatusEffects
 
         public override void OnMouseEntered()
         {
-            var pan = new DescriptionPanel(_game, _effect.GetDescription());
             var globalMouse = this.ToGlobal(this.LocalMousePosition.Value.ToVector2());
 
             var pos = new Point(((int)globalMouse.X), this.ToGlobal(new Point(Left, Top)).Y + this.Height.Value);

@@ -69,7 +69,7 @@ namespace Nabunassar.Entities.Data.Abilities
         {
             if (!IsCombat)
             {
-                return CreateWorldAbility(game, new Creature());
+                return CreateWorldAbility(game, new Creature(Archetype.Warrior));
             }
             else
             {

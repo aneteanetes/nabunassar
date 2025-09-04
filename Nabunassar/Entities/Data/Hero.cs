@@ -2,6 +2,7 @@
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Game;
+using Nabunassar.Entities.Game.Enums;
 
 namespace Nabunassar.Entities.Data
 {
@@ -17,10 +18,10 @@ namespace Nabunassar.Entities.Data
 
         public Creature Creature { get; set; }
 
-        public Hero(NabunassarGame game)
+        public Hero(NabunassarGame game, Archetype archetype)
         {
             _game = game;
-            Creature = new Creature(this);
+            Creature = new Creature(archetype,this);
         }
 
         public string Tileset { get; set; }

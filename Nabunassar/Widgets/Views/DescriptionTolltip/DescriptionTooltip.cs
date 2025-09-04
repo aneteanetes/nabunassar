@@ -27,7 +27,7 @@ namespace Nabunassar.Widgets.Views.DescriptionTolltip
 
         public override void Update(GameTime gameTime)
         {
-            var panelBox = _panel.Left + _panel.Width.Value;
+            var panelBox = _panel.Left + (_panel.Width.HasValue ? _panel.Width.Value : _panel.ActualBounds.Width);
             if (panelBox > Game.Resolution.Width)
             {
                 _panel.Left -= panelBox - Game.Resolution.Width + 5;
