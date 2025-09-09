@@ -9,6 +9,7 @@ using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
@@ -33,11 +34,19 @@ namespace Nabunassar.Entities
         private static int PersonBoundsYOffset = 15;
         private static Vector2 PersonBoundsSize = new Vector2(10, 8);
 
+        public const int HeroRenderHeight = 24;
+        public const int HeroRenderWidth = 16;
+        public const int PartyRenderXOffset = 4;
+        public const int PartyRenderYOffset = 12;
+        public const int HeroRenderWidthOffset = 8;
+
+        public const int PartyBoundRenderOffsetX = 6;
+
         public Action OnAfterDraw { get; private set; }
 
         public Entity CreateCursor()
         {
-            var entity = CreateEntity("cursor");
+            var entity = CreateEntity(CollisionLayers.Cursor);
             var cursor = Game.GameState.Cursor;
 
             cursor.FocusedGameObject = null;
@@ -73,7 +82,7 @@ namespace Nabunassar.Entities
             var cursorBounds = new RectangleF(0, 0, 4, 4);
             cursor.Bounds = cursorBounds;
 
-            var gameObj = new MapObject(Game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, "cursor", cursor.OnCollision) { Name = "cursor" };
+            var gameObj = new MapObject(Game, new Vector2(pos.X,pos.Y), ObjectType.Cursor, entity, cursorBounds, CollisionLayers.Cursor, cursor.OnCollision) { Name = "cursor" };
             gameObj.IsRegisterNoCollision = true;
             gameObj.NoCollision = cursor.OnNoCollistion;
             AddCollistion(gameObj);
@@ -131,7 +140,7 @@ namespace Nabunassar.Entities
 
             var bounds = new RectangleF(Vector2.Zero, size);
 
-            var mapObject = new MapObject(Game, position, ObjectType.Ground, entity, bounds, "ground") { Name = descriptor };
+            var mapObject = new MapObject(Game, position, ObjectType.Ground, entity, bounds, CollisionLayers.Ground) { Name = descriptor };
             entity.Attach(mapObject);
 
             AddCollistion(mapObject);
@@ -206,7 +215,7 @@ namespace Nabunassar.Entities
             var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), PersonBoundsSize);
 
 
-            var mapObject = new MapObject(Game, position, ObjectType.NPC, entity, bounds, "objects") { Name = descriptor };
+            var mapObject = new MapObject(Game, position, ObjectType.NPC, entity, bounds, CollisionLayers.Objects) { Name = descriptor };
             AddCollistion(mapObject);
             entity.Attach(mapObject);
             gameObject.MapObject = mapObject;
@@ -251,6 +260,8 @@ namespace Nabunassar.Entities
             return entity;
         }
 
+        public static int HeroInPartyOffset = 8;
+
         public Entity CreateParty(Party party, Vector2 position)
         {
             var descriptor = "party";
@@ -261,9 +272,9 @@ namespace Nabunassar.Entities
 
             AddOnMinimap(partyEntity.Id, position, ObjectType.Player, Game.Strings["UI"]["You"]);
 
-            var bounds = new RectangleF(new Vector2(6,0), new Vector2(20, 6));
+            var bounds = new RectangleF(new Vector2(PartyBoundRenderOffsetX, 0), new Vector2(20, 6));
 
-            var mapObject = new MapObject(Game, position, ObjectType.Player, partyEntity, bounds,"player", onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
+            var mapObject = new MapObject(Game, position, ObjectType.Player, partyEntity, bounds,CollisionLayers.Player, onCollistion: party.OnCollision,isMoveable:true) { Name = descriptor };
             partyEntity.Attach(mapObject);
             AddCollistion(mapObject);
 
@@ -271,8 +282,8 @@ namespace Nabunassar.Entities
 
             party.MapObject= mapObject;
 
-            var x =-4;
-            var y = -12;
+            var x = PartyRenderXOffset * -1;
+            var y = PartyRenderYOffset * -1;
             var i = 1;
             foreach (var hero in party.Reverse())
             {
@@ -328,7 +339,7 @@ namespace Nabunassar.Entities
 
             var name = "SpriteSheet_" + hero.Name;
             var texture = Game.Content.Load<Texture2D>("Assets/Tilesets/" + hero.Tileset);
-            var atlas = Texture2DAtlas.Create(name + Guid.NewGuid().ToString(), texture, 16, 24);
+            var atlas = Texture2DAtlas.Create(name + Guid.NewGuid().ToString(), texture, HeroRenderWidth, HeroRenderHeight);
             var spriteSheet = new SpriteSheet("SpriteSheet_" + hero.Name, atlas);
 
             spriteSheet.DefineAnimation("idle", builder =>
@@ -364,6 +375,7 @@ namespace Nabunassar.Entities
             gameObject.MoveSpeed = .01f;
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
+            hero.Sprite = _sprite;
             var render = new RenderComponent(Game, _sprite, Vector2.Zero, 0, gameObject);
             entity.Attach(render);
             entity.Attach(_sprite);
@@ -414,7 +426,7 @@ namespace Nabunassar.Entities
 
             bool isVisible = gameObj.RevealComplexity == null;
 
-            var mapObject = new MapObject(Game, position, objType, entity, layer: isVisible ? "objects" : "hidden")
+            var mapObject = new MapObject(Game, position, objType, entity, layer: isVisible ? CollisionLayers.Objects : CollisionLayers.Hidden)
             {
                 Name = descriptor,
                 IsVisible = isVisible
@@ -484,7 +496,7 @@ namespace Nabunassar.Entities
 
                     var dummyDiscriptor = $"obj {_object.gid} bound({i})";
                     var dummyEntity = CreateEntity(dummyDiscriptor);
-                    var complexCollision = new MapObject(Game, gameObjectPosition, ObjectType.Object, entity, bounds, isVisible ? "objects" : "hidden")
+                    var complexCollision = new MapObject(Game, gameObjectPosition, ObjectType.Object, entity, bounds, isVisible ? CollisionLayers.Objects : CollisionLayers.Hidden)
                     {
                         Name = dummyDiscriptor
                     };
@@ -662,9 +674,9 @@ namespace Nabunassar.Entities
         }
 
         internal void AttachEffect<T>(Entity entity, T effect)
-            where T : EffectComponent
+            where T : ShaderEffectComponent
         {
-            entity.Attach(effect as EffectComponent);
+            entity.Attach(effect as ShaderEffectComponent);
         }
 
         public Entity CreateEntity(string descriptor=null, int order=0)

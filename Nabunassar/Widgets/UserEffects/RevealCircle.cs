@@ -9,6 +9,7 @@ using MonoGame.Extended.Particles.Profiles;
 using Myra.Graphics2D.UI;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Shaders;
 using Nabunassar.Widgets.Base;
 using ParticleEffect = MonoGame.Extended.Particles.ParticleEffect;
@@ -163,7 +164,7 @@ namespace Nabunassar.Widgets.UserEffects
             _particleEffect.Trigger(_mousepos);
             _isDissapearing = true;
 
-            var objs = Game.QuerySpace("hidden", _revealArea)
+            var objs = Game.QuerySpace(CollisionLayers.Hidden, _revealArea)
                 .Select(x => x as MapObject)
                 .GroupBy(x => x.GameObject)
                 .Select(x => x.Key)

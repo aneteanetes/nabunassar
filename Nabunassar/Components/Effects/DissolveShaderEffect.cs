@@ -4,7 +4,7 @@ using MonoGame.Extended.ECS;
 
 namespace Nabunassar.Components.Effects
 {
-    internal class DissolveEffect : EffectComponent
+    internal class DissolveShaderEffect : ShaderEffectComponent
     {
         private float _dissolveAmount = 0.5f;
         private float _dissolveSpeed = .5f;
@@ -13,7 +13,9 @@ namespace Nabunassar.Components.Effects
 
         private Entity _entity;
 
-        public DissolveEffect(NabunassarGame game, Entity entity) : base(game)
+        public override bool IsSeparateTexture => true;
+
+        public DissolveShaderEffect(NabunassarGame game, Entity entity) : base(game)
         {
             _entity = entity;
             _noiseTexture = game.Content.Load<Texture2D>("Assets/Images/Effects/dissolvemax.png");
@@ -35,7 +37,7 @@ namespace Nabunassar.Components.Effects
                 if (_dissolveAmount >= 1)
                 {
                     _isDissolving = false;
-                    _entity.Detach<EffectComponent>();
+                    _entity.Detach<ShaderEffectComponent>();
                     OnEnd?.Invoke();
                 }
             }
@@ -46,8 +48,8 @@ namespace Nabunassar.Components.Effects
     {
         public static void Dissolve(this Entity entity, Action onEnd=null, NabunassarGame game=null)
         {
-            var dissolve = new DissolveEffect(game ?? NabunassarGame.Game, entity);
-            entity.Attach(dissolve as EffectComponent);
+            var dissolve = new DissolveShaderEffect(game ?? NabunassarGame.Game, entity);
+            entity.Attach(dissolve as ShaderEffectComponent);
 
             if (onEnd != null)
                 dissolve.OnEnd += onEnd;

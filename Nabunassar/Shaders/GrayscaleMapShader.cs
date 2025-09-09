@@ -39,8 +39,8 @@ namespace Nabunassar.Shaders
             sb.Draw(_grayscaleMapTexture, _grayscaleMapDestination(), Color.White);
             sb.End();
 
-            Shader.Parameters["patternTexture"].SetValue(_grayscaleMapBuffer);
-            Shader.Parameters["grayIntensive"].SetValue(_grayscaleGrayIntensive());
+            Effect.Parameters["patternTexture"].SetValue(_grayscaleMapBuffer);
+            Effect.Parameters["grayIntensive"].SetValue(_grayscaleGrayIntensive());
 
             base.Draw(gameTime, isLast);
         }

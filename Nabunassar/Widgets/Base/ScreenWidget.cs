@@ -135,6 +135,8 @@ namespace Nabunassar.Widgets.Base
 
         public bool IsRemoved { get; internal set; }
 
+        public bool IsClosed { get; set; }
+
         public virtual void Dispose()
         {
             UnloadContent();
@@ -149,6 +151,7 @@ namespace Nabunassar.Widgets.Base
 
         public virtual void Close()
         {
+            IsClosed = true;
             Game.GameState.EscapeSwitch = true;
             Dispose();
         }

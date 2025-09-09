@@ -27,11 +27,17 @@ namespace Nabunassar
             GameState.IsActive = true;
 
 #if DEBUG
+            var landscapeModel = DataBase.GetAbility("Landscape");
+            party.First.Creature.WorldAbilities.First = new LandscapeAbility(Game, GameState.Party, party.First.Creature, landscapeModel);
+
             var revealModel = DataBase.GetAbility("Reveal");
-            party.Third.Creature.WorldAbilities.First = new RevealAbility(Game, party.Third.Creature, revealModel);
+            party.Second.Creature.WorldAbilities.First = new RevealAbility(Game, party.Second.Creature, revealModel);
+
+            var teleportModel = DataBase.GetAbility("Teleportation");
+            party.Fourth.Creature.WorldAbilities.Third = new TeleportationAbility(Game, party.Third.Creature, teleportModel);
 
             var prayerModel = DataBase.GetAbility("Prayer");
-            party.Fourth.Creature.WorldAbilities.First = new PrayerAbility(Game, party.Third.Creature, prayerModel);
+            party.Fourth.Creature.WorldAbilities.First = new PrayerAbility(Game, party.Fourth.Creature, prayerModel);
 #endif
         }
 

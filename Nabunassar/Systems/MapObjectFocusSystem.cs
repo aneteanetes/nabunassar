@@ -7,6 +7,7 @@ using MonoGame.Extended.Input;
 using Nabunassar.Components;
 using Nabunassar.ECS;
 using Nabunassar.Entities.Game;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
 
@@ -21,7 +22,7 @@ namespace Nabunassar.Systems
 
         public MapObjectFocusSystem(NabunassarGame game) : base(game, Aspect.One(typeof(FocusWidgetComponent)))
         {
-            _focusingLayers = ["revealed", "objects"];
+            _focusingLayers = [CollisionLayers.Revealed, CollisionLayers.Objects];
             _availableLayers = Game.CollisionComponent.Layers.Where(x => _focusingLayers.Contains(x.Key)).ToArray();
         }
 

@@ -10,12 +10,12 @@ namespace Nabunassar.Shaders
 
         protected NabunassarContentManager Content => Game.Content;
 
-        protected Effect Shader;
+        protected Effect Effect;
 
         public PostProcessShader(NabunassarGame game, string shaderPath)
         {
             Game = game;
-            Shader = LoadShader(shaderPath);
+            Effect = LoadShader(shaderPath);
 
             if (_bufferOfBuffers == null)
                 _bufferOfBuffers = new RenderTarget2D(Game.GraphicsDevice, Game.Viewport.Width, Game.Viewport.Height);
@@ -67,7 +67,7 @@ namespace Nabunassar.Shaders
                 Game.GraphicsDevice.SetRenderTarget(_bufferOfBuffers);
             }
 
-            var sb = Game.BeginDraw(false, effect: Shader);            
+            var sb = Game.BeginDraw(false, effect: Effect);            
             sb.Draw(backBuffer, Game.Viewport, Color.White);
             sb.End();
 

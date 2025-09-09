@@ -12,7 +12,7 @@ namespace Nabunassar.Entities.Struct
 
         public virtual T Fourth { get; set; }
 
-        public QuadPosition GetPosition(T item)
+        public QuadPosition GetQuadPosition(T item)
         {
             if (item.Equals(First))
                 return QuadPosition.First;

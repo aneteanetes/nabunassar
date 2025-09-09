@@ -42,9 +42,11 @@ namespace Nabunassar.Entities.Data.Abilities
                     return new LandscapeAbility(game, game.GameState.Party, creature, this);
                 case nameof(RevealAbility):
                     return new RevealAbility(game, creature, this);
-                default:
-                    case nameof(PrayerAbility):
+                case nameof(TeleportationAbility):
+                    return new TeleportationAbility(game, creature, this);
+                case nameof(PrayerAbility):
                     return new PrayerAbility(game, creature, this);
+                default:
                     throw new NotImplementedException($"Ability {Name} instantiating is not implemented!");
             }
         }

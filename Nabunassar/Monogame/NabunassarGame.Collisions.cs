@@ -2,6 +2,7 @@
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Collisions.QuadTree;
+using Nabunassar.Monogame.Extended;
 
 namespace Nabunassar
 {
@@ -13,22 +14,22 @@ namespace Nabunassar
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 
             var playerLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("player", playerLayer);
+            CollisionComponent.Add(CollisionLayers.Player, playerLayer);
 
             var hiddenLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("hidden", hiddenLayer);
+            CollisionComponent.Add(CollisionLayers.Hidden, hiddenLayer);
 
             var revealedLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("revealed", revealedLayer);
+            CollisionComponent.Add(CollisionLayers.Revealed, revealedLayer);
 
             var objectsLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("objects", objectsLayer);
+            CollisionComponent.Add(CollisionLayers.Objects, objectsLayer);
 
             var groundLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("ground", groundLayer);
+            CollisionComponent.Add(CollisionLayers.Ground, groundLayer);
 
             var cursorLayer = new Layer(new QuadTreeSpace(quadTreeBounds));
-            CollisionComponent.Add("cursor", cursorLayer);
+            CollisionComponent.Add(CollisionLayers.Cursor, cursorLayer);
 
             CollisionComponent.AddCollisionBetweenLayer(cursorLayer, objectsLayer);
             CollisionComponent.AddCollisionBetweenLayer(cursorLayer, revealedLayer);

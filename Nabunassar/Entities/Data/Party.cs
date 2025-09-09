@@ -222,7 +222,9 @@ namespace Nabunassar.Entities.Data
 
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(2f);
 
-        public RectangleF RevealArea => DistanceMeterRectangle;//this.MapObject.Bounds.BoundingRectangle.Multiple(3).MultipleY(3);
+        public RectangleF Bounds => this.MapObject.Bounds.BoundingRectangle;
+
+        public RectangleF RevealArea => DistanceMeterRectangle;
 
         public RectangleF PartyMenuRectangle
         {
@@ -246,13 +248,32 @@ namespace Nabunassar.Entities.Data
             return DistanceMeterRectangle.Intersects(gameObject.MapObject.Bounds.BoundingRectangle);
         }
 
+        public bool Visible
+        {
+            set
+            {
+                foreach (var hero in this)
+                {
+                    hero.Entity.Get<RenderComponent>().IsVisible = value;
+                }
+            }
+        }
+
+        public void SetPosition(Vector2 position)
+        {
+            this.MapObject.SetPosition(position);
+        }
+
+        public Vector2 GetPosition()
+        {
+            return this.MapObject.Position;
+        }
+
         public void SpeakTo(GameObject gameObject, Vector2 talkingTargetPosition=default)
         {
             if (gameObject.MapObject != null)
             {
-                var visualBounds = this.MapObject.Bounds.BoundingRectangle.Multiple(2);
-
-                if (visualBounds.Intersects(gameObject.MapObject.Bounds.BoundingRectangle))
+                if (DistanceMeterRectangle.Intersects(gameObject.MapObject.Bounds.BoundingRectangle))
                 {
                     var direction = MapObject.Position.DetectDirection(gameObject.MapObject.Position)
                         .ToLeftRight();
@@ -262,10 +283,6 @@ namespace Nabunassar.Entities.Data
 
                     _game.WidgetFactory.OpenDialogue(gameObject);
                 }
-                //else
-                //{
-                //    MoveTo(talkingTargetPosition, gameObject);
-                //}
             }
         }
 

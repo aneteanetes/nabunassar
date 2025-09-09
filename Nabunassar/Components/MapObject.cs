@@ -5,6 +5,7 @@ using MonoGame.Extended.ECS;
 using Nabunassar.Components.Abstract;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Struct;
 using System.Diagnostics;
 
@@ -168,10 +169,17 @@ namespace Nabunassar.Components
             Position = position;
         }
 
-        public virtual void SetPositionFromBoundsOrigin(Vector2 position)
+        public virtual void SetPositionFromBoundsOrigin(Vector2 position, Vector2 prev=default)
         {
+            OnMoving?.Invoke(prev, position);
             var newPos = new Vector2((position.X - BoundRelativePosition.X) - Bounds.BoundingRectangle.Width / 2, (position.Y - BoundRelativePosition.Y) - Bounds.BoundingRectangle.Height / 2);
             Position = newPos;
+        }
+
+        public virtual void SetPosition(Vector2 position, Vector2 prev = default)
+        {
+            OnMoving?.Invoke(prev, position);
+            Position = position;
         }
 
         public virtual void SetAbsolutePosition(Vector2 position)
@@ -323,11 +331,11 @@ namespace Nabunassar.Components
 
                 if (GameObject?.GetPropertyValue<bool>("NoBounds") == true)
                 {
-                    LayerName = "ground";
+                    LayerName = CollisionLayers.Ground;
                 }
                 else
                 {
-                    LayerName = "revealed";
+                    LayerName = CollisionLayers.Revealed;
                 }
 
                 Game.EntityFactory.AddCollistion(this);

@@ -27,7 +27,17 @@ namespace Nabunassar
             }
 
             if (IsGameActive)
+            {
                 GameState.Update(gameTime);
+
+                if (PostProcessShaders.Count > 0)
+                {
+                    foreach (var postProcessor in PostProcessShaders)
+                    {
+                        postProcessor.Update(gameTime);
+                    }
+                }
+            }
 #if DEBUG
             DebugUpdate(gameTime);
 #endif

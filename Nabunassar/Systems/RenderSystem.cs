@@ -1,11 +1,15 @@
 ﻿using Geranium.Reflection;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
+using MonoGame.Extended.Particles;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Map;
+using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Systems;
 
 namespace Nabunassar.ECS
@@ -15,7 +19,7 @@ namespace Nabunassar.ECS
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private ComponentMapper<MapObject> _gameObjectMapper;
-        private ComponentMapper<EffectComponent> _effectMapper;
+        private ComponentMapper<ShaderEffectComponent> _effectMapper;
         private ComponentMapper<Party> _partyMapper;
 
         private static bool isGlowNeedDisable = false;
@@ -34,7 +38,7 @@ namespace Nabunassar.ECS
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
             _gameObjectMapper = mapperService.GetMapper<MapObject>();
-            _effectMapper = mapperService.GetMapper<EffectComponent>();
+            _effectMapper = mapperService.GetMapper<ShaderEffectComponent>();
             _partyMapper = mapperService.GetMapper<Party>();
         }
 
@@ -48,7 +52,7 @@ namespace Nabunassar.ECS
             {
                 var effect = _effectMapper.Get(entityId);
                 if (effect != null)
-                    effect.Update(gameTime);
+                    UpdateEffect(effect, entityId, gameTime);
 
                 var render = _renderMapper.Get(entityId);
                 if (render != null)
@@ -80,6 +84,18 @@ namespace Nabunassar.ECS
             isGlowNeedDisable = false;
         }
 
+        private void UpdateEffect(ShaderEffectComponent shaderEffect, int entityId, GameTime gameTime)
+        {
+            shaderEffect.Update(gameTime);
+
+            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateTexture == null)
+            {
+                var render = _renderMapper.Get(entityId);
+                var textureRegion = render.Sprite.TextureRegion;
+                shaderEffect.SeparateTexture = new RenderTarget2D(Game.GraphicsDevice, textureRegion.Width, textureRegion.Height);
+            }
+        }
+
         public override void Draw(GameTime gameTime, bool sys)
         {
             var sb = Game.BeginDraw();
@@ -99,7 +115,7 @@ namespace Nabunassar.ECS
                 { }
 
                 var render = _renderMapper.Get(entity);
-                if (render != null && render.Sprite.IsVisible)
+                if (render != null && render.Sprite.IsVisible && render.IsVisible)
                 {
                     if (render.OpacityTimer != default && render.Opacity == 0)
                         continue;
@@ -107,11 +123,13 @@ namespace Nabunassar.ECS
                     var effect = _effectMapper.Get(entity);
                     if (effect != default)
                     {
-                        sb.End();
-                        sb = Game.BeginDraw(effect: effect.Effect);
+                        DrawEffect(effect, render, sb);
+                    }
+                    else
+                    {
+                        sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
                     }
 
-                    sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
                     if (render.OnAfterDraw != default)
                         render.OnAfterDraw?.Invoke();
 
@@ -156,7 +174,40 @@ namespace Nabunassar.ECS
                     }
                 }
             }
+        }
 
+        private void DrawEffect(ShaderEffectComponent shaderEffect, RenderComponent render, SpriteBatchKnowed sb)
+        {
+            sb.End();
+
+            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateTexture == null)
+                return;
+
+            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateSprite == null)
+            {
+                Game.SetRenderTarget(shaderEffect.SeparateTexture);
+                Game.ClearRenderTarget(Color.Black);
+                sb = Game.BeginDraw(false);
+
+                sb.Draw(render.Sprite, Vector2.Zero, render.Rotation, render.Scale);
+
+                sb.End();
+
+                Game.SetRenderTarget(null);
+
+                shaderEffect.SeparateSprite = new Sprite(shaderEffect.SeparateTexture);
+            }
+
+            sb = Game.BeginDraw(effect: shaderEffect.Effect);
+
+            if (shaderEffect.IsSeparateTexture)
+            {
+                sb.Draw(shaderEffect.SeparateSprite, render.Position, render.Rotation, render.Scale);
+            }
+            else
+            {
+                sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 
@@ -140,7 +141,7 @@ namespace Nabunassar.Systems
             if(keyboard.WasKeyPressed(Keys.G))
                 foreach (var hero in party)
                 {
-                    hero.Entity.Attach(new DissolveEffect(Game, hero.Entity) as EffectComponent);
+                    hero.Entity.Attach(new DissolveShaderEffect(Game, hero.Entity) as ShaderEffectComponent);
                 }
         }
 
@@ -202,7 +203,7 @@ namespace Nabunassar.Systems
 
             if (radialMenuGameObject == null)
             {
-                var layer = Game.CollisionComponent.Layers["ground"];
+                var layer = Game.CollisionComponent.Layers[CollisionLayers.Ground];
                 var groundTile = layer.Space.Query(mouseRect).FirstOrDefault();
                 if (groundTile != default)
                 {

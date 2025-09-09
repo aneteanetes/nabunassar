@@ -14,7 +14,7 @@
     "ItemId": 3,
     "IsCombat": "false",
     "Slot": "First",
-    "Archetype": "Wizard",
+    "Archetype": "Rogue",
     "IsUsableInWorld": true
   },
   {
@@ -24,6 +24,15 @@
     "IsCombat": "false",
     "Slot": "First",
     "Archetype": "Priest",
+    "IsUsableInWorld": true
+  },
+  {
+    "Name": "Teleportation",
+    "Icon": "Assets/Images/Icons/Abilities/teleportation.png",
+    "ItemId": 5,
+    "IsCombat": "false",
+    "Slot": "First",
+    "Archetype": "Wizard",
     "IsUsableInWorld": true
   }
 ]

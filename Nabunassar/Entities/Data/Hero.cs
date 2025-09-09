@@ -1,4 +1,5 @@
 ﻿using MonoGame.Extended.ECS;
+using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Game;
@@ -33,5 +34,6 @@ namespace Nabunassar.Entities.Data
         }
 
         public string Name { get; set; } = Guid.NewGuid().ToString();
+        public AnimatedSprite Sprite { get; internal set; }
     }
 }

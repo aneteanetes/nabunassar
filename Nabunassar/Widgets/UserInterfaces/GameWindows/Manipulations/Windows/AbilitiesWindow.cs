@@ -67,7 +67,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                     var texture = Content.Load<Texture2D>(worldAbility.Icon);
                     var info = new AbilityView(worldAbility, texture);
 
-                    var pos = hero.Creature.WorldAbilities.GetPosition(worldAbility);
+                    var pos = hero.Creature.WorldAbilities.GetQuadPosition(worldAbility);
                     _worldAbilityViews[hero][pos] = info;
                 }
 
@@ -80,7 +80,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                     var texture = Content.Load<Texture2D>(battleAbility.Icon);
                     var info = new AbilityView(battleAbility, texture);
 
-                    var pos = hero.Creature.BattleAbilities.GetPosition(battleAbility);
+                    var pos = hero.Creature.BattleAbilities.GetQuadPosition(battleAbility);
                     _battleAbilityViews[hero][pos] = info;
                 }
             }

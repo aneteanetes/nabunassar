@@ -95,7 +95,6 @@ namespace Nabunassar.Systems
                     }
 
                     // setting position
-                    gameobject.OnMoving?.Invoke(gameobject.Position, newPos);
                     gameobject.SetPositionFromBoundsOrigin(newPos);
 
                     if (gameobject.Position.RoundNew() == gameobject.Ray2.Direction.RoundNew() && gameobject.Ray2 != default)

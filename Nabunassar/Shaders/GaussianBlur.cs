@@ -213,7 +213,7 @@ namespace Nabunassar.Shaders
                                              RenderTarget2D renderTarget2,
                                              SpriteBatch spriteBatch)
         {
-            if (Shader == null)
+            if (Effect == null)
                 throw new InvalidOperationException("GaussianBlur.fx effect not loaded.");
 
             Texture2D outputTexture = null;
@@ -225,12 +225,12 @@ namespace Nabunassar.Shaders
 
             Game.GraphicsDevice.SetRenderTarget(renderTarget1);
 
-            Shader.CurrentTechnique = Shader.Techniques["GaussianBlur"];
-            Shader.Parameters["weights"].SetValue(_kernel);
-            Shader.Parameters["colorMap+colorMapTexture"].SetValue(srcTexture);
-            Shader.Parameters["offsets"].SetValue(_offsetsHoriz);
+            Effect.CurrentTechnique = Effect.Techniques["GaussianBlur"];
+            Effect.Parameters["weights"].SetValue(_kernel);
+            Effect.Parameters["colorMap+colorMapTexture"].SetValue(srcTexture);
+            Effect.Parameters["offsets"].SetValue(_offsetsHoriz);
 
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, Shader);
+            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, Effect);
             spriteBatch.Draw(srcTexture, destRect1, Color.White);
             spriteBatch.End();
 
@@ -239,10 +239,10 @@ namespace Nabunassar.Shaders
             Game.GraphicsDevice.SetRenderTarget(renderTarget2);
             outputTexture = (Texture2D)renderTarget1;
 
-            Shader.Parameters["colorMap+colorMapTexture"].SetValue(outputTexture);
-            Shader.Parameters["offsets"].SetValue(_offsetsVert);
+            Effect.Parameters["colorMap+colorMapTexture"].SetValue(outputTexture);
+            Effect.Parameters["offsets"].SetValue(_offsetsVert);
 
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, Shader);
+            spriteBatch.Begin(0, BlendState.Opaque, null, null, null, Effect);
             spriteBatch.Draw(outputTexture, destRect2, Color.White);
             spriteBatch.End();
 

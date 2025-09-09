@@ -73,7 +73,7 @@ namespace Nabunassar
                 Game.SetRenderTargetBackBuffer(_screenShotTarget);
             }
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
 
             if (PostProcessShaders.Count > 0)
             {

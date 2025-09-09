@@ -15,6 +15,18 @@
     "AbilityName": "Landscape"
   },
   {
+    "ObjectId": 2,
+    "Name": "OldSnowRustySword",
+    "Portrait": "Assets/Images/Objects/snow/oldsword_m.jpg",
+    "Image": "Assets/Images/Objects/snow/oldsword_s.png",
+    "Icon": "Assets/Tilesets/transparent_packed.png",
+    "IconRegion": "(528,112,16,16)",
+    "Cost": "15s,56c",
+    "Weight": "2",
+    "ItemType": "Weapon",
+    "ItemSubtype": "Sword"
+  },
+  {
     "ObjectId": 3,
     "Name": "RevealTablet",
     "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
@@ -28,17 +40,5 @@
     "Archetype": "Wizard",
     "IsCombat": false,
     "AbilityName": "Reveal"
-  },
-  {
-    "ObjectId": 2,
-    "Name": "OldSnowRustySword",
-    "Portrait": "Assets/Images/Objects/snow/oldsword_m.jpg",
-    "Image": "Assets/Images/Objects/snow/oldsword_s.png",
-    "Icon": "Assets/Tilesets/transparent_packed.png",
-    "IconRegion": "(528,112,16,16)",
-    "Cost": "15s,56c",
-    "Weight": "2",
-    "ItemType": "Weapon",
-    "ItemSubtype": "Sword"
   }
 ]

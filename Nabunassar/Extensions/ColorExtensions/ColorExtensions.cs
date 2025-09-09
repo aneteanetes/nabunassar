@@ -31,5 +31,10 @@ namespace Nabunassar
         {
             return new Color(color, alpha);
         }
+
+        public static Vector4 Normalize(this Color color)
+        {
+            return new Vector4(1f/color.R, 1f/color.G, 1f/color.B, 1f/color .A);
+        }
     }
 }

@@ -4,6 +4,7 @@ using MonoGame;
 using Myra;
 using Myra.Graphics2D.UI;
 using Nabunassar.Content;
+using Nabunassar.ECS;
 using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
 using Nabunassar.Monogame.Interfaces;

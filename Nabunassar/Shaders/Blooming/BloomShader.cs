@@ -230,30 +230,30 @@ namespace Nabunassar.Shaders.Blooming
 
             _renderTargetFormat = SurfaceFormat.Color;
 
-            Shader.Parameters["isNeon"].SetValue(_isNeon);
+            Effect.Parameters["isNeon"].SetValue(_isNeon);
 
             //Load the shader parameters and passes for cheap and easy access
-            _bloomInverseResolutionParameter = Shader.Parameters["InverseResolution"];
-            _bloomRadiusParameter = Shader.Parameters["Radius"];
-            _bloomStrengthParameter = Shader.Parameters["Strength"];
-            _bloomStreakLengthParameter = Shader.Parameters["StreakLength"];
-            _bloomThresholdParameter = Shader.Parameters["Threshold"];
+            _bloomInverseResolutionParameter = Effect.Parameters["InverseResolution"];
+            _bloomRadiusParameter = Effect.Parameters["Radius"];
+            _bloomStrengthParameter = Effect.Parameters["Strength"];
+            _bloomStreakLengthParameter = Effect.Parameters["StreakLength"];
+            _bloomThresholdParameter = Effect.Parameters["Threshold"];
 
             //For DirectX / Windows
-            _bloomParameterScreenTexture = Shader.Parameters["ScreenTexture"];
+            _bloomParameterScreenTexture = Effect.Parameters["ScreenTexture"];
 
             //If we are on OpenGL it's different, load the other one then!
             if (_bloomParameterScreenTexture == null)
             {
                 //for OpenGL / CrossPlatform
-                _bloomParameterScreenTexture = Shader.Parameters["LinearSampler+ScreenTexture"];
+                _bloomParameterScreenTexture = Effect.Parameters["LinearSampler+ScreenTexture"];
             }
 
-            _bloomPassExtract = Shader.Techniques["Extract"].Passes[0];
-            _bloomPassExtractLuminance = Shader.Techniques["ExtractLuminance"].Passes[0];
-            _bloomPassDownsample = Shader.Techniques["Downsample"].Passes[0];
-            _bloomPassUpsample = Shader.Techniques["Upsample"].Passes[0];
-            _bloomPassUpsampleLuminance = Shader.Techniques["UpsampleLuminance"].Passes[0];
+            _bloomPassExtract = Effect.Techniques["Extract"].Passes[0];
+            _bloomPassExtractLuminance = Effect.Techniques["ExtractLuminance"].Passes[0];
+            _bloomPassDownsample = Effect.Techniques["Downsample"].Passes[0];
+            _bloomPassUpsample = Effect.Techniques["Upsample"].Passes[0];
+            _bloomPassUpsampleLuminance = Effect.Techniques["UpsampleLuminance"].Passes[0];
 
             //An interesting blendstate for merging the initial image with the bloom.
             //BlendStateBloom = new BlendState();

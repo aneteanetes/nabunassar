@@ -35,6 +35,11 @@ namespace Nabunassar
             CollisionComponent.Remove(collision);
         }
 
+        internal void DisableGlowFocus()
+        {
+            RenderSystem.DisableGlow();
+        }
+
         public void DisableWorld()
         {
             ChangeGameActive();

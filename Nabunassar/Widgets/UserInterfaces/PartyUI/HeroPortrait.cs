@@ -4,7 +4,6 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Widgets.UserInterfaces.Combat;
-using Nabunassar.Widgets.Views;
 using Nabunassar.Widgets.Views.StatusEffects;
 
 namespace Nabunassar.Widgets.UserInterfaces.PartyUI
@@ -56,7 +55,8 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
                 Background = roundedBackground,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Myra.Graphics2D.Thickness(0, 3, 0, 0)
+                Margin = new Myra.Graphics2D.Thickness(0, 3, 0, 0),
+                Tooltip = hero.Name
             };
             _portrait = new Image()
             {
