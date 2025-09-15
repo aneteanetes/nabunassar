@@ -125,6 +125,24 @@ namespace Nabunassar.Entities.Data.Dices
             return diceResult;
         }
 
+        public static DiceResult operator +(DiceResult value, DiceResult diceResult)
+        {
+            diceResult.Terms.Add(value, DiceOperation.Add);
+            return diceResult;
+        }
+
+        public static DiceResult operator *(DiceResult diceResult, int value)
+        {
+            diceResult.Terms.Add(new DiceTermUnary(value), DiceOperation.Multiply);
+            return diceResult;
+        }
+
+        public static DiceResult operator *(DiceResult diceResult, DiceTermUnary unary)
+        {
+            diceResult.Terms.Add(unary, DiceOperation.Multiply);
+            return diceResult;
+        }
+
         public static implicit operator Rank(DiceResult diceResult) => new Rank(diceResult.ToValue());
 
         public override string ToString()

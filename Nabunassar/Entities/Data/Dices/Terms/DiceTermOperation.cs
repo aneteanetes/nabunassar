@@ -40,6 +40,10 @@
                     {
                         return Left.GetValue(isMax) * Right.GetValue(isMax);
                     }
+                case DiceOperation.Division:
+                    {
+                        return Left.GetValue(isMax) / Right.GetValue(isMax);
+                    }
                 default:
                     {
                         return Right.GetValue(isMax);

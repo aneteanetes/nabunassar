@@ -1,6 +1,6 @@
 ﻿namespace Nabunassar.Entities.Data.Dices
 {
-    internal class RollResultPercent : RollResult
+    internal class RollResultPercent : RollResultComplexity
     {
         public RollResultPercent(DiceResult complexity, bool isAutoMax = false) : base(complexity, Dice.d100.Roll(), isAutoMax)
         {

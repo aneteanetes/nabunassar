@@ -119,12 +119,18 @@ namespace Nabunassar.Entities.Data.Rankings
             return new DiceTermOperation(DiceOperation.Multiply, rank, term);
         }
 
-        //public static implicit operator DiceModifier(Rank rank)
-        //{
-        //    return new DiceModifier(rank.Value, rank.Value, DiceModifierType.Rank, DiceOperation.Unary, rank);
-        //}
+        public static bool operator <(Rank rank, int val)
+        {
+            return rank.Value < val;
+        }
 
-        public Dice AsDice() => (Dice)this;
+        public static bool operator >(Rank rank, int val)
+        {
+            return rank.Value > val;
+        }
+
+#warning Rank to Dice stupid conversion
+        public Dice AsDice() => new Dice(((Dice)this).Edges, this.ObjectId);
 
         public static explicit operator Rank(Dice dice) => dice.Edges switch
         {

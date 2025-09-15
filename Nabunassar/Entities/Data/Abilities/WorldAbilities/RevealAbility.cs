@@ -26,7 +26,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public void CastReveal(List<GameObject> objs)
         {
-            List<Pair<RollResult, GameObject>> revealedObjs = new();
+            List<Pair<RollResultComplexity, GameObject>> revealedObjs = new();
 
             foreach (var obj in objs)
             {
@@ -36,7 +36,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 if (roll.IsSuccess)
                 {
                     obj.Reveal();
-                    revealedObjs.Add(new Pair<RollResult, GameObject>(roll,obj));
+                    revealedObjs.Add(new Pair<RollResultComplexity, GameObject>(roll,obj));
                 }
             }
 
@@ -71,7 +71,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             }
         }
 
-        public override RollResult GetFormula()
+        public override RollResultComplexity GetFormula()
         {
             return Roll(
                 Rank.d2.Entity(GameObject.GetAbilityEntity("Reveal")),
@@ -81,12 +81,12 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.IntelligenceDice))));
         }
 
-        private RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
+        private RollResultComplexity Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
         {
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 
-            return new RollResult(checkValue, skillValue, true);
+            return new RollResultComplexity(checkValue, skillValue, true);
         }
 
         public override Result<bool> IsActive(GameObject gameObject)

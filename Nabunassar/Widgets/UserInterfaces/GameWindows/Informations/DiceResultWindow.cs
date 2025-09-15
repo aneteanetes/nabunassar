@@ -21,16 +21,27 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
         {
             var rollResult = this.GameObject.RollResult;
 
-            var textResult = rollResult.IsSuccess
-                ? Game.Strings["UI"]["Success"].ToString()
-                : Game.Strings["UI"]["Failure"].ToString();
+            var textResult = "";
+            bool isCheck = false;
 
-            if (rollResult.IsAutoSuccess)
-                textResult = Game.Strings["UI"]["Success (Guaranteed)"].ToString();
+            if (rollResult is RollResultComplexity rollComplexity)
+            {
+                isCheck = true;
+                textResult = rollComplexity.IsSuccess
+                    ? Game.Strings["UI"]["Success"].ToString()
+                    : Game.Strings["UI"]["Failure"].ToString();
 
-            AddRollResult(informationpanel, rollResult.Complexity, Game.Strings["UI"]["Difficult"]);
+                if (rollComplexity.IsAutoSuccess)
+                    textResult = Game.Strings["UI"]["Success (Guaranteed)"].ToString();
+
+                AddRollResult(informationpanel, rollComplexity.Complexity, Game.Strings["UI"]["Difficult"]);
+            }
             AddRollResult(informationpanel, rollResult.Result, Game.Strings["UI"]["Throw"],true);
-            AddTitle(informationpanel, $"{Game.Strings["UI"]["Result"]}: {textResult}", new Thickness(0,15,0,0));
+
+            if (isCheck)
+            {
+                AddTitle(informationpanel, $"{Game.Strings["UI"]["Result"]}: {textResult}", new Thickness(0, 15, 0, 0));
+            }
 
             return base.FillInformationWindow(informationpanel);
         }

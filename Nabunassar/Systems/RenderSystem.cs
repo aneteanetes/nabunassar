@@ -1,5 +1,4 @@
 ﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
@@ -8,8 +7,6 @@ using MonoGame.Extended.Particles;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
-using Nabunassar.Entities.Map;
-using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Systems;
 
 namespace Nabunassar.ECS
@@ -52,7 +49,7 @@ namespace Nabunassar.ECS
             {
                 var effect = _effectMapper.Get(entityId);
                 if (effect != null)
-                    UpdateEffect(effect, entityId, gameTime);
+                    effect.Update(gameTime);
 
                 var render = _renderMapper.Get(entityId);
                 if (render != null)
@@ -84,18 +81,6 @@ namespace Nabunassar.ECS
             isGlowNeedDisable = false;
         }
 
-        private void UpdateEffect(ShaderEffectComponent shaderEffect, int entityId, GameTime gameTime)
-        {
-            shaderEffect.Update(gameTime);
-
-            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateTexture == null)
-            {
-                var render = _renderMapper.Get(entityId);
-                var textureRegion = render.Sprite.TextureRegion;
-                shaderEffect.SeparateTexture = new RenderTarget2D(Game.GraphicsDevice, textureRegion.Width, textureRegion.Height);
-            }
-        }
-
         public override void Draw(GameTime gameTime, bool sys)
         {
             var sb = Game.BeginDraw();
@@ -123,7 +108,8 @@ namespace Nabunassar.ECS
                     var effect = _effectMapper.Get(entity);
                     if (effect != default)
                     {
-                        DrawEffect(effect, render, sb);
+                        sb.End();
+                        effect.Draw(gameTime, render.Sprite, render.Position, render.Rotation, render.Scale);
                     }
                     else
                     {
@@ -173,40 +159,6 @@ namespace Nabunassar.ECS
                         }
                     }
                 }
-            }
-        }
-
-        private void DrawEffect(ShaderEffectComponent shaderEffect, RenderComponent render, SpriteBatchKnowed sb)
-        {
-            sb.End();
-
-            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateTexture == null)
-                return;
-
-            if (shaderEffect.IsSeparateTexture && shaderEffect.SeparateSprite == null)
-            {
-                Game.SetRenderTarget(shaderEffect.SeparateTexture);
-                Game.ClearRenderTarget(Color.Black);
-                sb = Game.BeginDraw(false);
-
-                sb.Draw(render.Sprite, Vector2.Zero, render.Rotation, render.Scale);
-
-                sb.End();
-
-                Game.SetRenderTarget(null);
-
-                shaderEffect.SeparateSprite = new Sprite(shaderEffect.SeparateTexture);
-            }
-
-            sb = Game.BeginDraw(effect: shaderEffect.Effect);
-
-            if (shaderEffect.IsSeparateTexture)
-            {
-                sb.Draw(shaderEffect.SeparateSprite, render.Position, render.Rotation, render.Scale);
-            }
-            else
-            {
-                sb.Draw(render.Sprite, render.Position, render.Rotation, render.Scale);
             }
         }
     }

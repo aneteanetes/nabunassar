@@ -39,6 +39,11 @@ namespace Nabunassar.Entities.Data.Dices
                 return Result.ToString();
         }
 
+        public static DiceResult operator +(DiceRoll value, DiceRoll another)
+        {
+            return new DiceResult(value, DiceOperation.Add, another);
+        }
+
         public static implicit operator DiceResult(DiceRoll roll)
         {
             return new DiceResult(roll);

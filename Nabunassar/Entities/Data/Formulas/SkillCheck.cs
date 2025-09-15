@@ -18,7 +18,7 @@ namespace Nabunassar.Entities.Data.Formulas
         Кубик_Характеристики = d8
         */
 
-        public static RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
+        public static RollResultComplexity Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
         {
             //var @lock = ((int)Rank.Advanced) * 2 + Dice.d12;
             //var user = ((int)Rank.Advanced) + Dice.d12 + Dice.d8;
@@ -26,7 +26,7 @@ namespace Nabunassar.Entities.Data.Formulas
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 
-            return new RollResult(checkValue, skillValue, true);
+            return new RollResultComplexity(checkValue, skillValue, true);
         }
     }
 }

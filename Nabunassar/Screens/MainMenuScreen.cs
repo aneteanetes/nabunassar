@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Nabunassar.Components.Effects;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
-using Nabunassar.Shaders;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Menu;
 

@@ -96,7 +96,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 #warning pray blessing WIP
         }
 
-        public override RollResult GetFormula() => Roll(this.AbilityDice, Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Dialectics))));
+        public override RollResultComplexity GetFormula() => Roll(this.AbilityDice, Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Dialectics))));
 
         private RollResultPercent Roll(Dice skillDice, Dice characteristicdDice)
         {

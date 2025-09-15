@@ -1,8 +1,5 @@
-﻿using Nabunassar.Entities.Data.Dices;
-using Nabunassar.Entities.Data.Rankings;
-using Nabunassar.Entities.Game;
+﻿using Nabunassar.Entities.Game;
 using Nabunassar.Resources;
-using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 {

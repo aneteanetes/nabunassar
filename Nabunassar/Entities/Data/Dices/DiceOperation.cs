@@ -6,7 +6,8 @@
         Substract,
         Multiply,
         Unary,
-        Dices
+        Dices,
+        Division
     }
 
     internal static class DiceOperationExtensions
@@ -16,6 +17,7 @@
             DiceOperation.Add => " + ",
             DiceOperation.Substract => " - ",
             DiceOperation.Multiply => " * ",
+            DiceOperation.Division => " / ",
             _ => "",
         };
     }

@@ -185,6 +185,12 @@ namespace Nabunassar.Entities.Data.Dices
             return new DiceResult(mod, DiceOperation.Substract, roll);
         }
 
+        public static DiceResult operator /(Dice dice, int value)
+        {
+            var roll = dice.Roll();
+            return new DiceResult(roll, DiceOperation.Division, new DiceTermUnary(value));
+        }
+
         public override bool Equals(object obj)
         {
             if(obj == null) 

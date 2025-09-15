@@ -8,15 +8,18 @@ using Nabunassar.Entities.Game.Calendars;
 using Nabunassar.Entities.Map;
 using Nabunassar.Entities.Struct;
 using Nabunassar.Struct;
-using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.UserInterfaces;
-using System;
-using System.Drawing.Printing;
+using Monogame.Extended;
 
 namespace Nabunassar.Entities.Data
 {
     internal class GameState
     {
+        /// <summary>
+        /// For visuals multiply on NabunassarGame.Camera.Zoom
+        /// </summary>
+        public int GameMeterMeasure { get; private set; } = 16; //px
+
         public bool IsActive { get; set; } = false;
 
         public Party Party { get; set; }
@@ -52,7 +55,7 @@ namespace Nabunassar.Entities.Data
                 ChatWindow.AddMessage(text.ToString());
         }
 
-        public void AddRollMessage(DrawText text, RollResult rollResult)
+        public void AddRollMessage(DrawText text, RollResultComplexity rollResult)
         {
             if (ChatWindow.Exists)
                 ChatWindow.AddRollMessage(text.ToString(), rollResult);

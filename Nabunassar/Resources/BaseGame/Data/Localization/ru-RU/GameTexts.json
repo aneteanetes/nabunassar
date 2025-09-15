@@ -50,5 +50,8 @@
   "Charges": "Заряды",
   "Health": "Здоровье",
   "ArmorClass": "Класс брони",
-  "Will": "Воля"
+  "Will": "Воля",
+  "Max radius reached": "Достигнут максимальный радиус",
+  "Maximum length of obstacle": "Максимальная длина препятствия",
+  "obstacle length should not exceed": "не должна превышать"
 }

@@ -63,7 +63,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             }
         }
 
-        public override RollResult GetFormula()
+        public override RollResultComplexity GetFormula()
         {
             return Roll(
                 Rank.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
@@ -73,12 +73,12 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Strength))));
         }
 
-        private RollResult Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
+        private RollResultComplexity Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
         {
             var checkValue = checkRank * 2 + checkDice;
             var skillValue = skillRank + skillDice + characteristicdDice;
 
-            return new RollResult(checkValue, skillValue, true);
+            return new RollResultComplexity(checkValue, skillValue, true);
         }
 
         public override Result<bool> IsActive(GameObject gameObject)

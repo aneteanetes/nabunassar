@@ -42,6 +42,17 @@ namespace Nabunassar
             return new RectangleF(newX, newY, newWidth, newHeight);
         }
 
+        public static RectangleF Add(this RectangleF rect, float measure)
+        {
+            var newWidth = rect.Width + measure;
+            var newHeight = rect.Height + measure;
+
+            var newX = rect.X + rect.Width / 2 - newWidth / 2;
+            var newY = rect.Y + rect.Height / 2 - newHeight / 2;
+
+            return new RectangleF(newX, newY, newWidth, newHeight);
+        }
+
         public static RectangleF MultipleX(this RectangleF rect, float multiplier)
         {
             var newWidth = rect.Width * multiplier;
@@ -85,6 +96,11 @@ namespace Nabunassar
 
                 return false;
             }
+        }
+
+        public static BoundingBox ToBoundingBox(this RectangleF rect)
+        {
+            return new BoundingBox(new Vector3(rect.Left, rect.Top, 0), new Vector3(rect.Right, rect.Bottom, 0));
         }
     }
 }

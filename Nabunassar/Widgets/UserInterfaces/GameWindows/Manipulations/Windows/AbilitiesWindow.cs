@@ -7,6 +7,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities;
+using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
@@ -317,10 +318,15 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 .AppendLine()
                 .Append(roll.Result.ToFormula())
                 .AppendLine()
-                .AppendLine()
-                .Append($"{Game.Strings["UI"]["Complexity"]}:")
-                .AppendLine()
-                .Append(roll.Complexity.ToFormula());
+                .AppendLine();
+
+            if (roll is RollResultComplexity complexityRoll)
+            {
+                text = text
+                    .Append($"{Game.Strings["UI"]["Complexity"]}:")
+                    .AppendLine()
+                    .Append(complexityRoll.Complexity.ToFormula());
+            }
 
             SetDescription(text.ToString());
         }
