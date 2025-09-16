@@ -1,52 +1,32 @@
-﻿using Myra.Graphics2D.TextureAtlases;
-using Myra.Graphics2D.UI;
-using Nabunassar.Entities.Game;
-using Nabunassar.Monogame.Interfaces;
+﻿using Nabunassar.Entities.Game;
 
 namespace Nabunassar.Widgets.UserInterfaces.Combat
 {
-    internal class HPLine : HorizontalStackPanel, IFeatured
+    internal class HPLine : StatLine
     {
-        private HorizontalProgressBar _bar;
-        private NabunassarGame _game;
-        private Creature _creature;
-
-        public HPLine(NabunassarGame game, Creature creature, int width=75)
+        public HPLine(NabunassarGame game, Creature creature, int length = 75) : base(game, creature, length)
         {
-            _game = game;
-            _creature = creature;
-
-            _bar = new HorizontalProgressBar();
-            _bar.Filler = new SolidBrush(Color.Red);
-            _bar.Maximum = _creature.HPMax;
-            _bar.Minimum = 0;
-            _bar.Value = _bar.Maximum;
-            _bar.Width = width;
-            _bar.Height = 8;
-            _bar.VerticalAlignment= VerticalAlignment.Center;
-
-            var icons = game.Content.LoadTexture("Assets/Tilesets/transparent_packed.png");
-
-            var icon = new Image()
-            {
-                Renderable = new TextureRegion(icons, new Rectangle(624, 160, 16, 16)),
-                Color = Color.Red,
-                Width = 24,
-                Height = 24,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Myra.Graphics2D.Thickness(3, 0, 0, 0)
-            };
-
-            Widgets.Add(icon);
-            Widgets.Add(_bar);
         }
 
-        public void Update(GameTime gameTime)
-        {
-            _bar.Maximum = _creature.HPMax;
-            _bar.Value = _creature.HPNow;
+        public override string TextureAsset => "Assets/Tilesets/transparent_packed.png";
 
-            this.Tooltip = $"{_game.Strings["GameTexts"]["Health"]}: {_creature.HPNow}/{_creature.HPMax}";
+        public override Rectangle TextureRegion => new Rectangle(624, 160, 16, 16);
+
+        public override Color Color => Color.Red;
+
+        public override int GetCurrent()
+        {
+            return Creature.HPMax;
+        }
+
+        public override int GetMax()
+        {
+            return Creature.HPNow;
+        }
+
+        public override string GetTooltip()
+        {
+            return Game.Strings["GameTexts"]["Health"];
         }
     }
 }

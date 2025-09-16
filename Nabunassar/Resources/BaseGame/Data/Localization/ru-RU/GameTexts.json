@@ -1,6 +1,6 @@
 {
   "DangerRating": "Рейтинг сложности",
-  "Strength": "Сила",
+  "Constitution": "Сила",
   "Agility": "Ловкость",
   "Intelligence": "Интеллект",
   "Dialectics": "Диалектика",
@@ -49,8 +49,9 @@
   "Charge": "Заряд",
   "Charges": "Заряды",
   "Health": "Здоровье",
-  "ArmorClass": "Класс брони",
-  "Will": "Воля",
+  "Endurance": "Выносливость",
+  "ArmorClassStat": "Класс брони",
+  "WillStat": "Воля",
   "Max radius reached": "Достигнут максимальный радиус",
   "Maximum length of obstacle": "Максимальная длина препятствия",
   "obstacle length should not exceed": "не должна превышать"

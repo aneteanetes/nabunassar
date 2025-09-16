@@ -20,6 +20,7 @@ namespace Nabunassar.Entities.Game
             FormulaName = NabunassarGame.Game.Strings["Entities"][nameof(Creature)];
             HeroLink = hero;
             HPNow = HPMax;
+            EnduranceNow = EnduranceMax;
             ArmorClassBase = NabunassarGame.Game.DataBase.GetFromDictionary<int>("Data/Formulas/BaseArmorClassByArchetype.json", archetype.ToString());
             ArmorClass = new ComplexValue<int>();
             ArmorClass.AddValue(ArmorClassBase, ComplexValueType.Base);
@@ -43,13 +44,31 @@ namespace Nabunassar.Entities.Game
             get
             {
                 var unit = CreatureRank * 3;
-                var value = PrimaryStats.Strength * unit;
+                var value = PrimaryStats.Constitution * unit;
 
                 return value.GetValue(true);
             }
         }
 
         public int HPNow { get; set; }
+
+        public int EnduranceMax
+        {
+            get
+            {
+
+                var value = PrimaryStats.Constitution * CreatureRank;
+                return value.GetValue(true);
+            }
+        }
+
+        private int _enduranceNow;
+        public int EnduranceNow
+        {
+            get => _enduranceNow;
+            set => _enduranceNow = Math.Clamp(value, 0, EnduranceMax);
+        }
+
 
         public PrimaryStats PrimaryStats { get; set; }
 

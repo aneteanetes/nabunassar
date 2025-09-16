@@ -16,7 +16,11 @@ namespace Nabunassar.Entities.Data.Abilities
 
         public string Name { get; set; }
 
+        public string SystemName => this.GetType().Name.Replace("Ability", "");
+
         public string Description { get; set; }
+
+        public int EnduranceCost { get; set; } = 1;
 
         public Rank AbilityRank { get; set; } = Rank.Basic;
 

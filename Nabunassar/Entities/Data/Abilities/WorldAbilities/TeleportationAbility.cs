@@ -18,6 +18,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             Game.AddDesktopWidget(new TeleportationInterface(Game,this, LastRoll.Result.ToValue()));
         }
 
+        public void DoTeleport()
+        {
+            SpentEndurance();
+        }
+
         public float AvailableDistance
         {
             get
@@ -44,11 +49,6 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         {
             var @throw = skillDice.RollMax() + characteristicdDice.RollMax();
             return new RollResult(@throw, true);
-        }
-
-        public override Result<bool> IsActive(GameObject gameObject)
-        {
-            return true;
         }
 
         public override bool IsApplicable(GameObject gameObject)

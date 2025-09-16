@@ -4,9 +4,9 @@ using Nabunassar.Localization;
 
 namespace Nabunassar.Entities.Data.Stats
 {
-    internal class ArmorClass : BaseStat<ArmorClass>
+    internal class ArmorClassStat : BaseStat<ArmorClassStat>
     {
-        public ArmorClass(Creature creature=null) :base(creature)
+        public ArmorClassStat(Creature creature = null) : base(creature)
         {
         }
 
@@ -17,7 +17,7 @@ namespace Nabunassar.Entities.Data.Stats
             if (Creature != default)
                 builder.AppendLine(DescriptionPosition.Left, $"{strings["StatDescriptions"]["ArmorClassBaseValue"]}: {Creature.ArmorClassBase}", Color.Gray);
 
-            builder.AppendLine(DescriptionPosition.Center, strings["StatDescriptions"][nameof(ArmorClass)]);
+            builder.AppendLine(DescriptionPosition.Center, strings["StatDescriptions"][nameof(ArmorClassStat)]);
 
             builder.AppendLine(DescriptionPosition.Center, strings["StatDescriptions"]["ArmorClassCD"], Color.Yellow);
 
@@ -25,7 +25,7 @@ namespace Nabunassar.Entities.Data.Stats
                 builder.AppendLine(DescriptionPosition.Center, $"{strings["StatDescriptions"]["ArmorClassCDAdded"]}: {Creature.ArmorClassCD}", Color.Orange);
         }
 
-        public override string GetName(LocalizedStrings strings) => strings["GameTexts"][nameof(ArmorClass)];
+        public override string GetName(LocalizedStrings strings) => strings["GameTexts"][nameof(ArmorClassStat)];
 
         public override Color GetNameColor() => "#6285de".AsColor();
     }

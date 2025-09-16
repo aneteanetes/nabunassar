@@ -9,13 +9,13 @@ namespace Nabunassar.Entities.Game.Stats
     {
         public PrimaryStats(IEntity entity)
         {
-            Strength = Rank.d6.Entity(entity);
+            Constitution = Rank.d6.Entity(entity);
             Agility = Rank.d6.Entity(entity);
             Intelligence = Rank.d6.Entity(entity);
             Dialectics = Rank.d6.Entity(entity);
         }
 
-        public Rank Strength { get => base.First; set => base.First = value; }
+        public Rank Constitution { get => base.First; set => base.First = value; }
 
         public Rank Agility { get => base.Second; set => base.Second = value; }
 
@@ -23,9 +23,9 @@ namespace Nabunassar.Entities.Game.Stats
 
         public Rank Dialectics { get => base.Fourth; set => base.Fourth = value; }
 
-        public Dice StrengthDice
+        public Dice ConstitutionDice
         {
-            get => Strength.AsDice().Entity(GetStatDescription(nameof(Strength)));
+            get => Constitution.AsDice().Entity(GetStatDescription(nameof(Constitution)));
         }
 
         public Dice AgilityDice
@@ -55,7 +55,7 @@ namespace Nabunassar.Entities.Game.Stats
 
         public string GetName(int idx) => idx switch
         {
-            0 => nameof(Strength),
+            0 => nameof(Constitution),
             1 => nameof(Agility),
             2 => nameof(Intelligence),
             3 => nameof(Dialectics),

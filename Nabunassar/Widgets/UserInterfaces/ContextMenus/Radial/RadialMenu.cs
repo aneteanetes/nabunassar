@@ -1,4 +1,6 @@
-﻿using Geranium.Reflection;
+﻿using FontStashSharp;
+using Geranium.Reflection;
+using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Input;
@@ -7,6 +9,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
+using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
 using Nabunassar.Widgets.Base;
@@ -28,7 +31,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         private static Texture2D CursorTileset;
         private static Texture2D TrapsTileset;
         private static TextureRegion MoreActionsArrow;
-
+        private FontSystem _retron;
+        private FontSystem _bitterBold;
         private static Color _baseColor = "#cfc6b8".AsColor();
 
         private Panel _widget;
@@ -86,6 +90,9 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
             if (GameObject != default && GameObject.Image != default)
                 _gameObjectImage = Content.Load<Texture2D>(GameObject.Image);
+
+            _retron = Content.LoadFont(Fonts.Retron);
+            _bitterBold = Content.LoadFont(Fonts.BitterBold);
         }
 
         protected override void UnloadContent()
@@ -286,7 +293,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
                     foreach (var innerAction in action.InnerActions)
                     {
-                        var innerActionPos = SetInnerActionPosition(innerAction);
+                        var innerActionPos = SetInnerActionPosition(innerAction.Position);
 
                         var innerContainer = new Panel();
                         innerContainer.Visible = false;
@@ -335,6 +342,41 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
                         btnContent.Widgets.Add(innerContainer);
                         innerActionsWidgets.Add(innerContainer);
                     }
+                }
+
+                if (action.Counter > 0)
+                {
+                    var counterPosition = SetMoreArrowPosition(Direction.RightUp);
+
+                    var counterWH = 24;
+
+                    var counterPanel = new Panel();
+                    counterPanel.Left = counterPosition.X;
+                    counterPanel.Top = counterPosition.Y;
+                    counterPanel.Width= counterWH;
+                    counterPanel.Height= counterWH;
+
+                    var counterCircle = new Image()
+                    {
+                        Renderable = new TextureRegion(CircleTexture32),
+                        Width= counterWH,
+                        Height= counterWH
+                    };
+                    counterCircle.HorizontalAlignment = HorizontalAlignment.Center;
+                    counterCircle.VerticalAlignment = VerticalAlignment.Center;
+                    counterPanel.Widgets.Add(counterCircle);
+
+                    var counter = new Label()
+                    {
+                        Font = _bitterBold.GetFont(18),
+                        Text = action.Counter.ToString(),
+                        TextColor = Globals.BaseColor,
+                        HorizontalAlignment= HorizontalAlignment.Center,
+                        VerticalAlignment= VerticalAlignment.Center
+                    };
+                    counterPanel.Widgets.Add(counter);
+
+                    btnContent.Widgets.Add(counterPanel);
                 }
             }
         }
@@ -482,14 +524,14 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
             };
         }
 
-        private RadialActionPosition SetInnerActionPosition(RadialMenuAction action)
+        private RadialActionPosition SetInnerActionPosition(Direction position)
         {
             var x = 0;
             var y = 0;
 
             var draw = true;
 
-            switch (action.Position)
+            switch (position)
             {
                 case Direction.Up:
                     y = -32;
@@ -665,6 +707,7 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
         }
 
         private TimeSpan prev;
+
         public override void Update(GameTime gameTime)
         {
             if (QueueForClosing)

@@ -111,6 +111,22 @@ namespace Nabunassar.Entities.Struct
             return this;
         }
 
+        public DrawText AppendLine()
+        {
+            var newline = "/n";
+            _text += newline;
+            _unformatText += newline;
+            return this;
+        }
+
+        public DrawText AppendLine(string text = default)
+        {
+            var newline = "/n" + text;
+            _text += newline;
+            _unformatText += newline;
+            return this;
+        }
+
         public DrawText AppendSpace(int sizeInPixels)
         {
             _text += $"/s[{sizeInPixels}]";

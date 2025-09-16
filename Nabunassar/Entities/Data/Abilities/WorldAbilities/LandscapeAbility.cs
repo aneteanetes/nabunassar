@@ -23,10 +23,12 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (gameObject == default)
                 return;
 
+            SpentEndurance();
+
             var landRank = gameObject.LandscapeComplexity.Rank;
             var landDice = gameObject.LandscapeComplexity.Dice;
 
-            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.StrengthDice);
+            var roll = Roll(landRank, landDice, this.AbilityRank, this.AbilityDice, this.Creature.PrimaryStats.ConstitutionDice);
 
             var resultColor = roll.IsSuccess ? Color.Green : Color.Red;
             var commonColor = Globals.BaseColor;
@@ -70,7 +72,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
                 Dice.d2.Entity(GameObject.GetAbilityEntity("Landscape")),
                 this.AbilityRank,
                 this.AbilityDice,
-                Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Strength))));
+                Dice.d2.Entity(PrimaryStats.GetStatDescription(nameof(PrimaryStats.Constitution))));
         }
 
         private RollResultComplexity Roll(Rank checkRank, Dice checkDice, Rank skillRank, Dice skillDice, Dice characteristicdDice)
@@ -92,7 +94,10 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (!value)
                 result.Message = Game.Strings["GameTexts"]["TooAway"];
 
-            return result;
+            if (!result)
+                return result;
+
+            return base.IsActive(gameObject);
         }
 
         public override bool IsApplicable(GameObject gameObject)

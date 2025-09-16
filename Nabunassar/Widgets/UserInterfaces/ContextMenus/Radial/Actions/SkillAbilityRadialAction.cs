@@ -11,8 +11,10 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
 
         internal static Dictionary<Archetype, int> ArcheTypeCounter;
 
-        public SkillAbilityRadialAction(RadialMenu menu, BaseWorldAbility ability, string name, TextureRegion icon, IEnumerable<RadialMenuAction> innerActions = null) : base(menu, Direction.LeftUp, null, innerActions)
+        public SkillAbilityRadialAction(RadialMenu menu, BaseWorldAbility ability, string name, TextureRegion icon) : base(menu, Direction.LeftUp, null, null)
         {
+            Counter = ability.GetCharges();
+
             Name = name;
             Icon = icon;
             _ability = ability;

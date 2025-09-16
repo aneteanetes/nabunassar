@@ -76,5 +76,7 @@
   "Screenshot was created": "Скриншот сохранён",
   "Revealed": "Обнаружено",
   "Nothing is found": "Ничего не найдено",
-  "m": "м"
+  "m": "м",
+  "Not enough endurance points": "Недостаточно выносливости",
+  "Prayer can be cast after battle": "Молитва доступна после боя"
 }

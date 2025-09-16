@@ -16,6 +16,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         {
         }
 
+        public override int GetCharges()
+        {
+            return Creature.IsPrayerAvailable ? 1 : 0;
+        }
+
         protected override void Execute(GameObject gameObject)
         {
             Game.AddDesktopWidget(new PrayerInterface(Game, this));
@@ -24,6 +29,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public void CastPrayer(Gods god)
         {
+            SpentEndurance();
+
             if (!Game.GameState.PartyEffects.Contains<Worship>())
             {
                 Game.GameState.PartyEffects.Add(new Worship(Game));
@@ -110,10 +117,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             if (AbilityRank.Value >= 3)
                 return true;
 
-#warning prayer debug freecast
-            return true;
+            var isAvailable = Creature.IsPrayerAvailable;
+            if (!isAvailable)
+                return new Result<bool>(false, Game.Strings["UI"]["Prayer can be cast after battle"]);
 
-            return Creature.IsPrayerAvailable;
+            return base.IsActive(gameObject);
         }
 
         public override bool IsApplicable(GameObject gameObject)

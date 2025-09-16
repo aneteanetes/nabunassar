@@ -34,7 +34,7 @@ namespace Nabunassar
             party.Second.Creature.WorldAbilities.First = new RevealAbility(Game, party.Second.Creature, revealModel);
 
             var teleportModel = DataBase.GetAbility("Teleportation");
-            party.Fourth.Creature.WorldAbilities.Third = new TeleportationAbility(Game, party.Third.Creature, teleportModel);
+            party.Third.Creature.WorldAbilities.First = new TeleportationAbility(Game, party.Third.Creature, teleportModel);
 
             var prayerModel = DataBase.GetAbility("Prayer");
             party.Fourth.Creature.WorldAbilities.First = new PrayerAbility(Game, party.Fourth.Creature, prayerModel);

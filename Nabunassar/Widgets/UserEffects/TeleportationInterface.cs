@@ -132,9 +132,24 @@ namespace Nabunassar.Widgets.UserEffects
             var boundPos = new Vector2(mouseWorldPosition.X - Game.GameState.Party.Bounds.Size.Width / 2, mouseWorldPosition.Y - Game.GameState.Party.Bounds.Size.Height / 2);
             _bounds = new RectangleF(boundPos, Game.GameState.Party.Bounds.Size);
 
-            if (_teleportationAbility.AbilityRank < 5)
+
+            bool isCollided = false;
+
+            var objectLayer = Game.CollisionComponent.Layers[CollisionLayers.Objects];
+            var obj = objectLayer.Space.Query(_bounds).FirstOrDefault();
+            if (obj != default)
             {
-                if (CheckIfObstacle())
+                _waves.SetColor(Color.IndianRed);
+                isCollided = true;
+            }
+            else
+            {
+                _waves.SetColor();
+            }
+
+            if (!isCollided) 
+            {
+                if (CheckObstacleLength())
                 {
                     _warningText.Visible = true;
                     _warningText.Text = $"{Game.Strings["GameTexts"]["Maximum length of obstacle"]} ({(_blockedDistance / Game.GameState.GameMeterMeasure).ToString("0.0")}{Game.Strings["UI"]["m"]}) {Game.Strings["GameTexts"]["obstacle length should not exceed"]}: {(_teleportationAbility.AvailableDistance / Game.GameState.GameMeterMeasure)}{Game.Strings["UI"]["m"]} [{_teleportationAbility.AvailableDistanceFormula()}]";
@@ -144,19 +159,9 @@ namespace Nabunassar.Widgets.UserEffects
                 }
             }
 
-            var objectLayer = Game.CollisionComponent.Layers[CollisionLayers.Objects];
-            var obj = objectLayer.Space.Query(_bounds).FirstOrDefault();
-            if (obj != default)
+            if (mouse.WasButtonPressed(MouseButton.Left) && !isCollided)
             {
-                _waves.SetColor(Color.IndianRed);
-            }
-            else
-            {
-                _waves.SetColor();
-            }
-
-            if (mouse.WasButtonPressed(MouseButton.Left) && obj == default)
-            {
+                _teleportationAbility.DoTeleport();
                 _isTeleporting = true;
                 _disassemblyTP.OnEnd += () =>
                 {
@@ -168,7 +173,7 @@ namespace Nabunassar.Widgets.UserEffects
             }            
         }
 
-        private bool CheckIfObstacle()
+        private bool CheckObstacleLength()
         {
             var positionTo = _bounds.Position;
             var positionFrom = Game.GameState.Party.Bounds.Position;

@@ -22,6 +22,7 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
         private HPLine _hpLine;
         private ArmorClassWidget _acWidget;
         private WillPointsWidget _wpWidget;
+        private EnduranceLine _endLine;
 
         public HeroPortrait(NabunassarGame game, Hero hero)
         {
@@ -76,8 +77,9 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
             imageBorder.Widgets.Add(_portrait);
             portraitPanel.Widgets.Add(imageBorder);
 
-            portraitPanel.Widgets.Add(_hpLine = new HPLine(game, hero.Creature, 60));
-            
+            portraitPanel.Widgets.Add(_hpLine = new HPLine(game, hero.Creature, 72));
+            portraitPanel.Widgets.Add(_endLine = new EnduranceLine(game, hero.Creature, 72));
+
             Grid statGrid = FillStatsPoints(game, hero);
             portraitPanel.Widgets.Add(statGrid);
 
@@ -105,13 +107,13 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
             statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 4f));
             statGrid.ColumnsProportions.Add(new Proportion(ProportionType.Part, 1f));
 
-            _acWidget = new ArmorClassWidget(game, hero.Creature);
+            _acWidget = new ArmorClassWidget(game, hero.Creature,16);
             _acWidget.HorizontalAlignment = HorizontalAlignment.Center;
             _acWidget.Margin=new Myra.Graphics2D.Thickness(3,0,0,0);
             Grid.SetColumn(_acWidget, 0);
             statGrid.Widgets.Add(_acWidget);
 
-            _wpWidget = new WillPointsWidget(game, hero.Creature);
+            _wpWidget = new WillPointsWidget(game, hero.Creature,16);
             _wpWidget.HorizontalAlignment = HorizontalAlignment.Center;
             Grid.SetColumn(_wpWidget, 2);
             statGrid.Widgets.Add(_wpWidget);
@@ -154,6 +156,7 @@ namespace Nabunassar.Widgets.UserInterfaces.PartyUI
             }
 
             _hpLine.Update(gameTime);
+            _endLine.Update(gameTime);
 
             foreach (var effectWidget in _effectWidgets)
             {

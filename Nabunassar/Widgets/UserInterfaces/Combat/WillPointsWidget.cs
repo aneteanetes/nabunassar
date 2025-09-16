@@ -6,11 +6,11 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
 {
     internal class WillPointsWidget : BaseStatWidget
     {
-        private WillPoints _stat;
+        private WillStat _stat;
 
-        public WillPointsWidget(NabunassarGame game, Creature creature) : base(game, creature, "Assets/Tilesets/transparent_packed.png",20, new Rectangle(512, 160, 16, 16))
+        public WillPointsWidget(NabunassarGame game, Creature creature, int size=16/*20*/) : base(game, creature, "Assets/Tilesets/transparent_packed.png", size, new Rectangle(512, 160, 16, 16))
         {
-            _stat = new WillPoints(creature);
+            _stat = new WillStat(creature);
         }
 
         protected override string GetValue(Creature creature)
@@ -25,7 +25,7 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
 
         protected override Color GetIconColor()
         {
-            return WillPoints.Instance.GetNameColor();
+            return WillStat.Instance.GetNameColor();
         }
     }
 }

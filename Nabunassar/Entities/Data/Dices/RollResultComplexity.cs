@@ -2,9 +2,9 @@
 {
     internal class RollResultComplexity : RollResult
     {
-
         public RollResultComplexity(DiceResult complexity, DiceResult roll, bool isAutoMax = false) : base(roll, isAutoMax)
         {
+            Calculate(complexity, roll, isAutoMax);
         }
 
         protected virtual void Calculate(DiceResult complexity, DiceResult roll, bool isAutoMax)

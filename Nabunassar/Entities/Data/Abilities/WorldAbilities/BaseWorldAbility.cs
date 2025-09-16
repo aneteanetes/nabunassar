@@ -11,6 +11,11 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public NabunassarGame Game { get; private set; }
 
+        public virtual int GetCharges()
+        {
+            return Creature.EnduranceNow / EnduranceCost;
+        }
+
         public BaseWorldAbility(NabunassarGame game, AbilityModel model, Creature creature)
         {
             Creature = creature;
@@ -45,12 +50,28 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public abstract bool IsApplicable(GameObject gameObject);
 
-        public abstract Result<bool> IsActive(GameObject gameObject);
+        public virtual Result<bool> IsActive(GameObject gameObject)
+        {
+            if (Creature.EnduranceNow < this.EnduranceCost)
+            {
+                return new Result<bool>(false, Game.Strings["UI"]["Not enough endurance points"]);
+            }
+
+            return true;
+        }
 
         public void Cast(GameObject gameObject)
         {
             if(IsApplicable(gameObject))
                 Execute(gameObject);
+        }
+
+        /// <summary>
+        /// Spend endurance for ability cast
+        /// </summary>
+        protected void SpentEndurance()
+        {
+            Creature.EnduranceNow -= this.EnduranceCost;
         }
 
         protected abstract void Execute(GameObject gameObject);

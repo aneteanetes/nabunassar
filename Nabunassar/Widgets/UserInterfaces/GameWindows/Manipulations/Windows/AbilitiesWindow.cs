@@ -22,6 +22,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         private Dictionary<Hero, Quad<AbilityView>> _worldAbilityViews = new();
         private Dictionary<Hero, Quad<AbilityView>> _battleAbilityViews = new();
         private FontSystem _fontBitterBold;
+        private FontSystem _fontBitterRegular;
         private FontSystem _fontRetron;
         private ItemsPanel _itemPanel;
         private bool _isCombatAbilities;
@@ -37,6 +38,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
         public override void LoadContent()
         {
             _fontBitterBold = Content.LoadFont(Fonts.BitterBold);
+            _fontBitterRegular = Content.LoadFont(Fonts.BitterRegular);
             _fontRetron = Game.Content.LoadFont(Fonts.Retron);
 
             var itemViews = new List<ItemView>();
@@ -317,15 +319,22 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
                 .Append($"{Game.Strings["UI"]["Formula"]}:")
                 .AppendLine()
                 .Append(roll.Result.ToFormula())
-                .AppendLine()
                 .AppendLine();
 
             if (roll is RollResultComplexity complexityRoll)
             {
                 text = text
+                    .AppendLine()
                     .Append($"{Game.Strings["UI"]["Complexity"]}:")
                     .AppendLine()
                     .Append(complexityRoll.Complexity.ToFormula());
+            }
+
+            text = text.AppendLine();
+            for (int i = 0; i < 5; i++)
+            {
+                text = text.AppendLine($"{Game.Strings["GameTexts"]["Rank"]} {i + 1}: {Game.Strings["AbilityDescriptions"][abilityView.Ability.SystemName + (i + 1)]}")
+                    .AppendLine();
             }
 
             SetDescription(text.ToString());
@@ -377,7 +386,8 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             _descriptionLabel = new Label()
             {
                 Text = _descriptionDefaultText = Game.Strings["UI"]["FocusForHint"],
-                Font = this._fontBitterBold.GetFont(20),
+                Font = this._fontBitterRegular.GetFont(18),
+                Margin = new Thickness(3),
                 Wrap = true
             };
             ResetDescription();

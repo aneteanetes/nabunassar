@@ -6,7 +6,7 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
 {
     internal class ArmorClassWidget : BaseStatWidget
     {
-        public ArmorClassWidget(NabunassarGame game, Creature creature) : base(game, creature, "Assets/Tilesets/transparent_packed.png",20, new Rectangle(624, 48, 16, 16))
+        public ArmorClassWidget(NabunassarGame game, Creature creature, int size = 16/*20*/) : base(game, creature, "Assets/Tilesets/transparent_packed.png",size, new Rectangle(624, 48, 16, 16))
         {
         }
 
@@ -17,12 +17,12 @@ namespace Nabunassar.Widgets.UserInterfaces.Combat
 
         public override Description GetDescription(Creature creature)
         {
-            return new ArmorClass(creature).GetDescription(Game);
+            return new ArmorClassStat(creature).GetDescription(Game);
         }
 
         protected override Color GetIconColor()
         {
-            return ArmorClass.Instance.GetNameColor();
+            return ArmorClassStat.Instance.GetNameColor();
         }
     }
 }

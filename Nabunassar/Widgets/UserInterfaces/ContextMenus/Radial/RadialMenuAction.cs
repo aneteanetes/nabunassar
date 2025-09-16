@@ -26,6 +26,8 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial
 
         public IEnumerable<RadialMenuAction> InnerActions { get; set; }
 
+        public int Counter { get; set; }
+
         public RadialMenuAction(RadialMenu menu, Direction position, string codeName, IEnumerable<RadialMenuAction> innerActions = null)
         {
             this.Menu = menu;

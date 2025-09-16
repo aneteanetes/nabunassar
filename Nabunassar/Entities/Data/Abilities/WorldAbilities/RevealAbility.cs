@@ -26,6 +26,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public void CastReveal(List<GameObject> objs)
         {
+            SpentEndurance();
+
             List<Pair<RollResultComplexity, GameObject>> revealedObjs = new();
 
             foreach (var obj in objs)
@@ -87,11 +89,6 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
             var skillValue = skillRank + skillDice + characteristicdDice;
 
             return new RollResultComplexity(checkValue, skillValue, true);
-        }
-
-        public override Result<bool> IsActive(GameObject gameObject)
-        {
-            return true;
         }
 
         public override bool IsApplicable(GameObject gameObject)
