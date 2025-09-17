@@ -11,6 +11,7 @@ using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Native;
 using Nabunassar.Screens;
+using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
 using Nabunassar.Widgets;
 
@@ -55,9 +56,7 @@ namespace Nabunassar
 
             Strings = new LocalizedStrings(this);
 
-            SwitchScreen<MainMenuScreen>();
-
-            Game.InitializeGameState();
+            SwitchScreen<MainMenuScreen>(LoadLogos);
 
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
 
@@ -66,6 +65,11 @@ namespace Nabunassar
             PrintScreenHandler.Start();
 
             base.LoadContent();
+        }
+
+        private Task LoadLogos()
+        {
+            return Task.CompletedTask;
         }
 
         protected override void UnloadContent()

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Widgets.UserInterfaces

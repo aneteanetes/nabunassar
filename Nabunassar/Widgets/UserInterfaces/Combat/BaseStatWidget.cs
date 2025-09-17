@@ -4,7 +4,6 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Descriptions;
 using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Interfaces;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Views.DescriptionTolltip;
 
 namespace Nabunassar.Widgets.UserInterfaces.Combat

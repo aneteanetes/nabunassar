@@ -28,7 +28,7 @@ namespace Nabunassar
 
             if (IsGameActive)
             {
-                GameState.Update(gameTime);
+                GameState?.Update(gameTime);
 
                 if (PostProcessShaders.Count > 0)
                 {
@@ -61,8 +61,8 @@ namespace Nabunassar
 
             if (IsGameActive)
             {
-                CollisionComponent.Update(gameTime);
-                WorldGame.Update(gameTime);
+                CollisionComponent?.Update(gameTime);
+                WorldGame?.Update(gameTime);
             }
 
             base.Update(gameTime);

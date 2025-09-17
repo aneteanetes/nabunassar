@@ -7,7 +7,6 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
 using System.Reflection;

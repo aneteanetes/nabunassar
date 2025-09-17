@@ -1,6 +1,5 @@
 ﻿using FontStashSharp.RichText;
 using info.lundin.math;
-using Nabunassar.Resources;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Nabunassar.Entities.Struct

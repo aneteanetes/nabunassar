@@ -8,8 +8,10 @@ namespace Nabunassar
 {
     internal partial class NabunassarGame
     {
-        protected void InitGameWorlds()
+        public void InitGameWorld()
         {
+            Game.InitializeCollisions();
+
             WorldGame = new WorldBuilderProxy(this)
                 .AddSystem(new MinimapSystem(this))
                 .AddSystem(new PlayerControllSystem(this))
@@ -23,6 +25,13 @@ namespace Nabunassar
                 .Build();
 
             EntityFactory = new Entities.EntityFactory(this);
+        }
+
+        public void DisposeGameWorld()
+        {
+            Game.WorldGame.IsEnabled = false;
+            Game.WorldGame.Dispose();
+            Game.DisposeCollisionComponent();
         }
 
         public HashSet<Type> DisabledWorldSystems = new();

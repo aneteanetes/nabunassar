@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Screens.Transitions;
 using Nabunassar.Monogame.SpriteBatch;
-using Nabunassar.Resources;
 using Nabunassar.Shaders;
 
 namespace Nabunassar
@@ -80,24 +79,10 @@ namespace Nabunassar
                 ActivateBackBuffer();
             }
 
-            Game.Penumbra.BeginDraw();
+            //Game.Penumbra.BeginDraw();
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
-
-            if (PostProcessShaders.Count > 0)
-            {
-                for (int i = 0; i < PostProcessShaders.Count; i++)
-                {
-                    var postProcessor = PostProcessShaders[i];
-                    postProcessor.Draw(gameTime, i == PostProcessShaders.Count - 1);
-                }
-            }
-
-            SpriteBatch.End();
-
-            if (_screenLoaded)
-                Game.MyraDesktop.Render();
 
             if (isDrawFPS)
                 DrawFPS();
@@ -115,6 +100,8 @@ namespace Nabunassar
         public bool IsPostEffects = false;
 
         private List<PostProcessShader> PostProcessShaders = new();
+
+        public IEnumerable<PostProcessShader> ActivePostProcessShaders => PostProcessShaders;
 
         public void AddPostProcessor(PostProcessShader shader)
         {

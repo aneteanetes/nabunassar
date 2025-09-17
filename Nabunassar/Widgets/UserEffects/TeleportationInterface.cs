@@ -15,7 +15,6 @@ using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Extended;
 using Nabunassar.Monogame.SpriteBatch;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces;
 

@@ -8,7 +8,6 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Extensions.LocalizedStringsExtensions;
-using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.Base;
 

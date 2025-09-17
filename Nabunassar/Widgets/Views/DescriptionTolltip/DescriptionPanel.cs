@@ -1,6 +1,5 @@
 ﻿using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Descriptions;
-using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.Views.DescriptionTolltip
 {

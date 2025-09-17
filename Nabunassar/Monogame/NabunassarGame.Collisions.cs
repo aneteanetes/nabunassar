@@ -6,7 +6,7 @@ using Nabunassar.Monogame.Extended;
 
 namespace Nabunassar
 {
-    internal partial class NabunassarGame : Game
+    internal partial class NabunassarGame
     {
         protected void InitializeCollisions()
         {
@@ -36,6 +36,13 @@ namespace Nabunassar
 
             CollisionComponent.AddCollisionBetweenLayer(playerLayer, objectsLayer);
             CollisionComponent.AddCollisionBetweenLayer(playerLayer, groundLayer);
+        }
+
+        public void DisposeCollisionComponent()
+        {
+            CollisionComponent.IsEnabled = false;
+            CollisionComponent.Dispose();
+            CollisionComponent = null;
         }
     }
 }

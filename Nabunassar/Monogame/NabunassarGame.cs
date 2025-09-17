@@ -19,6 +19,7 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Native;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
 using System.Runtime.InteropServices;
 
@@ -212,30 +213,40 @@ namespace Nabunassar
 
             IsMouseMoveAvailable = new GameLoopFeatureValue<bool>(this, true);
 
-            InitializeCollisions();
-
-            InitGameWorlds();
-
             base.Initialize();
         }
 
-        public void SwitchScreen<TScreen>(Transition transition = default)
-            where TScreen : BaseGameScreen
+        public void SwitchScreen<TScreen>(Func<Task> loading = null, Transition transition = default)
+             where TScreen : BaseGameScreen
+        => SwitchScreen(typeof(TScreen).New(this).As<TScreen>(), loading, transition);
+
+        public void SwitchScreen<TScreen>(TScreen screen, Func<Task> loading = null, Transition transition = default)
+             where TScreen : BaseGameScreen
         {
             _screenLoaded = false;
 
-            var screen = typeof(TScreen).New(this).As<BaseGameScreen>();
+            var loadingScreen = new BaseLoadingScreen(this)
+            {
+                Loading = loading,
+                NextScreen = screen
+            };
+
+            if (transition == default)
+                transition = new FadeTransition(GraphicsDevice, Color.Black);
+
+            transition.Completed += (s, e) => loadingScreen.TransitionCompleted();
+
+            ScreenManager.LoadScreen(loadingScreen, transition);
+        }
+
+        public void SwitchScreenInternal(BaseGameScreen screen, Transition transition = default)
+        {
+            _screenLoaded = false;
 
             if (transition == default)
                 transition = new FadeTransition(GraphicsDevice, Color.Black);
 
             transition.Completed += (s, e) => _screenLoaded = true;
-
-            RemoveDesktopWidgets();
-
-            var widget = screen.GetWidget();
-            if (widget != default)
-                AddDesktopWidget(widget);
 
             ScreenManager.LoadScreen(screen, transition);
         }

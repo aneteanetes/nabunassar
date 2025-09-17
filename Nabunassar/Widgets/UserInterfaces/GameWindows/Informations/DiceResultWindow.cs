@@ -3,7 +3,6 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Game;
-using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
 {

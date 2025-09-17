@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI.Styles;
-using Nabunassar.Resources;
 
 namespace Nabunassar
 {

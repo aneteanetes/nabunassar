@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
-using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.Base
 {

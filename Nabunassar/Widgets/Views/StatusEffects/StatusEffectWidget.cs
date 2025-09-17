@@ -3,7 +3,6 @@ using MonoGame.Extended;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Effects;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Views.DescriptionTolltip;
 
 namespace Nabunassar.Widgets.Views.StatusEffects

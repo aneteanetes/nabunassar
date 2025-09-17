@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
-using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.Menu;
 
 namespace Nabunassar.Screens
@@ -14,14 +12,12 @@ namespace Nabunassar.Screens
 
         public override void LoadContent()
         {
-            base.LoadContent();
             Game.Content.LoadFont(Fonts.Retron);
             background = Game.Content.Load<Texture2D>("Assets/Images/Backgrounds/logo.png");
-        }
-
-        public override ScreenWidget GetWidget()
-        {
-            return new MainMenu(Game);
+            Game.AddDesktopWidget(new MainMenu(Game));
+            Game.InitGameWorld();
+            Game.InitializeGameState();
+            Game.IsGameActive = true;
         }
 
         public override void Draw(GameTime gameTime)
@@ -35,7 +31,7 @@ namespace Nabunassar.Screens
 
         public override void UnloadContent()
         {
-            Game.Content.UnloadAsset("Assets/Images/Backgrounds/logo.png");
+            Game.RemoveDesktopWidgets(true);
         }
 
         public override void Update(GameTime gameTime)

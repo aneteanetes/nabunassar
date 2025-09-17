@@ -1,11 +1,17 @@
 using FontStashSharp;
 using Geranium.Reflection;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame;
+using MonoGame.Extended.Graphics;
 using Myra.Events;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
+using Nabunassar.Screens;
 using Nabunassar.Screens.Game;
+using Nabunassar.Shaders;
+using Nabunassar.Struct;
+using Nabunassar.Tiled.Map;
 using Nabunassar.Widgets.Base;
 
 namespace Nabunassar.Widgets.Menu;
@@ -14,13 +20,13 @@ internal partial class MainMenu : ScreenWidget
 {
     bool _isInGame;
 
-    public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock=false)
+    public override void BindWidgetBlockMouse(Widget widget, bool withDispose = true, bool twoSideBlock = false)
     {
         if (_isInGame)
             base.BindWidgetBlockMouse(widget, withDispose);
     }
 
-    public MainMenu(NabunassarGame game, bool isInGame=false) : base(game)
+    public MainMenu(NabunassarGame game, bool isInGame = false) : base(game)
     {
         _isInGame = isInGame;
     }
@@ -68,10 +74,7 @@ internal partial class MainMenu : ScreenWidget
             Height = 50,
             Background = backNormal,
             OverBackground = backNormal,
-            PressedBackground = backPressed,
-            //Margin = new Myra.Graphics2D.Thickness(15),
-            //HorizontalAlignment = HorizontalAlignment.Center,
-            //VerticalAlignment = VerticalAlignment.Center,
+            PressedBackground = backPressed
         };
 
         newGame.MouseEntered += NewGame_MouseEntered;
@@ -88,16 +91,6 @@ internal partial class MainMenu : ScreenWidget
         newGame.Click += NewGame_Click;
         newGame.Content = newgametext;
         //newGame.Top = top;
-        panel.Widgets.Add(newGame);
-
-        var load = newGame.Clone().As<Button>();
-        var loadtext = newgametext.Clone().As<Label>();
-        loadtext.Text = Game.Strings["UI"]["Load"];
-        //load.Top = top+=75;
-        load.Content = loadtext;
-        load.MouseEntered += NewGame_MouseEntered;
-        load.MouseLeft += NewGame_MouseLeft;
-        panel.Widgets.Add(load);
 
         if (_isInGame)
         {
@@ -110,6 +103,32 @@ internal partial class MainMenu : ScreenWidget
             back.MouseEntered += NewGame_MouseEntered;
             back.MouseLeft += NewGame_MouseLeft;
             panel.Widgets.Add(back);
+        }
+        else
+        {
+            panel.Widgets.Add(newGame);
+        }
+
+        var load = newGame.Clone().As<Button>();
+        var loadtext = newgametext.Clone().As<Label>();
+        loadtext.Text = Game.Strings["UI"]["Load"];
+        //load.Top = top+=75;
+        load.Content = loadtext;
+        load.MouseEntered += NewGame_MouseEntered;
+        load.MouseLeft += NewGame_MouseLeft;
+        panel.Widgets.Add(load);
+
+        if (_isInGame)
+        {
+            var backtoMenu = newGame.Clone().As<Button>();
+            var backtoMenutext = newgametext.Clone().As<Label>();
+            backtoMenutext.Text = Game.Strings["UI"]["Back to main menu"];
+            backtoMenu.Content = backtoMenutext;
+            //quit.Top = top += 75;
+            backtoMenu.Click += BacktoMenu_Click; ;
+            backtoMenu.MouseEntered += NewGame_MouseEntered;
+            backtoMenu.MouseLeft += NewGame_MouseLeft;
+            panel.Widgets.Add(backtoMenu);
         }
 
         var quit = newGame.Clone().As<Button>();
@@ -135,6 +154,12 @@ internal partial class MainMenu : ScreenWidget
         return container;
     }
 
+    private void BacktoMenu_Click(object sender, MyraEventArgs e)
+    {
+        Game.GameState.InGame = false;
+        Game.SwitchScreen<MainMenuScreen>();
+    }
+
     public override void OnAfterAddedWidget(Widget widget)
     {
         widget.BringToFront();
@@ -149,7 +174,7 @@ internal partial class MainMenu : ScreenWidget
 
     private void NewGame_Click(object sender, MyraEventArgs e)
     {
-        Game.SwitchScreen<MainGameScreen>();
+        GameController.StartNewGame(Game);
     }
 
     private void NewGame_MouseLeft(object sender, MyraEventArgs e)
@@ -166,13 +191,4 @@ internal partial class MainMenu : ScreenWidget
     {
         Game.Exit();
     }
-
-
-    //public void LoadContent() { }
-
-    //public void UnloadContent()
-    //{
-    //    _game.Content.Load<Texture2D>("Assets/Images/Borders/commonborder.png");
-    //    _game.Content.Load<Texture2D>("Assets/Images/Borders/commonborderpressed.png");
-    //}
 }

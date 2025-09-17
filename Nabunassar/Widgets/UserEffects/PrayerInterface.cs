@@ -12,7 +12,6 @@ using Nabunassar.Entities.Data.Effects.Boons;
 using Nabunassar.Entities.Data.Effects.PartyEffects;
 using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using Nabunassar.Shaders.Blooming;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces;

@@ -9,7 +9,6 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Game;
-using Nabunassar.Resources;
 using Nabunassar.Struct;
 using Nabunassar.Systems;
 using Nabunassar.Widgets.Base;

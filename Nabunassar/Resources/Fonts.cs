@@ -1,4 +1,4 @@
-﻿namespace Nabunassar.Resources
+﻿namespace Nabunassar
 {
     internal class Fonts
     {
@@ -7,5 +7,6 @@
         public const string BitterRegular = $"Assets/Fonts/Bitter/Bitter-Regular.ttf";
         public const string BitterSemiBold = $"Assets/Fonts/Bitter/Bitter-SemiBold.ttf";
         public const string Sumerian = "Assets/Fonts/NotoSansCuneiform-Regular.ttf";
+        public const string FritzQuadranta = "Assets/Fonts/Fritz.ttf";
     }
 }

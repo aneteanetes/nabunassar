@@ -4,7 +4,6 @@ using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Stats;
 using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using Nabunassar.Struct;
 
 namespace Nabunassar.Entities.Data.Abilities.WorldAbilities

@@ -8,7 +8,6 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Game;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using System.Text;
 

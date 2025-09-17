@@ -7,7 +7,6 @@ using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;

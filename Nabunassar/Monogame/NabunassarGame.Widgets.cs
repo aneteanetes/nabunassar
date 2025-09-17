@@ -86,15 +86,34 @@ namespace Nabunassar
             return GetDesktopWidget<T>() != null;
         }
 
-        public void RemoveDesktopWidgets()
+        public void RemoveDesktopWidgets(bool isAnnihilateAll=false)
         {
-            _screenWidgets.Clear();
-            var notWindowWidgets = MyraDesktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
-            if (notWindowWidgets.Length>0)
+            ScreenWidget[] forRemoves = new ScreenWidget[_screenWidgets.Count];
+            _screenWidgets.CopyTo(forRemoves);
+
+            foreach (var forRemove in forRemoves.Where(x=>!x.IsRemovable))
             {
-                foreach (var notWidowWidget in notWindowWidgets)
+                RemoveDesktopWidget(forRemove);
+            }
+
+            if (isAnnihilateAll)
+            {
+                MyraDesktop.Widgets.Clear();
+                var all = _screenWidgets.Concat(_screenWindowWidgets).ToArray();
+                foreach (var widget in all)
                 {
-                    MyraDesktop.Widgets.Remove(notWidowWidget);
+                    RemoveDesktopWidget(widget);
+                }
+            }
+            else
+            {
+                var notWindowWidgets = MyraDesktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
+                if (notWindowWidgets.Length > 0)
+                {
+                    foreach (var notWidowWidget in notWindowWidgets)
+                    {
+                        MyraDesktop.Widgets.Remove(notWidowWidget);
+                    }
                 }
             }
         }
@@ -106,13 +125,14 @@ namespace Nabunassar
 
             var uiWidget = widget.GetWidgetReference();
 
+            widget.IsRemoved = true;
+
             if (uiWidget is Window windowWidget)
                 windowWidget.Close();
             else
                 MyraDesktop.Widgets.Remove(uiWidget);
 
             _screenWidgets.Remove(widget);
-            widget.IsRemoved = true;
             widget.Dispose();
         }
 

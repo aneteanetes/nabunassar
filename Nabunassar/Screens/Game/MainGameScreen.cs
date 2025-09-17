@@ -2,8 +2,6 @@
 using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using Nabunassar.Entities.Struct;
-using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Screens.Abstract;
 using Nabunassar.Shaders;
 using Nabunassar.Struct;
@@ -16,24 +14,35 @@ namespace Nabunassar.Screens.Game
 {
     internal class MainGameScreen : BaseGameScreen
     {
-        TiledMap _tiledMap;
         public static GaussianBlur GlobalBlurShader;
 
+        private bool logWindow = false;
+        private bool _isNewGame;
 
-        public MainGameScreen(NabunassarGame game) : base(game)
+        public MainGameScreen(NabunassarGame game, bool isNewGame=true) : base(game)
         {
+            _isNewGame = isNewGame;
         }
 
         public override void LoadContent()
         {
-            GlobalBlurShader = new GaussianBlur(Game,1.5f);            
+            if (GlobalBlurShader == null)
+                GlobalBlurShader = new GaussianBlur(base.Game, 1.5f);
 
             Game.Camera.Zoom = 4;
             Game.Camera.Origin = new Vector2(0, 0);
             Game.Camera.Position = new Vector2(0, 0);
-            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205,115));
+            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205, 115));
 
-            _tiledMap = Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
+            if (_isNewGame)
+                InitNewGame();
+
+            InitGameUI();
+        }
+
+        private void InitNewGame()
+        {
+            var _tiledMap = Game.Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
             Game.GameState.Location = new Entities.Data.Locations.Location(Game)
             {
                 Region = Entities.Data.Locations.Region.Underdead,
@@ -46,7 +55,7 @@ namespace Nabunassar.Screens.Game
                 if (tileset.name == "Hulls")
                     continue;
 
-                var texture = Content.Load<Texture2D>(tileset.image.Replace("colored-", ""));
+                var texture = Game.Content.Load<Texture2D>(tileset.image.Replace("colored-", ""));
                 var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
                 tileset.TextureAtlas = _atlas;
 
@@ -57,7 +66,7 @@ namespace Nabunassar.Screens.Game
                 float totalGlowMultiplier = 1;
                 bool hideTexture = false;
                 var glowTexture = GlowEffect.CreateGlow(texture, Color.Yellow, glowWidth, intensity, spread, totalGlowMultiplier, hideTexture);
-                var _glowAtlas = Texture2DAtlas.Create(tileset.name + "_glow", glowTexture, tileset.tilewidth, tileset.tileheight,margin: 50);
+                var _glowAtlas = Texture2DAtlas.Create(tileset.name + "_glow", glowTexture, tileset.tilewidth, tileset.tileheight, margin: 50);
                 tileset.TextureAtlasGlow = _glowAtlas;
             }
 
@@ -84,14 +93,7 @@ namespace Nabunassar.Screens.Game
             }
 
             Game.RunGameState();
-
-            InitGameUI();
-
-            _tiledMap.Dispose();
-            _tiledMap = null;
         }
-
-        private bool logWindow = false;
 
         public void InitGameUI()
         {
@@ -145,6 +147,18 @@ namespace Nabunassar.Screens.Game
 
                 logWindow = !logWindow;
             }
+        }
+
+        public override void UnloadContent()
+        {
+            GlobalBlurShader.Disable();
+            Game.DisposeGameWorld();
+            Game.RemoveDesktopWidgets(true);
+
+            var game = Game;
+            game.Camera.Zoom = 1;
+            game.Camera.Origin = new Vector2(0, 0);
+            game.Camera.Position = new Vector2(0, 0);
         }
     }
 }

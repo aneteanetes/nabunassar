@@ -6,7 +6,6 @@ using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Content;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.Base;
 using Nabunassar.Widgets.UserInterfaces;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;

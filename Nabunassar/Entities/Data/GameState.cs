@@ -44,6 +44,8 @@ namespace Nabunassar.Entities.Data
 
         public bool EscapeSwitch { get; internal set; }
 
+        public bool InGame { get; set; }
+
         public void Log(string message)
         {
             OnLog?.Invoke(message);

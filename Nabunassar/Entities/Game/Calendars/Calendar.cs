@@ -1,5 +1,4 @@
 ﻿using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using System;
 using System.Security.Cryptography;
 

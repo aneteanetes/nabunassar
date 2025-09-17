@@ -11,7 +11,6 @@ using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
-using Nabunassar.Resources;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;
 

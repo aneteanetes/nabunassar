@@ -1,6 +1,5 @@
 ﻿using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
-using MonoGame.Extended.Collisions.Layers;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
@@ -18,6 +17,7 @@ namespace Nabunassar
 
         public void RunGameState()
         {
+            GameState.InGame = true;
             var party = GameState.Party = DataBase.CreateRandomParty(this);
 
             var pos = new Vector2(175, 230);

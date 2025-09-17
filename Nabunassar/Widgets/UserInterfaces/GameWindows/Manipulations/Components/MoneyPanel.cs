@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
-using Nabunassar.Resources;
 
 namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components
 {
