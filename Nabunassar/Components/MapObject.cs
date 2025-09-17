@@ -12,7 +12,7 @@ using System.Diagnostics;
 namespace Nabunassar.Components
 {
     [DebuggerDisplay("{Name} {Position}")]
-    internal class MapObject : BaseComponent, ICollisionActor
+    internal class MapObject : BaseComponent, ICollisionActor, IDisposable
     {
         public string Name { get; set; }
 
@@ -359,6 +359,14 @@ namespace Nabunassar.Components
             {
                 depend.Destroy();
             }
+        }
+
+        public void Dispose()
+        {
+            Parent = null;
+            Entity = null;
+            _onCollistion = null;
+            NoCollision = null;
         }
     }
 

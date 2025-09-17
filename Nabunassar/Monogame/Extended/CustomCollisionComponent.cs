@@ -136,7 +136,6 @@ namespace Monogame.Extended
             {
                 throw new UndefinedLayerException(layerName);
             }
-
             layer.Space.Insert(target);
         }
 
@@ -368,5 +367,22 @@ namespace Monogame.Extended
         }
 
         #endregion
+
+        protected override void UnloadContent()
+        {
+            _layers.Clear();
+            _layerCollision.Clear();
+
+            foreach (var kv in _layers)
+            {
+                foreach (var item in kv.Value.Space)
+                {
+                    if(item is IDisposable disposable)
+                        disposable.Dispose();
+                }
+            }
+
+            base.UnloadContent();
+        }
     }
 }
