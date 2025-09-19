@@ -54,7 +54,7 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
         {
             if (Creature.EnduranceNow < this.EnduranceCost)
             {
-                return new Result<bool>(false, Game.Strings["UI"]["Not enough endurance points"]);
+                return new Result<bool>(false,$"{Game.Strings["UI"]["Not enough endurance points"]}: {this.EnduranceCost}");
             }
 
             return true;

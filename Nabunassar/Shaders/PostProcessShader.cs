@@ -42,7 +42,7 @@ namespace Nabunassar.Shaders
 
         public virtual void Disable()
         {
-            Game.DisablePostEffects(this);
+            Game.DisablePostProcessors(this);
         }
 
         public virtual void Enable()
@@ -82,7 +82,7 @@ namespace Nabunassar.Shaders
 
         public virtual void Dispose()
         {
-            Game.DisablePostEffects(this);
+            Game.DisablePostProcessors(this);
         }
     }
 }

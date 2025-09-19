@@ -17,7 +17,6 @@ namespace Nabunassar
 
         public void RunGameState()
         {
-            GameState.InGame = true;
             var party = GameState.Party = DataBase.CreateRandomParty(this);
 
             var pos = new Vector2(175, 230);

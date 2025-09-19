@@ -121,7 +121,7 @@ namespace Nabunassar
             Game.ClearRenderTarget(Color.Transparent);
         }
 
-        public void DisablePostEffects(PostProcessShader shader = null)
+        public void DisablePostProcessors(PostProcessShader shader = null)
         {
             _backRenderTarget = null;
             IsPostEffects = false;

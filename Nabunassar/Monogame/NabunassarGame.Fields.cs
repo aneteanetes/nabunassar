@@ -10,6 +10,7 @@ using Nabunassar.Entities;
 using Nabunassar.Entities.Data;
 using Nabunassar.Localization;
 using Nabunassar.Monogame.Content;
+using Nabunassar.Monogame.Extended;
 using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Monogame.Settings;
 using Nabunassar.Monogame.SpriteBatch;
@@ -122,6 +123,6 @@ namespace Nabunassar
 
         public SpriteBatchManager SpriteBatch { get; private set; }
 
-        public readonly ScreenManager ScreenManager;
+        public readonly CustomScreenManager ScreenManager;
     }
 }

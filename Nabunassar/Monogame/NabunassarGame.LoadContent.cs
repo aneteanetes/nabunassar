@@ -67,9 +67,8 @@ namespace Nabunassar
             base.LoadContent();
         }
 
-        private Task LoadLogos()
+        private void LoadLogos()
         {
-            return Task.CompletedTask;
         }
 
         protected override void UnloadContent()

@@ -12,7 +12,6 @@ using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
-using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Extended;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Widgets.Base;
@@ -257,21 +256,25 @@ namespace Nabunassar.Widgets.UserEffects
         private void BoundMousePos()
         {
             var pos = Game.Camera.ScreenToWorld(_mousepos);
+
+            if (!_availableBounds.Substract(5).InBounds(pos, out var boundedPos))
+            {
+                _warningText.Visible = true;
+                _warningText.Text = $"{Game.Strings["GameTexts"]["Max radius reached"]}: {_teleportationAbility.LastRoll.Result.ToValue()} [{_teleportationAbility.LastRoll.Result.ToFormula()}]";
+            }
+            else
+            {
+                _warningText.Visible = false;
+            }
+
             if (!_availableBounds.InBounds(pos, out var newPos))
             {
                 var newScreenPosition = Game.Camera.WorldToScreen(newPos);
                 _mousepos = newScreenPosition;
-                Mouse.SetPosition(((int)newScreenPosition.X), ((int)newScreenPosition.Y));
-
-                _warningText.Visible = true;
-                _warningText.Text = $"{Game.Strings["GameTexts"]["Max radius reached"]}: {_teleportationAbility.LastRoll.Result.ToValue()} [{_teleportationAbility.LastRoll.Result.ToFormula()}]";
+                var holdPos = newScreenPosition.ToPoint();
+                Mouse.SetPosition(holdPos.X, holdPos.Y);
             }
 
-            _boundPos = new Vector2(pos.X - _bounds.Width / 2, pos.Y - _bounds.Height / 2);
-            if(_availableBounds.InBounds(_boundPos, out var @new))
-            {
-                _warningText.Visible = false;
-            }
         }
 
         public override void Draw(GameTime gameTime)

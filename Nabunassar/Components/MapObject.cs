@@ -353,7 +353,8 @@ namespace Nabunassar.Components
             OnDestroy?.Invoke();
 
             Game.WorldGame.DestroyEntity(Entity);
-            Game.CollisionComponent.Remove(this);
+            if (!_isDestroyedPhysically)
+                DestroyPhysical();
 
             foreach (var depend in Dependant)
             {
@@ -361,12 +362,29 @@ namespace Nabunassar.Components
             }
         }
 
+        private bool _isDestroyedPhysically = false;
+        public void DestroyPhysical()
+        {
+            Game.CollisionComponent.Remove(this);
+            _isDestroyedPhysically = true;
+
+            foreach (var depend in Dependant)
+            {
+                depend.DestroyPhysical();
+            }
+        }
+
         public void Dispose()
         {
             Parent = null;
+
+            Game.WorldGame.DestroyEntity(Entity);
             Entity = null;
+
             _onCollistion = null;
             NoCollision = null;
+
+            Game = null;
         }
     }
 

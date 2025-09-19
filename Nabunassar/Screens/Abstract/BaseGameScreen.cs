@@ -1,28 +1,25 @@
-﻿using Geranium.Reflection;
-using MonoGame.Extended.Screens;
-using Nabunassar.Monogame.Content;
-using Nabunassar.Monogame.SpriteBatch;
-using Nabunassar.Shaders;
-using Nabunassar.Widgets.Base;
-
-namespace Nabunassar.Screens.Abstract
+﻿namespace Nabunassar.Screens.Abstract
 {
-    internal abstract class BaseGameScreen : GameScreen
+    internal abstract class BaseGameScreen : BaseScreen
     {
-        public new NabunassarGame Game => base.Game.As<NabunassarGame>();
-
-        public new NabunassarContentManager Content => base.Content.As<NabunassarContentManager>();
-
-        public SpriteBatchManager SpriteBatch => Game.SpriteBatch;
-
         protected BaseGameScreen(NabunassarGame game) : base(game)
         {
         }
 
+        public bool IsDisabled { get; set; }
+
+        public override void LoadContent()
+        {
+            base.LoadContent();
+            Game.GameState.InGame = true;
+        }
+
         public override void Draw(GameTime gameTime)
         {
-            if (Game.GameState.InGame)
-                Game.WorldGame.Draw(gameTime);
+            if (!Game.GameState.InGame && IsDisabled)
+                return;
+
+            Game.WorldGame.Draw(gameTime);
 
             Game.SpriteBatch.End();
 
@@ -41,7 +38,7 @@ namespace Nabunassar.Screens.Abstract
 
             Game.SpriteBatch.End();
 
-            Game.MyraDesktop.Render();
+            base.Draw(gameTime);
         }
     }
 }

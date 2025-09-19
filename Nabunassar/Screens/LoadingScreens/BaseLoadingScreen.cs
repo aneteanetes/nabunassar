@@ -1,8 +1,6 @@
 ﻿using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Particles;
-using MonoGame.Extended.Screens.Transitions;
 using Nabunassar.Screens.Abstract;
-using System.Runtime.CompilerServices;
 
 namespace Nabunassar.Screens.LoadingScreens
 {
@@ -12,18 +10,19 @@ namespace Nabunassar.Screens.LoadingScreens
         private Vector2 _iconPos;
         private float _rotation;
         private string _loadText;
-        private bool _isLoadingStarted;
+        private bool _isAllCompleted;
         private bool _isLoaded;
         private bool _isTransitionEnded;
-        private bool _isAllCompleted;
+
+        public override bool IsLoadingScreen => true;
 
         public BaseLoadingScreen(NabunassarGame game) : base(game)
         {
         }
 
-        public BaseGameScreen NextScreen { get; set; }
+        public BaseScreen NextScreen { get; set; }
 
-        public Func<Task> Loading { get; set; }
+        public Action Loading { get; set; }
 
         public override void LoadContent()
         {
@@ -40,6 +39,7 @@ namespace Nabunassar.Screens.LoadingScreens
         public override void Draw(GameTime gameTime)
         {
             Game.SpriteBatch.End();
+
             var sb = Game.BeginDraw();
 
             sb.Draw(_iconSprite, _iconPos, _rotation, new Vector2(.25f));
@@ -51,12 +51,26 @@ namespace Nabunassar.Screens.LoadingScreens
 
         public override void Update(GameTime gameTime)
         {
-            if (!_isLoadingStarted)
+            UpdateScreen(gameTime);
+
+            if (_isAllCompleted)
+                return;
+
+            if (_isTransitionEnded)
             {
-                _isLoadingStarted = true;
-                RunLoading();
+                Loading();
+                _isLoaded = true;
             }
 
+            if (_isLoaded && _isTransitionEnded)
+            {
+                Game.SwitchScreenInternal(NextScreen);
+                _isAllCompleted = true;
+            }
+        }
+
+        protected virtual void UpdateScreen(GameTime gameTime)
+        {
             if (this.CanUpdate(gameTime, TimeSpan.FromMilliseconds(.5)))
             {
                 if (_rotation == 1)
@@ -71,32 +85,11 @@ namespace Nabunassar.Screens.LoadingScreens
                 if (_loadText.Contains("...."))
                     _loadText = _loadText.Replace("....", "");
             }
-
-            if (_isLoaded && _isTransitionEnded && !_isAllCompleted)
-            {
-                Game.SwitchScreenInternal(NextScreen);
-                _isAllCompleted = true;
-            }
         }
 
         public void TransitionCompleted()
         {
             _isTransitionEnded = true;
-        }
-
-        private void RunLoading()
-        {
-            if (Loading != null)
-            {
-                Task.Run(Loading).ContinueWith(t =>
-                {
-                    _isLoaded = true;
-                });
-            }
-            else
-            {
-                _isLoaded = true;
-            }
         }
     }
 }

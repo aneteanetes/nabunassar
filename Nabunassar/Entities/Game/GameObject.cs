@@ -160,6 +160,7 @@ namespace Nabunassar.Entities.Game
         {
             if (Entity != default)
             {
+                MapObject?.DestroyPhysical();
                 Entity.Dissolve(() =>
                 {
                     if (MapObject != null)

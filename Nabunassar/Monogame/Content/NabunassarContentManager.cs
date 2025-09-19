@@ -98,6 +98,14 @@ namespace Nabunassar.Monogame.Content
                 return effect;
             }
 
+            if(typeof(T)==typeof(string))
+            {
+                var stream = OpenStream(assetName);
+                var @string = stream.AsString();
+                LoadedAssets[assetName] = @string;
+                return @string.As<T>();
+            }    
+
             return base.Load<T>(assetName);
         }
 

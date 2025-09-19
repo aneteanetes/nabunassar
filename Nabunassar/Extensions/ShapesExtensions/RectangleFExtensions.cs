@@ -52,6 +52,16 @@ namespace Nabunassar
 
             return new RectangleF(newX, newY, newWidth, newHeight);
         }
+        public static RectangleF Substract(this RectangleF rect, float measure)
+        {
+            var newWidth = rect.Width - measure;
+            var newHeight = rect.Height - measure;
+
+            var newX = rect.X + rect.Width / 2 - newWidth / 2;
+            var newY = rect.Y + rect.Height / 2 - newHeight / 2;
+
+            return new RectangleF(newX, newY, newWidth, newHeight);
+        }
 
         public static RectangleF MultipleX(this RectangleF rect, float multiplier)
         {

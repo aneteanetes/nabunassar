@@ -157,7 +157,7 @@ internal partial class MainMenu : ScreenWidget
     private void BacktoMenu_Click(object sender, MyraEventArgs e)
     {
         Game.GameState.InGame = false;
-        Game.SwitchScreen<MainMenuScreen>();
+        Game.SwitchScreen<MainMenuScreen>(GameController.UnloadGame);
     }
 
     public override void OnAfterAddedWidget(Widget widget)

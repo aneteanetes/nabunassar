@@ -19,6 +19,7 @@ using Nabunassar.Monogame.Viewport;
 using Nabunassar.Native;
 using Nabunassar.Resources;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Screens.Game;
 using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
 using System.Runtime.InteropServices;
@@ -84,7 +85,7 @@ namespace Nabunassar
             this.IsFixedTimeStep = false;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
 
-            ScreenManager = new MonoGame.Extended.Screens.ScreenManager();
+            ScreenManager = new Monogame.Extended.CustomScreenManager(this);
             ScreenManager.UpdateOrder = 10;
             this.Components.Add(this.ScreenManager);
         }
@@ -216,12 +217,12 @@ namespace Nabunassar
             base.Initialize();
         }
 
-        public void SwitchScreen<TScreen>(Func<Task> loading = null, Transition transition = default)
-             where TScreen : BaseGameScreen
+        public void SwitchScreen<TScreen>(Action loading = null, IScreenTransition transition = default)
+             where TScreen : BaseScreen
         => SwitchScreen(typeof(TScreen).New(this).As<TScreen>(), loading, transition);
 
-        public void SwitchScreen<TScreen>(TScreen screen, Func<Task> loading = null, Transition transition = default)
-             where TScreen : BaseGameScreen
+        public void SwitchScreen<TScreen>(TScreen screen, Action loading = null, IScreenTransition transition = default)
+             where TScreen : BaseScreen
         {
             _screenLoaded = false;
 
@@ -232,23 +233,28 @@ namespace Nabunassar
             };
 
             if (transition == default)
-                transition = new FadeTransition(GraphicsDevice, Color.Black);
+                transition = new FadeScreenTransition(GraphicsDevice, Color.Black);
 
             transition.Completed += (s, e) => loadingScreen.TransitionCompleted();
-
             ScreenManager.LoadScreen(loadingScreen, transition);
         }
 
-        public void SwitchScreenInternal(BaseGameScreen screen, Transition transition = default)
+        public void SwitchScreenInternal(BaseScreen screen, IScreenTransition transition = default)
         {
             _screenLoaded = false;
 
             if (transition == default)
-                transition = new FadeTransition(GraphicsDevice, Color.Black);
+                transition = new FadeScreenTransition(GraphicsDevice, Color.Black);
 
             transition.Completed += (s, e) => _screenLoaded = true;
 
             ScreenManager.LoadScreen(screen, transition);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            MainGameScreen.GlobalBlurShader?.Disable();
+            base.Dispose(disposing);
         }
 
         private Vector2 MoveCamera()
