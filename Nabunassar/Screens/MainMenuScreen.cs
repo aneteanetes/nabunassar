@@ -38,9 +38,6 @@ namespace Nabunassar.Screens
             Game.Content.LoadFont(Fonts.Retron);
             background = Game.Content.Load<Texture2D>("Assets/Images/Backgrounds/logo.png");
             Game.AddDesktopWidget(new MainMenu(Game));
-            Game.InitGameWorld();
-            Game.InitializeGameState();
-            Game.IsGameActive = true;
 
             LoadContentSpriter();
         }

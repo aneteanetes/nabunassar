@@ -12,7 +12,7 @@ namespace Nabunassar
         {
             GameState = new GameState();
             GameState.Init();
-            EntityFactory.CreateCursor();
+            MapEntityFactory.CreateCursor();
         }
 
         public void RunGameState()
@@ -21,7 +21,7 @@ namespace Nabunassar
 
             var pos = new Vector2(175, 230);
 
-            EntityFactory.CreateParty(GameState.Party, pos);
+            MapEntityFactory.CreateParty(GameState.Party, pos);
 
             GameState.IsActive = true;
 

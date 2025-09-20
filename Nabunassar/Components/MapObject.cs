@@ -327,7 +327,7 @@ namespace Nabunassar.Components
                     render.OpacityTimer = TimeSpan.FromSeconds(1);
                 }
 
-                Game.EntityFactory.RemoveCollistion(this);
+                Game.MapEntityFactory.RemoveCollistion(this);
 
                 if (GameObject?.GetPropertyValue<bool>("NoBounds") == true)
                 {
@@ -338,7 +338,7 @@ namespace Nabunassar.Components
                     LayerName = CollisionLayers.Revealed;
                 }
 
-                Game.EntityFactory.AddCollistion(this);
+                Game.MapEntityFactory.AddCollistion(this);
 
 
                 foreach (var dependant in this.Dependant)
@@ -352,7 +352,7 @@ namespace Nabunassar.Components
         {
             OnDestroy?.Invoke();
 
-            Game.WorldGame.DestroyEntity(Entity);
+            Game.MapWorld.DestroyEntity(Entity);
             if (!_isDestroyedPhysically)
                 DestroyPhysical();
 
@@ -378,7 +378,7 @@ namespace Nabunassar.Components
         {
             Parent = null;
 
-            Game.WorldGame.DestroyEntity(Entity);
+            Game.MapWorld.DestroyEntity(Entity);
             Entity = null;
 
             _onCollistion = null;

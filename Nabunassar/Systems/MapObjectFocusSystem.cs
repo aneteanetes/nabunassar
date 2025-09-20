@@ -100,7 +100,9 @@ namespace Nabunassar.Systems
                     var tiledBase = focusWidgetComponent.GameObject.Entity.Get<TiledBase>();
                     if (tiledBase != default)
                     {
-                        position = tiledBase.Position;
+                        position = tiledBase.TitlePosition == default
+                            ? tiledBase.Position
+                            : tiledBase.TitlePosition;
                         position = Game.Camera.WorldToScreen(position);
                     }
                 }

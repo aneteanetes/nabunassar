@@ -54,5 +54,6 @@
   "WillStat": "Воля",
   "Max radius reached": "Достигнут максимальный радиус",
   "Maximum length of obstacle": "Максимальная длина препятствия",
-  "obstacle length should not exceed": "не должна превышать"
+  "obstacle length should not exceed": "не должна превышать",
+  "Repuration relations": "Отношение"
 }

@@ -11,7 +11,7 @@ namespace Nabunassar
 
         public Color Color { get; }
 
-        public FadeScreenTransition(GraphicsDevice graphicsDevice, Color color, float duration = 2f)
+        public FadeScreenTransition(GraphicsDevice graphicsDevice, Color color, float duration = -1)
             : base(duration)
         {
             Color = color;

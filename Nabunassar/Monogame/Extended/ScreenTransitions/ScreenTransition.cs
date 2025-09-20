@@ -22,6 +22,9 @@ namespace Nabunassar
 
         protected ScreenTransition(float duration)
         {
+            if (duration < 0f)
+                duration = NabunassarGame.Game.Settings.DefaultFadeTransitionDurationInSeconds;
+
             Duration = duration;
             _halfDuration = Duration / 2f;
         }

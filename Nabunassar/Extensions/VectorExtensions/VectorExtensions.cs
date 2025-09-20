@@ -6,5 +6,11 @@
         {
             return new Vector3(vector2,z);
         }
+
+        public static Vector2 MultipleOpposite(this Vector2 vector2, Vector2 multiplier)
+        {
+            var diff = vector2 - (vector2 * multiplier);
+            return vector2 + diff / 2;
+        }
     }
 }

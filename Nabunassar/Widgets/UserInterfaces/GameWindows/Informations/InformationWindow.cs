@@ -7,6 +7,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
+using Nabunassar.Entities.Struct;
 using Nabunassar.Extensions.LocalizedStringsExtensions;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.Base;
@@ -165,8 +166,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
                 var rep = new Label()
                 {
                     Font = Font.GetFont(fontSize),
-                    Text = GameObject.Reputation.Name(),
-                    TextColor = GameObject.Reputation.Color(),
+                    Text = DrawText.Create(Game.Strings["GameTexts"]["Repuration relations"]+" : ").Color(GameObject.Reputation.Color()).Append(GameObject.Reputation.Name()).ToString(),
                     //Top = fontSize
                 };
                 rep.HorizontalAlignment = HorizontalAlignment.Left;

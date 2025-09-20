@@ -15,6 +15,10 @@ namespace Nabunassar.Monogame.Settings
 
         public string GameTitle { get; set; } = "Nabunassar";
 
+        public float DefaultFadeTransitionDurationInSeconds { get; set; } = 2f;
+
+        public string ModuleName { get; set; }
+
         public TimeSpan DropFpsOnUnfocus { get; set; } = TimeSpan.Zero;
 
         public WindowMode WindowMode { get; set; } = WindowMode.Windowed;
@@ -85,6 +89,8 @@ namespace Nabunassar.Monogame.Settings
         /// Путь до проекта
         /// </summary>
         public string PathProject { get; set; }
+
+        public string PathModuleRoot => Path.Combine(PathProject, "Resources", ModuleName);
 
         /// <summary>
         /// Пусть к бинарникам

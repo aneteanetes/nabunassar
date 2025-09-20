@@ -55,6 +55,7 @@
 	  <Folder Include="Entities\Data\Abilities\CombatAbilities\" />
 	  <Folder Include="Resources\BaseGame\Assets\Images\Interface\" />
 	  <Folder Include="Resources\BaseGame\Assets\Sprites\NPCs\" />
+	  <Folder Include="Resources\BaseGame\Data\Creatures\" />
 	</ItemGroup>
 
 	<ItemGroup>

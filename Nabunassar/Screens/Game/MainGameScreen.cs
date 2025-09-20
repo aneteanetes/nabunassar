@@ -49,6 +49,17 @@ namespace Nabunassar.Screens.Game
 
         public override void Update(GameTime gameTime)
         {
+            if (!Game.IsGameActive)
+                return;
+
+            Game.CollisionComponent?.Update(gameTime);
+            Game.MapWorld?.Update(gameTime);
+
+            GlobalMapGameControls();
+        }
+
+        private void GlobalMapGameControls()
+        {
             var keyboardState = KeyboardExtended.GetState();
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
@@ -59,15 +70,6 @@ namespace Nabunassar.Screens.Game
                     Game.GameState.EscapeSwitch = false;
             }
 
-            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Space))
-            {
-                Console.WriteLine("XNA_space");
-            }
-
-            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.PrintScreen))
-            {
-                Console.WriteLine("XNA_printscreen");
-            }
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
             {

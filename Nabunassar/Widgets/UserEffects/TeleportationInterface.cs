@@ -59,8 +59,8 @@ namespace Nabunassar.Widgets.UserEffects
 
         public override void LoadContent()
         {
-            _partyTeleportTexture ??= new RenderTarget2D(Game.GraphicsDevice, EntityFactory.HeroRenderWidth * 4, EntityFactory.HeroRenderHeight);
-            _partyRectangleSize = new Point(EntityFactory.HeroRenderWidth * 4, EntityFactory.HeroRenderHeight);
+            _partyTeleportTexture ??= new RenderTarget2D(Game.GraphicsDevice, MapEntityFactory.HeroRenderWidth * 4, MapEntityFactory.HeroRenderHeight);
+            _partyRectangleSize = new Point(MapEntityFactory.HeroRenderWidth * 4, MapEntityFactory.HeroRenderHeight);
             _waves = new WavesShaderEffect(Game, new Size(_partyTeleportTexture.Width,_partyTeleportTexture.Height),.08f);
             _assemblyTP = new TeleportationShaderEffect(Game, true);
             _disassemblyTP = new TeleportationShaderEffect(Game);
@@ -118,10 +118,10 @@ namespace Nabunassar.Widgets.UserEffects
 
             var pos = mouse.Position.ToVector2();
 
-            var imageLength = EntityFactory.HeroRenderWidth * 4;
+            var imageLength = MapEntityFactory.HeroRenderWidth * 4;
 
-            var imageWorldPosition = Game.Camera.ScreenToWorld(new Vector2(pos.X - imageLength , pos.Y - EntityFactory.PartyRenderYOffset));
-            _partyRenderPosition = new Vector2(imageWorldPosition.X - EntityFactory.PartyRenderXOffset, imageWorldPosition.Y - EntityFactory.PartyRenderYOffset);
+            var imageWorldPosition = Game.Camera.ScreenToWorld(new Vector2(pos.X - imageLength , pos.Y - MapEntityFactory.PartyRenderYOffset));
+            _partyRenderPosition = new Vector2(imageWorldPosition.X - MapEntityFactory.PartyRenderXOffset, imageWorldPosition.Y - MapEntityFactory.PartyRenderYOffset);
 
             _waves.Update(gameTime);
 
@@ -165,7 +165,7 @@ namespace Nabunassar.Widgets.UserEffects
                 {
                     this.Close();
                     Game.GameState.Party.Visible = true;
-                    Game.GameState.Party.SetPosition(new Vector2(_bounds.Position.X - EntityFactory.PartyBoundRenderOffsetX, _bounds.Position.Y));
+                    Game.GameState.Party.SetPosition(new Vector2(_bounds.Position.X - MapEntityFactory.PartyBoundRenderOffsetX, _bounds.Position.Y));
                 };
                 Game.GameState.Party.Visible = false;
             }            
@@ -286,7 +286,7 @@ namespace Nabunassar.Widgets.UserEffects
                 tpSb.End();
 
                 var partyPosVector = Game.GameState.Party.GetPosition();
-                var partyPos = new Point(((int)partyPosVector.X) - EntityFactory.PartyRenderXOffset, ((int)partyPosVector.Y) - EntityFactory.PartyRenderYOffset);
+                var partyPos = new Point(((int)partyPosVector.X) - MapEntityFactory.PartyRenderXOffset, ((int)partyPosVector.Y) - MapEntityFactory.PartyRenderYOffset);
 
                 tpSb = Game.BeginDraw(effect: _assemblyTP.Effect);
                 tpSb.Draw(_partyTeleportTexture, new Rectangle(partyPos, _partyRectangleSize), new Rectangle(Point.Zero, _partyRectangleSize), Color.White);
@@ -348,7 +348,7 @@ namespace Nabunassar.Widgets.UserEffects
             foreach (var hero in partyHeroes)
             {
                 sb.Draw(hero.Sprite, new Vector2(xOffset, 0));
-                xOffset += EntityFactory.HeroRenderWidthOffset;
+                xOffset += MapEntityFactory.HeroRenderWidthOffset;
             }
 
             sb.End();

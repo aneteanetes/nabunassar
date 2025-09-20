@@ -22,6 +22,7 @@ using Nabunassar.Screens.Abstract;
 using Nabunassar.Screens.Game;
 using Nabunassar.Screens.LoadingScreens;
 using Nabunassar.Struct;
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace Nabunassar
@@ -217,18 +218,18 @@ namespace Nabunassar
             base.Initialize();
         }
 
-        public void SwitchScreen<TScreen>(Action loading = null, IScreenTransition transition = default)
+        public void SwitchScreen<TScreen>(IEnumerator loadingMethod = default, IScreenTransition transition = default)
              where TScreen : BaseScreen
-        => SwitchScreen(typeof(TScreen).New(this).As<TScreen>(), loading, transition);
+        => SwitchScreen(typeof(TScreen).New(this).As<TScreen>(), loadingMethod, transition);
 
-        public void SwitchScreen<TScreen>(TScreen screen, Action loading = null, IScreenTransition transition = default)
+        public void SwitchScreen<TScreen>(TScreen screen, IEnumerator loadingMethod = null, IScreenTransition transition = default)
              where TScreen : BaseScreen
         {
             _screenLoaded = false;
 
             var loadingScreen = new BaseLoadingScreen(this)
             {
-                Loading = loading,
+                LoadingCorutine = loadingMethod,
                 NextScreen = screen
             };
 

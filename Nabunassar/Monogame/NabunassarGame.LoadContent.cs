@@ -56,7 +56,7 @@ namespace Nabunassar
 
             Strings = new LocalizedStrings(this);
 
-            SwitchScreen<MainMenuScreen>(LoadLogos);
+            SwitchScreen<MainMenuScreen>(GameController.LoadMainGame());
 
             GlowEffect.InitializeAndLoad(Content, GraphicsDevice);
 
@@ -65,10 +65,6 @@ namespace Nabunassar
             PrintScreenHandler.Start();
 
             base.LoadContent();
-        }
-
-        private void LoadLogos()
-        {
         }
 
         protected override void UnloadContent()

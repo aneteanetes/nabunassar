@@ -7,6 +7,7 @@ using MonoGame.Extended.Graphics;
 using Nabunassar.Components;
 using Nabunassar.Components.Effects;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Data.Animations;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Map;
 using Nabunassar.Monogame.Extended;
@@ -17,14 +18,14 @@ using Penumbra;
 
 namespace Nabunassar.Entities
 {
-    internal class EntityFactory
+    internal class MapEntityFactory
     {
         NabunassarGame Game;
         public const float TileSizeMultiplier = 3.99f;
         public const float TileBoundsSizeMultiplier = 3.8f;
         private Texture2DAtlas _cursorAtlas;
 
-        public EntityFactory(NabunassarGame game)
+        public MapEntityFactory(NabunassarGame game)
         {
             this.Game = game;
         }
@@ -210,7 +211,7 @@ namespace Nabunassar.Entities
             entity.Attach(animatedSprite);
 
             var position = _object.Position;
-            position = new Vector2(position.X, position.Y - 8);
+            position = new Vector2(position.X, position.Y);
 
             var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), PersonBoundsSize);
 
@@ -256,6 +257,146 @@ namespace Nabunassar.Entities
             var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite,order, title);
             glowEntity.Attach(glowAnimatedSprite);
 
+
+            return entity;
+        }
+
+        public Entity CreateCreature(TiledObject _object)
+        {
+            var scale = new Vector2((float)_object.width / _object.Tileset.tilewidth, (float)_object.height / _object.Tileset.tileheight);
+            var order = 12;
+            var descriptor = "creature " + _object.gid;
+            var entity = CreateEntity(descriptor, order);
+            var gameObject = Game.DataBase.GetObject(_object.GetPropertyValue<int>("ObjectId"));
+
+            AddOnMinimap(entity.Id, _object.Position.MultipleOpposite(scale), ObjectType.Creature, gameObject.Name);
+
+            gameObject.MergeProperties(_object);
+
+            entity.Attach(gameObject);
+            entity.Attach(_object.As<TiledBase>());
+            entity.Attach(new AnimatedPerson());
+
+            SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
+
+            string initialAnimation = null;
+            List<AnimationInfo> animations = null;
+
+            var animationsFile = gameObject.GetPropertyValue<string>("AnimationsFile");
+            if(animationsFile.IsNotEmpty())
+            {
+                var animationsFileAssetPath = Path.Combine(Path.GetDirectoryName(_object.Tileset.image), animationsFile);
+                animations = Game.Content.Load<List<AnimationInfo>>(animationsFileAssetPath);
+                foreach (var animation in animations)
+                {
+                    if (animations.IndexOf(animation) == 0)
+                        initialAnimation = animation.Name;
+
+                    spriteSheet.DefineAnimation(animation.Name, builder =>
+                    {
+                        builder.IsLooping(animation.IsLoop);
+                        foreach (var frame in animation.Frames)
+                        {
+                            builder.AddFrame(frame.RegionIndex,TimeSpan.FromSeconds(frame.DurationInSeconds));
+                        }
+                    });
+                }
+            }
+
+            var animatedSprite = new AnimatedSprite(spriteSheet);
+            if (initialAnimation.IsNotEmpty())
+                animatedSprite.SetAnimation(initialAnimation);
+
+            entity.Attach(animatedSprite);
+
+            var position = _object.Position;
+            position = new Vector2(position.X, position.Y);
+
+            var bounds = new RectangleF(new Vector2(PersonBoundsXOffset, PersonBoundsYOffset), new SizeF(_object.width, _object.height));
+
+            if (_object.Tileset.Tiles.Count==1)
+            {
+#warning creature bounds todo
+
+                var tileBounds = _object.Tileset.Tiles[0].Bounds;
+                if (tileBounds.IsNotEmpty())
+                {
+                    var tileBound = tileBounds.FirstOrDefault();
+                    bounds = tileBound;
+                    bounds = bounds.Multiple(scale);
+
+                    _object.TitlePosition = _object.Position + bounds.Position;
+                }
+
+                //var i = 0;
+                //foreach (var bound in _object.GetBounds())
+                //{
+                //    var gameObjectPosition = new Vector2(position.X + bound.X, position.Y + bound.Y);
+                //    var boundPosition = new Vector2(bound.X, bound.Y);
+                //    var boundSize = new SizeF(bound.Width, bound.Height);
+                //    var bounds = new RectangleF(Vector2.Zero, boundSize);
+
+                    //    var dummyDiscriptor = $"obj {_object.gid} bound({i})";
+                    //    var dummyEntity = CreateEntity(dummyDiscriptor);
+                    //    var complexCollision = new MapObject(Game, gameObjectPosition, ObjectType.Object, entity, bounds, isVisible ? CollisionLayers.Objects : CollisionLayers.Hidden)
+                    //    {
+                    //        Name = dummyDiscriptor
+                    //    };
+                    //    dummyEntity.Attach(complexCollision);
+
+                    //    //if (isVisible)
+                    //    AddCollistion(complexCollision);
+                    //    i++;
+
+                    //    complexCollision.OnDestroy = () => Game.DestoryEntity(dummyEntity);
+                    //    complexCollision.Parent = mapObject;
+                    //    mapObject.Dependant.Add(complexCollision);
+                    //}
+                    //mapObject.Bounds = new RectangleF(position, size);
+            }
+
+
+            var mapObject = new MapObject(Game, position, ObjectType.Creature, entity, bounds, CollisionLayers.Objects) { Name = descriptor };
+            AddCollistion(mapObject);
+            entity.Attach(mapObject);
+            gameObject.MapObject = mapObject;
+            gameObject.Entity = entity;
+
+            var render = new RenderComponent(Game, animatedSprite, position, 0);
+            render.Scale = scale;
+            entity.Attach(render);
+
+            //glow 
+
+            SpriteSheet glowSpriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name + "glow", _object.Tileset.TextureAtlasGlow);
+
+            if(animations.IsNotEmpty())
+            {
+                foreach (var animation in animations)
+                {
+                    if (animations.IndexOf(animation) == 0)
+                        initialAnimation = animation.Name;
+
+                    glowSpriteSheet.DefineAnimation(animation.Name, builder =>
+                    {
+                        builder.IsLooping(animation.IsLoop);
+                        foreach (var frame in animation.Frames)
+                        {
+                            builder.AddFrame(frame.RegionIndex, TimeSpan.FromSeconds(frame.DurationInSeconds));
+                        }
+                    });
+                }
+            }
+
+            var glowAnimatedSprite = new AnimatedSprite(glowSpriteSheet);
+            if (initialAnimation.IsNotEmpty())
+                glowAnimatedSprite.SetAnimation(initialAnimation);
+
+            var title = new FocusWidgetComponent(gameObject, focusEvent => new TitleWidget(Game, focusEvent.Object.GetObjectNameTitle(), focusEvent.Position));
+            entity.Attach(title);
+
+            var glowEntity = CreateGlowOutline(_object, gameObject, descriptor, entity, position, glowAnimatedSprite, order, title);
+            glowEntity.Attach(glowAnimatedSprite);
 
             return entity;
         }
@@ -490,7 +631,7 @@ namespace Nabunassar.Entities
                 foreach (var bound in _object.GetBounds())
                 {
                     var gameObjectPosition = new Vector2(position.X + bound.X, position.Y + bound.Y);
-                    var boundPosition = new Vector2(bound.X, bound.Y);
+                    //var boundPosition = new Vector2(bound.X, bound.Y);
                     var boundSize = new SizeF(bound.Width, bound.Height);
                     var bounds = new RectangleF(Vector2.Zero, boundSize);
 
@@ -553,6 +694,7 @@ namespace Nabunassar.Entities
         {
             var glowEntity = CreateEntity(descriptor + " glow", order-1);
             var glowRender = new RenderComponent(Game, glowSprite, position, 0);
+            glowRender.Scale = new Vector2((float)_object.width / _object.Tileset.tilewidth, (float)_object.height / _object.Tileset.tileheight);
             glowRender.IsEffect = true;
             glowSprite.IsVisible = false;
             glowEntity.Attach(glowRender);
@@ -681,7 +823,7 @@ namespace Nabunassar.Entities
 
         public Entity CreateEntity(string descriptor=null, int order=0)
         {
-            var entity = Game.WorldGame.CreateEntity();
+            var entity = Game.MapWorld.CreateEntity();
 
             entity.Attach(new DescriptorComponent(descriptor));
             entity.Attach(new OrderComponent(order));

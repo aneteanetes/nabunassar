@@ -196,6 +196,11 @@ namespace Nabunassar.Entities.Game
 
             var name = objectNames[token].ToString();
 
+            if (name == objectNames.NotFound && ObjectId > 0)
+            {
+                return game.Strings["ObjectNames"][ObjectId.ToString()];
+            }
+
             return name;
         }
 

@@ -6,6 +6,7 @@ using Nabunassar.Entities.Data.Enums;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game;
 using Nabunassar.Struct;
+using System.Data.Common;
 using System.IO;
 
 namespace Nabunassar.Resources
@@ -45,7 +46,11 @@ namespace Nabunassar.Resources
         public string GetFromDictionary(string file, string key)
         {
             var data = Get<Dictionary<string, string>>(file);
-            return data[key];
+
+            if (!data.TryGetValue(file, out var cursor))
+                return "cursor";
+
+            return cursor;
         }
 
         public TValue GetFromDictionary<TValue>(string file, string key)

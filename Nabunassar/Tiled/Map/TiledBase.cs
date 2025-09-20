@@ -7,6 +7,8 @@ namespace Nabunassar.Tiled.Map
     {
         public virtual Vector2 Position { get; set; }
 
+        public virtual Vector2 TitlePosition { get; set; }
+
         public TiledBase CopyBase()
         {
             return new TiledBase()

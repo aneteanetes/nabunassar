@@ -15,6 +15,7 @@ namespace Nabunassar.Struct
         Object,
         NPC,
         Container,
+        Creature,
 
         // other objects
         Player,
@@ -36,7 +37,7 @@ namespace Nabunassar.Struct
         {
             var code = (int)objectType;
 
-            return code > 1 && code < 8;
+            return code > 1 && code < typeof(ObjectType).GetEnumValues().Length - 11;
         }
 
         /// <summary>

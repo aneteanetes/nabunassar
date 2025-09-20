@@ -5,6 +5,7 @@ using Nabunassar.Entities.Data;
 using Nabunassar.Screens.Game;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using System.Collections;
 
 namespace Nabunassar
 {
@@ -14,13 +15,36 @@ namespace Nabunassar
 
         public static void StartNewGame(NabunassarGame game)
         {
+            game.SwitchScreen<MainGameScreen>(LoadNewGame(game));
+        }
+
+        public static void Exit()
+        {
+            static IEnumerator Exiting()
+            {
+                Game.Exit();
+                yield return 0;
+            }
+
+            Game.SwitchScreen<MainGameScreen>(Exiting());
+        }
+
+        private static IEnumerator LoadNewGame(NabunassarGame game)
+        {
+            Game.InitGameWorld();
+            Game.InitializeGameState();
+
+            yield return 0;
+
             var _tiledMap = Game.Content.Load<TiledMap>("Assets/Maps/learningarea.tmx");
             Game.GameState.Location = new Entities.Data.Locations.Location(Game)
             {
                 Region = Entities.Data.Locations.Region.Underdead,
                 LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) },
             };
-            Game.EntityFactory.CreateMinimap(_tiledMap);
+            Game.MapEntityFactory.CreateMinimap(_tiledMap);
+
+            yield return 0;
 
             foreach (var tileset in _tiledMap.Tilesets)
             {
@@ -42,6 +66,8 @@ namespace Nabunassar
                 tileset.TextureAtlasGlow = _glowAtlas;
             }
 
+            yield return 0;
+
             foreach (var _layer in _tiledMap.Layers)
             {
                 var sorted = _layer.Tiles.OrderBy(x => x.GetPropertyValue<GroundType>(nameof(GroundType))).ToList();
@@ -50,37 +76,52 @@ namespace Nabunassar
                     if (tile.Gid == 0)
                         continue;
 
-                    Game.EntityFactory.CreateTile(tile);
+                    Game.MapEntityFactory.CreateTile(tile);
                 }
             }
 
+            yield return 0;
+
             foreach (var mapObject in _tiledMap.Objects)
             {
-                Game.EntityFactory.CreateTiledObject(mapObject);
+                Game.MapEntityFactory.CreateTiledObject(mapObject);
             }
+
+            yield return 0;
 
             foreach (var mapObject in _tiledMap.NPCs)
             {
-                Game.EntityFactory.CreateNPC(mapObject);
+                Game.MapEntityFactory.CreateNPC(mapObject);
             }
 
-            Game.RunGameState();
+            yield return 0;
 
-            game.SwitchScreen<MainGameScreen>(LoadNewGame(game));
-        }
-
-        internal static void UnloadGame()
-        {
-            Game.DisposeGameWorld();
-            Game.RemoveDesktopWidgets(true);
-        }
-
-        private static Action LoadNewGame(NabunassarGame game)
-        {
-            return () =>
+            foreach (var mapObject in _tiledMap.Creatures)
             {
-                
-            };
+                Game.MapEntityFactory.CreateCreature(mapObject);
+            }
+
+            yield return 0;
+
+            Game.RunGameState();
+            Game.IsGameActive = true;
+
+            yield return 0;
+        }
+
+        public static IEnumerator LoadMainGame()
+        {
+            Game.IsGameActive = true; 
+            yield return 0;
+        }
+
+        internal static IEnumerator UnloadGame()
+        {
+            Game.RemoveDesktopWidgets(true);
+            yield return 0;
+
+            Game.DisposeGameWorld();
+            yield return 0;
         }
     }
 }

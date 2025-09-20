@@ -1,4 +1,6 @@
-﻿namespace Nabunassar.Screens.Abstract
+﻿using MonoGame.Extended.Collisions;
+
+namespace Nabunassar.Screens.Abstract
 {
     internal abstract class BaseGameScreen : BaseScreen
     {
@@ -14,12 +16,16 @@
             Game.GameState.InGame = true;
         }
 
+        public override void Update(GameTime gameTime)
+        {
+        }
+
         public override void Draw(GameTime gameTime)
         {
             if (!Game.GameState.InGame && IsDisabled)
                 return;
 
-            Game.WorldGame.Draw(gameTime);
+            Game.MapWorld.Draw(gameTime);
 
             Game.SpriteBatch.End();
 

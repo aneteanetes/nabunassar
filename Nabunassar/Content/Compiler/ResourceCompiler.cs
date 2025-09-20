@@ -30,8 +30,6 @@ namespace Nabunassar.Content.Compiler
 
         private const string ResourceManifestName = "ResourceManifest.ndm";
 
-        private const string BaseModuleName = "BaseGame";
-
         private ResourceCompiler(GameSettings settings)
         {
             configuration = settings;
@@ -189,7 +187,7 @@ namespace Nabunassar.Content.Compiler
         }
 
         private string FormatPathForDB(string filePath)
-            => Path.GetRelativePath(Path.Combine(configuration.PathRepository,Assembly.GetEntryAssembly().GetName().Name,"Resources",BaseModuleName), filePath).Replace("\\","/");
+            => Path.GetRelativePath(Path.Combine(configuration.PathRepository, Assembly.GetEntryAssembly().GetName().Name, "Resources", configuration.ModuleName), filePath).Replace("\\", "/");
 
     }
 }

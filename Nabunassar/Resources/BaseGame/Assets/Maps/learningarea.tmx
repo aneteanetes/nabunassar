@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="8" nextobjectid="155">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="left-up" width="30" height="26" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#000000" nextlayerid="9" nextobjectid="158">
  <properties>
   <property name="AreaName" value="Underpeaks"/>
   <property name="AreaObjectPostfix" value="Snow"/>
@@ -458,6 +458,14 @@
  </tileset>
  <tileset firstgid="1311" name="boardIconsDefault" tilewidth="64" tileheight="64" tilecount="273" columns="21">
   <image source="../Tilesets/boardIconsDefault.png" trans="000000" width="1344" height="832"/>
+ </tileset>
+ <tileset firstgid="1584" name="Slime2_Idle_with_shadow" tilewidth="64" tileheight="64" tilecount="24" columns="6">
+  <image source="../Sprites/Creatures/Slime2/Slime2_Idle_with_shadow.png" trans="000000" width="384" height="256"/>
+  <tile id="0">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="22" y="18.7826" width="23" height="21.3043"/>
+   </objectgroup>
+  </tile>
  </tileset>
  <layer id="1" name="Ground" width="30" height="26">
   <data encoding="csv">
@@ -1178,4 +1186,12 @@
   </object>
  </objectgroup>
  <objectgroup id="7" name="Pathing"/>
+ <objectgroup id="8" name="Creatures">
+  <object id="157" gid="1584" x="332.333" y="100" width="48" height="48">
+   <properties>
+    <property name="AnimationsFile" value="slime2.json"/>
+    <property name="ObjectId" type="int" value="100"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

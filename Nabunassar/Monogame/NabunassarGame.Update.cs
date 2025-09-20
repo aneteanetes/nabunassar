@@ -59,12 +59,6 @@ namespace Nabunassar
 
             Game.MyraDesktop.Update();
 
-            if (IsGameActive)
-            {
-                CollisionComponent?.Update(gameTime);
-                WorldGame?.Update(gameTime);
-            }
-
             base.Update(gameTime);
         }
 
@@ -98,20 +92,20 @@ namespace Nabunassar
 
             if (keyboardState.WasKeyPressed(Keys.OemPlus))
             {
-                EntityFactory.PartyLight.Scale += new Vector2(50,50);
+                MapEntityFactory.PartyLight.Scale += new Vector2(50,50);
             }
             if (keyboardState.WasKeyPressed(Keys.OemMinus))
             {
-                EntityFactory.PartyLight.Scale -= new Vector2(50, 50);
+                MapEntityFactory.PartyLight.Scale -= new Vector2(50, 50);
             }
 
             if (keyboardState.WasKeyPressed(Keys.D0))
             {
-                EntityFactory.PartyLight.Radius += 10;
+                MapEntityFactory.PartyLight.Radius += 10;
             }
             if (keyboardState.WasKeyPressed(Keys.D9))
             {
-                EntityFactory.PartyLight.Radius -= 10;
+                MapEntityFactory.PartyLight.Radius -= 10;
             }
 
             AdjustZoom();

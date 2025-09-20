@@ -1,6 +1,7 @@
 ﻿using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Particles;
 using Nabunassar.Screens.Abstract;
+using System.Collections;
 
 namespace Nabunassar.Screens.LoadingScreens
 {
@@ -22,7 +23,7 @@ namespace Nabunassar.Screens.LoadingScreens
 
         public BaseScreen NextScreen { get; set; }
 
-        public Action Loading { get; set; }
+        public IEnumerator LoadingCorutine { get; set; }
 
         public override void LoadContent()
         {
@@ -58,8 +59,8 @@ namespace Nabunassar.Screens.LoadingScreens
 
             if (_isTransitionEnded)
             {
-                Loading();
-                _isLoaded = true;
+                if (!LoadingCorutine.MoveNext())
+                    _isLoaded = true;
             }
 
             if (_isLoaded && _isTransitionEnded)

@@ -16,8 +16,12 @@ namespace Nabunassar.Tiled.Map
 
         private TiledMap() { }
 
-        public static TiledMap Load(Stream stream)
+        public static TiledMap Load(Stream stream, string assetName)
         {
+            var settings = NabunassarGame.Game.Settings;
+            var assetsPath = Path.GetDirectoryName(Path.Combine(settings.PathModuleRoot, assetName));
+            var assetsPathAbsolutePart = settings.PathModuleRoot + "\\";
+
             var xdoc = XDocument.Load(stream);
             var map = xdoc.Root;
 
@@ -92,9 +96,12 @@ namespace Nabunassar.Tiled.Map
                     })
                     .ToList();
 
-
                 tileSet.Autotiled = true;
-                tileSet.image = "Assets/Tilesets/" + Path.GetFileName(xmlTileSet.Element("image").GetTagAttrString("source"));
+
+                var source = xmlTileSet.Element("image").GetTagAttrString("source");
+                tileSet.image = Path.GetFullPath(source, assetsPath)
+                    .Replace(assetsPathAbsolutePart, "")
+                    .Replace("\\","/");
 
 
                 tiledMap.Tilesets.Add(tileSet);
@@ -153,7 +160,7 @@ namespace Nabunassar.Tiled.Map
                         }
                     }
 
-                    tobj.Position = new Vector2((int)tobj.x, (int)tobj.y - 16);
+                    tobj.Position = new Vector2((int)tobj.x, (int)tobj.y - tobj.height);
                     ReadProperties(objtag, tobj);
 
                     if (tobj.gid != 0)
@@ -187,7 +194,13 @@ namespace Nabunassar.Tiled.Map
                     }
 
                     if (tobj.objectgroup == "NPC")
+                    {
                         tiledMap.NPCs.Add(tobj);
+                    }
+                    else if (tobj.objectgroup == "Creatures")
+                    {
+                        tiledMap.Creatures.Add(tobj);
+                    }
                     else
                         tiledMap.Objects.Add(tobj);
                 }
@@ -305,6 +318,8 @@ namespace Nabunassar.Tiled.Map
 
         public List<TiledObject> NPCs { get; set; } = new List<TiledObject>();
 
+        public List<TiledObject> Creatures { get; set; } = new List<TiledObject>();
+
         public List<TiledTileset> Tilesets { get; set; } = new List<TiledTileset>();
 
         private Point ParseCoordinates(int gid)
@@ -351,6 +366,10 @@ namespace Nabunassar.Tiled.Map
             {
                 npc.Dispose();
             }
+            foreach (var creature in Creatures)
+            {
+                creature.Dispose();
+            }
             foreach (var tileset in Tilesets)
             {
                 tileset.Dispose();
@@ -368,6 +387,9 @@ namespace Nabunassar.Tiled.Map
 
             NPCs.Clear();
             NPCs = null;
+
+            Creatures.Clear();
+            Creatures= null;
 
             Tilesets.Clear();
             Tilesets = null;

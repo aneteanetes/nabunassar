@@ -66,6 +66,9 @@ namespace Nabunassar.Systems
                     dotColor = Color.DarkGreen;
                     break;
                 case Struct.ObjectType.Player:
+                    dotColor = Color.IndianRed;
+                    break;
+                case Struct.ObjectType.Creature:
                     dotColor = Color.Red;
                     break;
                 case Struct.ObjectType.Ground:

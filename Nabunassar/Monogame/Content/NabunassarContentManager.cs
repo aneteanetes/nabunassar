@@ -75,7 +75,7 @@ namespace Nabunassar.Monogame.Content
             if (typeof(T) == typeof(TiledMap))
             {
                 var stream = OpenStream(assetName);
-                var map = TiledMap.Load(stream);
+                var map = TiledMap.Load(stream,assetName);
                 LoadedAssets[assetName] = map;
                 return map.As<T>();
             }
@@ -165,7 +165,7 @@ namespace Nabunassar.Monogame.Content
         }
 
         protected override Stream OpenStream(string assetName)
-            => _resourceLoader.GetStream(assetName);
+            => _resourceLoader.GetStream(assetName.Replace("\\", "/"));
 
         protected override void Dispose(bool disposing)
         {

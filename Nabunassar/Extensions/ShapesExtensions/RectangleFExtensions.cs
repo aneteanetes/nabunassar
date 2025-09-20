@@ -42,6 +42,34 @@ namespace Nabunassar
             return new RectangleF(newX, newY, newWidth, newHeight);
         }
 
+        public static RectangleF Multiple(this RectangleF rect, Vector2 multiplier)
+        {
+            var newWidth = rect.Width * multiplier.X;
+            var newHeight = rect.Height * multiplier.Y;
+
+            var newX = rect.X;
+            if (multiplier.X > 1)
+            {
+                newX += rect.Width / 2 - newWidth / 2;
+            }
+            else
+            {
+                newX -= rect.Width / 2 - newWidth / 2;
+            }
+
+            var newY = rect.Y;
+            if (multiplier.Y > 1)
+            {
+                newY += rect.Height / 2 - newHeight / 2;
+            }
+            else
+            {
+                newY -= rect.Height / 2 - newHeight / 2;
+            }
+
+            return new RectangleF(newX, newY, newWidth, newHeight);
+        }
+
         public static RectangleF Add(this RectangleF rect, float measure)
         {
             var newWidth = rect.Width + measure;

@@ -104,5 +104,15 @@
     "Image": "Assets/Images/Objects/snow/woodenbox_s.png",
     "ObjectType": "Container",
     "LootTableId": 2
+  },
+  {
+    "ObjectId": 100,
+    "Name": "Slime2",
+    "Portrait": "Assets/Images/Objects/snow/slime2_m.jpg",
+    "Image": "Assets/Images/Objects/snow/slime2_s.png",
+    "ObjectType": "Creature",
+    "BattlerId": 2,
+    "Reputation": "Unfriendly",
+    "DangerRating": "Neutral"
   }
 ]

@@ -3,5 +3,10 @@
     "BattlerId": 1,
     "MaxHP": 25,
     "NowHP": 25
+  },
+  {
+    "BattlerId": 2,
+    "MaxHP": 25,
+    "NowHP": 25
   }
 ]

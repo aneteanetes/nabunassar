@@ -12,7 +12,7 @@ namespace Nabunassar
         {
             Game.InitializeCollisions();
 
-            WorldGame = new WorldBuilderProxy(this)
+            MapWorld = new WorldBuilderProxy(this)
                 .AddSystem(new MinimapSystem(this))
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new CursorSystem(this))
@@ -24,13 +24,19 @@ namespace Nabunassar
                 .AddSystem(new LightSystem(this))
                 .Build();
 
-            EntityFactory = new Entities.EntityFactory(this);
+            MapEntityFactory = new Entities.MapEntityFactory(this);
+        }
+
+        public void InitCombatWorld()
+        {
+            CombatWorld = new WorldBuilderProxy(this)
+                .Build();
         }
 
         public void DisposeGameWorld()
         {
-            Game.WorldGame.IsEnabled = false;
-            Game.WorldGame.Dispose();
+            Game.MapWorld.IsEnabled = false;
+            Game.MapWorld.Dispose();
             Game.DisposeCollisionComponent();
         }
 
@@ -40,7 +46,7 @@ namespace Nabunassar
         public void DestoryEntity(Entity entity)
         {
             var collision = entity.Get<MapObject>();
-            this.WorldGame.DestroyEntity(entity);
+            this.MapWorld.DestroyEntity(entity);
             CollisionComponent.Remove(collision);
         }
 
