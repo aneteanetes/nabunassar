@@ -14,8 +14,6 @@ namespace Nabunassar.Screens.Game
 {
     internal class MainGameScreen : BaseGameScreen
     {
-        public static GaussianBlur GlobalBlurShader;
-
         private bool logWindow = false;
 
         public MainGameScreen(NabunassarGame game) : base(game)
@@ -24,13 +22,7 @@ namespace Nabunassar.Screens.Game
 
         public override void LoadContent()
         {
-            if (GlobalBlurShader == null)
-                GlobalBlurShader = new GaussianBlur(base.Game, 1.5f);
-
-            Game.Camera.Zoom = 4;
-            Game.Camera.Origin = new Vector2(0, 0);
-            Game.Camera.Position = new Vector2(0, 0);
-            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205, 115));
+            GameController.SetCameraToWorld();
 
             InitGameUI();
 
@@ -49,6 +41,8 @@ namespace Nabunassar.Screens.Game
 
         public override void Update(GameTime gameTime)
         {
+            GameController.CallGlobalMenu();
+
             if (!Game.IsGameActive)
                 return;
 
@@ -58,18 +52,21 @@ namespace Nabunassar.Screens.Game
             GlobalMapGameControls();
         }
 
+        protected override void DrawInternal(GameTime gameTime)
+        {
+            Game.MapWorld.Draw(gameTime);
+
+            Game.SpriteBatch.End();
+
+            Game.Penumbra.Draw(gameTime);
+
+            Game.SpriteBatch.End();
+        }
+
         private void GlobalMapGameControls()
         {
+
             var keyboardState = KeyboardExtended.GetState();
-
-            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
-            {
-                if (!Game.GameState.EscapeSwitch)
-                    SettingsIconButton.OpenCloseSettings(Game);
-                else
-                    Game.GameState.EscapeSwitch = false;
-            }
-
 
             if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.M))
             {
@@ -95,12 +92,8 @@ namespace Nabunassar.Screens.Game
 
         public override void UnloadContent()
         {
-            GlobalBlurShader.Disable();
-
-            var game = Game;
-            game.Camera.Zoom = 1;
-            game.Camera.Origin = new Vector2(0, 0);
-            game.Camera.Position = new Vector2(0, 0);
+            GameController.GlobalBlurShader.Disable();
+            Game.RemoveDesktopWidgets(true);
         }
     }
 }

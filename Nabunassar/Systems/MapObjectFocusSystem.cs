@@ -115,7 +115,7 @@ namespace Nabunassar.Systems
                 });
                 Game.AddDesktopWidget(screenWidget);
 
-                var cursor = Game.DataBase.GetFromDictionary("Data/Interface/ObjectTypeCursors.json", focusWidgetComponent.GameObject.ObjectType.ToString());
+                var cursor = Game.DataBase.GetFromDictionary("Data/Interface/ObjectTypeCursors.json", focusWidgetComponent.GameObject.ObjectType.ToString(), "cursor");
                 if (cursor != default)
                     Game.GameState.Cursor.SetCursor(cursor);
 

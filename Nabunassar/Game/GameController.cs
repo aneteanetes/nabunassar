@@ -1,21 +1,32 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Input;
 using Nabunassar.Entities.Data;
+using Nabunassar.Entities.Game;
 using Nabunassar.Screens.Game;
+using Nabunassar.Shaders;
 using Nabunassar.Struct;
 using Nabunassar.Tiled.Map;
+using Nabunassar.Widgets.Views.IconButtons;
 using System.Collections;
 
 namespace Nabunassar
 {
     internal static class GameController
     {
+        public static GaussianBlur GlobalBlurShader;
+
         private static NabunassarGame Game => NabunassarGame.Game;
 
         public static void StartNewGame(NabunassarGame game)
         {
             game.SwitchScreen<MainGameScreen>(LoadNewGame(game));
+        }
+
+        public static void StartCombat(GameObject gameObject)
+        {
+            Game.SwitchScreen(new CombatGameScreen(Game, gameObject), LoadCombat());
         }
 
         public static void Exit()
@@ -27,6 +38,40 @@ namespace Nabunassar
             }
 
             Game.SwitchScreen<MainGameScreen>(Exiting());
+        }
+
+        public static void CallGlobalMenu()
+        {
+            var keyboardState = KeyboardExtended.GetState();
+
+            if (keyboardState.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
+            {
+                if (!Game.GameState.EscapeSwitch)
+                    SettingsIconButton.OpenCloseSettings(Game);
+                else
+                    Game.GameState.EscapeSwitch = false;
+            }
+        }
+
+        public static void SetCameraToWorld()
+        {
+            Game.Camera.Zoom = 4;
+            Game.Camera.Origin = new Vector2(0, 0);
+            Game.Camera.Position = new Vector2(0, 0);
+            Game.Camera.SetBounds(Vector2.Zero, new Vector2(205, 115));
+        }
+
+        public static void SetCameraToScreen()
+        {
+            Game.Camera.Zoom = 1;
+            Game.Camera.Origin = new Vector2(0, 0);
+            Game.Camera.Position = new Vector2(0, 0);
+            Game.Camera.SetBoundsFree();
+        }
+
+        private static IEnumerator LoadCombat()
+        {
+            yield return 0;
         }
 
         private static IEnumerator LoadNewGame(NabunassarGame game)
@@ -111,6 +156,9 @@ namespace Nabunassar
 
         public static IEnumerator LoadMainGame()
         {
+            if (GlobalBlurShader == null)
+                GlobalBlurShader = new GaussianBlur(Game, 1.5f);
+
             Game.IsGameActive = true; 
             yield return 0;
         }

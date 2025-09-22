@@ -59,6 +59,11 @@ namespace Nabunassar.Monogame.Viewport
             return new Vector2(Width, Height);
         }
 
+        public Point ToPoint()
+        {
+            return new Point(Width, Height);
+        }
+
         public static implicit operator Rectangle(PossibleResolution res) => new Rectangle(0, 0, res.Width, res.Height);
     }
 }

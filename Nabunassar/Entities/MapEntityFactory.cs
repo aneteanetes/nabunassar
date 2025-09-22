@@ -66,12 +66,15 @@ namespace Nabunassar.Entities
 
             var cursorHand = MouseCursor.FromTexture2D(Game.Content.Load<Texture2D>("Assets/Images/Cursors/tile_0176.png"), 0, 0);
 
+            var cursorAttack = MouseCursor.FromTexture2D(Game.Content.LoadTexture("Assets/Images/Cursors/tile_0107.png"), 0, 0);
+
             cursor.DefineCursor("cursor", cursorDefault);
 
             cursor.DefineCursor("enter", cursorEnter);
             cursor.DefineCursor("info", cursorInfo);
             cursor.DefineCursor("speak", cursorSpeak);
             cursor.DefineCursor("hand", cursorHand);
+            cursor.DefineCursor("attack", cursorAttack);
 
             cursor.SetCursor("cursor");
 

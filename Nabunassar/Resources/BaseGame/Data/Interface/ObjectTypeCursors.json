@@ -1,8 +1,9 @@
-﻿{  
-  "Door":"enter",
-  "Tree":"info",
-  "Wall":"cursor",
-  "Object":"cursor",
+﻿{
+  "Door": "enter",
+  "Tree": "info",
+  "Wall": "cursor",
+  "Object": "cursor",
   "NPC": "speak",
-  "Container": "hand"
+  "Container": "hand",
+  "Creature": "attack"
 }

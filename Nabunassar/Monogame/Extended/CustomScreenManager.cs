@@ -5,6 +5,7 @@ namespace Nabunassar.Monogame.Extended
 {
     internal class CustomScreenManager : SimpleDrawableGameComponent
     {
+        public BaseScreen ActiveScreen => _activeScreen;
         private BaseScreen _activeScreen;
         private bool _disabledActive;
         private IScreenTransition _activeTransition;

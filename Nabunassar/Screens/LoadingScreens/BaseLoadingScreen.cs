@@ -5,7 +5,7 @@ using System.Collections;
 
 namespace Nabunassar.Screens.LoadingScreens
 {
-    internal class BaseLoadingScreen : BaseGameScreen
+    internal class BaseLoadingScreen : BaseScreen
     {
         private Sprite _iconSprite;
         private Vector2 _iconPos;
@@ -27,6 +27,8 @@ namespace Nabunassar.Screens.LoadingScreens
 
         public override void LoadContent()
         {
+            GameController.SetCameraToScreen();
+
             _iconSprite = new Sprite(Content.LoadTexture("Assets/Images/Backgrounds/star.png"));
 
             var posOffset = 100;

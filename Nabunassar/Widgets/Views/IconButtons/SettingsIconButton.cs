@@ -12,7 +12,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
 
         public override bool IsReactOnClick => false;
 
-        public SettingsIconButton(NabunassarGame game) : base(game.Strings["UI"]["Minimap"], null)
+        public SettingsIconButton(NabunassarGame game) : base(game.Strings["UI"]["Settings"], null)
         {
             _game = game;
             var iconAsset = game.Content.Load<Texture2D>("Assets/Tilesets/transparent_packed.png");
@@ -26,7 +26,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
 
         private static void Open(NabunassarGame game)
         {
-            MainGameScreen.GlobalBlurShader.Enable();
+            GameController.GlobalBlurShader.Enable();
             game.AddDesktopWidget(new MainMenu(game, true));
             game.RemoveDesktopWidgets<TitleWidget>();
             game.ChangeGameActive();
@@ -36,7 +36,7 @@ namespace Nabunassar.Widgets.Views.IconButtons
         {
             if (game.IsDesktopWidgetExist<MainMenu>())
             {
-                MainGameScreen.GlobalBlurShader.Disable();
+                GameController.GlobalBlurShader.Disable();
                 game.RemoveDesktopWidgets<MainMenu>();
                 game.ChangeGameActive();
             }

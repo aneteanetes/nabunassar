@@ -64,6 +64,8 @@ namespace Nabunassar
 
             PrintScreenHandler.Start();
 
+            IsMakingScreenShot = new GameLoopFeatureValue<bool>(this, false);
+
             base.LoadContent();
         }
 

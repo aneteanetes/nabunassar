@@ -43,12 +43,12 @@ namespace Nabunassar.Resources
             return data[type];
         }
 
-        public string GetFromDictionary(string file, string key)
+        public string GetFromDictionary(string file, string key, string @default=null)
         {
             var data = Get<Dictionary<string, string>>(file);
 
-            if (!data.TryGetValue(file, out var cursor))
-                return "cursor";
+            if (!data.TryGetValue(key, out var cursor))
+                return @default;
 
             return cursor;
         }

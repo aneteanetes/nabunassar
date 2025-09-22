@@ -27,7 +27,7 @@ namespace Nabunassar
     {
         public HashSet<IFeatured> FeatureValues { get; internal set; } = new();
 
-        public static bool? IsMakingScreenShot = null;
+        public static GameLoopFeatureValue<bool> IsMakingScreenShot;
 
         private RenderTarget2D _screenShotTarget = null;
 

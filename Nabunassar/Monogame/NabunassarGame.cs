@@ -254,7 +254,7 @@ namespace Nabunassar
 
         protected override void Dispose(bool disposing)
         {
-            MainGameScreen.GlobalBlurShader?.Disable();
+            GameController.GlobalBlurShader?.Disable();
             base.Dispose(disposing);
         }
 

@@ -66,10 +66,7 @@ namespace Nabunassar.Monogame.Content
 
             if (typeof(T) == typeof(Texture2D))
             {
-                var stream = OpenStream(assetName);
-                var texture = Texture2D.FromStream(_game.GraphicsDevice, stream, DefaultColorProcessors.PremultiplyAlpha);
-                LoadedAssets[assetName] = texture;
-                return texture.As<T>();
+                return LoadTextureInternal<T>(assetName);
             }
 
             if (typeof(T) == typeof(TiledMap))
@@ -107,6 +104,50 @@ namespace Nabunassar.Monogame.Content
             }    
 
             return base.Load<T>(assetName);
+        }
+
+        private T LoadTextureInternal<T>(string assetName)
+        {
+            bool isFound = false;
+
+            var originalAssetName = assetName;
+
+            if (!_resourceLoader.IsExists(assetName))
+            {
+                assetName = Path.Combine(Path.GetDirectoryName(assetName), Path.GetFileNameWithoutExtension(assetName)).Replace("\\", "/");
+
+                if (_resourceLoader.IsExists(assetName + ".png"))
+                {
+                    assetName += ".png";
+                    isFound = true;
+                }
+
+                if (_resourceLoader.IsExists(assetName + ".jpg"))
+                {
+                    assetName += ".jpg";
+                    isFound = true;
+                }
+
+                if (_resourceLoader.IsExists(assetName + ".jpeg"))
+                {
+                    assetName += ".jpeg";
+                    isFound = true;
+                }
+            }
+            else
+            {
+                isFound = true;
+            }
+
+            if(!isFound)
+            {
+                throw new ContentLoadException($"File asset not found: {originalAssetName}");
+            }
+
+            var stream = OpenStream(assetName);
+            var texture = Texture2D.FromStream(_game.GraphicsDevice, stream, DefaultColorProcessors.PremultiplyAlpha);
+            LoadedAssets[assetName] = texture;
+            return texture.As<T>();
         }
 
         public Texture2D LoadTexture(string assetName) => Load<Texture2D>(assetName);

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Screens.Transitions;
+using Nabunassar.Extensions.Texture2DExtensions;
 using Nabunassar.Monogame.SpriteBatch;
 using Nabunassar.Shaders;
 
@@ -64,22 +64,11 @@ namespace Nabunassar
             if (!IsActive)
                 return;
 
-            if (IsMakingScreenShot == true)
-            {
-                IsMakingScreenShot = false;
-                Game.SetRenderTarget(_screenShotTarget);
-                Game.ClearRenderTarget(Color.Black);
-                Game.SetRenderTargetBackBuffer(_screenShotTarget);
-            }
-
-            //base.Draw(gameTime);
-
             if (PostProcessShaders.Count > 0)
             {
                 ActivateBackBuffer();
             }
 
-            //Game.Penumbra.BeginDraw();
             GraphicsDevice.Clear(Color.Black);
 
             base.Draw(gameTime);
@@ -90,11 +79,21 @@ namespace Nabunassar
             if (isDrawCoords)
                 DrawPositions();
 
-            if (IsMakingScreenShot == false)
+            if (IsMakingScreenShot)
             {
-                Game.ClearRenderTargetBackBuffer();
-                Game.SetRenderTarget(null);
+                if(ScreenManager.ActiveScreen.DumpedScreen!=null)
+                {
+                    ScreenManager.ActiveScreen.DumpedScreen.SaveAsScreenshot();
+                    ScreenManager.ActiveScreen.DumpedScreen = null;
+                }
+                IsMakingScreenShot.SetValue(false);
             }
+        }
+
+        public void MakeScreenshot()
+        {
+            IsMakingScreenShot.Value = true;
+            ScreenManager.ActiveScreen.Dump();
         }
 
         public bool IsPostEffects = false;

@@ -45,7 +45,7 @@ namespace Nabunassar.Native
                 Keys vkCode = (Keys)Marshal.ReadInt32(lParam);
                 if (vkCode == Keys.PrintScreen)
                 {
-                    NabunassarGame.IsMakingScreenShot = true;
+                    NabunassarGame.Game.MakeScreenshot();
                 }
             }
             return CallNextHookEx(_hookID, nCode, wParam, lParam);

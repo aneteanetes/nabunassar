@@ -47,7 +47,8 @@ namespace Nabunassar.Entities.Data
 
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject other)
         {
-
+            if (other.ObjectType == ObjectType.Creature)
+                GameController.StartCombat(other.GameObject);
         }
 
         public void Select(QuadPosition position)
@@ -159,27 +160,33 @@ namespace Nabunassar.Entities.Data
             }
         }
 
-        public void MoveTo(Vector2 to, GameObject gameObject=null, Vector2 mouseScreenPosition=default)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="toWorldCoords">Screen coords</param>
+        /// <param name="gameObject"></param>
+        /// <param name="mouseWorldPosition"></param>
+        public void MoveTo(Vector2 toWorldCoords, GameObject gameObject=null, Vector2 mouseWorldPosition=default)
         {
             if (gameObject == null)
             {
-                MoveParty(to);
+                MoveParty(toWorldCoords);
             }
             else
             { 
                 if (IsObjectNear(gameObject))
                 {
-                    Interact(gameObject, mouseScreenPosition);
+                    Interact(gameObject, mouseWorldPosition);
                 }
                 else
                 {
-                    MoveParty(to);
+                    MoveParty(toWorldCoords);
 
                     MapObject.BoundsTries = 15;
 
                     ActionQueue.Enqueue(() =>
                     {
-                        Interact(gameObject, mouseScreenPosition);
+                        Interact(gameObject, mouseWorldPosition);
                     });
                 }
             }
@@ -211,10 +218,17 @@ namespace Nabunassar.Entities.Data
                     SpeakTo(gameObject);
                     break;
                 case ObjectType.Container:
-                    LootWindow.Open(_game, gameObject);
+                    if (IsObjectNear(gameObject))
+                        LootWindow.Open(_game, gameObject);
+                    break;
+                case ObjectType.Creature:
+                    if (IsObjectNear(gameObject))
+                    {
+                        GameController.StartCombat(gameObject);
+                    }
                     break;
                 default:
-                    if (gameObject.ObjectType.IsInteractive())
+                    if (gameObject.ObjectType.IsInteractive() && IsObjectNear(gameObject))
                         InformationWindow.Open(NabunassarGame.Game, gameObject);
                     break;
             }

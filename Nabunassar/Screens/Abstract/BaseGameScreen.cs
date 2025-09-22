@@ -8,8 +8,6 @@ namespace Nabunassar.Screens.Abstract
         {
         }
 
-        public bool IsDisabled { get; set; }
-
         public override void LoadContent()
         {
             base.LoadContent();
@@ -22,14 +20,7 @@ namespace Nabunassar.Screens.Abstract
 
         public override void Draw(GameTime gameTime)
         {
-            if (!Game.GameState.InGame && IsDisabled)
-                return;
-
-            Game.MapWorld.Draw(gameTime);
-
-            Game.SpriteBatch.End();
-
-            Game.Penumbra.Draw(gameTime);
+            DrawInternal(gameTime);
 
             var postProcessShaders = Game.ActivePostProcessShaders.ToArray();
 
@@ -46,5 +37,7 @@ namespace Nabunassar.Screens.Abstract
 
             base.Draw(gameTime);
         }
+
+        protected virtual void DrawInternal(GameTime gameTime) { }
     }
 }

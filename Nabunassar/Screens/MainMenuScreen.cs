@@ -35,6 +35,7 @@ namespace Nabunassar.Screens
 
         public override void LoadContent()
         {
+            GameController.SetCameraToScreen();
             Game.Content.LoadFont(Fonts.Retron);
             background = Game.Content.Load<Texture2D>("Assets/Images/Backgrounds/logo.png");
             Game.AddDesktopWidget(new MainMenu(Game));

@@ -19,13 +19,6 @@ namespace Nabunassar
                 feature.Update(gameTime);
             }
 
-            if (IsMakingScreenShot == false)
-            {
-                var path = _screenShotTarget.MakeScreenshot();
-                Game.GameState.AddMessage(DrawText.Create("").Color(Color.Yellow).Append(Game.Strings["UI"]["Screenshot was created"] + $": {path}"));
-                IsMakingScreenShot = null;
-            }
-
             if (IsGameActive)
             {
                 GameState?.Update(gameTime);

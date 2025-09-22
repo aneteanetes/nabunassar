@@ -14,7 +14,16 @@ namespace Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial.Actions
         public override void OnClick()
         {
             Menu.Close();
-            InformationWindow.Open(Game, this.Menu.GameObject);
+            var party = Game.GameState.Party;
+            if (party.IsObjectNear(this.Menu.GameObject))
+            {
+                InformationWindow.Open(Game, this.Menu.GameObject);
+            }
+            else
+            {
+                var worldPos = Game.Camera.ScreenToWorld(Menu.Position);
+                party.MoveTo(worldPos, Menu.GameObject, worldPos);
+            }
         }
     }
 }

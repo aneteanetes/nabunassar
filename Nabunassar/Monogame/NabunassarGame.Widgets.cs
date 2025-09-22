@@ -104,6 +104,8 @@ namespace Nabunassar
                 {
                     RemoveDesktopWidget(widget);
                 }
+                if (Game.GameState != null)
+                    Game.GameState.EscapeSwitch = false;
             }
             else
             {

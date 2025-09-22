@@ -16,7 +16,7 @@ namespace Nabunassar
             float zoomDifference = camera.Zoom - pastZoom;
 
             // Adjust the camera's position
-            prevCameraZoomPosition= camera.Position;
+            prevCameraZoomPosition = camera.Position;
             camera.Position += offset * (zoomDifference / camera.Zoom);
         }
 
@@ -55,7 +55,7 @@ namespace Nabunassar
 
         internal static void ViewReset(this OrthographicCamera camera)
         {
-            camera.Position= prevCameraViewPosition;
+            camera.Position = prevCameraViewPosition;
         }
 
         private static Vector2 _leftBounds;
@@ -65,6 +65,12 @@ namespace Nabunassar
         {
             _leftBounds = left;
             _rightBounds = right;
+        }
+
+        internal static void SetBoundsFree(this OrthographicCamera camera)
+        {
+            _leftBounds = default;
+            _rightBounds = default;
         }
     }
 }

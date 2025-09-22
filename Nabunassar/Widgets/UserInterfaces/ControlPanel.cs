@@ -12,11 +12,13 @@ namespace Nabunassar.Widgets.UserInterfaces
         private static HorizontalIconPanel _iconPanel;
         private static InventoryIconButton _inventory;
         private static AbilityIconButton _abils;
+        private bool _full;
 
         public override bool IsRemovable => false;
 
-        public ControlPanel(NabunassarGame game) : base(game)
+        public ControlPanel(NabunassarGame game, bool full=true) : base(game)
         {
+            _full = full;
         }
 
         public override void LoadContent()
@@ -40,19 +42,27 @@ namespace Nabunassar.Widgets.UserInterfaces
             var globalMap = new IconButton(Game.Strings["UI"]["GlobalMap"], globalMapImage);
 
             var miniMap = new MinimapIconButton(Game);
+
             var settings = new SettingsIconButton(Game);
 
-            _iconPanel = new HorizontalIconPanel(Content, new List<IconButton>()
+            var icons = new List<IconButton>()
             {
                 @char,
                 _abils,
                 skills,
                 _inventory,
                 journal,
-                globalMap,
-                miniMap,
-                settings
-            }, GetTitlePosition);
+            };
+
+            if (_full)
+            {
+                icons.Add(globalMap);
+                icons.Add(miniMap);
+            }
+
+            icons.Add(settings);
+
+            _iconPanel = new HorizontalIconPanel(Content, icons, GetTitlePosition);
 
             base.LoadContent();
         }
