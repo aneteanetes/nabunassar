@@ -68,7 +68,7 @@
    <properties>
     <property name="Color" type="color" value="#ff5b5b5b"/>
     <property name="NoBounds" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="13"/>
+    <property name="ObjectId" value="80ff96bc-0cbf-4af4-b58c-8d45d59ab8a4"/>
     <property name="ObjectType" value="Ground"/>
    </properties>
   </tile>
@@ -76,7 +76,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectId" value="dbcd8dd4-6c9c-4833-83b0-c08c26d475e7"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -96,7 +96,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectId" value="676ce1ad-21db-4521-8926-448a02d6bd4a"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -115,7 +115,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="5"/>
+    <property name="ObjectId" value="69c18aa7-f01d-42a7-a5b8-32f196e5708c"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -130,7 +130,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectId" value="6da991c9-0980-4117-9bb5-61410fb80577"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -146,7 +146,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="6"/>
+    <property name="ObjectId" value="c615c520-9b43-40fa-bb88-06214038d6c3"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -167,7 +167,7 @@
    <properties>
     <property name="Color" type="color" value="#ff36bbd9"/>
     <property name="IsHalfed" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="4"/>
+    <property name="ObjectId" value="ce09e053-5900-4ea5-8d45-d526daf4415d"/>
     <property name="ObjectType" value="Tree"/>
    </properties>
    <objectgroup draworder="index" id="2">
@@ -253,7 +253,7 @@
   <tile id="750">
    <properties>
     <property name="Color" type="color" value="#ffbf7958"/>
-    <property name="ObjectId" type="int" value="14"/>
+    <property name="ObjectId" value="b0bf0500-f78d-41b1-8a21-c83f31e8ce2f"/>
    </properties>
    <objectgroup draworder="index" id="3">
     <object id="3" x="2.96875" y="1.9375" width="10.0625" height="12.0938"/>
@@ -635,13 +635,13 @@
   </object>
   <object id="28" gid="987" x="160" y="64" width="16" height="16">
    <properties>
-    <property name="ObjectId" type="int" value="7"/>
+    <property name="ObjectId" value="6575ab12-829c-4716-9e8e-096094f675f8"/>
     <property name="ObjectType" value="Door"/>
    </properties>
   </object>
   <object id="29" gid="840" x="176" y="192" width="16" height="16">
    <properties>
-    <property name="ObjectId" type="int" value="2"/>
+    <property name="ObjectId" value="f760308c-9c73-46b2-bfdb-88158810abf9"/>
     <property name="ObjectType" value="door"/>
    </properties>
   </object>
@@ -712,7 +712,7 @@
   </object>
   <object id="43" gid="691" x="192" y="224" width="16" height="16">
    <properties>
-    <property name="ObjectId" type="int" value="3"/>
+    <property name="ObjectId" value="a46617e2-bbb4-4b77-a9dd-6f6645d58e28"/>
     <property name="ObjectType" value="object"/>
    </properties>
   </object>
@@ -1170,7 +1170,7 @@
    <properties>
     <property name="Color" type="color" value="#ff2073aa"/>
     <property name="IsLocked" type="bool" value="true"/>
-    <property name="ObjectId" type="int" value="12"/>
+    <property name="ObjectId" value="49f095f4-5902-4839-b27b-d79a178a2b38"/>
    </properties>
   </object>
   <object id="151" gid="751" x="213" y="28.3333" width="16" height="16"/>
@@ -1181,7 +1181,7 @@
  <objectgroup id="4" name="NPC">
   <object id="48" gid="1079" x="160" y="208" width="16" height="24">
    <properties>
-    <property name="ObjectId" type="int" value="1"/>
+    <property name="ObjectId" value="4cfaad15-8922-45bc-b595-8297950e09f7"/>
    </properties>
   </object>
  </objectgroup>
@@ -1190,7 +1190,7 @@
   <object id="157" gid="1584" x="332.333" y="100" width="48" height="48">
    <properties>
     <property name="AnimationsFile" value="slime2.json"/>
-    <property name="ObjectId" type="int" value="100"/>
+    <property name="ObjectId" value="d507587c-75c6-4dd4-9c38-e4b4eb71b172"/>
    </properties>
   </object>
  </objectgroup>

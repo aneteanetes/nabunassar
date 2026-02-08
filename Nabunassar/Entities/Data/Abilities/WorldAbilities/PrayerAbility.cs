@@ -114,6 +114,8 @@ namespace Nabunassar.Entities.Data.Abilities.WorldAbilities
 
         public override Result<bool> IsActive(GameObject gameObject)
         {
+            return true;
+
             if (AbilityRank.Value >= 3)
                 return true;
 

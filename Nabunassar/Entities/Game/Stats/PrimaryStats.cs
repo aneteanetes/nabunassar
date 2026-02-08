@@ -1,12 +1,25 @@
 ﻿using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
-using Nabunassar.Entities.Struct;
+using Nabunassar.Entities.Game.Enums;
+using Nabunassar.Entities.Struct.FixedCollections.Quads;
 using Nabunassar.Resources;
 
 namespace Nabunassar.Entities.Game.Stats
 {
-    internal class PrimaryStats : Quad<Rank>
+    internal class PrimaryStats : Quad<Rank>, IClonable<PrimaryStats>
     {
+        public PrimaryStats Clone(PrimaryStats instance = null)
+        {
+            var obj = instance ?? new PrimaryStats(default);
+
+            obj.Constitution = new Rank(Constitution.Value, Constitution.ObjectId);
+            obj.Agility = new Rank(Agility.Value, Agility.ObjectId);
+            obj.Intelligence = new Rank(Intelligence.Value, Intelligence.ObjectId);
+            obj.Dialectics = new Rank(Dialectics.Value, Dialectics.ObjectId);
+
+            return obj;
+        }
+
         public PrimaryStats(IEntity entity)
         {
             Constitution = Rank.d6.Entity(entity);

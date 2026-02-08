@@ -8,6 +8,8 @@ using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Speaking;
 using Nabunassar.Entities.Json;
 using Nabunassar.Entities.Struct.ImageRegions;
+using Nabunassar.Serialization;
+using Nabunassar.Stats.Serialization;
 using Nabunassar.Tiled.Map;
 using Newtonsoft.Json;
 
@@ -16,7 +18,7 @@ namespace Nabunassar.Monogame.Content
     internal class NabunassarContentManager : ContentManager
     {
         private ResourceLoader _resourceLoader;
-        private JsonSerializer _jsonSerializer;
+        public JsonSerializer _jsonSerializer;
         NabunassarGame _game;
 
         private Dictionary<string, FontSystem> _fonts = new();
@@ -48,11 +50,13 @@ namespace Nabunassar.Monogame.Content
         {
             var settings = new JsonSerializerSettings();
 
+            settings.Converters.Add(new GuidJsonConverter());
             settings.Converters.Add(new DiceJsonConverter());
             settings.Converters.Add(new RankJsonConverter());
             settings.Converters.Add(new RankDiceJsonConverter());
             settings.Converters.Add(new ImageRegionJsonConverter());
             settings.Converters.Add(new MoneyJsonConverter());
+            settings.Converters.Add(new ParameterConverter());
 
             _jsonSerializer = JsonSerializer.CreateDefault(settings);
         }

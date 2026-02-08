@@ -228,9 +228,12 @@ namespace Nabunassar.Widgets.UserEffects
                 Top = -150,
                 OnClick = (button, args) =>
                 {
-                    args.StopPropagation();
-                    _prayerAbility.CastPrayer(_selected.Value);
-                    this.Close();
+                    if (_selected != default)
+                    {
+                        args.StopPropagation();
+                        _prayerAbility.CastPrayer(_selected.Value);
+                        this.Close();
+                    }
                 }
             });
             _acceptBtn.Enabled = false;

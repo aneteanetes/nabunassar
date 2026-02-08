@@ -89,10 +89,10 @@ namespace Nabunassar.Resources
 
         public GameObject GetObject(ObjectType objectType)
         {
-            var obj = GetObjectInternal(x=>x.ObjectType==objectType);
+            var obj = GetGameObjectInternal(x=>x.ObjectType==objectType);
             if (obj == null)
             {
-                obj = GetObjectInternal(x => x.Name == x.ObjectType.ObjectTypeInLoadedMap());
+                obj = GetGameObjectInternal(x => x.Name == x.ObjectType.ObjectTypeInLoadedMap());
 
                 if (obj == null)
                     obj = new GameObject()
@@ -102,7 +102,7 @@ namespace Nabunassar.Resources
             }
 
             if (obj != null)
-                obj.ObjectId = Game.Random.Next(-10000, -10);
+                obj.ObjectId = Guid.NewGuid(); Game.Random.Next(-10000, -10);
 
             return obj;
         }
@@ -110,7 +110,7 @@ namespace Nabunassar.Resources
         public GameObject GetObjectGround(GroundType groundType)
         {
             var groundName = groundType + Game.GameState.LoadedMapPostFix;
-            var obj = GetObjectInternal(x => x.Name == groundName);
+            var obj = GetGameObjectInternal(x => x.Name == groundName);
             obj.ObjectType = ObjectType.Ground;
             obj.GroundType = groundType;
             if (obj == null)
@@ -122,18 +122,18 @@ namespace Nabunassar.Resources
             }
 
             if (obj != null)
-                obj.ObjectId = Game.Random.Next(-10000, -10);
+                obj.ObjectId = Guid.Empty;
 
             return obj;
         }
 
-        public GameObject GetObject(long objectId)
+        public GameObject GetObject(Guid objectId)
         {
-            var obj = GetObjectInternal(x=>x.ObjectId==objectId);
+            var obj = GetGameObjectInternal(x=>x.ObjectId==objectId);
             return obj;
         }
 
-        private GameObject GetObjectInternal(Func<GameObject,bool> selector)
+        private GameObject GetGameObjectInternal(Func<GameObject,bool> selector)
         {
             if (_objects == default)
             {
@@ -144,11 +144,22 @@ namespace Nabunassar.Resources
             if (@object == default)
                 return default;
 
-            if (@object.BattlerId != 0)
+            if (@object.CreatureId != default)
             {
-                var battler = Get<List<Battler>>("Data/Battlers/BattlerRegistry.json").FirstOrDefault(x => x.BattlerId == @object.BattlerId);
-                if (battler != default)
-                    @object.Battler = battler;
+                var creature = Get<List<Creature>>("Data/Battlers/CreatureRegistry.json").FirstOrDefault(x => x.ObjectId == @object.CreatureId);
+                if (creature != default)
+                    @object.Creature = creature.Clone();
+            }
+
+            if (@object.EncounterId != default)
+            {
+                var encounter = Get<List<Encounter>>("Data/Battlers/EncounterRegistry.json").FirstOrDefault(x => x.EncounterId == @object.EncounterId);
+                if (encounter != default)
+                {
+                    encounter = encounter.Clone();
+                    encounter.Init(this);
+                    @object.Encounter = encounter;
+                }
             }
 
             var newObject = @object.Clone();
@@ -173,7 +184,7 @@ namespace Nabunassar.Resources
             return abilities.FirstOrDefault(x=>x.Name== abilityName);
         }
 
-        internal Item GetItem(int itemId)
+        internal Item GetItem(Guid itemId)
         {
             var item = GetById<Item>("Data/Objects/ItemsRegistry.json", x => x.ObjectId == itemId);
 
@@ -188,11 +199,11 @@ namespace Nabunassar.Resources
             {
                 Tileset = "warrior.png",
                 Sex = Sex.Male,
-                Name = GetName(Sex.Male)
+                Name = GetName(Sex.Male),
             };
             party.First.Creature = new Creature( Nabunassar.Entities.Game.Enums.Archetype.Warrior, party.First)
             {
-                Archetype = Nabunassar.Entities.Game.Enums.Archetype.Warrior
+                Archetype = Nabunassar.Entities.Game.Enums.Archetype.Warrior,
             };
 
             party.Second = new Hero(game, Nabunassar.Entities.Game.Enums.Archetype.Rogue)
@@ -228,7 +239,19 @@ namespace Nabunassar.Resources
                 Archetype = Nabunassar.Entities.Game.Enums.Archetype.Priest
             };
 
+            CreateAndFillGameObjectForHero(party.First);
+            CreateAndFillGameObjectForHero(party.Second);
+            CreateAndFillGameObjectForHero(party.Third);
+            CreateAndFillGameObjectForHero(party.Fourth);
+
             return party;
+        }
+
+        private void CreateAndFillGameObjectForHero(Hero hero)
+        {
+            hero.Creature.Portrait = $"Assets/Images/Objects/players/{hero.Creature.Archetype.ToString().ToLowerInvariant()}_m";
+            hero.Creature.PortraitBattle = hero.Creature.Portrait.Replace("_m", "_c");
+            hero.Creature.Image = hero.Creature.Portrait.Replace("_m", "_s");
         }
 
         internal string GetName(Sex sex, int idx = -1)

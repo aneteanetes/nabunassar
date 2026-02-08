@@ -3,7 +3,7 @@ using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using Nabunassar.Entities.Data;
 using Nabunassar.Monogame.Interfaces;
-using Nabunassar.Widgets.UserInterfaces.Combat;
+using Nabunassar.Widgets.UserInterfaces.Stats;
 using Nabunassar.Widgets.Views.StatusEffects;
 
 namespace Nabunassar.Widgets.UserInterfaces.PartyUI

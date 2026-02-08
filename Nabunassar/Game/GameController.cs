@@ -24,9 +24,9 @@ namespace Nabunassar
             game.SwitchScreen<MainGameScreen>(LoadNewGame(game));
         }
 
-        public static void StartCombat(GameObject gameObject)
+        public static void StartCombat(GameObject gameObject, Side playerSide)
         {
-            Game.SwitchScreen(new CombatGameScreen(Game, gameObject), LoadCombat());
+            Game.SwitchScreen(new CombatGameScreen(Game, gameObject, playerSide), LoadCombat());
         }
 
         public static void Exit()
@@ -87,7 +87,7 @@ namespace Nabunassar
                 Region = Entities.Data.Locations.Region.Underdead,
                 LoadedMap = new TiledBase() { Properties = new Dictionary<string, string>(_tiledMap.Properties) },
             };
-            Game.MapEntityFactory.CreateMinimap(_tiledMap);
+            Game.EntityFactoryMap.CreateMinimap(_tiledMap);
 
             yield return 0;
 
@@ -121,7 +121,7 @@ namespace Nabunassar
                     if (tile.Gid == 0)
                         continue;
 
-                    Game.MapEntityFactory.CreateTile(tile);
+                    Game.EntityFactoryMap.CreateTile(tile);
                 }
             }
 
@@ -129,21 +129,21 @@ namespace Nabunassar
 
             foreach (var mapObject in _tiledMap.Objects)
             {
-                Game.MapEntityFactory.CreateTiledObject(mapObject);
+                Game.EntityFactoryMap.CreateTiledObject(mapObject);
             }
 
             yield return 0;
 
             foreach (var mapObject in _tiledMap.NPCs)
             {
-                Game.MapEntityFactory.CreateNPC(mapObject);
+                Game.EntityFactoryMap.CreateNPC(mapObject);
             }
 
             yield return 0;
 
             foreach (var mapObject in _tiledMap.Creatures)
             {
-                Game.MapEntityFactory.CreateCreature(mapObject);
+                Game.EntityFactoryMap.CreateCreature(mapObject);
             }
 
             yield return 0;

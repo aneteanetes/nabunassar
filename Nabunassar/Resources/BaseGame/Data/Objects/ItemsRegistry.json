@@ -1,6 +1,6 @@
 [
   {
-    "ObjectId": 1,
+    "ObjectId": "869a3db9-e300-48d1-822f-856311d4aeb8",
     "Name": "LandscapeTablet",
     "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowchest_s.png",
@@ -15,7 +15,7 @@
     "AbilityName": "Landscape"
   },
   {
-    "ObjectId": 2,
+    "ObjectId": "7240261e-268a-45fc-9c0d-d723e38468f1",
     "Name": "OldSnowRustySword",
     "Portrait": "Assets/Images/Objects/snow/oldsword_m.jpg",
     "Image": "Assets/Images/Objects/snow/oldsword_s.png",
@@ -27,7 +27,7 @@
     "ItemSubtype": "Sword"
   },
   {
-    "ObjectId": 3,
+    "ObjectId": "8a8b7bfe-fccd-4039-ada2-ac253a089d30",
     "Name": "RevealTablet",
     "Portrait": "Assets/Images/Objects/snow/snowchest_m.jpg",
     "Image": "Assets/Images/Objects/snow/snowchest_s.png",

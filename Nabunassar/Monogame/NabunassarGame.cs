@@ -103,6 +103,12 @@ namespace Nabunassar
                 var windowsScale = GetWindowsScreenScalingFactor(false);
                 Settings.WidthPixel = ((int)(Settings.WidthPixel / windowsScale));
                 Settings.HeightPixel = ((int)(Settings.HeightPixel / windowsScale));
+
+                Resolution = new PossibleResolution()
+                {
+                    Width = Settings.WidthPixel,
+                    Height = Settings.HeightPixel
+                };
             }
             else
             {

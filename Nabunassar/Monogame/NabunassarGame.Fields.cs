@@ -89,11 +89,13 @@ namespace Nabunassar
 
         //public ECS.ESCWorld World { get; private set; }
 
-        public MapEntityFactory MapEntityFactory { get; set; }
+        public MapEntityFactory EntityFactoryMap { get; set; }
 
-        public World MapWorld { get; private set; }
+        public BattleEntityFactory EntityFactoryBattle { get; set; }
 
-        public World CombatWorld { get; private set; }
+        public World WorldMap { get; private set; }
+
+        public World WorldBattle { get; private set; }
 
         public OrthographicCamera Camera { get; private set; }
 

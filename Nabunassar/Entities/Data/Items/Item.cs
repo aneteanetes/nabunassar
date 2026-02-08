@@ -86,7 +86,7 @@ namespace Nabunassar.Entities.Data.Items
             if (Name != null)
                 token = Name;
 
-            if (token == null && ObjectId > 0)
+            if (token == null && ObjectId != default)
                 token = ObjectId.ToString();
 
             return objectNames[token];

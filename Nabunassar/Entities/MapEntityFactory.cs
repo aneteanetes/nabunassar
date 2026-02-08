@@ -18,17 +18,11 @@ using Penumbra;
 
 namespace Nabunassar.Entities
 {
-    internal class MapEntityFactory
+    internal class MapEntityFactory(NabunassarGame game) : BaseEntityFactory(game,game.WorldMap)
     {
-        NabunassarGame Game;
         public const float TileSizeMultiplier = 3.99f;
         public const float TileBoundsSizeMultiplier = 3.8f;
         private Texture2DAtlas _cursorAtlas;
-
-        public MapEntityFactory(NabunassarGame game)
-        {
-            this.Game = game;
-        }
 
         //private static Vector2 StandartScale => Vector2.One * TileSizeMultiplier;
         private static int PersonBoundsXOffset = 3;
@@ -178,7 +172,7 @@ namespace Nabunassar.Entities
             var order = 12;
             var descriptor = "npc " + _object.gid;
             var entity = CreateEntity(descriptor,order);
-            var gameObject = Game.DataBase.GetObject(_object.GetPropertyValue<int>("ObjectId"));
+            var gameObject = Game.DataBase.GetObject(_object.GetPropertyValue<Guid>("ObjectId"));
 
             AddOnMinimap(entity.Id, _object.Position, ObjectType.NPC, gameObject.Name);
 
@@ -270,7 +264,7 @@ namespace Nabunassar.Entities
             var order = 12;
             var descriptor = "creature " + _object.gid;
             var entity = CreateEntity(descriptor, order);
-            var gameObject = Game.DataBase.GetObject(_object.GetPropertyValue<int>("ObjectId"));
+            var gameObject = Game.DataBase.GetObject(_object.GetPropertyValue<Guid>("ObjectId"));
 
             AddOnMinimap(entity.Id, _object.Position.MultipleOpposite(scale), ObjectType.Creature, gameObject.Name);
 
@@ -283,16 +277,16 @@ namespace Nabunassar.Entities
             SpriteSheet spriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name, _object.Tileset.TextureAtlas);
 
             string initialAnimation = null;
-            List<AnimationInfo> animations = null;
-
+            AnimationFile animationFile = null;
+            
             var animationsFile = gameObject.GetPropertyValue<string>("AnimationsFile");
             if(animationsFile.IsNotEmpty())
             {
                 var animationsFileAssetPath = Path.Combine(Path.GetDirectoryName(_object.Tileset.image), animationsFile);
-                animations = Game.Content.Load<List<AnimationInfo>>(animationsFileAssetPath);
-                foreach (var animation in animations)
+                animationFile = Game.Content.Load<AnimationFile>(animationsFileAssetPath);
+                foreach (var animation in animationFile.Animations)
                 {
-                    if (animations.IndexOf(animation) == 0)
+                    if (animationFile.Animations.IndexOf(animation) == 0)
                         initialAnimation = animation.Name;
 
                     spriteSheet.DefineAnimation(animation.Name, builder =>
@@ -373,11 +367,11 @@ namespace Nabunassar.Entities
 
             SpriteSheet glowSpriteSheet = new SpriteSheet("SpriteSheet_" + _object.Tileset.name + "glow", _object.Tileset.TextureAtlasGlow);
 
-            if(animations.IsNotEmpty())
+            if(animationFile!=default)
             {
-                foreach (var animation in animations)
+                foreach (var animation in animationFile.Animations)
                 {
-                    if (animations.IndexOf(animation) == 0)
+                    if (animationFile.Animations.IndexOf(animation) == 0)
                         initialAnimation = animation.Name;
 
                     glowSpriteSheet.DefineAnimation(animation.Name, builder =>
@@ -477,9 +471,10 @@ namespace Nabunassar.Entities
             var descriptor = "hero" + personalPosition.X;
             var entity = CreateEntity(descriptor, 3 + order); // from 4 to 8
             hero.Entity = entity;
-            var size = new Vector2(16, 24) * TileSizeMultiplier;
+            hero.Creature.Entity = entity;
 
             entity.Attach(new AnimatedPerson());
+            //entity.Attach(hero.Creature);
 
             var name = "SpriteSheet_" + hero.Name;
             var texture = Game.Content.Load<Texture2D>("Assets/Tilesets/" + hero.Tileset);
@@ -507,20 +502,20 @@ namespace Nabunassar.Entities
 
             var bounds = new RectangleF(4, 18, 8, 6);
 
-            var gameObject = new MapObject(Game, personalPosition, ObjectType.Hero, entity, bounds, parent: parent,isMoveable:true) { 
+            var mapObject = new MapObject(Game, personalPosition, ObjectType.Hero, entity, bounds, parent: parent,isMoveable:true) { 
                 Name = descriptor,
                 BoundsColor = Color.Green
             };
-            gameObject.RecalculatePosition();
-            entity.Attach(gameObject);
-            hero.GameObject = gameObject;
+            mapObject.RecalculatePosition();
+            entity.Attach(mapObject);
+            hero.MapObject = mapObject;
 
-            gameObject.IsCustomSpeed = true;
-            gameObject.MoveSpeed = .01f;
+            mapObject.IsCustomSpeed = true;
+            mapObject.MoveSpeed = .01f;
 
             var _sprite = new AnimatedSprite(spriteSheet, "idle");
             hero.Sprite = _sprite;
-            var render = new RenderComponent(Game, _sprite, Vector2.Zero, 0, gameObject);
+            var render = new RenderComponent(Game, _sprite, Vector2.Zero, 0, mapObject);
             entity.Attach(render);
             entity.Attach(_sprite);
 
@@ -529,7 +524,7 @@ namespace Nabunassar.Entities
 
         public Entity CreateTiledObject(TiledObject _object)
         {
-            var objId = _object.GetPropertyValue<long>(nameof(GameObject.ObjectId));
+            var objId = _object.GetPropertyValue<Guid>(nameof(GameObject.ObjectId));
             var objType = _object.GetPropertyValue<ObjectType>(nameof(GameObject.ObjectType));
 
             GameObject gameObj = null;
@@ -822,16 +817,6 @@ namespace Nabunassar.Entities
             where T : ShaderEffectComponent
         {
             entity.Attach(effect as ShaderEffectComponent);
-        }
-
-        public Entity CreateEntity(string descriptor=null, int order=0)
-        {
-            var entity = Game.MapWorld.CreateEntity();
-
-            entity.Attach(new DescriptorComponent(descriptor));
-            entity.Attach(new OrderComponent(order));
-
-            return entity;
         }
     }
 }

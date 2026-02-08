@@ -4,7 +4,7 @@ namespace Nabunassar.Entities.Data.Loot
 {
     internal class LootTable
     {
-        public int TableId { get; set; }
+        public Guid TableId { get; set; }
 
         public List<LootTableRow> Rows { get; set; } = new();
 

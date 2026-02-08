@@ -6,7 +6,7 @@ using Nabunassar.Entities.Game;
 using Nabunassar.Monogame.Interfaces;
 using Nabunassar.Widgets.Views.DescriptionTolltip;
 
-namespace Nabunassar.Widgets.UserInterfaces.Combat
+namespace Nabunassar.Widgets.UserInterfaces.Stats
 {
     internal abstract class BaseStatWidget : HorizontalStackPanel, IFeatured
     {

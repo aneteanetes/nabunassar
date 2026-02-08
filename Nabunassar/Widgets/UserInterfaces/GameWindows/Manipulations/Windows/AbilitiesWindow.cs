@@ -11,6 +11,7 @@ using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Items;
 using Nabunassar.Entities.Game.Enums;
 using Nabunassar.Entities.Struct;
+using Nabunassar.Entities.Struct.FixedCollections.Quads;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
 using Nabunassar.Widgets.Views;
 
@@ -546,7 +547,7 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Manipulations.Windows
             RefreshAbilitiesView();
         }
 
-        private void AddItemToInventory(int itemId)
+        private void AddItemToInventory(Guid itemId)
         {
             var item = Game.DataBase.GetItem(itemId);
             var view = new ItemView(item, Content);

@@ -85,20 +85,20 @@ namespace Nabunassar
 
             if (keyboardState.WasKeyPressed(Keys.OemPlus))
             {
-                MapEntityFactory.PartyLight.Scale += new Vector2(50,50);
+                EntityFactoryMap.PartyLight.Scale += new Vector2(50,50);
             }
             if (keyboardState.WasKeyPressed(Keys.OemMinus))
             {
-                MapEntityFactory.PartyLight.Scale -= new Vector2(50, 50);
+                EntityFactoryMap.PartyLight.Scale -= new Vector2(50, 50);
             }
 
             if (keyboardState.WasKeyPressed(Keys.D0))
             {
-                MapEntityFactory.PartyLight.Radius += 10;
+                EntityFactoryMap.PartyLight.Radius += 10;
             }
             if (keyboardState.WasKeyPressed(Keys.D9))
             {
-                MapEntityFactory.PartyLight.Radius -= 10;
+                EntityFactoryMap.PartyLight.Radius -= 10;
             }
 
             AdjustZoom();

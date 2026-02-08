@@ -5,7 +5,8 @@ using Nabunassar.Entities.Data.Dices;
 using Nabunassar.Entities.Data.Rankings;
 using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Game.Enums;
-using Nabunassar.Entities.Struct;
+using Nabunassar.Entities.Struct.FixedCollections;
+using Nabunassar.Entities.Struct.FixedCollections.Quads;
 using Nabunassar.Resources;
 
 namespace Nabunassar.Entities.Data.Abilities
@@ -26,7 +27,7 @@ namespace Nabunassar.Entities.Data.Abilities
 
         public Dice AbilityDice { get; set; } = Dice.d4;
 
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
 
         public bool IsCombat { get; set; }
 

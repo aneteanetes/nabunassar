@@ -47,14 +47,14 @@ namespace Nabunassar.Screens.Game
                 return;
 
             Game.CollisionComponent?.Update(gameTime);
-            Game.MapWorld?.Update(gameTime);
+            Game.WorldMap?.Update(gameTime);
 
             GlobalMapGameControls();
         }
 
         protected override void DrawInternal(GameTime gameTime)
         {
-            Game.MapWorld.Draw(gameTime);
+            Game.WorldMap.Draw(gameTime);
 
             Game.SpriteBatch.End();
 

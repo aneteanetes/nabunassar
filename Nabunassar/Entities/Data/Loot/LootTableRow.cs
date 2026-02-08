@@ -2,7 +2,7 @@
 {
     internal class LootTableRow
     {
-        public int ItemId { get; set; }
+        public Guid ItemId { get; set; }
 
         public LootChance Type { get; set; }
 

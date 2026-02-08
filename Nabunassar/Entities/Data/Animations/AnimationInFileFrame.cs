@@ -1,6 +1,6 @@
 ﻿namespace Nabunassar.Entities.Data.Animations
 {
-    internal class AnimationFrameInfo
+    internal class AnimationInFileFrame
     {
         public int RegionIndex { get; set; }
 

@@ -22,6 +22,10 @@ namespace Nabunassar.Entities.Base
                 {
                     value = Enum.Parse(typeof(T), p, true).As<T>();
                 }
+                else if (typeof(T).Is<Guid>())
+                {
+                    value = Guid.Parse(p).As<T>();
+                }
                 else
                 {
                     value = Convert.ChangeType(p, typeof(T)).As<T>();

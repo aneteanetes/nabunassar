@@ -15,7 +15,7 @@ namespace Nabunassar.Entities.Data
 
         public Entity Entity { get; set; }
 
-        public MapObject GameObject { get; set; }
+        public MapObject MapObject { get; set; }
 
         public Creature Creature { get; set; }
 

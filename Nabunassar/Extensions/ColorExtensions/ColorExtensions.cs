@@ -27,6 +27,12 @@ namespace Nabunassar
             return new Color(r, g, b, a);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="color"></param>
+        /// <param name="alpha">normilized</param>
+        /// <returns></returns>
         public static Color SetAlpha(this Color color, float alpha)
         {
             return new Color(color, alpha);

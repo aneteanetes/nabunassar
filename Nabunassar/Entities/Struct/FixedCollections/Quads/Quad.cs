@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Nabunassar.Entities.Struct
+namespace Nabunassar.Entities.Struct.FixedCollections.Quads
 {
     public class Quad<T> : IEnumerable<T>
     {
@@ -26,7 +26,7 @@ namespace Nabunassar.Entities.Struct
             if (item.Equals(Fourth))
                 return QuadPosition.Fourth;
 
-            return QuadPosition.First;
+            return QuadPosition.Unknown;
         }
 
         public virtual IEnumerator<T> GetEnumerator()
@@ -49,25 +49,28 @@ namespace Nabunassar.Entities.Struct
 
         public T this[int key]
         {
-            get => key switch
-            {
-                0 => First,
-                1 => Second,
-                2 => Third,
-                3 => Fourth,
-                _ => default,
-            };
+            get => GetByIndex(key);
+            set => SetByIndex(key, value);
+        }
 
-            set
+        public virtual T GetByIndex(int key) => key switch
+        {
+            0 => First,
+            1 => Second,
+            2 => Third,
+            3 => Fourth,
+            _ => default,
+        };
+
+        public virtual void SetByIndex(int key, T value)
+        {
+            switch (key)
             {
-                switch (key)
-                {
-                    case 0: First = value; break;
-                    case 1: Second = value; break;
-                    case 2: Third = value; break;
-                    case 3: Fourth = value; break;
-                    default: throw new InvalidOperationException("Quad support only 0-3 indexes!");
-                }
+                case 0: First = value; break;
+                case 1: Second = value; break;
+                case 2: Third = value; break;
+                case 3: Fourth = value; break;
+                default: throw new InvalidOperationException("Quad support only 0-3 indexes!");
             }
         }
 

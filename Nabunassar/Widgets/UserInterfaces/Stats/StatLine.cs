@@ -4,7 +4,7 @@ using Nabunassar.Entities.Game;
 using Nabunassar.Entities.Struct.ImageRegions;
 using Nabunassar.Monogame.Interfaces;
 
-namespace Nabunassar.Widgets.UserInterfaces.Combat
+namespace Nabunassar.Widgets.UserInterfaces.Stats
 {
     internal abstract class StatLine : HorizontalStackPanel, IFeatured
     {

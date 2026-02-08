@@ -151,9 +151,9 @@ namespace Nabunassar.Widgets.UserInterfaces.GameWindows.Informations
         {
             var fontSize = 20;
 
-            if (GameObject.Battler != null)
+            if (GameObject.Creature != null)
             {
-                var battler = GameObject.Battler;
+                var battler = GameObject.Creature;
                 var wounds = battler.BattlerWounds();
                 var hp = new Label()
                 {

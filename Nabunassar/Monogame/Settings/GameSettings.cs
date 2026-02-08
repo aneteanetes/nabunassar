@@ -13,6 +13,8 @@ namespace Nabunassar.Monogame.Settings
 
         public string LanguageCode { get; set; } = "ru-RU";
 
+        public bool IsResourceCompiling { get; set; } = false;
+
         public string GameTitle { get; set; } = "Nabunassar";
 
         public float DefaultFadeTransitionDurationInSeconds { get; set; } = 2f;
@@ -113,6 +115,7 @@ namespace Nabunassar.Monogame.Settings
         {
             PathBin = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             PathRepository = Directory.GetParent(PathProject).ToString();
+
             PathData = Path.Combine(PathBin, "Data");
 
             IsInitialized = true;

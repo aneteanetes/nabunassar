@@ -15,7 +15,7 @@ using System.Diagnostics;
 
 namespace Nabunassar.Entities.Game
 {
-    [DebuggerDisplay("{Name}")]
+    [DebuggerDisplay("{Name} [{ObjectId}]")]
     internal class GameObject : Propertied, IDistanceMeter, IClonable<GameObject>
     {
         public virtual GameObject Clone(GameObject instance = null)
@@ -29,11 +29,16 @@ namespace Nabunassar.Entities.Game
             obj.ObjectType = ObjectType;
             obj.Dialogue = Dialogue;
             obj.Portrait = Portrait;
-            obj.Battler = Battler;
+            obj.PortraitBattle = PortraitBattle;
+            obj.CreatureId = CreatureId;
+            obj.Creature = Creature;
+            obj.EncounterId = EncounterId;
+            obj.Encounter = Encounter;
             obj.DangerRating = DangerRating;
             obj.Reputation = Reputation;
-            obj.BattlerId = BattlerId;
+            obj.EncounterId = EncounterId;
             obj.LootTableId = LootTableId;
+            obj.Properties= Properties;
 
             obj.LandscapeComplexity = LandscapeComplexity.Entity(GetAbilityEntity("Landscape"));
 
@@ -69,11 +74,15 @@ namespace Nabunassar.Entities.Game
 
         public GroundType GroundType { get; set; }
 
-        public Battler Battler { get; set; }
+        public Guid CreatureId { get; set; }
+
+        public Creature Creature { get; set; }
 
         public RollResult RollResult { get; set; }
 
-        public int BattlerId { get; set; }
+        public Guid EncounterId { get; set; }
+
+        public Encounter Encounter { get; set; }
 
         public Reputation Reputation { get; set; }
 
@@ -83,7 +92,7 @@ namespace Nabunassar.Entities.Game
 
         public MapObject MapObject { get; set; }
 
-        public long ObjectId { get; set; }
+        public Guid ObjectId { get; set; }
 
         /// <summary>
         /// Токен.
@@ -93,6 +102,8 @@ namespace Nabunassar.Entities.Game
         public string Name { get; set; }
 
         public string Portrait { get; set; }
+
+        public string PortraitBattle { get; set; }
 
         public string Cursor { get; set; }
 
@@ -108,7 +119,7 @@ namespace Nabunassar.Entities.Game
 
         public RectangleF DistanceMeterRectangle => this.MapObject.Bounds.BoundingRectangle.Multiple(2);
 
-        public int LootTableId { get; set; }
+        public Guid LootTableId { get; set; }
 
         [JsonIgnore]
         protected LootTable LootTable { get; set; }
@@ -185,7 +196,7 @@ namespace Nabunassar.Entities.Game
             if (Name != null)
                 token = Name;
 
-            if (token == null && ObjectId > 0)
+            if (token == null && ObjectId != default)
                 token = ObjectId.ToString();
 
             if (token == null)
@@ -196,7 +207,7 @@ namespace Nabunassar.Entities.Game
 
             var name = objectNames[token].ToString();
 
-            if (name == objectNames.NotFound && ObjectId > 0)
+            if (name == objectNames.NotFound && ObjectId != default)
             {
                 return game.Strings["ObjectNames"][ObjectId.ToString()];
             }

@@ -2,7 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Input;
 using Nabunassar.Screens.Abstract;
+using Nabunassar.Stats;
 using Nabunassar.Widgets.Menu;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SpriterDotNet;
 using SpriterDotNet.MonoGame;
 using SpriterDotNet.MonoGame.Sprites;
@@ -125,9 +128,32 @@ namespace Nabunassar.Screens
             SkeletonAnimationTest();
         }
 
+        public class HealMod : ParameterModifier<int>
+        {
+            public override int Set(int value)
+            {
+                return value + (int)Math.Floor(value * 0.5d);
+            }
+        }
+
         private void SkeletonAnimationTest()
         {
             var keyboard = KeyboardExtended.GetState();
+
+            if(keyboard.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.J))
+            {
+                ParameterModifier.Register<HealMod>();
+
+                var param = new Parameter("HP", 150);
+                param.AddModifier(new HealMod());
+
+                var hp = param.Get<int>();
+                param.Add(hp - 20);
+
+                var json = Content._jsonSerializer.Serialize(param);
+
+                var param1 = Content._jsonSerializer.Deserialize<Parameter>(json);
+            }
 
             if (keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.V))
             {

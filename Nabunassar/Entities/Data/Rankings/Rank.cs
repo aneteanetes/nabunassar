@@ -22,7 +22,7 @@ namespace Nabunassar.Entities.Data.Rankings
 
         public static Rank FromEntity(IEntity entity, Rank rank)
         {
-            return new Rank(rank.Value, objectId: entity.ObjectId);
+            return new Rank(rank.Value, objectId: entity?.ObjectId ?? default);
         }
 
         public Rank Entity(IEntity entity) => FromEntity(entity, this);

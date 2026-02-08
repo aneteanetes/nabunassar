@@ -2,7 +2,7 @@
 using Nabunassar.Entities.Data.Stats;
 using Nabunassar.Entities.Game;
 
-namespace Nabunassar.Widgets.UserInterfaces.Combat
+namespace Nabunassar.Widgets.UserInterfaces.Stats
 {
     internal class WillPointsWidget : BaseStatWidget
     {

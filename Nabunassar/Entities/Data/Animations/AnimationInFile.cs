@@ -1,11 +1,11 @@
 ﻿namespace Nabunassar.Entities.Data.Animations
 {
-    internal class AnimationInfo
+    internal class AnimationInFile
     {
         public string Name { get; set; }
 
         public bool IsLoop { get; set; }
 
-        public List<AnimationFrameInfo> Frames { get; set; }
+        public List<AnimationInFileFrame> Frames { get; set; }
     }
 }

@@ -7,7 +7,9 @@ using Nabunassar.Components;
 using Nabunassar.Entities.Data.Abilities.WorldAbilities;
 using Nabunassar.Entities.Data.Affects;
 using Nabunassar.Entities.Game;
-using Nabunassar.Entities.Struct;
+using Nabunassar.Entities.Struct.FixedCollections;
+using Nabunassar.Entities.Struct.FixedCollections.Octas;
+using Nabunassar.Entities.Struct.FixedCollections.Quads;
 using Nabunassar.Struct;
 using Nabunassar.Widgets.UserInterfaces.ContextMenus.Radial;
 using Nabunassar.Widgets.UserInterfaces.GameWindows.Informations;
@@ -48,7 +50,7 @@ namespace Nabunassar.Entities.Data
         public void OnCollision(CollisionEventArgs collisionInfo, MapObject host, MapObject other)
         {
             if (other.ObjectType == ObjectType.Creature)
-                GameController.StartCombat(other.GameObject);
+                GameController.StartCombat(other.GameObject, Side.Right);
         }
 
         public void Select(QuadPosition position)
@@ -117,7 +119,7 @@ namespace Nabunassar.Entities.Data
 
         internal void ChangeDirection(Direction direction)
         {
-            var gameobject = First.GameObject;
+            var gameobject = First.MapObject;
 
             if (!gameobject.IsMoving)
             {
@@ -144,16 +146,16 @@ namespace Nabunassar.Entities.Data
             switch (position)
             {
                 case QuadPosition.First:
-                    hero.GameObject.SetAbsolutePosition(-4,y);
+                    hero.MapObject.SetAbsolutePosition(-4,y);
                     break;
                 case QuadPosition.Second:
-                    hero.GameObject.SetAbsolutePosition(4, y);
+                    hero.MapObject.SetAbsolutePosition(4, y);
                     break;
                 case QuadPosition.Third:
-                    hero.GameObject.SetAbsolutePosition(12, y);
+                    hero.MapObject.SetAbsolutePosition(12, y);
                     break;
                 case QuadPosition.Fourth:
-                    hero.GameObject.SetAbsolutePosition(20, y);
+                    hero.MapObject.SetAbsolutePosition(20, y);
                     break;
                 default:
                     break;
@@ -224,7 +226,7 @@ namespace Nabunassar.Entities.Data
                 case ObjectType.Creature:
                     if (IsObjectNear(gameObject))
                     {
-                        GameController.StartCombat(gameObject);
+                        GameController.StartCombat(gameObject, Side.Left);
                     }
                     break;
                 default:
@@ -354,6 +356,18 @@ namespace Nabunassar.Entities.Data
             }
 
             return worldAbilities;
+        }
+
+        internal Octa<Creature> ToSquad()
+        {
+#warning todo party formation
+            return new Octa<Creature>()
+            {
+                First = this.First.Creature,
+                Second = this.Second.Creature,
+                Third = this.Third.Creature,
+                Fourth = this.Fourth.Creature
+            };
         }
     }
 }

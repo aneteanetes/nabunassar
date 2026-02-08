@@ -13,11 +13,8 @@ var config = new ConfigurationBuilder()
 var settings = config.Get<GameSettings>();
 settings.Initialize();
 
-#if DEBUG
-ResourceCompiler.Compile(settings);
-#endif
+if (settings.IsResourceCompiling)
+    ResourceCompiler.Compile(settings);
 
 using var game = new NabunassarGame(settings);
 game.Run();
-
-
