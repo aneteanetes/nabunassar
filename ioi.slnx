@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Myra/src/Myra/Myra.MonoGame.csproj" />
+  <Project Path="ioi/ioi.csproj" />
+</Solution>

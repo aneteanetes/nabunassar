@@ -1,0 +1,16 @@
+﻿using Microsoft.Xna.Framework;
+
+namespace ioi
+{
+    internal class Globals
+    {
+        public static Color CommonColor { get; } = new Color(139, 107, 86);
+        public static Color CommonColorLight { get; } = new Color(234, 186, 155);
+
+        private static Color _baseColor = "#cfc6b8".AsColor();
+        public static Color BaseColor => _baseColor;
+
+        private static Color _baseColorLight = "#ebe6df".AsColor();
+        public static Color BaseColorLight => _baseColorLight;
+    }
+}

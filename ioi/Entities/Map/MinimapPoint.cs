@@ -1,0 +1,19 @@
+﻿using ioi.Struct;
+
+namespace ioi.Entities.Map
+{
+    internal class MinimapPoint
+    {
+        public int EntityId { get; set; }
+
+        public Vector2 Position { get; set; }
+
+        public ObjectType ObjectType { get; set; }
+
+        public GroundType GroundType { get; set; }
+
+        public string Name { get; set; }
+
+        public bool IsVisible { get; set; }
+    }
+}

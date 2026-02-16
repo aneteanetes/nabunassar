@@ -1,0 +1,100 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.TextureAtlases;
+using Myra.Graphics2D.UI;
+using ioi.Widgets.Base;
+using ioi.Widgets.UserInterfaces.GameWindows.Manipulations.Components;
+using ioi.Widgets.Views.IconButtons;
+
+namespace ioi.Widgets.UserInterfaces
+{
+    internal class ControlPanel : ScreenWidget
+    {
+        private static HorizontalIconPanel _iconPanel;
+        private static InventoryIconButton _inventory;
+        private static AbilityIconButton _abils;
+        private bool _full;
+
+        public override bool IsRemovable => false;
+
+        public ControlPanel(GameHost game, bool full=true) : base(game)
+        {
+            _full = full;
+        }
+
+        public override void LoadContent()
+        {
+            var iconAsset = Content.Load<Texture2D>("Assets/Tilesets/transparent_packed.png");
+
+            var charImage = new TextureRegion(iconAsset, new Rectangle(544, 192, 16, 16));
+            var @char = new IconButton(Game.Strings["UI"]["Characters"], charImage);
+
+            _abils = new AbilityIconButton(Game);
+
+            var skillsImage = new TextureRegion(iconAsset, new Rectangle(496, 192, 16, 16));
+            var skills = new IconButton(Game.Strings["UI"]["skill"], skillsImage);
+
+            _inventory = new InventoryIconButton(Game);
+
+            var journalImage = new TextureRegion(iconAsset, new Rectangle(528, 240, 16, 16));
+            var journal = new IconButton(Game.Strings["UI"]["Journal"], journalImage);
+
+            var globalMapImage = new TextureRegion(iconAsset, new Rectangle(512, 240, 16, 16));
+            var globalMap = new IconButton(Game.Strings["UI"]["GlobalMap"], globalMapImage);
+
+            var miniMap = new MinimapIconButton(Game);
+
+            var settings = new SettingsIconButton(Game);
+
+            var icons = new List<IconButton>()
+            {
+                @char,
+                _abils,
+                skills,
+                _inventory,
+                journal,
+            };
+
+            if (_full)
+            {
+                icons.Add(globalMap);
+                icons.Add(miniMap);
+            }
+
+            icons.Add(settings);
+
+            _iconPanel = new HorizontalIconPanel(Content, icons, GetTitlePosition);
+
+            base.LoadContent();
+        }
+
+        protected override Widget CreateWidget()
+        {
+            _iconPanel.HorizontalAlignment = HorizontalAlignment.Center;
+            _iconPanel.VerticalAlignment = VerticalAlignment.Top;
+
+            return _iconPanel;
+        }
+
+        public static void CloseInventory()
+        {
+            if (_iconPanel != default)
+            {
+                _iconPanel.Close(_inventory);
+            }
+        }
+
+        public static void CloseAbility()
+        {
+            if (_iconPanel != default)
+            {
+                _iconPanel.Close(_abils);
+            }
+        }
+
+        private Vector2 GetTitlePosition(Image image)
+        {
+            var imgPos = image.ToGlobal(Point.Zero);
+            return new Vector2(imgPos.X, imgPos.Y + 100);
+        }
+    }
+}
