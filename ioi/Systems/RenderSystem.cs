@@ -16,7 +16,7 @@ namespace ioi.ECS
         private ComponentMapper<RenderComponent> _renderMapper;
         private ComponentMapper<DescriptorComponent> _descriptorMapper;
         private ComponentMapper<MapObject> _gameObjectMapper;
-        private ComponentMapper<ShaderEffectComponent> _effectMapper;
+        private ComponentMapper<ShaderEffect> _effectMapper;
         private ComponentMapper<Party> _partyMapper;
 
         private static bool isGlowNeedDisable = false;
@@ -35,7 +35,7 @@ namespace ioi.ECS
             _renderMapper = mapperService.GetMapper<RenderComponent>();
             _descriptorMapper = mapperService.GetMapper<DescriptorComponent>();
             _gameObjectMapper = mapperService.GetMapper<MapObject>();
-            _effectMapper = mapperService.GetMapper<ShaderEffectComponent>();
+            _effectMapper = mapperService.GetMapper<ShaderEffect>();
             _partyMapper = mapperService.GetMapper<Party>();
         }
 

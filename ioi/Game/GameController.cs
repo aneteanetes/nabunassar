@@ -2,7 +2,7 @@
 using ioi.Entities.Game;
 using ioi.Screens;
 using ioi.Screens.Game;
-using ioi.Shaders;
+using ioi.Shaders.PostProceessing;
 using ioi.Struct;
 using ioi.Systems;
 using ioi.Systems.Roguelike;

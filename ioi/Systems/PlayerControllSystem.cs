@@ -1,18 +1,17 @@
 ﻿using Geranium.Reflection;
+using ioi.Components;
+using ioi.Components.Effects;
+using ioi.Entities.Data;
+using ioi.Entities.Struct.FixedCollections.Quads;
+using ioi.Monogame.Extended;
+using ioi.Struct;
+using ioi.Widgets.UserInterfaces.ContextMenus.Radial;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using ioi.Components;
-using ioi.Components.Effects;
-using ioi.Entities.Data;
-using ioi.Entities.Struct.FixedCollections;
-using ioi.Entities.Struct.FixedCollections.Quads;
-using ioi.Monogame.Extended;
-using ioi.Struct;
-using ioi.Widgets.UserInterfaces.ContextMenus.Radial;
 
 namespace ioi.Systems
 {
@@ -142,7 +141,7 @@ namespace ioi.Systems
             if(keyboard.WasKeyPressed(Keys.G))
                 foreach (var hero in party)
                 {
-                    hero.Entity.Attach(new DissolveShaderEffect(Game, hero.Entity) as ShaderEffectComponent);
+                    hero.Entity.Attach(new DissolveShaderEffect(Game, hero.Entity) as ShaderEffect);
                 }
         }
 

@@ -4,7 +4,7 @@ using MonoGame.Extended.ECS;
 
 namespace ioi.Components.Effects
 {
-    internal class DissolveShaderEffect : ShaderEffectComponent
+    internal class DissolveShaderEffect : ShaderEffect
     {
         private float _dissolveAmount = 0.5f;
         private float _dissolveSpeed = .5f;
@@ -37,7 +37,7 @@ namespace ioi.Components.Effects
                 if (_dissolveAmount >= 1)
                 {
                     _isDissolving = false;
-                    _entity.Detach<ShaderEffectComponent>();
+                    _entity.Detach<ShaderEffect>();
                     OnEnd?.Invoke();
                 }
             }
@@ -49,7 +49,7 @@ namespace ioi.Components.Effects
         public static void Dissolve(this Entity entity, Action onEnd=null, GameHost game=null)
         {
             var dissolve = new DissolveShaderEffect(game ?? GameHost.Game, entity);
-            entity.Attach(dissolve as ShaderEffectComponent);
+            entity.Attach(dissolve as ShaderEffect);
 
             if (onEnd != null)
                 dissolve.OnEnd += onEnd;

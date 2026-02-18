@@ -12,12 +12,12 @@ using ioi.Entities.Data.Effects.Boons;
 using ioi.Entities.Data.Effects.PartyEffects;
 using ioi.Entities.Data.Enums;
 using ioi.Entities.Struct;
-using ioi.Shaders.Blooming;
 using ioi.Widgets.Base;
 using ioi.Widgets.UserInterfaces;
 using ioi.Widgets.Views.DescriptionTolltip;
 using ioi.Widgets.Views.StatusEffects;
 using SharpFont;
+using ioi.Shaders.PostProceessing.Blooming;
 
 namespace ioi.Widgets.UserEffects
 {

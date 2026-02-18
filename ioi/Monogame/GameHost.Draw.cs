@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ioi.Extensions.Texture2DExtensions;
 using ioi.Monogame.SpriteBatch;
-using ioi.Shaders;
 using MonoGame.Extended;
 using ioi.Monogame.Cameras;
+using ioi.Shaders.PostProceessing;
 
 namespace ioi
 {

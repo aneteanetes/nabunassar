@@ -31,6 +31,7 @@ namespace ioi
         public static GameLoopFeatureValue<bool> IsMakingScreenShot;
 
         public RenderTarget2D _screenShotTarget = null;
+        public RenderTarget2D _shareTarget = null;
 
         public Texture2D PixelTexture { get; private set; }
         public OSPlatform OSPlatform { get; private set; }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace ioi.Shaders
+namespace ioi.Shaders.PostProceessing
 {
     internal class GrayscaleMapShader : PostProcessShader
     {

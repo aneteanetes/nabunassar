@@ -4,7 +4,7 @@ using MonoGame.Extended.ECS;
 
 namespace ioi.Components.Effects
 {
-    internal class LineJitterShaderEffect : ShaderEffectComponent
+    internal class LineJitterShaderEffect : ShaderEffect
     {
         private float _seconds;
         private TimeSpan _time;
@@ -42,7 +42,7 @@ namespace ioi.Components.Effects
 
             if (this.CanUpdate(gameTime, _time))
             {
-                _entity.Detach<ShaderEffectComponent>();
+                _entity.Detach<ShaderEffect>();
                 OnEnd?.Invoke();
             }
         }
@@ -53,7 +53,7 @@ namespace ioi.Components.Effects
         public static void LineJitter(this Entity entity, TimeSpan time, Action onEnd = null, GameHost game = null)
         {
             var tpEffect = new LineJitterShaderEffect(game ?? GameHost.Game, entity, time);
-            entity.Attach(tpEffect as ShaderEffectComponent);
+            entity.Attach(tpEffect as ShaderEffect);
 
             if (onEnd != null)
                 tpEffect.OnEnd += onEnd;

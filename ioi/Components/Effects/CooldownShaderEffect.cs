@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using ioi.Monogame.Cameras;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 
 namespace ioi.Components.Effects
 {
-    internal class CooldownShaderEffect : ShaderEffectComponent
+    internal class CooldownShaderEffect : ShaderEffect
     {
         private Color _maskColor;
         private TimeSpan? _elapsed;
@@ -70,7 +71,7 @@ namespace ioi.Components.Effects
             _fillPercent = (float)(_elapsed / _cooldown * 100);
         }
 
-        public override void Draw(GameTime gameTime, Sprite sprite, Vector2 position, float rotation = 0, Vector2 scale = default, bool isWithEffect = true)
+        public override void Draw(GameTime gameTime, Sprite sprite, Vector2 position, float rotation = 0, Vector2 scale = default, bool isWithEffect = true, OrthographicCameraCustom camera=null)
         {
             if (_fillPercent == 0)
             {

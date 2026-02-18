@@ -1,7 +1,7 @@
 ﻿using ioi.Screens.Abstract;
 using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame;
+using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
 
 namespace ioi.Screens
@@ -10,13 +10,18 @@ namespace ioi.Screens
     {
         public RoguelikeScreen(GameHost game) : base(game) { }
 
-        private TiledMap _tiledMap;
         private List<PolyTile> interfaceSprites;
+
+        public Effect Celshading { get; private set; }
+        public Effect CelshadingGlobal { get; private set; }
 
         public override void LoadContent()
         {
+            Celshading = Game.Content.Load<Effect>("Assets/Shaders/Celshading.fx");
+            CelshadingGlobal = Game.Content.Load<Effect>("Assets/Shaders/CelshadingGlobal.fx");
             var @interface = Game.Content.Load<TiledMap>("Assets/Maps/interface2.tmx");
             interfaceSprites = LoadTiled(@interface);
+            
         }
 
         private List<PolyTile> LoadTiled(TiledMap map)
@@ -31,7 +36,7 @@ namespace ioi.Screens
                 tileset.TextureAtlas = _atlas;
             }
 
-            //Game.viewportAdapter.Reset();
+            var gray = Color.Wheat;
 
             return map.Layers.SelectMany(layer => layer.Tiles)
                 .Where(poly => poly.Gid > 0)
@@ -40,6 +45,8 @@ namespace ioi.Screens
                     var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.Gid - 1);
                     var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
                     var position = poly.Position;// new Vector2(poly.Position.X* size.X, poly.Position.Y* size.Y);
+
+                    _sprite.Color = gray;
 
                     return new PolyTile()
                     {
@@ -56,13 +63,30 @@ namespace ioi.Screens
             public Vector2 Position { get; set; }
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            GameController.GlobalMenuWidget();
+            Game.PlayerControlSystem.Update(gameTime);
+            Game.MapSystem.Update(gameTime);
+        }
         public override void Draw(GameTime gameTime)
         {
+            CelshadingGlobal.Parameters["ScreenSize"].SetValue(new Vector2(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height));
+            //CelshadingGlobal.Parameters["Time"]?.SetValue(((float)gameTime.TotalGameTime.TotalSeconds));
+
+            Game.SetRenderTarget(Game._shareTarget);
             var sb = Game.BeginDraw(samplerState: SamplerState.LinearWrap);
             DrawSprites(sb, interfaceSprites);
             sb.End();
 
-            Game.MapSystem.Draw(gameTime);
+            Game.SetRenderTarget(null);
+            sb.Begin(effect: CelshadingGlobal);
+            sb.Draw(Game._shareTarget,Vector2.One,Color.White);
+
+            sb.End();
+
+            Game.MapSystem.Draw(gameTime, Celshading);
+            Game.PlayerControlSystem.Draw(gameTime);
 
             base.Draw(gameTime);
         }
@@ -90,13 +114,6 @@ namespace ioi.Screens
         public override void UnloadContent()
         {
             Game.RemoveDesktopWidgets(true);
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            GameController.GlobalMenuWidget();
-            Game.PlayerControlSystem.Update(gameTime);
-            Game.MapSystem.Update(gameTime);
         }
     }
 }

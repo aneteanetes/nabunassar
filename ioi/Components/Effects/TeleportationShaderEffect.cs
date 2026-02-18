@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace ioi.Components.Effects
 {
-    internal class TeleportationShaderEffect : ShaderEffectComponent
+    internal class TeleportationShaderEffect : ShaderEffect
     {
         private float _progress = 0f;
         private float _beamSize = .1f;
@@ -36,7 +36,7 @@ namespace ioi.Components.Effects
                 if (_progress >= 1)
                 {
                     _isRunning = false;
-                    _entity?.Detach<ShaderEffectComponent>();
+                    _entity?.Detach<ShaderEffect>();
                     OnEnd?.Invoke();
                 }
             }
@@ -48,7 +48,7 @@ namespace ioi.Components.Effects
         public static void Teleportation(this Entity entity, Action onEnd = null, GameHost game = null)
         {
             var tpEffect = new TeleportationShaderEffect(game ?? GameHost.Game,false, entity);
-            entity.Attach(tpEffect as ShaderEffectComponent);
+            entity.Attach(tpEffect as ShaderEffect);
 
             if (onEnd != null)
                 tpEffect.OnEnd += onEnd;

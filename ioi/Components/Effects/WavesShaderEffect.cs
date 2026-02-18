@@ -5,7 +5,7 @@ using MonoGame.Extended.ECS;
 
 namespace ioi.Components.Effects
 {
-    internal class WavesShaderEffect : ShaderEffectComponent
+    internal class WavesShaderEffect : ShaderEffect
     {
         private float _seconds = 0f;
         private TimeSpan _effectTime;
@@ -56,7 +56,7 @@ namespace ioi.Components.Effects
 
             if (_effectTime != default && this.CanUpdate(gameTime, _effectTime))
             {
-                _entity?.Detach<ShaderEffectComponent>();
+                _entity?.Detach<ShaderEffect>();
                 OnEnd?.Invoke();
             }
         }

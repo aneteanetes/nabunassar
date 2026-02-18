@@ -56,6 +56,7 @@ namespace ioi
             // backbuffer
             _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
             _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
+            _shareTarget = new RenderTarget2D(GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
 
             //
 

@@ -30,13 +30,15 @@ namespace ioi.Entities.Map
             ObjectMap[obj.Coords].Remove(obj);
 
             obj.Coords = coords;
-            obj.RecalculatePositionFromCoords();
 
-            if(!ObjectMap.ContainsKey(coords))
+            if (!ObjectMap.ContainsKey(coords))
             {
                 ObjectMap[coords] = [];
             }
             ObjectMap[obj.Coords].Add(obj);
+
+            obj.IsMoving = true;
+            obj.TargetPosition = obj.GetPositionFromCoords();
         }
     }
 }

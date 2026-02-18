@@ -2,14 +2,15 @@
 using MonoGame.Extended.Graphics;
 using ioi.Monogame.SpriteBatch;
 using System.Diagnostics.Tracing;
+using ioi.Monogame.Cameras;
 
 namespace ioi.Components.Effects
 {
-    internal abstract class ShaderEffectComponent : IDisposable
+    internal abstract class ShaderEffect : IDisposable
     {
         protected GameHost Game;
 
-        public ShaderEffectComponent(GameHost game)
+        public ShaderEffect(GameHost game)
         {
             Game = game;
         }
@@ -34,7 +35,7 @@ namespace ioi.Components.Effects
         public void Draw(GameTime gameTime, Texture2D texture, Vector2 position, float rotation = 0, Vector2 scale = default)
             => this.Draw(gameTime, new Sprite(texture), position, rotation, scale);
 
-        public virtual void Draw(GameTime gameTime, Sprite sprite, Vector2 position, float rotation = 0, Vector2 scale = default, bool isWithEffect = true)
+        public virtual void Draw(GameTime gameTime, Sprite sprite, Vector2 position, float rotation = 0, Vector2 scale = default, bool isWithEffect = true, OrthographicCameraCustom camera=null)
         {
             if (IsSeparateTexture && SeparateTexture == null)
             {
@@ -61,7 +62,7 @@ namespace ioi.Components.Effects
             if (scale == default)
                 scale = Vector2.One;
 
-            sb = Game.BeginDraw(effect: isWithEffect ? Effect : null);
+            sb = Game.BeginDraw(camera:camera, effect: isWithEffect ? Effect : null);
 
             if (IsSeparateTexture)
             {

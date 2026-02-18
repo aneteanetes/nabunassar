@@ -1,8 +1,11 @@
-﻿using ioi.Components;
+﻿using FontStashSharp;
+using ioi.Components;
+using ioi.Components.Effects;
 using ioi.Entities.Base;
 using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
+using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
 using System.Collections;
 
@@ -10,8 +13,6 @@ namespace ioi.Systems.Roguelike
 {
     internal class ObjectMapSystem
     {
-        private Texture2D normalAtlas;
-        private Texture2D colorAtlas;
         private Effect lightingEffect;
 
         public GameHost Game { get; }
@@ -23,10 +24,7 @@ namespace ioi.Systems.Roguelike
 
         public IEnumerator LoadMap(string assetName)
         {
-            normalAtlas = Game.Content.LoadTexture("Assets/Tilesets/Fonts/NormalMap1.png"); // карта нормалей
-            colorAtlas = Game.Content.LoadTexture("Assets/Tilesets/Fonts/Consolas_0.png");
-            // Загружаем эффект (файл .fx должен быть скомпилирован в .xnb)
-            lightingEffect = Game.Content.Load<Effect>("Assets/Shaders/Celshading.fx");
+
 
             var tiledMap = Game.Content.Load<TiledMap>(assetName);
             return LoadMap(tiledMap);
@@ -67,7 +65,7 @@ namespace ioi.Systems.Roguelike
                     var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
                     var position = poly.Position;
 
-                    return new ObjectMap
+                    var obj = new ObjectMap
                     {
                         Sprite = _sprite,
                         Color = GetColorFromTile(poly),
@@ -76,6 +74,8 @@ namespace ioi.Systems.Roguelike
                         Coords = poly.Coords,
                         Size = Game.CellSize
                     };
+                    obj.Sprite.Color = GetColorFromTile(poly);
+                    return obj;
                 }).ToDictionary(obj => obj.KeyCoords(), obj => new List<ObjectMap>() { obj });
 
             yield return 0;
@@ -95,10 +95,13 @@ namespace ioi.Systems.Roguelike
                     Coords = poly.Coords,
                     Size = Game.CellSize
                 };
+                obj.Sprite.Color = GetColorFromTile(poly);
 
                 if (poly.GetPropertyValue<string>("id") == "player")
                 {
+                    obj.IsIdle = true;
                     Game.GameState.Player = obj;
+                    Game.CameraMap.Origin = new Vector2(Game.mapViewport.Width / 2f, Game.mapViewport.Height / 2f);
                 }
 
                 Game.GameState.Map.Add(obj);
@@ -122,43 +125,47 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
-            Game.CameraMap.Position = Game.GameState.Player.Position - new Vector2(Game.mainViewport.Width / 2f, Game.mainViewport.Height / 2f);
-            //Game.CameraMap.LookAt(Game.GameState.Player.Position);
+            Game.GameState.Map.Objects.Where(x => x.IsUpdatable)
+                .ForEach(x =>
+                {
+                    x.Update(gameTime);
+                });
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, Effect effect=null)
         {
             var mainViewport = Game.GraphicsDevice.Viewport;
 
             Game.GraphicsDevice.Viewport = Game.mapViewport;
 
-            float time = (float)gameTime.TotalGameTime.TotalSeconds;
-            Vector3 lightDir = new Vector3(
-                (float)Math.Sin(0.5f),
-                (float)Math.Cos(0.5f),
-                0.5f);
+            var defaultObjs = Game.GameState.Map.Objects.Where(x => x.Effect == default);
 
-            lightDir.Normalize();
+            var sb = Game.BeginDraw(samplerState: SamplerState.LinearWrap, camera: Game.CameraMap, effect: effect);
 
-            var sb = Game.BeginDraw(samplerState: SamplerState.LinearWrap, camera: Game.CameraMap, effect: lightingEffect);
-
-            //sb.Draw(colorAtlas, Vector2.Zero, Color.White);
-            foreach (var objMap in Game.GameState.Map.Objects)
-            {
-                if (Game.CameraMap.Contains(objMap.Position + objMap.Size) == ContainmentType.Disjoint)
-                {
-                    continue;
-                }
-
-                if (objMap.Sprite.Color != objMap.Color)
-                    objMap.Sprite.Color = objMap.Color;
-
-                objMap.Sprite.Draw(sb, objMap.Position, 0, Vector2.One);
-            }
+            DrawMapObjects(sb, defaultObjs);
 
             sb.End();
 
+            var affectedObjs = Game.GameState.Map.Objects.Except(defaultObjs);
+            foreach (var affectedObj in affectedObjs)
+            {
+                affectedObj.Effect.Draw(gameTime, affectedObj.Sprite, affectedObj.Position);
+            }
+
             Game.GraphicsDevice.Viewport = mainViewport;
+        }
+
+        private void DrawMapObjects(Monogame.SpriteBatch.SpriteBatchKnowed sb, IEnumerable<ObjectMap> obs)
+        {
+            foreach (var objMap in obs)
+            {
+                if (Game.CameraMap.Contains(objMap.VisualBounds) == ContainmentType.Disjoint)
+                {
+                    continue;
+                }
+                //objMap.Sprite.Effect = objMap.Side == Struct.Side.Right ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
+                objMap.Sprite.Draw(sb, objMap.DrawPosition.HasValue ? objMap.DrawPosition.Value : objMap.Position, 0, Vector2.One);
+            }
         }
     }
 }

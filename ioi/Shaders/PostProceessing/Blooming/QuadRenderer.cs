@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
 
-namespace ioi.Shaders.Blooming
+namespace ioi.Shaders.PostProceessing.Blooming
 {
     /// <summary>
     /// Renders a simple quad to the screen. Uncomment the Vertex / Index buffers to make it a static fullscreen quad. 

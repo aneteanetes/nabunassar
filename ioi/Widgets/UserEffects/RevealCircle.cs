@@ -10,9 +10,9 @@ using Myra.Graphics2D.UI;
 using ioi.Components;
 using ioi.Entities.Data.Abilities.WorldAbilities;
 using ioi.Monogame.Extended;
-using ioi.Shaders;
 using ioi.Widgets.Base;
 using ParticleEffect = MonoGame.Extended.Particles.ParticleEffect;
+using ioi.Shaders.PostProceessing;
 
 namespace ioi.Widgets.UserEffects
 {

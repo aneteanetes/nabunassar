@@ -814,9 +814,9 @@ namespace ioi.Entities
         }
 
         internal void AttachEffect<T>(Entity entity, T effect)
-            where T : ShaderEffectComponent
+            where T : ShaderEffect
         {
-            entity.Attach(effect as ShaderEffectComponent);
+            entity.Attach(effect as ShaderEffect);
         }
     }
 }

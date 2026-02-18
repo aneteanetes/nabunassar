@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using ioi.Shaders.PostProceessing;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace ioi.Shaders.Blooming
+namespace ioi.Shaders.PostProceessing.Blooming
 {
     /// <summary>
     /// 

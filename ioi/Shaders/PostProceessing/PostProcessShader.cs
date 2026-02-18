@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using ioi.Monogame.Content;
 
-namespace ioi.Shaders
+namespace ioi.Shaders.PostProceessing
 {
     internal class PostProcessShader : IDisposable
     {
