@@ -91,6 +91,40 @@ namespace ioi.Content
             }
         }
 
+        public Resource[] GetStreams(string startsFrom)
+        {
+            try
+            {
+                var db = Database?.GetCollection<Resource>();
+                if (db != null)
+                {
+                    try
+                    {
+                        var resources = db.Find(x => x.Path.StartsWith(startsFrom)).ToArray();
+                        return resources;
+                    }
+                    catch
+                    {
+                        throw new ContentLoadException($"Can't load resources with paths starts with {startsFrom}.");
+                    }
+                }
+            }
+            catch (FileNotFoundException innerException)
+            {
+                throw new ContentLoadException("The content file was not found.", innerException);
+            }
+            catch (DirectoryNotFoundException innerException2)
+            {
+                throw new ContentLoadException("The directory was not found.", innerException2);
+            }
+            catch (Exception innerException3)
+            {
+                throw new ContentLoadException("Opening stream error.", innerException3);
+            }
+
+            return [];
+        }
+
         public void Dispose()
         {
             _dataBase?.Dispose();

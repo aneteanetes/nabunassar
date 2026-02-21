@@ -68,14 +68,14 @@ namespace ioi.Shaders.PostProceessing
             }
 
             var sb = Game.BeginDraw(false, effect: Effect);            
-            sb.Draw(backBuffer, Game.GraphicsDevice.Viewport.Bounds, Color.White);
+            sb.Draw(backBuffer, Vector2.Zero, Color.White);
             sb.End();
 
             if (!isLast)
             {
                 Game.GraphicsDevice.SetRenderTarget(backBuffer);
                 sb = Game.BeginDraw(false);
-                sb.Draw(_bufferOfBuffers, Game.GraphicsDevice.Viewport.Bounds, Color.White);
+                sb.Draw(_bufferOfBuffers, Vector2.Zero, Color.White);
                 sb.End();
             }
         }

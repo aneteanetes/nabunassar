@@ -14,6 +14,8 @@ namespace ioi
             if (!IsActive)
                 return;
 
+            Lua.Update(gameTime);
+
             foreach (var feature in FeatureValues)
             {
                 feature.Update(gameTime);
@@ -130,7 +132,7 @@ namespace ioi
                 movementDirection += Vector2.UnitX;
             }
 
-            return movementDirection;
+            return movementDirection * 15;
         }
     }
 }

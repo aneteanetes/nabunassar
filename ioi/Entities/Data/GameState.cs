@@ -4,6 +4,7 @@ using ioi.Entities.Data.Dices;
 using ioi.Entities.Data.Effects;
 using ioi.Entities.Data.Locations;
 using ioi.Entities.Data.Praying;
+using ioi.Entities.Data.Temporary;
 using ioi.Entities.Game;
 using ioi.Entities.Game.Calendars;
 using ioi.Entities.Map;
@@ -11,6 +12,7 @@ using ioi.Entities.Struct;
 using ioi.Struct;
 using ioi.Widgets.UserInterfaces;
 using Monogame.Extended;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ioi.Entities.Data
 {
@@ -48,7 +50,11 @@ namespace ioi.Entities.Data
         public bool EscapeSwitch { get; internal set; }
 
         public bool InGame { get; set; }
-        public ObjectMap Player { get; internal set; }
+
+        public GameEntity Player { get; internal set; }
+
+        [NotMapped]
+        public TemporaryState Temp { get; set; } = new();
 
         public void Log(string message)
         {

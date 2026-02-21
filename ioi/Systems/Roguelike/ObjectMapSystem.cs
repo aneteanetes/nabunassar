@@ -100,12 +100,16 @@ namespace ioi.Systems.Roguelike
                 if (poly.GetPropertyValue<string>("id") == "player")
                 {
                     obj.IsIdle = true;
-                    Game.GameState.Player = obj;
-                    Game.CameraMap.Origin = new Vector2(Game.mapViewport.Width / 2f, Game.mapViewport.Height / 2f);
+                    Game.GameState.Player.MapObject = obj;
+                    //Game.CameraMap.Origin = new Vector2(Game.mapViewport.Width / 2f, Game.mapViewport.Height / 2f);
+                    //Game.CameraMap.LookAt(obj.Position);
                 }
 
                 Game.GameState.Map.Add(obj);
             });
+
+
+            Game.PathfindSystem = new PathfindSystem(Game.GameState.Map);
 
             yield return 0;
         }
@@ -136,7 +140,7 @@ namespace ioi.Systems.Roguelike
         {
             var mainViewport = Game.GraphicsDevice.Viewport;
 
-            Game.GraphicsDevice.Viewport = Game.mapViewport;
+            Game.GraphicsDevice.Viewport = Game.MapViewport;
 
             var defaultObjs = Game.GameState.Map.Objects.Where(x => x.Effect == default);
 

@@ -258,6 +258,25 @@ namespace ioi.Monogame.Content
             return stream;
         }
 
+        public Resource[] LoadResourcePack(string pathStartsFrom)
+        {
+            if (LoadedAssets.TryGetValue(pathStartsFrom, out var loadedRes))
+            {
+                return loadedRes.As<Resource[]>();
+            }
+
+            var resources = _resourceLoader.GetStreams(pathStartsFrom);
+
+            LoadedAssets[pathStartsFrom] = resources;
+
+            foreach (var res in resources)
+            {
+                LoadedAssets[res.Path] = res.Stream;
+            }
+
+            return resources;
+        }
+
         protected override Stream OpenStream(string assetName)
             => _resourceLoader.GetStream(assetName.Replace("\\", "/"));
 

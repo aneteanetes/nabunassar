@@ -100,7 +100,7 @@ namespace ioi.Screens
         public override void Draw(GameTime gameTime)
         {
             var sb = Game.BeginDraw();
-            sb.Draw(background, Game.Resolution, new Rectangle(0, 0, 2560, 1440), Color.White);
+            sb.Draw(background,new Rectangle(0,0,Game.MainViewport.Width,Game.MainViewport.Height), new Rectangle(0, 0, 2560, 1440), Color.White);
             sb.End();
 
             if (_isAnimationVisible)

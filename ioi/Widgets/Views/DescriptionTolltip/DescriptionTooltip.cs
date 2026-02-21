@@ -28,9 +28,9 @@ namespace ioi.Widgets.Views.DescriptionTolltip
         public override void Update(GameTime gameTime)
         {
             var panelBox = _panel.Left + (_panel.Width.HasValue ? _panel.Width.Value : _panel.ActualBounds.Width);
-            if (panelBox > Game.Resolution.Width)
+            if (panelBox > Game.MainViewport.Width)
             {
-                _panel.Left -= panelBox - Game.Resolution.Width + 5;
+                _panel.Left -= panelBox - Game.MainViewport.Width + 5;
             }
             base.Update(gameTime);
         }

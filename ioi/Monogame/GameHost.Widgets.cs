@@ -2,6 +2,7 @@
 using Myra.Graphics2D.UI;
 using ioi.Widgets.Base;
 using ioi.Systems.Roguelike;
+using ioi.Scripting;
 
 namespace ioi
 {
@@ -12,6 +13,10 @@ namespace ioi
 
         public ObjectMapSystem MapSystem { get; internal set; }
         public PlayerControlSystem PlayerControlSystem { get; internal set; }
+        public PathfindSystem PathfindSystem { get; set; }
+
+        public LuaScripts Lua { get; set; }
+        public SpawnSystem SpawnSystem { get; internal set; }
 
         public int WidgetsCount()
         {

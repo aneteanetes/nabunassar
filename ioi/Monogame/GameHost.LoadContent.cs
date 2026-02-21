@@ -42,11 +42,18 @@ namespace ioi
             MyraDesktop = new Desktop();
             
             viewportAdapter.Reset();
-            MyraDesktop.ViewportAdapterFetcher = () => new Myra.Graphics2D.MyraViewportAdapter()
+            MyraDesktop.ViewportAdapterFetcher = () =>
             {
-                VirtualWidth = viewportAdapter.VirtualWidth,
-                VirtualHeight = viewportAdapter.VirtualHeight,
-                TransformMatrix = viewportAdapter.GetScaleMatrix()
+                var matrix = viewportAdapter.GetScaleMatrix();
+                //matrix.M41 = Game.MainViewport.X;
+                //matrix.M42 = Game.MainViewport.Y;
+
+                return new Myra.Graphics2D.MyraViewportAdapter()
+                {
+                    VirtualWidth = viewportAdapter.VirtualWidth,
+                    VirtualHeight = viewportAdapter.VirtualHeight,
+                    TransformMatrix = matrix
+                };
             };
 
             WidgetFactory = new Widgets.WidgetFactory(this);
@@ -57,8 +64,11 @@ namespace ioi
             _backBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
             _screenShotTarget = new RenderTarget2D(GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
             _shareTarget = new RenderTarget2D(GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
-
             //
+
+            // scripting
+            Lua = new Scripting.LuaScripts(this);
+            Lua.Init();
 
             PixelTexture = new Texture2D(GraphicsDevice, 1, 1);
 

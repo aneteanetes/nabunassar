@@ -10,7 +10,7 @@ namespace ioi
     {
         protected void InitializeCollisions()
         {
-            var quadTreeBounds = new RectangleF(0, 0, Resolution.Width, Resolution.Height);
+            var quadTreeBounds = Game.MainViewport.Bounds.ToRectangleF();
             CollisionComponent = new CustomCollisionComponent(quadTreeBounds);
 
             var playerLayer = new Layer(new QuadTreeSpace(quadTreeBounds));

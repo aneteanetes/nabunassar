@@ -266,7 +266,7 @@ namespace ioi.Shaders.PostProceessing
             var result = PerformGaussianBlur(backBuffer, _renderTarget1, _renderTarget2, sb);
 
             sb.Begin();
-            sb.Draw(result, Game.GraphicsDevice.Viewport.Bounds, Color.White);
+            sb.Draw(result, Game.MainViewport.Bounds, Color.White);
             sb.End();
 
             base.Draw(gameTime,isLast);

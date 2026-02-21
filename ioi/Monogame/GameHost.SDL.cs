@@ -130,7 +130,7 @@ namespace ioi
 				windowPosition = new Point(bounds.x, isfullscreen ? 0 : 50);
 			}
 
-			var resolution = this.Resolution;
+			var resolution = Game.MainViewport.Bounds;
 
 			if (resolution.Width != bounds.w || resolution.Height != bounds.h)
 			{
@@ -147,57 +147,6 @@ namespace ioi
 			Window.Position = windowPosition;
 
 			return false;
-		}
-
-		private void FitBounds(SDL_Rect bounds)
-		{
-			graphics.PreferredBackBufferWidth = bounds.w;
-			graphics.PreferredBackBufferHeight = bounds.h;
-			graphics.ApplyChanges();
-
-			Resolution = new PossibleResolution(bounds.w, bounds.h);
-
-			Point left = Point.Zero;
-			Point right = Point.Zero;
-
-			var size = new Point(bounds.w, bounds.h);
-
-			if (originSize.X > bounds.w)
-			{
-				left = size;
-				right = originSize;
-			}
-			else if (originSize.X < bounds.w)
-			{
-				left = originSize;
-				right = size;
-			}
-
-			var scaleX = (float)left.X / right.X;
-			var scaleY = (float)left.Y / right.Y;
-
-			var scale = new Vector3(scaleX, scaleY, 1);
-
-			ResolutionMatrix = Matrix.CreateScale(scale);
-
-			ResolutionScaleMatrix =
-				new System.Numerics.Matrix4x4(
-					ResolutionMatrix.M11,
-					ResolutionMatrix.M12,
-					ResolutionMatrix.M13,
-					ResolutionMatrix.M14,
-					ResolutionMatrix.M21,
-					ResolutionMatrix.M22,
-					ResolutionMatrix.M23,
-					ResolutionMatrix.M24,
-					ResolutionMatrix.M31,
-					ResolutionMatrix.M32,
-					ResolutionMatrix.M33,
-					ResolutionMatrix.M34,
-					ResolutionMatrix.M41,
-					ResolutionMatrix.M42,
-					ResolutionMatrix.M43,
-					ResolutionMatrix.M44);
 		}
 	}
 }

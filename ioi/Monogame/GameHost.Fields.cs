@@ -116,8 +116,6 @@ namespace ioi
 
         public Microsoft.Xna.Framework.Vector3 Scale { get; private set; }
 
-        public PossibleResolution Resolution { get; set; }
-
         public int ViewportProportion { get; set; }
 
         public static System.Numerics.Matrix4x4 ResolutionScaleMatrix { get; set; }

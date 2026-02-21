@@ -1,8 +1,5 @@
 ﻿using ioi.Components.Effects;
 using ioi.Struct;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
 using Newtonsoft.Json;
 
@@ -45,7 +42,18 @@ namespace ioi.Components
 
         public bool IsBounds { get; set; }
 
-        public Vector2 Position { get; set; }
+        private Vector2 _position;
+        public Vector2 Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                RecalculateBounds();
+            }
+        }
+
+        public Queue<Vector2> MovingPath { get; set; }
 
         public Vector2? DrawPosition { get; set; }
 
@@ -61,15 +69,24 @@ namespace ioi.Components
 
         public Vector2 Size { get; set; }
 
-        public Rectangle VisualBounds => new Rectangle(Position.ToPoint(), Size.ToPoint());
+        public Rectangle VisualBounds { get; private set; }
 
-        public BoundingBox BoundingBox => new BoundingBox((Position+Size).ToVector3(0.5f), (Position + Size+Size).ToVector3(0.5f));
+        public BoundingBox BoundingBox { get; private set; }
+
+        public BoundingBox BoundingBoxCamera { get; private set; }
 
         public Vector2 GetPositionFromCoords() => new Vector2(Coords.X * GameHost.Game.CellSize.X, Coords.Y * GameHost.Game.CellSize.Y);
 
         public Vector2 KeyCoords() => Coords;
 
         public Action<ObjectMap> OnCollide;
+
+        public void RecalculateBounds()
+        {
+            VisualBounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
+            BoundingBox = new BoundingBox((Position + Size).ToVector3(0.5f), (Position + Size + Size).ToVector3(0.5f));
+            BoundingBoxCamera = new BoundingBox((Position - Size / 2).ToVector3(0.5f), (Position + Size * 2 + Size).ToVector3(0.5f));
+        }
 
         public void ProcessCollision(List<ObjectMap> collided)
         {

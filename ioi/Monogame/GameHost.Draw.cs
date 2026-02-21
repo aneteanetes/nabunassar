@@ -28,7 +28,7 @@ namespace ioi
                 GraphicsDevice.SetRenderTarget(target);
             }
 
-            GraphicsDevice.Viewport = mainViewport;
+            GraphicsDevice.Viewport = MainViewport;
         }
 
         public void ClearRenderTarget(Color color)
@@ -51,23 +51,22 @@ namespace ioi
             Game._backRenderTarget = null;
         }
 
-        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true, 
-            SamplerState samplerState = null, 
-            SpriteSortMode sortMode = SpriteSortMode.Deferred, 
-            BlendState blendState=null, 
-            bool isTransformMatrix = true, 
+        public SpriteBatchKnowed BeginDraw(bool isCameraDependant = true,
+            SamplerState samplerState = null,
+            SpriteSortMode sortMode = SpriteSortMode.Deferred,
+            BlendState blendState = null,
+            bool isTransformMatrix = true,
             Effect effect = default,
-            Matrix? matrix=null,
             OrthographicCameraCustom camera = default)
         {
             if (camera == default)
                 camera = CameraMain;
 
-            var transformMatrix = camera.GetViewMatrix();
+            var transformMatrix = isCameraDependant
+                ? camera.GetViewMatrix()
+                : Matrix.Identity;
 
-            this.SpriteBatch.Begin(isCameraDependant
-                ? transformMatrix
-                : matrix);
+            this.SpriteBatch.Begin(transformMatrix);
 
             var sb = this.SpriteBatch.GetSpriteBatch(samplerState, sortMode, blendState, isTransformMatrix, effect);
             return sb;
@@ -78,7 +77,7 @@ namespace ioi
             if (!IsActive)
                 return;
 
-            Game.GraphicsDevice.Viewport = Game.mainViewport;
+            Game.GraphicsDevice.Viewport = Game.MainViewport;
 
             if (PostProcessShaders.Count > 0)
             {

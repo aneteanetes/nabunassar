@@ -72,7 +72,7 @@ namespace ioi.Monogame.Viewports
             int y = clientBounds.Height / 2 - num3 / 2;
 
             _game.GraphicsDevice.Viewport = _graphicsDevice.Viewport = new Viewport(x, y, num2, num3);
-            _game.mainViewport = Viewport = _graphicsDevice.Viewport;
+            _game.MainViewport = Viewport = _graphicsDevice.Viewport;
 
             // backbuffer
             _game._backBuffer = new RenderTarget2D(_game.GraphicsDevice, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height);

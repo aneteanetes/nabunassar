@@ -73,7 +73,7 @@ namespace ioi.Screens.Game
             Game.AddDesktopWidget(new PartyConditions(Game));
 
             var leftFramePos = new Vector2(0, 130);
-            var rightFramePos = new Vector2(Game.Resolution.Width - SquadPlate.SquadPlateWidth, 130);
+            var rightFramePos = new Vector2(Game.MainViewport.Width - SquadPlate.SquadPlateWidth, 130);
 
             Game.AddDesktopWidget(new SquadPlate(Game, _playerSquadComponent, _playerSide)
             {
@@ -97,9 +97,9 @@ namespace ioi.Screens.Game
 
         protected override void DrawInternal(GameTime gameTime)
         {
-            var sb = Game.BeginDraw();
-            sb.Draw(_background, new Rectangle(Point.Zero, (Game.Resolution.ToVector2() / Game.CameraMain.Zoom).ToPoint()), Color.White);
-            sb.End();
+            //var sb = Game.BeginDraw();
+            //sb.Draw(_background, new Rectangle(Point.Zero, (Game.MainViewport.ToVector2() / Game.CameraMain.Zoom).ToPoint()), Color.White);
+            //sb.End();
 
             Game.WorldBattle?.Draw(gameTime);
 

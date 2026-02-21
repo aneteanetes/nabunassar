@@ -137,7 +137,7 @@ namespace ioi.Widgets.UserEffects
 
         protected override Widget CreateWidget()
         {
-            var panel = _mainPanel = new Panel() { Width = Game.Resolution.Width, Height = Game.Resolution.Height };
+            var panel = _mainPanel = new Panel() { Width = Game.MainViewport.Width, Height = Game.MainViewport.Height };
             panel.Background = new SolidBrush(new Color(Color.Black, 190));
 
             panel.TouchDown += Panel_TouchDown;
@@ -423,7 +423,7 @@ namespace ioi.Widgets.UserEffects
                 Text = text.ToString(),
                 TextColor = Globals.BaseColor,
                 Wrap = true,
-                Width = ((int)(Game.Resolution.Width*0.4)),
+                Width = ((int)(Game.MainViewport.Width*0.4)),
                 Font = _retron.GetFont(32),
                 HorizontalAlignment = HorizontalAlignment.Center
             };

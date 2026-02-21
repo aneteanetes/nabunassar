@@ -156,6 +156,7 @@ internal partial class MainMenu : ScreenWidget
 
     private void BacktoMenu_Click(object sender, MyraEventArgs e)
     {
+        GameController.GlobalBlurShader.Disable();
         Game.GameState.InGame = false;
         Game.SwitchScreen<MainMenuScreen>(GameController.UnloadGame());
     }

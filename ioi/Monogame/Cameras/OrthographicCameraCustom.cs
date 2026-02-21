@@ -396,6 +396,12 @@ namespace ioi.Monogame.Cameras
                 screenPosition -= new Vector2(viewport.X, viewport.Y);
             }
 
+            if (_viewportAdapter is MapViewportAdapter)
+            {
+                Viewport viewport = GameHost.Game.MainViewport;
+                screenPosition -= new Vector2(viewport.X, viewport.Y);
+            }
+
             return Vector2.Transform(screenPosition, Matrix.Invert(GetViewMatrix()));
         }
 

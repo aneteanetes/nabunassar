@@ -83,7 +83,9 @@ namespace ioi
             Game.InitGameWorld();
             Game.InitializeGameState();
             Game.MapSystem = new ObjectMapSystem(Game);
+            Game.SpawnSystem = new SpawnSystem(Game);
             Game.PlayerControlSystem=new PlayerControlSystem(Game);
+            Game.GameState.Player = Game.SpawnSystem.CreateCharacter("Human", "Warrior");
             return Game.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");
         }
 

@@ -4,23 +4,7 @@ global using SolidBrush = Myra.Graphics2D.Brushes.SolidBrush;
 using ioi.Content.Compiler;
 using ioi.Monogame.Settings;
 using Microsoft.Extensions.Configuration;
-//using SadConsole;
-//using SadConsole.Configuration;
-
-//SadConsole.Configuration.Builder
-//    .GetBuilder()
-//    .SetWindowSizeInCells(90, 30)
-//    .ConfigureFonts(true)
-//    .UseDefaultConsole()
-//    .OnStart(Startup)
-//    .Run();
-
-//static void Startup(object? sender, SadConsole.GameHost host)
-//{
-//    SadConsole.Game.Instance.StartingConsole!.FillWithRandomGarbage(SadConsole.Game.Instance.StartingConsole!.Font);
-//    SadConsole.Game.Instance.StartingConsole.Fill(new SadRogue.Primitives.Rectangle(3, 3, 23, 3), SadRogue.Primitives.Color.Violet, SadRogue.Primitives.Color.Black, 0, Mirror.None);
-//    SadConsole.Game.Instance.StartingConsole.Print(4, 4, "Hello from SadConsole");
-//}
+using MoonSharp.Interpreter;
 
 var config = new ConfigurationBuilder()
                 .AddJsonFile($"ioi.cfg", true)
@@ -32,6 +16,24 @@ settings.Initialize();
 
 if (settings.IsResourceCompiling)
     ResourceCompiler.Compile(settings);
+
+//var script = new Script();
+//// Создаем глобальную таблицу для всех типов
+//var charactersTable = new Table(script);
+//script.Globals["CharacterTypes"] = charactersTable;
+
+//charactersTable.Values
+
+//string path = "Characters/";
+//foreach (var file in Directory.GetFiles(path, "*.lua"))
+//{
+//    // Выполняем файл и получаем возвращаемую таблицу
+//    DynValue characterData = script.DoFile(file);
+
+//    // Используем имя файла как ключ (например, "Warrior")
+//    string typeName = Path.GetFileNameWithoutExtension(file);
+//    charactersTable[typeName] = characterData;
+//}
 
 using var game = new ioi.GameHost(settings);
 game.Run();

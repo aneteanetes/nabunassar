@@ -51,8 +51,8 @@ namespace ioi.Monogame.SpriteBatch
             //if (spriteBatch == default)
             //    spriteBatch = new SpriteBatchKnowed(_game, _game.GraphicsDevice);
 
-            if (samplerState == null)
-                samplerState = SamplerState.PointWrap;
+            //if (samplerState == null)
+            //    samplerState = SamplerState.PointWrap;
 
             var effectName = effect == null ? NoEffectNameConstant : effect.Name;
 
@@ -67,11 +67,12 @@ namespace ioi.Monogame.SpriteBatch
                 spriteBatch.Begin(
                     sortMode: sortMode,
                     samplerState: samplerState,
-                    blendState: blendState == null ? BlendState.NonPremultiplied : blendState,
+                    //blendState: blendState == null ? BlendState.NonPremultiplied : blendState,
                     transformMatrix: _resolutionMatrix,
                     effect: effect,
-                    depthStencilState: spriteBatch.DepthStencilState,
-                    rasterizerState: antialise);
+                    depthStencilState: spriteBatch.DepthStencilState
+                    //rasterizerState: antialise
+                    );
             }
 
             return spriteBatch;

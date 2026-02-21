@@ -1,8 +1,9 @@
-﻿using ioi.Struct;
+﻿using Geranium.Reflection;
+using ioi.Components;
+using ioi.Struct;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
-using System.Linq.Expressions;
 
 namespace ioi.Systems.Roguelike
 {
@@ -18,11 +19,13 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
-            var player = Game.GameState.Player;
+            var player = Game.GameState.Player.MapObject;
+
+            MouseMoving(player);
 
             if (player.IsMoving)
             {
-                var newPos = Vector2.Lerp(player.Position, player.TargetPosition, 0.15f);
+                var newPos = Vector2.Lerp(player.Position, player.TargetPosition, 1f);
                 var diff = newPos - player.Position;
                 player.Position = newPos;
                 if (Vector2.Distance(player.Position, player.TargetPosition) < 0.1f)
@@ -31,13 +34,61 @@ namespace ioi.Systems.Roguelike
                     player.IsMoving = false;
                 }
 
-                CameraMoving(player,diff);
+                CameraMoving(player, diff);
                 return;
             }
 
+            if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1)))
+            {
+                Game.GameState.Temp.ClickPosition = null;
+            }
+
+            if (player.MovingPath != default)
+            {
+                var target = player.MovingPath.Dequeue();
+                Game.GameState.Map.Move(player, target);
+
+                if (player.MovingPath.Count == 0)
+                {
+                    player.MovingPath = null;
+                    Game.GameState.Temp.ClickPosition = null;
+                }
+            }
+
+            if (!player.IsMoving)
+                KeyboardMoving(player);
+        }
+
+        private void MouseMoving(ObjectMap player)
+        {
+            var state = MouseExtended.GetState();
+
+            if (state.WasButtonPressed(MouseButton.Left))
+            {
+                var pos = state.Position;
+                var clicked = Game.CameraMap.ScreenToWorld(pos.X,pos.Y);
+                var targetCoords = new Vector2(((float)Math.Floor(clicked.X / Game.CellSize.X)), ((float)Math.Floor(clicked.Y / Game.CellSize.Y)));
+
+                if (targetCoords.X > 90 || targetCoords.Y > 23)
+                    return;
+
+                var path = Game.PathfindSystem.FindPath(player.Coords, targetCoords);
+
+                if (path != default)
+                {
+                    player.MovingPath = new Queue<Vector2>(path);
+                }
+
+                Game.GameState.Temp.ClickPosition = clicked;
+                Game.GameState.Temp.ClickSprite = path == default ? Entities.Data.Temporary.ClickSprite.Cross : Entities.Data.Temporary.ClickSprite.Position;
+            }
+        }
+
+        private void KeyboardMoving(Components.ObjectMap player)
+        {
             var keyboard = KeyboardExtended.GetState();
 
-            float x = player.Coords.X, y = player.Coords.Y;
+            float x = 0, y = 0;
 
             if (keyboard.IsKeyDown(Keys.S))
             {
@@ -63,13 +114,17 @@ namespace ioi.Systems.Roguelike
             if (coords == Vector2.Zero)
                 return;
 
+            coords = player.Coords + coords;
+
             var objs = Game.GameState.Map.Collide(coords);
 
             if (objs.Count > 0)
             {
                 player.ProcessCollision(objs);
-                return;
             }
+
+            if (objs.Any(x => x.IsBounds))
+                return;
 
             Game.GameState.Map.Move(player, coords);
         }
@@ -82,6 +137,8 @@ namespace ioi.Systems.Roguelike
 
             Vector2 cameraAdjustment = Vector2.Zero;
 
+            bool lookat = false;
+
             // x
             if (playerBounds.Max.X < deadzoneBounds.Min.X || playerBounds.Min.X > deadzoneBounds.Max.X)
             {
@@ -93,6 +150,13 @@ namespace ioi.Systems.Roguelike
             {
                 cameraAdjustment.Y = diffMove.Y;
             }
+
+            if(deadzoneBounds.Contains(player.BoundingBoxCamera)== ContainmentType.Disjoint)
+            {
+                Game.CameraMap.LookAt(player.Position);
+                return;
+            }
+
 
             if (cameraAdjustment != Vector2.Zero)
             {
@@ -124,17 +188,23 @@ namespace ioi.Systems.Roguelike
             if (!Game.IsDrawBounds)
                 return;
 
-            var player = Game.GameState.Player;
+            var player = Game.GameState.Player.MapObject;
 
             BoundingBox deadzoneBounds = GetDeadzoneBounds();
 
             var sb = Game.BeginDraw(camera: Game.CameraMap);
+
             sb.DrawRectangle(new RectangleF(deadzoneBounds.Min.X, deadzoneBounds.Min.Y, 
                 deadzoneBounds.Max.X- deadzoneBounds.Min.X, 
                 deadzoneBounds.Max.Y- deadzoneBounds.Min.Y), Color.Yellow, 2);
+
             sb.DrawRectangle(new RectangleF(player.BoundingBox.Min.X, player.BoundingBox.Min.Y, 
                 player.BoundingBox.Max.X- player.BoundingBox.Min.X, 
                 player.BoundingBox.Max.Y- player.BoundingBox.Min.Y), Color.Red, 2);
+
+            sb.DrawRectangle(new RectangleF(player.BoundingBoxCamera.Min.X, player.BoundingBoxCamera.Min.Y,
+                player.BoundingBoxCamera.Max.X - player.BoundingBoxCamera.Min.X,
+                player.BoundingBoxCamera.Max.Y - player.BoundingBoxCamera.Min.Y), Color.LightYellow, 2);
             sb.End();
         }
     }

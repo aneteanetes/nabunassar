@@ -1,29 +1,18 @@
 ﻿global using Microsoft.Xna.Framework;
 global using Point = Microsoft.Xna.Framework.Point;
 using Geranium.Reflection;
-using Microsoft.Win32;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-using Monogame.Extended;
-using MonoGame.Extended;
-using MonoGame.Extended.Collisions.Layers;
-using MonoGame.Extended.Collisions.QuadTree;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Screens;
-using MonoGame.Extended.Screens.Transitions;
-using MonoGame.Extended.ViewportAdapters;
-using ioi.Entities.Game.Calendars;
 using ioi.Monogame.Settings;
 using ioi.Monogame.Viewports;
 using ioi.Native;
 using ioi.Resources;
 using ioi.Screens.Abstract;
-using ioi.Screens.Game;
 using ioi.Screens.LoadingScreens;
 using ioi.Struct;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended.Input;
 using System.Collections;
-using System.Runtime.InteropServices;
 
 namespace ioi
 {
@@ -44,13 +33,7 @@ namespace ioi
             Settings = settings;
 
             InactiveSleepTime = settings.DropFpsOnUnfocus;
-
-            Resolution = new PossibleResolution()
-            {
-                Width = settings.OriginWidthPixel,
-                Height = settings.OriginHeightPixel
-            };
-
+                        
             try
             {
                 SDL_InitMonitors();
@@ -86,7 +69,7 @@ namespace ioi
             IsMouseVisible = true;
 
             // fixing framerate
-            this.IsFixedTimeStep = false;
+            this.IsFixedTimeStep = true;
             //this.TargetElapsedTime = TimeSpan.FromSeconds(1d / 60d); //60);
 
             ScreenManager = new Monogame.Extended.CustomScreenManager(this);
@@ -155,7 +138,7 @@ namespace ioi
                 IsFullScreen = Settings.WindowMode == WindowMode.FullScreenSoftware || Settings.WindowMode == WindowMode.FullScreenHardware,
                 PreferredBackBufferWidth = Settings.WidthPixel,
                 PreferredBackBufferHeight = Settings.HeightPixel,
-                SynchronizeWithVerticalRetrace = false,// settings.VerticalSync,
+                SynchronizeWithVerticalRetrace = Game.Settings.VerticalSync,
                 PreferredDepthStencilFormat = DepthFormat.Depth24Stencil8,
             };
 
@@ -164,7 +147,7 @@ namespace ioi
                 graphics.HardwareModeSwitch = false;
             }
 
-            graphics.SynchronizeWithVerticalRetrace = false;
+            graphics.SynchronizeWithVerticalRetrace = Game.Settings.VerticalSync;
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
@@ -175,7 +158,7 @@ namespace ioi
             SetMonitor(Settings.MonitorIndex);
 
             var state = GamePad.GetState(0);
-            IsMouseVisible = !state.IsConnected;
+            //IsMouseVisible = !state.IsConnected;
             Settings.IsGamePadConnected = state.IsConnected;
 
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
@@ -189,7 +172,6 @@ namespace ioi
 
             base.Initialize();
         }
-
 
         public void SwitchScreen<TScreen>(IEnumerator loadingMethod = default, IScreenTransition transition = default)
              where TScreen : BaseScreen

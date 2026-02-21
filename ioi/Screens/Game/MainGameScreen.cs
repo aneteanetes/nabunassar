@@ -31,7 +31,7 @@ namespace ioi.Screens.Game
 
         public void InitGameUI()
         {
-            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.Resolution.Width, Game.Resolution.Height) });
+            Game.AddDesktopWidget(new MinimapWindow(Game) { Position = new Vector2(Game.MainViewport.Width, Game.MainViewport.Height) });
             //Game.AddDesktopWidget(new ChatWindow(Game));
             Game.AddDesktopWidget(new ControlPanel(Game));
             Game.AddDesktopWidget(new GameDateTime(Game));

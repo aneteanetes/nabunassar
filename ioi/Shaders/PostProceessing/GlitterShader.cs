@@ -17,7 +17,7 @@ namespace ioi.Shaders.PostProceessing
             Effect.Parameters["patternTexture"].SetValue(_patternTexture);
 
             if (_buffer == null)
-                _buffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+                _buffer = new RenderTarget2D(Game.GraphicsDevice, Game.MainViewport.Width, Game.MainViewport.Height);
         }
     }
 }

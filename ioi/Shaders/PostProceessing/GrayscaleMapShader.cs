@@ -27,7 +27,7 @@ namespace ioi.Shaders.PostProceessing
                 _grayscaleMapTexture = _defaultTexture;
 
             if (_grayscaleMapBuffer == null)
-                _grayscaleMapBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.Resolution.Width, Game.Resolution.Height);
+                _grayscaleMapBuffer = new RenderTarget2D(Game.GraphicsDevice, Game.MainViewport.Width, Game.MainViewport.Height);
         }
 
         public override void Draw(GameTime gameTime, bool isLast = true)

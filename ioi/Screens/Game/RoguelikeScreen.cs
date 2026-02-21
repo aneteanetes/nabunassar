@@ -1,7 +1,6 @@
 ﻿using ioi.Screens.Abstract;
 using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
 
 namespace ioi.Screens
@@ -11,8 +10,11 @@ namespace ioi.Screens
         public RoguelikeScreen(GameHost game) : base(game) { }
 
         private List<PolyTile> interfaceSprites;
+        private Sprite positionSprite;
+        private Sprite crossSprite;
 
         public Effect Celshading { get; private set; }
+
         public Effect CelshadingGlobal { get; private set; }
 
         public override void LoadContent()
@@ -21,7 +23,10 @@ namespace ioi.Screens
             CelshadingGlobal = Game.Content.Load<Effect>("Assets/Shaders/CelshadingGlobal.fx");
             var @interface = Game.Content.Load<TiledMap>("Assets/Maps/interface2.tmx");
             interfaceSprites = LoadTiled(@interface);
-            
+
+            var cursorTileset = Game.Content.LoadTexture("Assets/Tilesets/cursor_tilemap_packed.png");
+            positionSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 32, 16, 16)) { Color= Color.AntiqueWhite };
+            crossSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 0, 16, 16)) { Color = Color.Red, };
         }
 
         private List<PolyTile> LoadTiled(TiledMap map)
@@ -69,24 +74,37 @@ namespace ioi.Screens
             Game.PlayerControlSystem.Update(gameTime);
             Game.MapSystem.Update(gameTime);
         }
+
         public override void Draw(GameTime gameTime)
         {
             CelshadingGlobal.Parameters["ScreenSize"].SetValue(new Vector2(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height));
-            //CelshadingGlobal.Parameters["Time"]?.SetValue(((float)gameTime.TotalGameTime.TotalSeconds));
 
-            Game.SetRenderTarget(Game._shareTarget);
-            var sb = Game.BeginDraw(samplerState: SamplerState.LinearWrap);
+            var sb = Game.BeginDraw(effect: CelshadingGlobal);
+
             DrawSprites(sb, interfaceSprites);
-            sb.End();
-
-            Game.SetRenderTarget(null);
-            sb.Begin(effect: CelshadingGlobal);
-            sb.Draw(Game._shareTarget,Vector2.One,Color.White);
 
             sb.End();
 
             Game.MapSystem.Draw(gameTime, Celshading);
             Game.PlayerControlSystem.Draw(gameTime);
+
+            sb = Game.BeginDraw(effect: Celshading,camera:Game.CameraMap);
+
+            if (Game.GameState.Temp.ClickPosition.HasValue)
+            {
+                var sprite = Game.GameState.Temp.ClickSprite == Entities.Data.Temporary.ClickSprite.Position
+                    ? positionSprite
+                    : crossSprite;
+
+                var drawPos = Game.GameState.Temp.ClickPosition.Value;// - new Vector2(16, 16);
+
+                sb.Draw(sprite, drawPos, 0, new Vector2(2, 2));
+            }
+
+            var hp = Game.GameState.Player["hp"];
+            sb.DrawText(Fonts.Consolas, 25, $"Здоровье: {hp}/{hp}", new Vector2(1600, 200), Color.Red);
+
+            sb.End();
 
             base.Draw(gameTime);
         }

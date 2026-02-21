@@ -224,7 +224,7 @@ namespace ioi.Shaders.PostProceessing.Blooming
         public override void LoadContent()
         {
             _graphicsDevice = Game.GraphicsDevice;
-            UpdateResolution(Game.Resolution.Width, Game.Resolution.Height);
+            UpdateResolution(Game.MainViewport.Width, Game.MainViewport.Height);
 
             //if quadRenderer == null -> new, otherwise not
             _quadRenderer = new QuadRenderer(Game.GraphicsDevice);
@@ -619,8 +619,8 @@ namespace ioi.Shaders.PostProceessing.Blooming
             Game.GraphicsDevice.Clear(Color.Black);
 
             var sb = Game.BeginDraw(false,blendState: BlendState.Additive);
-            sb.Draw(bloom, Game.GraphicsDevice.Viewport.Bounds, Color.White);
-            sb.Draw(backBuffer, Game.GraphicsDevice.Viewport.Bounds, Color.White);
+            sb.Draw(bloom, Game.MainViewport.Bounds, Color.White);
+            sb.Draw(backBuffer, Game.MainViewport.Bounds, Color.White);
             sb.End();
         }
     }

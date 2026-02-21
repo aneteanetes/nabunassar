@@ -72,10 +72,13 @@ namespace ioi.Monogame.Viewports
             int num2 = (int)(num * (float)VirtualWidth + 0.5f);
             int num3 = (int)(num * (float)VirtualHeight + 0.5f);
 
-
             var mapViewportOffset = Vector2.Transform(_game.CellSize, _game.CameraMain.GetViewMatrix());
 
-            _game.mapViewport = new Viewport((int)Math.Round(mapViewportOffset.X), (int)Math.Round(mapViewportOffset.Y), num2, num3);
+            var mapViewpOffset = new Point((int)Math.Round(mapViewportOffset.X), (int)Math.Round(mapViewportOffset.Y));
+
+            mapViewpOffset += new Point(_game.MainViewport.X, _game.MainViewport.Y);
+
+            _game.MapViewport = new Viewport(mapViewpOffset.X, mapViewpOffset.Y, num2, num3);
         }
 
         public override void Reset()
@@ -91,8 +94,8 @@ namespace ioi.Monogame.Viewports
         }
         public override Matrix GetScaleMatrix()
         {
-            float xScale = (float)_game.mapViewport.Width / (float)VirtualWidth;
-            float yScale = (float)_game.mapViewport.Height / (float)VirtualHeight;
+            float xScale = (float)_game.MapViewport.Width / (float)VirtualWidth;
+            float yScale = (float)_game.MapViewport.Height / (float)VirtualHeight;
             return Matrix.CreateScale(xScale, yScale, 1f);
         }
     }

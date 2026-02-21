@@ -1,5 +1,4 @@
 ﻿using ioi.Components;
-using SadConsole.UI;
 
 namespace ioi.Entities.Map
 {
