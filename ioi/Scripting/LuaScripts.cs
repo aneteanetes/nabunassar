@@ -1,5 +1,4 @@
 ﻿using ioi.Components;
-using MonoGame.Extended.ECS;
 using MoonSharp.Interpreter;
 
 namespace ioi.Scripting
@@ -7,9 +6,9 @@ namespace ioi.Scripting
     internal class LuaScripts
     {
         public GameHost Game { get; }
-        public Table SharedMeta { get; }
+        public Table LuaMeta { get; }
 
-        public Script Executor = new Script();
+        public Script Executor;
 
         private FileSystemWatcher _watcher;
         private bool _needsReload;
@@ -24,15 +23,36 @@ namespace ioi.Scripting
 
         public LuaScripts(GameHost game)
         {
-            Game = game;
-            SharedMeta = new Table(Executor);
-            SharedMeta["__index"] = (Func<Table, string, DynValue>)((t, k) => t.GetSmart(k));
+            Game = game; 
+            
+            Executor = new Script();
+            Script.DefaultOptions.DebugPrint = s => Console.WriteLine(s);
+
+            LuaMeta = new Table(Executor);
+            LuaMeta["__index"] = (Func<Table, string, DynValue>)((t, k) => t.GetSmart(k));
+            Executor.Globals.Set("LuaMeta", DynValue.NewTable(LuaMeta));
 
         }
 
-        public DynValue Call(object func, params object[] args)
+        public DynValue Call(DynValue function, params object[] args)
         {
-            return Executor.Call(func, args);
+            try
+            {
+                return Executor.Call(function, args);
+            }
+            catch (InterpreterException ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Lua: {ex.DecoratedMessage}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($"Lua unhandled: {ex}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            return DynValue.Nil;
         }
 
         public Table MergeTables(Table t1, Table t2)
@@ -51,8 +71,10 @@ namespace ioi.Scripting
                 sources.Append(DynValue.NewString(template));
             }
 
-            table["_sources"] = sources;
-            table.MetaTable = SharedMeta;
+            table["_components"] = sources;
+            table.MetaTable = LuaMeta;
+
+            table.Init();
 
             return table;
         }
@@ -88,7 +110,7 @@ namespace ioi.Scripting
                 var files = Directory.GetFiles(scriptsPath, "*.lua", SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
-                    Executor.DoFile(file);
+                    LoadFile(file);
                 }
             }
             else
@@ -106,8 +128,24 @@ namespace ioi.Scripting
             if (_needsReload)
             {
                 Console.WriteLine($"Updated Lua script: {_changedFile}");
-                Executor.DoFile(_changedFile);
+                LoadFile(_changedFile);
                 _needsReload = false;
+            }
+        }
+
+        private void LoadFile(string file)
+        {
+            try
+            {
+                Executor.DoFile(file);
+            }
+            catch (InterpreterException ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                Console.WriteLine($"Lua: {ex.DecoratedMessage}");
+
+                Console.ForegroundColor = ConsoleColor.White;
             }
         }
     }

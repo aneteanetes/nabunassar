@@ -1,6 +1,5 @@
 ﻿using ioi.Components;
 using ioi.Scripting;
-using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike
 {
@@ -17,12 +16,14 @@ namespace ioi.Systems.Roguelike
 
         public GameEntity CreateCharacter(string race, string @class)
         {
-            var entity = new GameEntity(Game.Lua, $"Templates.Classes.{@class}")
+            var entity = new GameEntity(Game.Lua, "Templates.Base.Object", $"Templates.Classes.{@class}")
             {
                 Name = "Странник"
             };
 
-            Console.WriteLine(entity.GetHp());
+            var result = Lua.Call(entity["refresh"],entity.Data);
+
+            var z = entity["stats.arm"];
 
             return entity;
         }

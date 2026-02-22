@@ -101,8 +101,9 @@ namespace ioi.Screens
                 sb.Draw(sprite, drawPos, 0, new Vector2(2, 2));
             }
 
-            var hp = Game.GameState.Player["hp"];
-            sb.DrawText(Fonts.Consolas, 25, $"Здоровье: {hp}/{hp}", new Vector2(1600, 200), Color.Red);
+            var hp = Game.GameState.Player["stats.hp"];
+            var mhp = Game.GameState.Player["stats.mhp"];
+            sb.DrawText(Fonts.Consolas, 25, $"Здоровье: {hp}/{mhp}", new Vector2(1600, 200), Color.Red);
 
             sb.End();
 
