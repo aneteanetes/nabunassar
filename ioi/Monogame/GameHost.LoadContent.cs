@@ -40,13 +40,12 @@ namespace ioi
             MyraEnvironment.EventHandlingModel = Myra.Events.EventHandlingStrategy.EventBubbling;
             MyraEnvironment.DefaultAssetManager = new AssetManager(new MyraAssetAccessor(ResourceLoader), Settings.PathData);
             MyraDesktop = new Desktop();
+            MyraDesktopIngame = new Desktop();
             
             viewportAdapter.Reset();
             MyraDesktop.ViewportAdapterFetcher = () =>
             {
                 var matrix = viewportAdapter.GetScaleMatrix();
-                //matrix.M41 = Game.MainViewport.X;
-                //matrix.M42 = Game.MainViewport.Y;
 
                 return new Myra.Graphics2D.MyraViewportAdapter()
                 {
@@ -55,6 +54,7 @@ namespace ioi
                     TransformMatrix = matrix
                 };
             };
+            MyraDesktopIngame.ViewportAdapterFetcher = MyraDesktop.ViewportAdapterFetcher;
 
             WidgetFactory = new Widgets.WidgetFactory(this);
             WidgetFactory.LoadContent();

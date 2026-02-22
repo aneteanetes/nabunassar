@@ -14,7 +14,7 @@ Templates.Perks.Experienced = {
         {
             type=Templates.Base.Mod.Type.Flat,
             value=1,
-            stat="arm"
+            stat="def"
         }
     }
 }

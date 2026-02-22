@@ -105,6 +105,8 @@ namespace ioi
 
         public Desktop MyraDesktop { get; private set; }
 
+        public Desktop MyraDesktopIngame { get; set; }
+
         public AudioOptions Audio { get; set; } = new AudioOptions();
 
         internal GraphicsDeviceManager graphics;

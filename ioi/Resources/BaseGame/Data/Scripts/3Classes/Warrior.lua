@@ -1,10 +1,10 @@
 Templates.Classes.Warrior = {
+
+    class='Warrior',
+
     init = function(obj)
     
         -- сюда придём после всех предыдущих init
-
-        obj.class='Warrior';
-
 
         if obj.stats == nil then
             obj.stats={}
@@ -16,6 +16,12 @@ Templates.Classes.Warrior = {
         obj.stats.hp=100;
         obj.stats.mindmg=7
         obj.stats.maxdmg=11
+
+        obj.res='rage';
+        obj.rescolor={255,0,0,255};
+        obj.resstring = function (obj)
+            return tostring(obj.stats.rage);
+        end
         
         if(obj.perks==nil) then
             obj.perks={};

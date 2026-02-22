@@ -10,6 +10,15 @@
     color= { 255,255,255,255},
     colorback = { 255,255,255,255},
 
+    res='mana',
+    rescolor={0,0,255,255},
+
+    gold=100,
+
+    resstring = function (obj)
+        return obj.stats.mana..'/'..obj.stats.manamax;
+    end,
+
     -- autoinit
     init = function (obj)
 
@@ -23,8 +32,8 @@
             -- base
             ap=0,
             ad=0,
-            arm=0,
-            mres=0,
+            def=0,
+            mdef=0,
 
             -- hp
             basemhp=1,
@@ -64,8 +73,6 @@
             end
 
             local base = tonumber(obj.stats['base'..statKey]);
-
-            print('base'..statKey)
 
             obj.stats[statKey] = obj.calculateStat(base, flatMods,percentMods,multipleMods)
         end

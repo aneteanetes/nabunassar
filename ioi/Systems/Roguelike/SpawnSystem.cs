@@ -16,14 +16,14 @@ namespace ioi.Systems.Roguelike
 
         public GameEntity CreateCharacter(string race, string @class)
         {
-            var entity = new GameEntity(Game.Lua, "Templates.Base.Object", $"Templates.Classes.{@class}")
+            var entity = new GameEntity(Game.Lua, "Templates.Base.Object", $"Templates.Races.{race}", $"Templates.Classes.{@class}")
             {
                 Name = "Странник"
             };
 
             var result = Lua.Call(entity["refresh"],entity.Data);
 
-            var z = entity["stats.arm"];
+            var z = entity["stats.def"];
 
             return entity;
         }

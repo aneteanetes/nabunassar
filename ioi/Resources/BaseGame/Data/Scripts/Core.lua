@@ -12,5 +12,6 @@ Core = {
 Templates={
     Base={},
     Perks={},
+    Races={},
     Classes={}
 }

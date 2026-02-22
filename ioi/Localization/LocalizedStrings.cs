@@ -42,12 +42,13 @@ namespace ioi.Localization
                 }
             }
 
-            if (KeyChain.IsNotEmpty())
-            {
-                KeyChain += "." + key;
-            }
-            else
-                KeyChain = key;
+#warning key overriding - localization chain is not available
+            //if (KeyChain.IsNotEmpty())
+            //{
+            //    KeyChain += "." + key;
+            //}
+            //else
+            KeyChain = key;
         }
 
         private string NormalizeString(string key)

@@ -53,6 +53,10 @@ namespace ioi
             _worldPosition = CameraMain.ScreenToWorld(_mousePosition);
 
             Game.MyraDesktop.Update();
+            Game.MyraDesktopIngame.Update();
+
+            if(KeyboardExtended.GetState().WasKeyPressed(Keys.F3))
+                GameHost.Game.MakeScreenshot();
 
             base.Update(gameTime);
         }

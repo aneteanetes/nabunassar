@@ -1,5 +1,7 @@
-﻿using ioi.Screens.Abstract;
+﻿using ioi.Monogame.SpriteBatch;
+using ioi.Screens.Abstract;
 using ioi.Tiled.Map;
+using ioi.Widgets.UserInterfaces.Roguelike;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 
@@ -27,6 +29,8 @@ namespace ioi.Screens
             var cursorTileset = Game.Content.LoadTexture("Assets/Tilesets/cursor_tilemap_packed.png");
             positionSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 32, 16, 16)) { Color= Color.AntiqueWhite };
             crossSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 0, 16, 16)) { Color = Color.Red, };
+
+            Game.AddDesktopWidget(new PlayerWidget(Game),Game.MyraDesktopIngame);
         }
 
         private List<PolyTile> LoadTiled(TiledMap map)
@@ -100,10 +104,6 @@ namespace ioi.Screens
 
                 sb.Draw(sprite, drawPos, 0, new Vector2(2, 2));
             }
-
-            var hp = Game.GameState.Player["stats.hp"];
-            var mhp = Game.GameState.Player["stats.mhp"];
-            sb.DrawText(Fonts.Consolas, 25, $"Здоровье: {hp}/{mhp}", new Vector2(1600, 200), Color.Red);
 
             sb.End();
 

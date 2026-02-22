@@ -23,9 +23,12 @@ namespace ioi
             return _screenWidgets.Where(x => x.IsRemovable).Count();
         }
 
-        public T AddDesktopWidget<T>(T widget)
+        public T AddDesktopWidget<T>(T widget, Desktop desktop=null)
             where T : ScreenWidget
         {
+            if (desktop == null)
+                desktop = Game.MyraDesktop;
+
             if (widget != default)
             {
                 var uiWidget = widget.Load();
@@ -49,11 +52,11 @@ namespace ioi
 
                         if (widgetWindow.IsModal)
                         {
-                            windowWidget.ShowModal(MyraDesktop, pos);
+                            windowWidget.ShowModal(desktop, pos);
                         }
                         else
                         {
-                            windowWidget.Show(MyraDesktop, pos);
+                            windowWidget.Show(desktop, pos);
                         }
                         widget.OnAfterAddedWidget(windowWidget);
 
@@ -69,7 +72,7 @@ namespace ioi
                 else
                 {
                     _screenWidgets.Add(widget);
-                    MyraDesktop.Widgets.Add(uiWidget);
+                    desktop.Widgets.Add(uiWidget);
                     widget.OnAfterAddedWidget(uiWidget);
                 }
 
@@ -95,8 +98,11 @@ namespace ioi
             return GetDesktopWidget<T>() != null;
         }
 
-        public void RemoveDesktopWidgets(bool isAnnihilateAll=false)
+        public void RemoveDesktopWidgets(bool isAnnihilateAll=false, Desktop desktop=null)
         {
+            if (desktop == null)
+                desktop = Game.MyraDesktop;
+
             ScreenWidget[] forRemoves = new ScreenWidget[_screenWidgets.Count];
             _screenWidgets.CopyTo(forRemoves);
 
@@ -107,7 +113,7 @@ namespace ioi
 
             if (isAnnihilateAll)
             {
-                MyraDesktop.Widgets.Clear();
+                desktop.Widgets.Clear();
                 var all = _screenWidgets.Concat(_screenWindowWidgets).ToArray();
                 foreach (var widget in all)
                 {
@@ -118,19 +124,22 @@ namespace ioi
             }
             else
             {
-                var notWindowWidgets = MyraDesktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
+                var notWindowWidgets = desktop.Widgets.Where(w => w.IsNot<Window>()).ToArray();
                 if (notWindowWidgets.Length > 0)
                 {
                     foreach (var notWidowWidget in notWindowWidgets)
                     {
-                        MyraDesktop.Widgets.Remove(notWidowWidget);
+                        desktop.Widgets.Remove(notWidowWidget);
                     }
                 }
             }
         }
 
-        public void RemoveDesktopWidget(ScreenWidget widget)
+        public void RemoveDesktopWidget(ScreenWidget widget, Desktop desktop=null)
         {
+            if (desktop == null)
+                desktop = Game.MyraDesktop;
+
             if (widget == default && !widget.IsRemoved)
                 return;
 
@@ -141,7 +150,7 @@ namespace ioi
             if (uiWidget is Window windowWidget)
                 windowWidget.Close();
             else
-                MyraDesktop.Widgets.Remove(uiWidget);
+                desktop.Widgets.Remove(uiWidget);
 
             _screenWidgets.Remove(widget);
             widget.Dispose();

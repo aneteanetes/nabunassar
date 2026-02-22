@@ -22,6 +22,8 @@ namespace ioi.Screens.Abstract
         {
             DrawInternal(gameTime);
 
+            Game.MyraDesktopIngame.Render();
+
             var postProcessShaders = Game.ActivePostProcessShaders.ToArray();
 
             if (postProcessShaders.Length > 0)

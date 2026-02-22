@@ -1,18 +1,10 @@
 using FontStashSharp;
 using Geranium.Reflection;
+using ioi.Screens;
+using ioi.Widgets.Base;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame;
-using MonoGame.Extended.Graphics;
-using Myra.Events;
-using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
-using ioi.Screens;
-using ioi.Screens.Game;
-using ioi.Shaders;
-using ioi.Struct;
-using ioi.Tiled.Map;
-using ioi.Widgets.Base;
 
 namespace ioi.Widgets.Menu;
 

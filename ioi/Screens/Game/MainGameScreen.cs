@@ -1,14 +1,8 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using MonoGame;
-using MonoGame.Extended.Graphics;
-using MonoGame.Extended.Input;
-using ioi.Screens.Abstract;
-using ioi.Shaders;
-using ioi.Struct;
-using ioi.Tiled.Map;
+﻿using ioi.Screens.Abstract;
 using ioi.Widgets.UserInterfaces;
 using ioi.Widgets.UserInterfaces.GameWindows;
 using ioi.Widgets.Views.IconButtons;
+using MonoGame.Extended.Input;
 
 namespace ioi.Screens.Game
 {
