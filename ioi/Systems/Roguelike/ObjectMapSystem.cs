@@ -1,7 +1,7 @@
-﻿using FontStashSharp;
-using ioi.Components;
-using ioi.Components.Effects;
+﻿using ioi.Components;
 using ioi.Entities.Base;
+using ioi.Entities.Map;
+using ioi.Entities.Struct;
 using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
@@ -24,15 +24,17 @@ namespace ioi.Systems.Roguelike
 
         public IEnumerator LoadMap(string assetName)
         {
-
-
             var tiledMap = Game.Content.Load<TiledMap>(assetName);
+
             return LoadMap(tiledMap);
         }
 
         public IEnumerator LoadMap(TiledMap map)
         {
-            Game.GameState.Map = new Entities.Map.RogueMap();
+            Game.GameState.Map = new Entities.Map.RogueMap()
+            {
+                NameToken = map.GetPropertyValue<string>(nameof(RogueMap.NameToken))
+            };
 
             foreach (var tileset in map.Tilesets)
             {
@@ -82,6 +84,17 @@ namespace ioi.Systems.Roguelike
 
             map.Objects.ForEach(poly =>
             {
+                if (poly.gid == 0)
+                {
+                    Game.GameState.Map.Areas.Add(new Entities.Map.Area()
+                    {
+                        Bounds = new RectangleF(((float)poly.x), ((float)poly.y), poly.width, poly.height),
+                        NameToken = poly.GetPropertyValue<string>("NameToken")
+                    });
+
+                    return;
+                }
+
                 var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.gid - 1);
                 var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
                 var position = poly.Position;
@@ -111,7 +124,30 @@ namespace ioi.Systems.Roguelike
 
             Game.PathfindSystem = new PathfindSystem(Game.GameState.Map);
 
+            UpdateArea();
+
             yield return 0;
+        }
+
+        [Obsolete("Potential performance hit")]
+        public void UpdateArea()
+        {
+            Game.GameState.Map.CurrentArea = Game.GameState.Map.Areas.FirstOrDefault(x => x.Bounds.Contains(Game.GameState.Player.MapObject.Position));
+        }
+
+        public void LogArea()
+        {
+            var str = Game.Strings["roguelike"];
+            var map = Game.GameState.Map;
+
+            var txt = DrawText.Create(str["comingtolocation"], Color.DarkGray)
+                .AppendSpace()
+                .Append(str[map.NameToken]);
+
+            if (map.CurrentArea != null)
+                txt.Append(" - "+str[map.CurrentArea.NameToken]);
+
+            Game.LogSystem.Log(txt.Append("."));
         }
 
         private static Color GetColorFromTile(Propertied _object)
@@ -134,6 +170,7 @@ namespace ioi.Systems.Roguelike
                 {
                     x.Update(gameTime);
                 });
+            UpdateArea();
         }
 
         public void Draw(GameTime gameTime, Effect effect=null)

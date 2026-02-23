@@ -1,9 +1,14 @@
-﻿using ioi.Monogame.SpriteBatch;
+﻿using Geranium.Reflection;
+using ioi.Entities.Struct;
+using ioi.Monogame.SpriteBatch;
 using ioi.Screens.Abstract;
 using ioi.Tiled.Map;
 using ioi.Widgets.UserInterfaces.Roguelike;
+using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Graphics;
+using MonoGame.Extended.Input;
 
 namespace ioi.Screens
 {
@@ -19,6 +24,8 @@ namespace ioi.Screens
 
         public Effect CelshadingGlobal { get; private set; }
 
+        public ControlsWidget ControlsWidget { get; set; }
+
         public override void LoadContent()
         {
             Celshading = Game.Content.Load<Effect>("Assets/Shaders/Celshading.fx");
@@ -31,6 +38,22 @@ namespace ioi.Screens
             crossSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 0, 16, 16)) { Color = Color.Red, };
 
             Game.AddDesktopWidget(new PlayerWidget(Game),Game.MyraDesktopIngame);
+            ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
+
+            var str = Game.Strings["Roguelike"];
+            ControlsWidget.BindButton(1, $"[Q,MRB] - {str["info"]}");
+            ControlsWidget.BindButton(2, $"[W,A,S,D,LMB] - {str["controlwasd"]}");
+            ControlsWidget.BindButton(3, $"[1,2,3,4] - {str["abils"]}");
+            ControlsWidget.BindButton(4, $"[E] - {str["controluse"]}");
+            ControlsWidget.BindButton(5, $"[5,6,7,8] - {str["skills"]}");
+            ControlsWidget.BindButton(6, $"[С] - {str["charinfo"]}");
+            ControlsWidget.BindButton(7, $"[M] - {str["map"]}");
+            ControlsWidget.BindButton(8, $"[I] - {str["inventory"]}");
+            ControlsWidget.BindButton(9, $"[F1-F6] - {str["charselectcontrol"]}");
+            ControlsWidget.BindButton(10, $"[\u2190,↑,↓,→] - {str["camera"]}");
+
+            Game.LogSystem.Widget = Game.AddDesktopWidget(new LogWidget(Game), Game.MyraDesktopIngame);
+            Game.MapSystem.LogArea();
         }
 
         private List<PolyTile> LoadTiled(TiledMap map)
@@ -47,7 +70,7 @@ namespace ioi.Screens
 
             var gray = Color.Wheat;
 
-            return map.Layers.SelectMany(layer => layer.Tiles)
+            var tiles = map.Layers.SelectMany(layer => layer.Tiles)
                 .Where(poly => poly.Gid > 0)
                 .Select(poly =>
                 {
@@ -63,6 +86,24 @@ namespace ioi.Screens
                         Position = position,
                     };
                 }).ToList();
+
+            var objs = map.Objects.Select(poly =>
+            {
+                var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.gid - 1);
+                var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
+                var position = poly.Position;// new Vector2(poly.Position.X* size.X, poly.Position.Y* size.Y);
+
+                _sprite.Color = gray;
+
+                return new PolyTile()
+                {
+                    Sprite = _sprite,
+                    Position = position,
+                };
+            });
+
+            tiles.AddRange(objs);
+            return tiles;
         }
 
         private class PolyTile
@@ -74,13 +115,26 @@ namespace ioi.Screens
 
         public override void Update(GameTime gameTime)
         {
+            if (GameHost.IsMakingScreenShot == false && Game.LastScreenshot.IsNotEmpty())
+            {
+                Game.LogSystem.Log(DrawText.Create(Game.Strings["Roguelike"]["screenshotsaved"], Color.DarkGray).AppendSpace().Append(Game.LastScreenshot));
+                Game.LastScreenshot = default;
+            }
+
             GameController.GlobalMenuWidget();
             Game.PlayerControlSystem.Update(gameTime);
             Game.MapSystem.Update(gameTime);
+
+            var keystate = KeyboardExtended.GetState();
+            if (keystate.IsControlDown() && keystate.WasKeyPressed(Keys.S))
+            {
+                GameHost.Game.MakeScreenshot();
+            }
         }
 
         public override void Draw(GameTime gameTime)
         {
+            GraphicsDevice.Clear(new Color(12, 12, 12));
             CelshadingGlobal.Parameters["ScreenSize"].SetValue(new Vector2(Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height));
 
             var sb = Game.BeginDraw(effect: CelshadingGlobal);

@@ -1,11 +1,5 @@
 ﻿using Geranium.Reflection;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Shapes;
-using MonoGame.Extended.Tiled;
-using ioi.Entities.Base;
-using System.Diagnostics;
 using System.Xml.Linq;
-using ioi.Struct;
 
 namespace ioi.Tiled.Map
 {

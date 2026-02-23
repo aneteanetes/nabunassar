@@ -4,6 +4,8 @@ namespace ioi.Entities.Map
 {
     internal class RogueMap
     {
+        public string NameToken { get; set; }
+
         public Dictionary<Vector2,List<ObjectMap>> ObjectMap { get; set; }
 
         public IEnumerable<ObjectMap> Objects => ObjectMap.SelectMany(x => x.Value);
@@ -39,5 +41,9 @@ namespace ioi.Entities.Map
             obj.IsMoving = true;
             obj.TargetPosition = obj.GetPositionFromCoords();
         }
+
+        public List<Area> Areas { get; set; } = new();
+
+        public Area CurrentArea { get; set; }
     }
 }

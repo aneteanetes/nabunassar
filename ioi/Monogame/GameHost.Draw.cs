@@ -98,7 +98,7 @@ namespace ioi
             {
                 if(ScreenManager.ActiveScreen.DumpedScreen!=null)
                 {
-                    ScreenManager.ActiveScreen.DumpedScreen.SaveAsScreenshot();
+                    Game.LastScreenshot = ScreenManager.ActiveScreen.DumpedScreen.SaveAsScreenshot();
                     ScreenManager.ActiveScreen.DumpedScreen = null;
                 }
                 IsMakingScreenShot.SetValue(false);
@@ -116,6 +116,8 @@ namespace ioi
         private List<PostProcessShader> PostProcessShaders = new();
 
         public IEnumerable<PostProcessShader> ActivePostProcessShaders => PostProcessShaders;
+
+        public string LastScreenshot { get; set; }
 
         public void AddPostProcessor(PostProcessShader shader)
         {

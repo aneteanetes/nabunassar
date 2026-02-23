@@ -106,7 +106,7 @@ namespace ioi.Widgets.Base
         {
             Game.IsMouseMoveAvailable.Value = true;
 #if DEBUG
-            Console.WriteLine($"{sender} mouse active");
+            //Console.WriteLine($"{sender} mouse active");
 #endif
             if (NOLOOSEBLOCK)
                 GameHost.Game.IsMouseMoveAvailable.Value = false;
@@ -116,7 +116,7 @@ namespace ioi.Widgets.Base
 
             NOLOOSEBLOCK = false;
 #if DEBUG
-            Console.WriteLine("Mouse block restored.");
+            //Console.WriteLine("Mouse block restored.");
 #endif
         }
 
@@ -125,7 +125,7 @@ namespace ioi.Widgets.Base
             Game.IsMouseMoveAvailable.Value = false;
             WidgetOverMouse = sender;
 #if DEBUG
-            Console.WriteLine($"{sender} mouse disabled");
+            //Console.WriteLine($"{sender} mouse disabled");
 #endif
         }
 

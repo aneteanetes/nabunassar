@@ -6,6 +6,28 @@
   "gold": "$",
   "squad": "Отряд",
 
+  //messages
+  "comingtolocation": "Вы попадаете в",
+  "screenshotsaved": "Скриншот сохранён",
+
+  //maps and areas
+  "MapMraumir": "Мраумир",
+  "AreaMarket": "Торговый квартал",
+
+  //interface
+  "controluse": "Использовать",
+  "controlwasd": "Шаг",
+  "info": "Информация",
+  "controllb": "Перемещение",
+  "skills": "Умения",
+  "abils": "Навыки",
+  "charinfo": "Персонаж",
+  "map": "Карта",
+  "inventory": "Инвентарь",
+  "charselectcontrol": "Слот",
+  "pause": "Пауза",
+  "camera": "Камера",
+
   //races
   "Human": "Человек",
 

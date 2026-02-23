@@ -168,6 +168,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                         Text = counter.ToString(),
                         TextAlign= FontStashSharp.RichText.TextHorizontalAlignment.Center,
                         Padding=new Myra.Graphics2D.Thickness(0,20),
+                        Margin=new Myra.Graphics2D.Thickness(0,0,0,0),
                         TextColor = Color.IndianRed,
                         Font = consolas,
                         Border = new SolidBrush(Color.IndianRed),

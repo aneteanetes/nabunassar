@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using StbImageWriteSharp;
 
 namespace ioi.Extensions.Texture2DExtensions
 {
     internal static class Texture2DSaveExtensions
     {
-        internal static unsafe string SaveAsScreenshot(this Texture2D texure)
+        internal static string SaveAsScreenshot(this Texture2D texure)
         {
             var screenshotDir = "Screenshots";
 
