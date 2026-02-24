@@ -65,8 +65,8 @@
 	  <Folder Include="Resources\BaseGame\Assets\Images\Interface\" />
 	  <Folder Include="Resources\BaseGame\Assets\Sprites\NPCs\" />
 	  <Folder Include="Resources\BaseGame\Data\Creatures\" />
-	  <Folder Include="Resources\BaseGame\Data\Scripts\3Classes\" />
 	  <Folder Include="Resources\BaseGame\Data\Scripts\2Races\" />
+	  <Folder Include="Resources\BaseGame\Data\Scripts\6Enemies\" />
 	</ItemGroup>
 
 	<ItemGroup>

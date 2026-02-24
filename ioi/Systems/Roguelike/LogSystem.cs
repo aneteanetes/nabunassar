@@ -3,9 +3,9 @@ using ioi.Widgets.UserInterfaces.Roguelike;
 
 namespace ioi.Systems.Roguelike
 {
-    internal class LogSystem
+    internal class LogSystem : IDisposable
     {
-        public GameHost Game { get; }
+        public GameHost Game { get; private set; }
 
         public LogWidget Widget { get; internal set; }
 
@@ -17,6 +17,12 @@ namespace ioi.Systems.Roguelike
         public void Log(DrawText text)
         {
             Widget.SetText(text);
+        }
+
+        public void Dispose()
+        {
+            Widget?.Dispose();
+            Game = null;
         }
     }
 }

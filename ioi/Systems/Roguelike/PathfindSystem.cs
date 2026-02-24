@@ -2,9 +2,9 @@
 
 namespace ioi.Systems.Roguelike;
 
-internal class PathfindSystem
+internal class PathfindSystem : IDisposable
 {
-    private readonly RogueMap _map;
+    private RogueMap _map;
 
     public PathfindSystem(RogueMap map) => _map = map;
 
@@ -18,13 +18,14 @@ internal class PathfindSystem
         public Node(Point pos) => Position = pos;
     }
 
-    public List<Vector2> FindPath(Vector2 startVec, Vector2 targetVec)
+    public List<Point> FindPath(Point start, Point target)
     {
-        // Сразу работаем с целыми числами
-        Point start = new Point((int)Math.Round(startVec.X), (int)Math.Round(startVec.Y));
-        Point target = new Point((int)Math.Round(targetVec.X), (int)Math.Round(targetVec.Y));
+        var targetX = Math.Clamp(target.X,0,_map.Width-1);
+        var targetY = Math.Clamp(target.Y, 0, _map.Height-1);
 
-        if (start == target) return new List<Vector2> { startVec };
+        target = new Point(targetX, targetY);
+
+        if (start == target) return new List<Point> { start };
         if (!IsWalkable(target)) return null;
 
         // Очередь с приоритетом: всегда отдает узел с минимальным F
@@ -104,23 +105,28 @@ internal class PathfindSystem
 
     private bool IsWalkable(Point p)
     {
-        // Важно: ключ в Dictionary должен совпадать с типом Vector2 (как в твоем RogueMap)
         var key = new Vector2(p.X, p.Y);
-        if (_map.ObjectMap.TryGetValue(key, out var objects))
-            return !objects.Any(obj => obj.IsBounds);
-        return true;
+
+        var boundsExists = _map.ObjectMap[p.X, p.Y].Objects.Any(x => x.IsBounds);
+
+        return !boundsExists;
     }
 
-    private List<Vector2> RetracePath(Node node)
+    private List<Point> RetracePath(Node node)
     {
-        var res = new List<Vector2>();
+        var res = new List<Point>();
         while (node != null)
         {
-            res.Add(new Vector2(node.Position.X, node.Position.Y));
+            res.Add(node.Position);
             node = node.Parent;
         }
         res.Reverse();
         return res;
+    }
+
+    public void Dispose()
+    {
+        _map = null;
     }
 }
 

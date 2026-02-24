@@ -21,6 +21,7 @@ using ioi.Widgets;
 using Penumbra;
 using System.Runtime.InteropServices;
 using ioi.Monogame.Cameras;
+using ioi.Systems.Roguelike;
 
 namespace ioi
 {
@@ -98,6 +99,8 @@ namespace ioi
         public World WorldMap { get; private set; }
 
         public World WorldBattle { get; private set; }
+
+        public GameWorld GameWorld { get; set; }
 
         public OrthographicCameraCustom CameraMain { get; private set; }
 

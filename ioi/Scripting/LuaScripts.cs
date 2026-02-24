@@ -8,29 +8,29 @@ namespace ioi.Scripting
         public GameHost Game { get; }
         public Table LuaMeta { get; }
 
-        public Script Executor;
+        public Script ScriptHost;
 
         private FileSystemWatcher _watcher;
         private bool _needsReload;
         private string _changedFile;
 
-        public Table Globals => Executor.Globals;
+        public Table Globals => ScriptHost.Globals;
 
         public DynValue Execute(string scriptText)
         {
-            return Executor.DoString(scriptText);
+            return ScriptHost.DoString(scriptText);
         }
 
         public LuaScripts(GameHost game)
         {
             Game = game; 
             
-            Executor = new Script();
+            ScriptHost = new Script();
             Script.DefaultOptions.DebugPrint = s => Console.WriteLine(s);
 
-            LuaMeta = new Table(Executor);
+            LuaMeta = new Table(ScriptHost);
             LuaMeta["__index"] = (Func<Table, string, DynValue>)((t, k) => t.GetSmart(k));
-            Executor.Globals.Set("LuaMeta", DynValue.NewTable(LuaMeta));
+            ScriptHost.Globals.Set("LuaMeta", DynValue.NewTable(LuaMeta));
 
         }
 
@@ -38,7 +38,7 @@ namespace ioi.Scripting
         {
             try
             {
-                return Executor.Call(function, args);
+                return ScriptHost.Call(function, args);
             }
             catch (InterpreterException ex)
             {
@@ -57,15 +57,15 @@ namespace ioi.Scripting
 
         public Table MergeTables(Table t1, Table t2)
         {
-            var func = Executor.Globals.Get("Core").Table.Get("mergeTables");
-            return Executor.Call(func, t1, t2).Table;
+            var func = ScriptHost.Globals.Get("Core").Table.Get("mergeTables");
+            return ScriptHost.Call(func, t1, t2).Table;
         }
 
         public Table CreateTable(params string[] templates)
         {
-            var table = new Table(Executor);
+            var table = new Table(ScriptHost);
 
-            Table sources = new Table(Executor);
+            Table sources = new Table(ScriptHost);
             foreach (var template in templates)
             {
                 sources.Append(DynValue.NewString(template));
@@ -118,7 +118,7 @@ namespace ioi.Scripting
                 var scripts = Game.Content.LoadResourcePack("Data/Scprits");
                 foreach (var script in scripts)
                 {
-                    Executor.DoStream(script.Stream);
+                    ScriptHost.DoStream(script.Stream);
                 }
             }
         }
@@ -137,7 +137,7 @@ namespace ioi.Scripting
         {
             try
             {
-                Executor.DoFile(file);
+                ScriptHost.DoFile(file);
             }
             catch (InterpreterException ex)
             {

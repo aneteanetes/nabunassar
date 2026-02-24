@@ -82,12 +82,21 @@ namespace ioi
         {
             Game.InitGameWorld();
             Game.InitializeGameState();
-            Game.MapSystem = new ObjectMapSystem(Game);
-            Game.SpawnSystem = new SpawnSystem(Game);
-            Game.PlayerControlSystem=new PlayerControlSystem(Game);
-            Game.LogSystem = new LogSystem(Game);
-            Game.GameState.Player = Game.SpawnSystem.CreateCharacter("Human", "Warrior");
-            return Game.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");
+
+            Game.GameWorld = new GameWorld(Game)
+            {
+                MapSystem = new ObjectMapSystem(Game),
+                SpawnSystem = new SpawnSystem(Game),
+                PlayerControlSystem = new PlayerControlSystem(Game),
+                LogSystem = new LogSystem(Game),
+                BorderLayersSystem = new BorderLayersSystem(Game),
+                CombatSystem = new CombatSystem(Game)
+            };
+
+            Game.GameState.Player = Game.GameWorld.SpawnSystem.CreateCharacter("Human", "Warrior");
+
+            yield return Game.GameWorld.LoadContent();
+            yield return Game.GameWorld.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");
         }
 
         private static IEnumerator LoadNewGame(GameHost game)

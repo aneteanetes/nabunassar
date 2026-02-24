@@ -31,8 +31,14 @@
   //races
   "Human": "Человек",
 
+  //races other
+  "Animal": "Зверь",
+
   //classes
   "Warrior": "Воин",
+
+  //classes other
+  "Bruiser": "Громила",
 
   //stats
   "ad": "Сила атаки",
@@ -41,5 +47,8 @@
   "mdef": "Защита М",
 
   //resources
-  "rage": "Ярость"
+  "rage": "Ярость",
+
+  //other
+  "rat_enemy": "Крыса"
 }

@@ -15,8 +15,10 @@
 
     gold=100,
 
+    desc="description",
+
     resstring = function (obj)
-        return obj.stats.mana..'/'..obj.stats.manamax;
+        return (obj.stats.mana or '')..'/'..(obj.stats.manamax or '');
     end,
 
     -- autoinit

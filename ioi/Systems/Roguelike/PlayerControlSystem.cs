@@ -1,15 +1,21 @@
 ﻿using Geranium.Reflection;
 using ioi.Components;
 using ioi.Struct;
+using ioi.Widgets.UserInterfaces.Roguelike;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
 
 namespace ioi.Systems.Roguelike
 {
-    internal class PlayerControlSystem
+    internal class PlayerControlSystem : IDisposable
     {
-        public GameHost Game { get; }
+        public GameHost Game { get; private set; }
+
+        public Mode Mode { get; set; }
+
+        public ControlsWidget ControlsWidget { get; internal set; }
+
         private TimeSpan _total;
 
         public PlayerControlSystem(GameHost game)
@@ -19,20 +25,26 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
+            if(Mode== Mode.Map)
+                UpdateMap(gameTime);
+            else
+                UpdateCombat(gameTime);
+        }
+
+        public void UpdateCombat(GameTime gameTime)
+        {
+
+        }
+
+        public void UpdateMap(GameTime gameTime)
+        {
             var player = Game.GameState.Player.MapObject;
 
             MouseMoving(player);
 
             if (player.IsMoving)
             {
-                var newPos = Vector2.Lerp(player.Position, player.TargetPosition, 1f);
-                var diff = newPos - player.Position;
-                player.Position = newPos;
-                if (Vector2.Distance(player.Position, player.TargetPosition) < 0.1f)
-                {
-                    player.Position = player.TargetPosition;
-                    player.IsMoving = false;
-                }
+                var diff = player.UpdateMoving();
 
                 CameraMoving(player, diff);
                 return;
@@ -43,14 +55,14 @@ namespace ioi.Systems.Roguelike
                 Game.GameState.Temp.ClickPosition = null;
             }
 
-            if (player.MovingPath != default)
+            if (player.MovePath != default)
             {
-                var target = player.MovingPath.Dequeue();
+                var target = player.MovePath.Dequeue();
                 Game.GameState.Map.Move(player, target);
 
-                if (player.MovingPath.Count == 0)
+                if (player.MovePath.Count == 0)
                 {
-                    player.MovingPath = null;
+                    player.MovePath = null;
                     Game.GameState.Temp.ClickPosition = null;
                 }
             }
@@ -66,21 +78,22 @@ namespace ioi.Systems.Roguelike
             if (state.WasButtonPressed(MouseButton.Left))
             {
                 var pos = state.Position;
-                var clicked = Game.CameraMap.ScreenToWorld(pos.X,pos.Y);
-                var targetCoords = new Vector2(((float)Math.Floor(clicked.X / Game.CellSize.X)), ((float)Math.Floor(clicked.Y / Game.CellSize.Y)));
+                var clicked = Game.CameraMap.ScreenToWorld(pos.X, pos.Y);
+                var targetCoords = new Microsoft.Xna.Framework.Point(((int)Math.Floor(clicked.X / Game.CellSize.X)), ((int)Math.Floor(clicked.Y / Game.CellSize.Y)));
 
-                if (targetCoords.X > 90 || targetCoords.Y > 23)
-                    return;
+                Queue<Point> path = default;
 
-                var path = Game.PathfindSystem.FindPath(player.Coords, targetCoords);
-
-                if (path != default)
+                var isClickOutOfMap = targetCoords.X > Game.GameState.Map.Width || targetCoords.Y > Game.GameState.Map.Height;
+                if (!isClickOutOfMap)
                 {
-                    player.MovingPath = new Queue<Vector2>(path);
+                    path = player.BindMovePath(targetCoords);
                 }
 
-                Game.GameState.Temp.ClickPosition = clicked;
-                Game.GameState.Temp.ClickSprite = path == default ? Entities.Data.Temporary.ClickSprite.Cross : Entities.Data.Temporary.ClickSprite.Position;
+                if (Game.MapViewport.Bounds.Contains(pos))
+                {
+                    Game.GameState.Temp.ClickPosition = clicked;
+                    Game.GameState.Temp.ClickSprite = path == default ? Entities.Data.Temporary.ClickSprite.Cross : Entities.Data.Temporary.ClickSprite.Position;
+                }
             }
         }
 
@@ -88,7 +101,7 @@ namespace ioi.Systems.Roguelike
         {
             var keyboard = KeyboardExtended.GetState();
 
-            float x = 0, y = 0;
+            int x = 0, y = 0;
 
             if (keyboard.IsKeyDown(Keys.S))
             {
@@ -109,22 +122,16 @@ namespace ioi.Systems.Roguelike
                 player.Side = Side.Right;
             }
 
-            var coords = new Vector2(x, y);
+            var coords = new Point(x, y);
 
-            if (coords == Vector2.Zero)
+            if (coords == Point.Zero)
                 return;
 
             coords = player.Coords + coords;
+            //List<ObjectMap> objs = player.ProcessCollisions(coords);
 
-            var objs = Game.GameState.Map.Collide(coords);
-
-            if (objs.Count > 0)
-            {
-                player.ProcessCollision(objs);
-            }
-
-            if (objs.Any(x => x.IsBounds))
-                return;
+            //if (objs.Any(x => x.IsBounds))
+            //    return;
 
             Game.GameState.Map.Move(player, coords);
         }
@@ -206,6 +213,43 @@ namespace ioi.Systems.Roguelike
                 player.BoundingBoxCamera.Max.X - player.BoundingBoxCamera.Min.X,
                 player.BoundingBoxCamera.Max.Y - player.BoundingBoxCamera.Min.Y), Color.LightYellow, 2);
             sb.End();
+        }
+
+        public void MainScreenPreset()
+        {
+            var str = Game.Strings["Roguelike"];
+            ControlsWidget.BindButton(1, $"[Q/MRB] - {str["info"]}");
+            ControlsWidget.BindButton(2, $"[W,A,S,D/LMB] - {str["controlwasd"]}");
+            ControlsWidget.BindButton(3, $"[1,2,3,4] - {str["abils"]}");
+            ControlsWidget.BindButton(4, $"[E] - {str["controluse"]}");
+            ControlsWidget.BindButton(5, $"[5,6,7,8] - {str["skills"]}");
+            ControlsWidget.BindButton(6, $"[С] - {str["charinfo"]}");
+            ControlsWidget.BindButton(7, $"[M] - {str["map"]}");
+            ControlsWidget.BindButton(8, $"[I] - {str["inventory"]}");
+            ControlsWidget.BindButton(9, $"[F1-F6] - {str["charselectcontrol"]}");
+            ControlsWidget.BindButton(10, $"[<,^,>] - {str["camera"]}");
+        }
+
+        public void Dispose()
+        {
+            Game = null;
+            ControlsWidget?.Dispose();
+            ControlsWidget = null;
+        }
+
+        internal void OnCollide(ObjectMap map)
+        {
+            Game.GameWorld.CombatSystem.StartCombat(map.Entity);
+        }
+
+        internal void Combat()
+        {
+            Mode = Mode.Combat;
+        }
+
+        internal void Map()
+        {
+            Mode = Mode.Map;
         }
     }
 }

@@ -182,11 +182,7 @@ namespace ioi
         {
             _screenLoaded = false;
 
-            var loadingScreen = new BaseLoadingScreen(this)
-            {
-                LoadingCorutine = loadingMethod,
-                NextScreen = screen
-            };
+            var loadingScreen = new BaseLoadingScreen(this, screen, loadingMethod);
 
             if (transition == default)
                 transition = new FadeScreenTransition(GraphicsDevice, Color.Black);

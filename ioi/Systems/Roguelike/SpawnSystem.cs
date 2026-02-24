@@ -1,5 +1,6 @@
 ﻿using ioi.Components;
 using ioi.Scripting;
+using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike
 {
@@ -18,12 +19,27 @@ namespace ioi.Systems.Roguelike
         {
             var entity = new GameEntity(Game.Lua, "Templates.Base.Object", $"Templates.Races.{race}", $"Templates.Classes.{@class}")
             {
-                Name = "Странник"
+                Name = "Странник",
             };
 
-            var result = Lua.Call(entity["refresh"],entity.Data);
+            entity["icon"] = DynValue.NewString("@");
+            entity.Color("color", Color.Red);
 
-            var z = entity["stats.def"];
+            Lua.Call(entity["refresh"],entity.Data);
+
+            return entity;
+        }
+
+        public GameEntity CreateEnemy(string id, string race, string @class)
+        {
+            var entity = new GameEntity(Game.Lua,
+                "Templates.Base.Object",
+                $"Templates.Races.{race}", 
+                $"Templates.Classes.{@class}",
+                $"Templates.Base.Moveable",
+                $"Templates.Enemies.{id}");
+
+            Lua.Call(entity["refresh"], entity.Data);
 
             return entity;
         }

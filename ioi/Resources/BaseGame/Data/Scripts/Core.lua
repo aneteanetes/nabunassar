@@ -13,5 +13,6 @@ Templates={
     Base={},
     Perks={},
     Races={},
-    Classes={}
+    Classes={},
+    Enemies={}
 }

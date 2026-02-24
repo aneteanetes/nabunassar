@@ -11,13 +11,8 @@ namespace ioi
         private List<ScreenWidget> _screenWidgets = new();
         private List<ScreenWidgetWindow> _screenWindowWidgets = new();
 
-        public ObjectMapSystem MapSystem { get; internal set; }
-        public PlayerControlSystem PlayerControlSystem { get; internal set; }
-        public PathfindSystem PathfindSystem { get; set; }
 
         public LuaScripts Lua { get; set; }
-        public SpawnSystem SpawnSystem { get; internal set; }
-        public LogSystem LogSystem { get; internal set; }
 
         public int WidgetsCount()
         {

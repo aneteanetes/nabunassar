@@ -1,7 +1,9 @@
-﻿using MonoGame.Extended.Graphics;
+﻿using ioi.Screens.Abstract;
+using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Particles;
-using ioi.Screens.Abstract;
+using MonoGame.Extended.Screens;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace ioi.Screens.LoadingScreens
 {
@@ -15,15 +17,19 @@ namespace ioi.Screens.LoadingScreens
         private bool _isLoaded;
         private bool _isTransitionEnded;
 
+
+        private Stack<IEnumerator> loading = new();
+
         public override bool IsLoadingScreen => true;
 
-        public BaseLoadingScreen(GameHost game) : base(game)
+        public BaseLoadingScreen(GameHost game, BaseScreen next, IEnumerator loadingEnty = null) : base(game)
         {
+            if (loadingEnty != default)
+                loading.Push(loadingEnty);
+            NextScreen = next;
         }
 
         public BaseScreen NextScreen { get; set; }
-
-        public IEnumerator LoadingCorutine { get; set; }
 
         public override void LoadContent()
         {
@@ -61,7 +67,23 @@ namespace ioi.Screens.LoadingScreens
 
             if (_isTransitionEnded)
             {
-                if (!LoadingCorutine.MoveNext())
+                IEnumerator current = loading.Peek();
+
+                // if it's nested IEnumerator - add to loadings
+                if (current.MoveNext())
+                {
+                    if (current.Current is IEnumerator nested)
+                    {
+                        loading.Push(nested);
+                    }
+                }
+                else
+                {
+                    // return to parent IEnumerator
+                    loading.Pop();
+                }
+
+                if (loading.Count==0)
                     _isLoaded = true;
             }
 
