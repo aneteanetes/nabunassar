@@ -51,7 +51,9 @@ namespace ioi.Entities.Data
 
         public bool InGame { get; set; }
 
-        public GameEntity Player { get; internal set; }
+        public ObjectMap Player { get; internal set; }
+
+        public GameEntity Enemy { get; set; }
 
         [NotMapped]
         public TemporaryState Temp { get; set; } = new();

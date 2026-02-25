@@ -1,11 +1,14 @@
 ﻿using ioi.Components;
+using ioi.Localization;
 using MoonSharp.Interpreter;
+using System.Reflection;
 
 namespace ioi.Scripting
 {
-    internal class LuaScripts
+    public class LuaScripts
     {
-        public GameHost Game { get; }
+        internal GameHost Game { get; }
+
         public Table LuaMeta { get; }
 
         public Script ScriptHost;
@@ -21,12 +24,25 @@ namespace ioi.Scripting
             return ScriptHost.DoString(scriptText);
         }
 
-        public LuaScripts(GameHost game)
+        internal LuaScripts(GameHost game)
         {
             Game = game; 
             
             ScriptHost = new Script();
             Script.DefaultOptions.DebugPrint = s => Console.WriteLine(s);
+
+            UserData.RegisterAssembly(Assembly.GetExecutingAssembly());
+            UserData.RegisterType<GameEntity>();
+            UserData.RegisterType<ObjectMap>();
+            UserData.RegisterType<LocalizedStrings>();
+
+
+            Table mathTable = Globals.Get("math").Table;
+            mathTable["clamp"] = (Func<double, double, double, double>)Math.Clamp;
+
+            Func<string, string> localizationfunc = str => Game.Strings["Roguelike"][str];
+            Globals["loco"] = localizationfunc;
+            Globals["toHexString"] = (Func<Table, string>)GameEntity.ColorFromTableToHex;
 
             LuaMeta = new Table(ScriptHost);
             LuaMeta["__index"] = (Func<Table, string, DynValue>)((t, k) => t.GetSmart(k));
@@ -43,7 +59,7 @@ namespace ioi.Scripting
             catch (InterpreterException ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Lua: {ex.DecoratedMessage}");
+                Console.WriteLine($"Lua: {ex.DecoratedMessage ?? ex.Message}");
                 Console.ForegroundColor = ConsoleColor.White;
             }
             catch (Exception ex)

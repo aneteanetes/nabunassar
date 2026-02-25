@@ -1,10 +1,12 @@
 ﻿using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
+using MoonSharp.Interpreter;
 using System.Collections;
 
 namespace ioi.Systems.Roguelike
 {
+    [MoonSharpUserData]
     internal class BorderLayersSystem
     {
         public GameHost Game { get; }

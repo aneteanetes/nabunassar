@@ -63,7 +63,7 @@ namespace ioi.Entities.Map
             ObjectMap[obj.Coords.X, obj.Coords.Y].Flags = (byte)(isBlocked ? 1 : 0);
         }
 
-        internal void Move(ObjectMap obj, Point coords)
+        internal bool Move(ObjectMap obj, Point coords)
         {
             var x = Math.Clamp(coords.X, 0, Width - 1);
             var y = Math.Clamp(coords.Y, 0, Height - 1);
@@ -73,19 +73,29 @@ namespace ioi.Entities.Map
             if (cell.Flags == 1)
             {
                 obj.StopMove();
-                return;
+                obj.MoveStopRequest = false;
+                return false;
             }
 
             obj.ProcessCollision(cell.Objects);
 
-            cell.Objects.Remove(obj);
+            // move stopped
+            if (obj.MoveStopRequest)
+            {
+                obj.MoveStopRequest = false;
+                return false;
+            }
+
+            ObjectMap[obj.Coords.X, obj.Coords.Y].Objects.Remove(obj);
 
             obj.Coords = coords;
 
-            cell.Objects.Add(obj);
+            ObjectMap[x, y].Objects.Add(obj);
 
             obj.IsMoving = true;
             obj.TargetPosition = obj.GetPositionFromCoords();
+
+            return true;
         }
 
         public List<Area> Areas { get; set; } = new();

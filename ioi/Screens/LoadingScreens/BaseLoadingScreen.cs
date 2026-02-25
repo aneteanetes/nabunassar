@@ -1,9 +1,7 @@
 ﻿using ioi.Screens.Abstract;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Particles;
-using MonoGame.Extended.Screens;
 using System.Collections;
-using System.Runtime.CompilerServices;
 
 namespace ioi.Screens.LoadingScreens
 {
@@ -19,6 +17,7 @@ namespace ioi.Screens.LoadingScreens
 
 
         private Stack<IEnumerator> loading = new();
+        private LoadingComponent loader;
 
         public override bool IsLoadingScreen => true;
 
@@ -35,32 +34,25 @@ namespace ioi.Screens.LoadingScreens
         {
             GameController.SetCameraToScreen();
 
-            _iconSprite = new Sprite(Content.LoadTexture("Assets/Images/Backgrounds/star.png"));
-
-            var posOffset = 100;
-            _iconPos = new Vector2(posOffset, Game.Settings.OriginHeightPixel - posOffset);
-            _rotation = 0f;
-            _iconSprite.Origin = new Vector2(_iconSprite.TextureRegion.Width / 2, _iconSprite.TextureRegion.Height / 2);
-
-            _loadText = Game.Strings["UI"]["Loading"];
+            loader = new LoadingComponent(Game);
+            loader.LoadContent();
         }
 
         public override void Draw(GameTime gameTime)
         {
             Game.SpriteBatch.End();
 
-            var sb = Game.BeginDraw();
-
-            sb.Draw(_iconSprite, _iconPos, _rotation, new Vector2(.25f));
-
-            sb.DrawText(Fonts.FritzQuadranta, 50, _loadText, _iconPos + new Vector2(50, -20), Globals.BaseColor);
-
-            Game.SpriteBatch.End();
+            loader.Draw(gameTime);
         }
 
         public override void Update(GameTime gameTime)
         {
-            UpdateScreen(gameTime);
+            loader.X = Game.MainViewport.X;
+            loader.Y = Game.MainViewport.Y;
+            loader.Width = Game.MainViewport.Width;
+            loader.Height = Game.MainViewport.Height;
+            loader.Update(gameTime);
+            //UpdateScreen(gameTime);
 
             if (_isAllCompleted)
                 return;
@@ -70,7 +62,7 @@ namespace ioi.Screens.LoadingScreens
                 IEnumerator current = loading.Peek();
 
                 // if it's nested IEnumerator - add to loadings
-                if (current.MoveNext())
+                if (current.MoveNext()) //here loading
                 {
                     if (current.Current is IEnumerator nested)
                     {
@@ -91,24 +83,6 @@ namespace ioi.Screens.LoadingScreens
             {
                 Game.SwitchScreenInternal(NextScreen);
                 _isAllCompleted = true;
-            }
-        }
-
-        protected virtual void UpdateScreen(GameTime gameTime)
-        {
-            if (this.CanUpdate(gameTime, TimeSpan.FromMilliseconds(.5)))
-            {
-                if (_rotation == 1)
-                    _rotation = 0;
-                _rotation += 0.001f;
-            }
-
-            if (_loadText.CanUpdate(gameTime, TimeSpan.FromMilliseconds(250)))
-            {
-                _loadText += ".";
-
-                if (_loadText.Contains("...."))
-                    _loadText = _loadText.Replace("....", "");
             }
         }
 

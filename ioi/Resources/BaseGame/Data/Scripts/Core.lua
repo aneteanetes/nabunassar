@@ -1,3 +1,5 @@
+math.randomseed(os.time());
+
 Core = {
     groupby = function(data, key_selector)
         local grouped = {}

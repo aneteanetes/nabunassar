@@ -72,7 +72,7 @@ namespace ioi.Monogame.Viewports
             int num2 = (int)(num * (float)VirtualWidth + 0.5f);
             int num3 = (int)(num * (float)VirtualHeight + 0.5f);
 
-            var mapViewportOffset = Vector2.Transform(_game.CellSize, _game.CameraMain.GetViewMatrix());
+            var mapViewportOffset = Vector2.Transform(_game.CellSize.ToVector2(), _game.CameraMain.GetViewMatrix());
 
             var mapViewpOffset = new Point((int)Math.Round(mapViewportOffset.X), (int)Math.Round(mapViewportOffset.Y));
 

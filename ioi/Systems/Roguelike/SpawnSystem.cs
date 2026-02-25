@@ -4,6 +4,7 @@ using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike
 {
+    [MoonSharpUserData]
     internal class SpawnSystem
     {
         public GameHost Game { get; }
@@ -17,7 +18,11 @@ namespace ioi.Systems.Roguelike
 
         public GameEntity CreateCharacter(string race, string @class)
         {
-            var entity = new GameEntity(Game.Lua, "Templates.Base.Object", $"Templates.Races.{race}", $"Templates.Classes.{@class}")
+            var entity = new GameEntity(Game.Lua, 
+                "Templates.Base.Object",
+                "Templates.Base.Player",
+                $"Templates.Races.{race}", 
+                $"Templates.Classes.{@class}")
             {
                 Name = "Странник",
             };
@@ -34,6 +39,7 @@ namespace ioi.Systems.Roguelike
         {
             var entity = new GameEntity(Game.Lua,
                 "Templates.Base.Object",
+                "Templates.Base.Enemy",
                 $"Templates.Races.{race}", 
                 $"Templates.Classes.{@class}",
                 $"Templates.Base.Moveable",

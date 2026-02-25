@@ -2,6 +2,7 @@
 using ioi.Struct;
 using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
+using MoonSharp.Interpreter;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -64,7 +65,9 @@ namespace ioi.Components
                 if (MovePath != default)
                 {
                     var target = MovePath.Dequeue();
-                    Game.GameState.Map.Move(this, target);
+                    var moving = Game.GameState.Map.Move(this, target);
+                    if (!moving)
+                        return;
 
                     if (MovePath.Count == 0)
                     {
@@ -115,6 +118,8 @@ namespace ioi.Components
         }
 
         public Queue<Point> MovePath { get; set; }
+
+        public bool MoveStopRequest { get; set; }
 
         public Vector2? DrawPosition { get; set; }
 
@@ -173,8 +178,6 @@ namespace ioi.Components
 
         public Point KeyCoords() => Coords;
 
-        public Action<ObjectMap> OnCollide;
-
         public void RecalculateBounds()
         {
             VisualBounds = new Rectangle(Position.ToPoint(), Size.ToPoint());
@@ -192,11 +195,11 @@ namespace ioi.Components
                 if (collision == this)
                     continue;
 
-                if (OnCollide != default)
-                    OnCollide(collision);
-
-                if (collision.OnCollide != default)
-                    collision.OnCollide(this);
+                var colliderFunc = Entity?["collide"];
+                if(colliderFunc.IsNotNil())
+                {
+                    Entity.Func("collide", Game.GameWorld,this, collision);
+                }
             }
         }
 
@@ -217,6 +220,7 @@ namespace ioi.Components
             IsMoving = false;
             MovePath = default;
             TargetPosition = Position;
+            MoveStopRequest = true;
         }
     }
 }

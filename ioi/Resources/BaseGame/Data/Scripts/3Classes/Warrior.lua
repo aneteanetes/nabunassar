@@ -6,21 +6,17 @@ Templates.Classes.Warrior = {
     
         -- сюда придём после всех предыдущих init
 
-        if obj.stats == nil then
-            obj.stats={}
-        end
-
-        obj.stats.rage=0;
-        obj.stats.basemhp=100;
-        obj.stats.mhp=100;
-        obj.stats.hp=100;
-        obj.stats.mindmg=7
-        obj.stats.maxdmg=11
+        obj.rage=0;
+        obj.basemhp=100;
+        obj.mhp=100;
+        obj.hp=100;
+        obj.mindmg=7
+        obj.maxdmg=11
 
         obj.res='rage';
         obj.rescolor={255,0,0,255};
         obj.resstring = function (obj)
-            return tostring(obj.stats.rage);
+            return tostring(obj.rage);
         end
         
         if(obj.perks==nil) then

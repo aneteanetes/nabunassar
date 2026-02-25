@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using MoonSharp.Interpreter;
+using System.Collections;
 
 namespace ioi.Systems.Roguelike
 {
+    [MoonSharpUserData]
     internal class GameWorld
     {
         public GameHost Game { get; }
@@ -23,16 +25,30 @@ namespace ioi.Systems.Roguelike
 
         public CombatSystem CombatSystem { get; set; }
 
+        public LoadingSystem LoadingSystem { get; set; }
+
         public BorderLayersSystem BorderLayersSystem { get; internal set; }
+
+        internal IEnumerator LoadContent()
+        {
+            LoadingSystem.LoadContent();
+            yield return 0;
+
+            CombatSystem.LoadContent();
+            yield return 0;
+
+            yield return BorderLayersSystem.LoadContent();
+        }
 
         public void Update(GameTime gameTime)
         {
             if (!Game.IsGameActive)
                 return;
 
-            MapSystem?.Update(gameTime);
             PlayerControlSystem?.Update(gameTime);
+            MapSystem?.Update(gameTime);
             CombatSystem?.Update(gameTime);
+            LoadingSystem?.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
@@ -48,6 +64,7 @@ namespace ioi.Systems.Roguelike
             PlayerControlSystem?.Dispose();
             PathfindSystem?.Dispose();
             LogSystem?.Dispose();
+            LoadingSystem?.Dispose();
             CombatSystem?.Dispose();
 
             MapSystem = null;
@@ -55,11 +72,6 @@ namespace ioi.Systems.Roguelike
             PathfindSystem = null;
             SpawnSystem = null;
             LogSystem = null;
-        }
-
-        internal IEnumerator LoadContent()
-        {
-            yield return BorderLayersSystem.LoadContent();
         }
     }
 }

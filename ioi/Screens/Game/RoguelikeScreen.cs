@@ -1,10 +1,7 @@
 ﻿using Geranium.Reflection;
 using ioi.Entities.Struct;
-using ioi.Monogame.SpriteBatch;
 using ioi.Screens.Abstract;
-using ioi.Tiled.Map;
 using ioi.Widgets.UserInterfaces.Roguelike;
-using Microsoft.VisualBasic;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Graphics;
@@ -31,9 +28,9 @@ namespace ioi.Screens
             positionSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 32, 16, 16)) { Color= Color.AntiqueWhite };
             crossSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 0, 16, 16)) { Color = Color.Red, };
 
-            Game.AddDesktopWidget(new EntityWidget(Game,Game.GameState.Player, Struct.Side.Right),Game.MyraDesktopIngame);
+            Game.AddDesktopWidget(new EntityWidget(Game,Game.GameState.Player.Entity, Struct.Side.Right),Game.MyraDesktopIngame);
             Game.GameWorld.PlayerControlSystem.ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
-            Game.GameWorld.PlayerControlSystem.MainScreenPreset();
+            Game.GameWorld.PlayerControlSystem.ControlsMainScreenPreset();
 
             Game.GameWorld.LogSystem.Widget = Game.AddDesktopWidget(new LogWidget(Game), Game.MyraDesktopIngame);
             Game.GameWorld.MapSystem.LogArea();

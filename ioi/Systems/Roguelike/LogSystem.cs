@@ -1,8 +1,10 @@
 ﻿using ioi.Entities.Struct;
 using ioi.Widgets.UserInterfaces.Roguelike;
+using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike
 {
+    [MoonSharpUserData]
     internal class LogSystem : IDisposable
     {
         public GameHost Game { get; private set; }

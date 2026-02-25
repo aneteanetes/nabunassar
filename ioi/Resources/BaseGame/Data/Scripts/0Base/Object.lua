@@ -17,36 +17,46 @@
 
     desc="description",
 
+    manamax=0,
+    mana_tpl="{mana}/{manamax}",   
+        
+    -- base
+    ap=0,
+    ad=0,
+    def=0,
+    mdef=0,
+
+    -- hp
+    basemhp=1,
+    mhp=1,
+    hp=1,
+
+    -- damage
+    mindmg=1,
+    maxdmg=1,
+
     resstring = function (obj)
-        return (obj.stats.mana or '')..'/'..(obj.stats.manamax or '');
+        return (obj.mana or '')..'/'..(obj.manamax or '');
+    end,
+
+    collide = function(world,objmap)
+	end,
+
+    strike = function (self,target)
+        local dmg = math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
+        local def = target.def * 0.75;
+        local result = math.clamp(dmg-def,0,dmg);
+
+        target.hp = math.clamp(target.hp-result,0,target.hp);
+
+        local targetColor = toHexString(target.color);
+        world.CombatSystem.LogCombat("/c["..targetColor.."]"..loco(target.name).."/cd "..loco("getting").."/c[#de6b00] "..tostring(result).."/cd "..loco("dmgplural").."!");
     end,
 
     -- autoinit
     init = function (obj)
 
-        -- for all nested objects 
-
-        obj.stats = {
-            -- resource
-            manamax=0,
-            mana_tpl="{mana}/{manamax}",   
-        
-            -- base
-            ap=0,
-            ad=0,
-            def=0,
-            mdef=0,
-
-            -- hp
-            basemhp=1,
-            mhp=1,
-            hp=1,
-
-            -- damage
-            mindmg=1,
-            maxdmg=1,
-        }
-
+        -- for all nested objects
         obj.perks={}
     end,
 
@@ -74,10 +84,12 @@
                 obj.addmod(mod,flatMods,percentMods,multipleMods)
             end
 
-            local base = tonumber(obj.stats['base'..statKey]);
+            local base = tonumber(obj['base'..statKey]);
 
-            obj.stats[statKey] = obj.calculateStat(base, flatMods,percentMods,multipleMods)
+            obj[statKey] = obj.calculateStat(base, flatMods,percentMods,multipleMods)
         end
+
+        obj.hp=obj.mhp;
 
     end,
 

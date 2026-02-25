@@ -1,5 +1,4 @@
-﻿using Geranium.Reflection;
-using ioi.Components;
+﻿using ioi.Components;
 using ioi.Entities.Base;
 using ioi.Entities.Map;
 using ioi.Entities.Struct;
@@ -8,8 +7,8 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using MonoGame.Extended;
 using MonoGame.Extended.Graphics;
+using MoonSharp.Interpreter;
 using System.Collections;
-using System.Security.Claims;
 
 namespace ioi.Systems.Roguelike
 {
@@ -76,7 +75,7 @@ namespace ioi.Systems.Roguelike
                         IsBounds = poly.GetPropertyValue<bool>(nameof(ObjectMap.IsBounds)),
                         Position = position,
                         Coords = poly.Coords.ToPoint(),
-                        Size = Game.CellSize
+                        Size = Game.CellSize.ToVector2()
                     };
                     obj.Sprite.Color = GetColorFromTile(poly);
 
@@ -111,7 +110,7 @@ namespace ioi.Systems.Roguelike
                     IsBounds = poly.GetPropertyValue<bool>(nameof(ObjectMap.IsBounds)),
                     Position = position,
                     Coords = poly.Coords.ToPoint(),
-                    Size = Game.CellSize
+                    Size = Game.CellSize.ToVector2()
                 };
                 obj.Sprite.Color = GetColorFromTile(poly);
 
@@ -119,8 +118,11 @@ namespace ioi.Systems.Roguelike
                 {
                     obj.IsIdle = true;
                     obj.IsUpdatable = true;
-                    Game.GameState.Player.MapObject = obj;
-                    obj.OnCollide = Game.GameWorld.PlayerControlSystem.OnCollide;
+
+                    Game.GameState.Player = obj;
+                    var playerEntity = Game.GameWorld.SpawnSystem.CreateCharacter("Human", "Warrior");
+                    playerEntity["type"] = DynValue.NewString("player");
+                    Game.GameState.Player.BindEntity(playerEntity);
                 }
 
                 if (poly.GetPropertyValue<string>("type") == "enemy")
@@ -143,7 +145,7 @@ namespace ioi.Systems.Roguelike
         [Obsolete("Potential performance hit")]
         public void UpdateArea()
         {
-            Game.GameState.Map.CurrentArea = Game.GameState.Map.Areas.FirstOrDefault(x => x.Bounds.Contains(Game.GameState.Player.MapObject.Position));
+            Game.GameState.Map.CurrentArea = Game.GameState.Map.Areas.FirstOrDefault(x => x.Bounds.Contains(Game.GameState.Player.Position));
         }
 
         public void LogArea()
@@ -179,12 +181,11 @@ namespace ioi.Systems.Roguelike
             if (IsPaused)
                 return;
 
+            foreach (var updatable in Game.GameState.Map.Updatable)
+            {
+                updatable.Update(gameTime);
+            }
 
-            Game.GameState.Map.Updatable
-                .ForEach(x =>
-                {
-                    x.Update(gameTime);
-                });
             UpdateArea();
         }
 
@@ -235,6 +236,7 @@ namespace ioi.Systems.Roguelike
 
         internal void Pause()
         {
+            Game.GameState.Temp.ClickPosition = null;
             Game.GameWorld.BorderLayersSystem["Map"] = false;
             IsPaused = true;
         }

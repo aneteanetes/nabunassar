@@ -5,9 +5,11 @@ using ioi.Widgets.UserInterfaces.Roguelike;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
+using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike
 {
+    [MoonSharpUserData]
     internal class PlayerControlSystem : IDisposable
     {
         public GameHost Game { get; private set; }
@@ -25,20 +27,75 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
-            if(Mode== Mode.Map)
-                UpdateMap(gameTime);
-            else
-                UpdateCombat(gameTime);
+            switch (Mode)
+            {
+                case Mode.Map:
+                    UpdateMap(gameTime);
+                    break;
+                case Mode.Combat:
+                    UpdateCombat(gameTime);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public void UpdateCombat(GameTime gameTime)
         {
+            var key = KeyboardExtended.GetState();
 
+            var player = Game.GameState.Player.Entity;
+            var enemy = Game.GameState.Enemy;
+            
+            if (key.WasKeyPressed(Keys.D1))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.D2))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.D3))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.D4))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.I))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.A))
+            {
+                Game.GameWorld.CombatSystem.Attack(player, enemy);
+            }
+
+            if (key.WasKeyPressed(Keys.D))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.F))
+            {
+
+            }
+
+            if (key.WasKeyPressed(Keys.Q))
+            {
+
+            }
         }
 
         public void UpdateMap(GameTime gameTime)
         {
-            var player = Game.GameState.Player.MapObject;
+            var player = Game.GameState.Player;
 
             MouseMoving(player);
 
@@ -58,7 +115,9 @@ namespace ioi.Systems.Roguelike
             if (player.MovePath != default)
             {
                 var target = player.MovePath.Dequeue();
-                Game.GameState.Map.Move(player, target);
+                var moving = Game.GameState.Map.Move(player, target);
+                if (!moving)
+                    return;
 
                 if (player.MovePath.Count == 0)
                 {
@@ -128,10 +187,6 @@ namespace ioi.Systems.Roguelike
                 return;
 
             coords = player.Coords + coords;
-            //List<ObjectMap> objs = player.ProcessCollisions(coords);
-
-            //if (objs.Any(x => x.IsBounds))
-            //    return;
 
             Game.GameState.Map.Move(player, coords);
         }
@@ -192,10 +247,10 @@ namespace ioi.Systems.Roguelike
 
         public void Draw(GameTime gameTime)
         {
-            if (!Game.IsDrawBounds)
+            if (!Game.IsDrawBounds || Mode == Mode.Combat)
                 return;
 
-            var player = Game.GameState.Player.MapObject;
+            var player = Game.GameState.Player;
 
             BoundingBox deadzoneBounds = GetDeadzoneBounds();
 
@@ -215,7 +270,7 @@ namespace ioi.Systems.Roguelike
             sb.End();
         }
 
-        public void MainScreenPreset()
+        public void ControlsMainScreenPreset()
         {
             var str = Game.Strings["Roguelike"];
             ControlsWidget.BindButton(1, $"[Q/MRB] - {str["info"]}");
@@ -230,6 +285,26 @@ namespace ioi.Systems.Roguelike
             ControlsWidget.BindButton(10, $"[<,^,>] - {str["camera"]}");
         }
 
+        public void ControlsCombatPreset()
+        {
+            var entity = Game.GameState.Player.Entity;
+
+            var str = Game.Strings["Roguelike"];
+            ControlsWidget.BindButton(1, $"[1] - {entity.GetAbilityName(1)}");
+            ControlsWidget.BindButton(2, $"[2] - {entity.GetAbilityName(2)}");
+            ControlsWidget.BindButton(3, $"[3] - {entity.GetAbilityName(3)}");
+            ControlsWidget.BindButton(4, $"[4] - {entity.GetAbilityName(4)}");
+
+            ControlsWidget.BindButton(5, $"[I] - {str["inventory"]}");
+
+            ControlsWidget.BindButton(6, $"[A] - {str["doattack"]}");
+            ControlsWidget.BindButton(7, $"[D] - {str["dodefence"]}");
+            ControlsWidget.BindButton(8, $"[S] - {str["doflee"]}");
+
+            ControlsWidget.BindButton(9, $"[F] - {str["dowait"]}");
+            ControlsWidget.BindButton(10, $"[Q] - {str["info"]}");
+        }
+
         public void Dispose()
         {
             Game = null;
@@ -239,7 +314,6 @@ namespace ioi.Systems.Roguelike
 
         internal void OnCollide(ObjectMap map)
         {
-            Game.GameWorld.CombatSystem.StartCombat(map.Entity);
         }
 
         internal void Combat()

@@ -4,6 +4,7 @@ Templates.Enemies.Rat = {
     
     init = function (obj)
         obj.name="rat_enemy";
+        obj.type="enemy";
 	    obj.speed = 0.15;
         obj.idleSpeed=10;
         obj.idleAmplitude=.5;
@@ -17,18 +18,18 @@ Templates.Enemies.Rat = {
             h=9
         };
 
-        obj.stats.ad=5;
-        obj.stats.def=3;
-        obj.stats.mdef=2;
+        obj.ad=5;
+        obj.def=3;
+        obj.mdef=2;
 
         -- hp
-        obj.stats.basemhp=10;
-        obj.stats.mhp=10;
-        obj.stats.hp=10;
+        obj.basemhp=10;
+        obj.mhp=10;
+        obj.hp=10;
 
         -- damage
-        obj.stats.mindmg=1;
-        obj.stats.maxdmg=2;
+        obj.mindmg=1;
+        obj.maxdmg=2;
 
         obj.icon='r';
         obj.color={173,113,56};

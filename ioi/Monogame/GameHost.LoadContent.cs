@@ -66,13 +66,14 @@ namespace ioi
             _shareTarget = new RenderTarget2D(GraphicsDevice, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height);
             //
 
-            // scripting
-            Lua = new Scripting.LuaScripts(this);
-            Lua.Init();
 
             PixelTexture = new Texture2D(GraphicsDevice, 1, 1);
 
             Strings = new LocalizedStrings(this);
+
+            // scripting
+            Lua = new Scripting.LuaScripts(this);
+            Lua.Init();
 
             SwitchScreen<MainMenuScreen>(GameController.LoadMainGame());
 

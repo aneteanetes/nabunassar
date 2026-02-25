@@ -90,10 +90,11 @@ namespace ioi
                 PlayerControlSystem = new PlayerControlSystem(Game),
                 LogSystem = new LogSystem(Game),
                 BorderLayersSystem = new BorderLayersSystem(Game),
-                CombatSystem = new CombatSystem(Game)
+                CombatSystem = new CombatSystem(Game),
+                LoadingSystem= new LoadingSystem(Game)
             };
 
-            Game.GameState.Player = Game.GameWorld.SpawnSystem.CreateCharacter("Human", "Warrior");
+            Game.Lua.Globals["world"] = Game.GameWorld;
 
             yield return Game.GameWorld.LoadContent();
             yield return Game.GameWorld.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");

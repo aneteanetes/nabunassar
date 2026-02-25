@@ -3,6 +3,7 @@ using ioi.Components;
 using ioi.Struct;
 using ioi.Widgets.Base;
 using Myra.Graphics2D.UI;
+using System.Linq.Expressions;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike
 {
@@ -223,6 +224,35 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
             squadgrid.Width = squadcellsize * 6 + 30;
 
+            #region enemy abilities
+
+            var abilities = new VerticalStackPanel();
+            var abilslabel = new Label()
+            {
+                Text = $"{strings["abilities"]}:",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Myra.Graphics2D.Thickness(0, 0, 0, 15),
+                TextColor = Color.LightYellow,
+                Font = consolas
+            };
+            abilities.Widgets.Add(abilslabel);
+
+            foreach (var abil in entity.Abilities)
+            {
+                var abillabel = new Label()
+                {
+                    Text = $"{strings[abil["name"].String]}:",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Myra.Graphics2D.Thickness(2),
+                    TextColor = Color.LightYellow,
+                    Font = consolas
+                };
+
+                abilities.Widgets.Add(abillabel);
+            }
+
+            #endregion
+
             panel.Widgets.Add(name);
             panel.Widgets.Add(raceclass);
             panel.Widgets.Add(level);
@@ -242,6 +272,10 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             panel.Widgets.Add(def);
             panel.Widgets.Add(mdef);
             panel.Widgets.Add(gold);
+
+            if(side== Side.Left)
+                panel.Widgets.Add(abilities);
+
             panel.Widgets.Add(squad);
             panel.Widgets.Add(squadgrid);
 
@@ -256,13 +290,13 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             raceclass.Text = $"{strings[entity["race"].String]} - {strings[entity["class"].String]}";
             level.Text = $"{strings["level"]}: {entity["level"]}";
             exp.Text = $"{strings["exp"]}: {entity["exp"]}/10";
-            health.Text = $"{strings["health"]}: {entity["stats.hp"]}/{entity["stats.mhp"]}";
+            health.Text = $"{strings["health"]}: {entity["hp"]}/{entity["mhp"]}";
             resource.Text = $"{strings[entity["res"].String]}: {entity.Func("resstring").String}";
-            damage.Text = $"{strings["damage"]}: {entity["stats.mindmg"]}-{entity["stats.maxdmg"]}";
-            ad.Text = $"{strings["ad"]}: {entity["stats.ad"]}";
-            ap.Text = $"{strings["ap"]}: {entity["stats.ap"]}";
-            def.Text = $"{strings["def"]}: {entity["stats.def"]}";
-            mdef.Text = $"{strings["mdef"]}: {entity["stats.mdef"]}";
+            damage.Text = $"{strings["damage"]}: {entity["mindmg"]}-{entity["maxdmg"]}";
+            ad.Text = $"{strings["ad"]}: {entity["ad"]}";
+            ap.Text = $"{strings["ap"]}: {entity["ap"]}";
+            def.Text = $"{strings["def"]}: {entity["def"]}";
+            mdef.Text = $"{strings["mdef"]}: {entity["mdef"]}";
             gold.Text = $"{strings["gold"]}: {entity["gold"]}";
         }
 

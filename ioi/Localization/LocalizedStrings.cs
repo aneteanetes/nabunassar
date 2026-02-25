@@ -3,7 +3,7 @@ using ioi.Resources;
 
 namespace ioi.Localization
 {
-    internal struct LocalizedStrings
+    internal class LocalizedStrings
     {
         GameHost _game;
         private string _fileName;

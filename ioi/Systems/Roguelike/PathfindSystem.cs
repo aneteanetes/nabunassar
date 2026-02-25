@@ -1,7 +1,9 @@
 ﻿using ioi.Entities.Map;
+using MoonSharp.Interpreter;
 
 namespace ioi.Systems.Roguelike;
 
+[MoonSharpUserData]
 internal class PathfindSystem : IDisposable
 {
     private RogueMap _map;

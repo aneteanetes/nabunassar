@@ -41,10 +41,10 @@ namespace ioi
             return true;
         }
 
-        public static bool CanUpdate(this object obj, GameTime gameTime, TimeSpan updateTime, object @lock=null)
+        public static bool CanUpdate(this object obj, GameTime gameTime, TimeSpan updateTime, object @lock = null)
         {
-            if(@lock!=default)
-                obj=@lock;
+            if (@lock != default)
+                obj = @lock;
 
             if (!updatesCache.ContainsKey(obj))
             {

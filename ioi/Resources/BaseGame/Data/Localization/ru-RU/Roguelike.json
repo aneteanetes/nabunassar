@@ -21,12 +21,21 @@
   "controllb": "Перемещение",
   "skills": "Умения",
   "abils": "Навыки",
+  "abilities": "Способности",
   "charinfo": "Персонаж",
   "map": "Карта",
   "inventory": "Инвентарь",
   "charselectcontrol": "Слот",
   "pause": "Пауза",
   "camera": "Камера",
+  "doattack": "Атаковать",
+  "dodefence": "Защищаться",
+  "doflee": "Сбежать",
+  "dowait": "Ждать",
+
+  //combat
+  "getting": "получает",
+  "dmgplural": "урона",
 
   //races
   "Human": "Человек",

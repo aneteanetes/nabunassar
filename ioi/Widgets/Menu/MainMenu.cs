@@ -151,6 +151,7 @@ internal partial class MainMenu : ScreenWidget
         GameController.GlobalBlurShader.Disable();
         Game.GameState.InGame = false;
         Game.SwitchScreen<MainMenuScreen>(GameController.UnloadGame());
+        Game.ChangeGameActive();
     }
 
     public override void OnAfterAddedWidget(Widget widget)
