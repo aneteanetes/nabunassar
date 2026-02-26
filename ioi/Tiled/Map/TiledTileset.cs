@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended.Graphics;
-using ioi.Entities.Base;
 using System.Diagnostics;
 
 namespace ioi.Tiled.Map

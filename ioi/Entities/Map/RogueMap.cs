@@ -1,5 +1,6 @@
 ﻿using ioi.Components;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Graphics;
 using Myra.Graphics2D.UI;
 
 namespace ioi.Entities.Map
@@ -13,6 +14,12 @@ namespace ioi.Entities.Map
         public int Width { get; }
 
         public int Height { get; }
+
+        public List<Area> Areas { get; set; } = new();
+
+        public Area CurrentArea { get; set; }
+
+        public Dictionary<string, Texture2DAtlas> Tilesets { get; internal set; } = new();
 
         public List<ObjectMap> Updatable { get; set; } = new();
 
@@ -97,9 +104,5 @@ namespace ioi.Entities.Map
 
             return true;
         }
-
-        public List<Area> Areas { get; set; } = new();
-
-        public Area CurrentArea { get; set; }
     }
 }

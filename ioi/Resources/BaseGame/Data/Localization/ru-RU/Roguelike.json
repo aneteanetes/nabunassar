@@ -32,10 +32,13 @@
   "dodefence": "Защищаться",
   "doflee": "Сбежать",
   "dowait": "Ждать",
+  "deals": "нанесено",
+  "defeddmg": "заблокировано",
 
   //combat
   "getting": "получает",
   "dmgplural": "урона",
+  "diedcombat": "умирает",
 
   //races
   "Human": "Человек",

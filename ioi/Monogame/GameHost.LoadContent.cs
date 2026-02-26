@@ -85,6 +85,11 @@ namespace ioi
 
             IsMakingScreenShot = new GameLoopFeatureValue<bool>(this, false);
 
+#if DEBUG
+            if (Settings.IsResourceHotReload)
+                EnableHotReload();
+#endif
+
             base.LoadContent();
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ioi.Entities.Data.Praying;
+using Microsoft.Xna.Framework;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -14,6 +15,8 @@ namespace ioi.Monogame.Settings
         public string LanguageCode { get; set; } = "ru-RU";
 
         public bool IsResourceCompiling { get; set; } = false;
+
+        public bool IsResourceHotReload { get; set; } = false;
 
         public string GameTitle { get; set; } = "Inventaion of Imagination";
 

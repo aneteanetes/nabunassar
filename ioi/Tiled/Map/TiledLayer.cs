@@ -1,5 +1,4 @@
-﻿using ioi.Entities.Base;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace ioi.Tiled.Map
 {

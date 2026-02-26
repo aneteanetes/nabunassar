@@ -64,7 +64,7 @@ namespace ioi.Scripting
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        public static DynValue Init(this Table table)
+        public static DynValue Init(this Table table, Table initProps)
         {
             Stack<DynValue> initList = new();
 
@@ -90,7 +90,16 @@ namespace ioi.Scripting
 
             foreach (var init in initList)
             {
-                table.OwnerScript.Call(init, table);
+                try
+                {
+                    table.OwnerScript.Call(init, table, initProps);
+                }
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Lua call: {ex}");
+                    Console.ForegroundColor=ConsoleColor.White;
+                }
             }
 
             return DynValue.Nil;

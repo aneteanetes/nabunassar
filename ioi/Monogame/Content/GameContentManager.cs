@@ -2,6 +2,7 @@
 using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Content;
+using ioi.Content.Compiler;
 using ioi.Entities.Data.Dices;
 using ioi.Entities.Data.Speaking;
 using ioi.Entities.Json;
@@ -286,6 +287,13 @@ namespace ioi.Monogame.Content
             _fonts.ForEach(f => f.Value.Dispose());
             _fonts.Clear();
             base.Dispose(disposing);
+        }
+
+        public void HotReload(string filePath)
+        {
+            var embeddedPath = ResourceCompiler.FormatPathForDB(filePath, _game.Settings);
+            LoadedAssets.Remove(embeddedPath);
+            ResourceCompiler.Compile(_game.Settings, filePath, _resourceLoader);
         }
     }
 }

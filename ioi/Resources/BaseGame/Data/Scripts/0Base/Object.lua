@@ -39,22 +39,81 @@
         return (obj.mana or '')..'/'..(obj.manamax or '');
     end,
 
-    collide = function(world,objmap)
+    collide = function(self,selfentity,objmap,collision)
 	end,
 
     strike = function (self,target)
+        
+        local ctx = DamageContext:new();
+
         local dmg = math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
-        local def = target.def * 0.75;
-        local result = math.clamp(dmg-def,0,dmg);
 
-        target.hp = math.clamp(target.hp-result,0,target.hp);
+        ctx.attacked = math.floor(dmg);
 
-        local targetColor = toHexString(target.color);
-        world.CombatSystem.LogCombat("/c["..targetColor.."]"..loco(target.name).."/cd "..loco("getting").."/c[#de6b00] "..tostring(result).."/cd "..loco("dmgplural").."!");
+        dmg = target.applydmg(target,dmg,self,ctx);
+
+        ctx.attacker="/c[#00FFFF]"..(self.name or "player");
+    end,
+
+    applydmg = function (self,dmg,attacker,ctx)
+
+        -- before
+        dmg = self.beforedmg(self,dmg,attacker,ctx);
+        
+        -- usual
+        local def = self.def * 0.75;
+
+        dmgdefed = math.clamp(dmg-def,0,dmg);
+
+        local defround = math.floor(def);
+        ctx.defed= defround;
+
+        --after calucaltion
+        mitigated = self.afterdmg(self,dmgdefed,attacker,ctx);
+        
+        -- round damage
+        mitigated = math.floor(mitigated);
+
+        ctx.dmg=mitigated;
+
+        self.hp = self.hp-math.floor(dmg);
+
+        if(self.hp<=0) then
+            self.die(self,attacker,ctx);
+            attacker.kill(attacker,self,ctx);
+        end
+        
+        local targetColor = toHexString(self.color);
+        ctx.target="/c["..targetColor.."]"..loco(self.name);
+
+        ctx:log();
+    end,
+
+    beforedmg=function (self,dmg,attacker,ctx)
+	    -- щиты
+        return dmg;
+    end,
+
+    afterdmg=function (self,dmg,attacker,ctx)
+	    -- отражение урона
+        return dmg;
+    end,
+
+    die=function (self,killer,ctx)
+	    ctx.died=true;
+        world.CombatSystem:Kill(self.entity);
+    end,
+
+    kill=function (self,target,ctx)
+	    -- on kill
+    end,
+
+    destroy=function(self)
+	    -- on destroy
     end,
 
     -- autoinit
-    init = function (obj)
+    init = function (obj,props)
 
         -- for all nested objects
         obj.perks={}

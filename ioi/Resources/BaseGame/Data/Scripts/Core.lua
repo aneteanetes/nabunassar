@@ -16,5 +16,6 @@ Templates={
     Perks={},
     Races={},
     Classes={},
-    Enemies={}
+    enemy={},
+    spawner={}
 }

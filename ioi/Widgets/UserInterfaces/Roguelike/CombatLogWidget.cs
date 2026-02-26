@@ -66,5 +66,10 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             widget.Left = 480;
             widget.Top = 94;
         }
+
+        internal void Clear()
+        {
+            vbox.Widgets.Clear();
+        }
     }
 }

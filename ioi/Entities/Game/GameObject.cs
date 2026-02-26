@@ -2,7 +2,6 @@
 using MonoGame.Extended.ECS;
 using ioi.Components;
 using ioi.Components.Effects;
-using ioi.Entities.Base;
 using ioi.Entities.Data.Dices;
 using ioi.Entities.Data.Items;
 using ioi.Entities.Data.Loot;
@@ -12,6 +11,7 @@ using ioi.Resources;
 using ioi.Struct;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using ioi.Tiled.Map;
 
 namespace ioi.Entities.Game
 {

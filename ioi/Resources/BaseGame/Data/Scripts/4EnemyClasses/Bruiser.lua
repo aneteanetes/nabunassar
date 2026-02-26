@@ -1,8 +1,8 @@
-Templates.Classes.Bruiser = {
+Templates.Classes.bruiser = {
 
     class='Bruiser',
 
-    init = function(obj)
+    init = function(obj,props)
                 
         if(obj.perks==nil) then
             obj.perks={};

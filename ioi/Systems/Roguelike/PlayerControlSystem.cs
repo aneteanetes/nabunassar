@@ -17,6 +17,7 @@ namespace ioi.Systems.Roguelike
         public Mode Mode { get; set; }
 
         public ControlsWidget ControlsWidget { get; internal set; }
+        public bool Enabled { get; private set; } = true;
 
         private TimeSpan _total;
 
@@ -27,6 +28,9 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
+            if (!Enabled)
+                return;
+
             switch (Mode)
             {
                 case Mode.Map:
@@ -324,6 +328,16 @@ namespace ioi.Systems.Roguelike
         internal void Map()
         {
             Mode = Mode.Map;
+        }
+
+        internal void Disable()
+        {
+            Enabled = false;
+        }
+
+        internal void Enable()
+        {
+            Enabled = true;
         }
     }
 }

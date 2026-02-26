@@ -1,6 +1,6 @@
 ﻿using Geranium.Reflection;
 
-namespace ioi.Entities.Base
+namespace ioi.Tiled.Map
 {
     public class Propertied : IDisposable
     {

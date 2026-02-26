@@ -1,3 +1,3 @@
-Templates.Races.Animal = {
+Templates.Races.animal = {
     race="Animal"
 }

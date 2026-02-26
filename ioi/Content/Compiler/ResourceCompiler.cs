@@ -37,6 +37,11 @@ namespace ioi.Content.Compiler
             manifestPath = Path.Combine(configuration.PathData, ResourceManifestName);
 
             CurrentBuild = new ResourceManifest();
+
+            if (!Directory.Exists(configuration.PathData))
+                Directory.CreateDirectory(configuration.PathData);
+
+            LoadLastBuild();
         }
 
         private void LoadLastBuild()
@@ -61,15 +66,11 @@ namespace ioi.Content.Compiler
         internal static void Compile(GameSettings cfg)
         {
             var compiler = new ResourceCompiler(cfg);
-            compiler.LoadLastBuild();
 
             var resDir = Path.Combine(compiler.configuration.PathProject, "Resources");
             var folders = Directory.GetDirectories(resDir)
                 .Where(x => Directory.GetFiles(x, "*.*", SearchOption.AllDirectories).Length > 0)
                 .ToArray();
-
-            if (!Directory.Exists(compiler.configuration.PathData))
-                Directory.CreateDirectory(compiler.configuration.PathData);
 
             foreach (var folder in folders)
             {
@@ -85,11 +86,20 @@ namespace ioi.Content.Compiler
             compiler.WriteCurrentBuild();
         }
 
+        internal static void Compile(GameSettings cfg, string file, ResourceLoader loader)
+        {
+            var compiler = new ResourceCompiler(cfg);
+            var resources = loader.Database.GetCollection<Resource>();
+            resources.EnsureIndex("Path");
+
+            compiler.ProcessFile(file, resources);
+        }
+
         private void ProcessResourcesFolder(string folderPath, ILiteCollection<Resource> db)
         {
             var filePaths = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
 
-            var formattedFilePaths = filePaths.Select(FormatPathForDB);
+            var formattedFilePaths = filePaths.Select(p=>FormatPathForDB(p,configuration));
 
             var currentRes = db.Query().Select(x => x.Path).ToArray();
 
@@ -116,13 +126,13 @@ namespace ioi.Content.Compiler
         }
 
         /// <summary>
-        /// Переносит файлы из папки в БД
+        /// Переносит файл из папки в БД
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="db"></param>
-        private void ProcessFile(string filePath, ILiteCollection<Resource> db)
+        public void ProcessFile(string filePath, ILiteCollection<Resource> db)
         {
-            var formattedPath = FormatPathForDB(filePath);
+            var formattedPath = FormatPathForDB(filePath,configuration);
             var lastTime = File.GetLastWriteTime(filePath);
             var res = LastBuild.Resources.FirstOrDefault(x => x.Path == formattedPath);
 
@@ -186,8 +196,7 @@ namespace ioi.Content.Compiler
             }
         }
 
-        private string FormatPathForDB(string filePath)
+        public static string FormatPathForDB(string filePath, GameSettings configuration)
             => Path.GetRelativePath(Path.Combine(configuration.PathRepository, Assembly.GetEntryAssembly().GetName().Name, "Resources", configuration.ModuleName), filePath).Replace("\\", "/");
-
     }
 }

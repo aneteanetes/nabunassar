@@ -1,9 +1,9 @@
 Templates.Base.Enemy = {
-	collide = function(self,world,hostobjmap,objmap)
-		if objmap.Entity["type"]=='player' then
+	collide = function(self,selfentity,objmap,collision)
+		if collision.Entity["type"]=='player' then
+			collision:StopMove();
 			objmap:StopMove();
-			hostobjmap:StopMove();
-			world.CombatSystem:StartCombat(hostobjmap.Entity);
+			world.CombatSystem:StartCombat(selfentity);
 		end
 	end
 }

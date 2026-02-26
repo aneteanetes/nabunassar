@@ -3,7 +3,6 @@ using ioi.Components;
 using ioi.Struct;
 using ioi.Widgets.Base;
 using Myra.Graphics2D.UI;
-using System.Linq.Expressions;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike
 {
@@ -11,7 +10,8 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
     {
         private DynamicSpriteFont consolas;
 
-        private GameEntity entity;
+        public GameEntity Entity { get; private set; }
+
         private Side side;
         private Label name;
         private Label raceclass;
@@ -29,7 +29,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
         public EntityWidget(GameHost game, GameEntity entity, Side side) : base(game)
         {
-            this.entity = entity;
+            this.Entity = entity;
 
             this.side = side;
 
@@ -99,7 +99,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Myra.Graphics2D.Thickness(0, 10, 10, largeBottomMargin/2),
-                TextColor = entity.Color("rescolor"),
+                TextColor = Entity.Color("rescolor"),
                 Font = consolas
             };
 
@@ -199,7 +199,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                 //BorderThickness = new Myra.Graphics2D.Thickness(1)
             };
             var c = 0;
-            foreach (var member in entity.Squad)
+            foreach (var member in Entity.Squad)
             {
                 var cell = new Label
                 {
@@ -210,7 +210,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                     Padding = new Myra.Graphics2D.Thickness(0, 10),
                     Margin = new Myra.Graphics2D.Thickness(5),
                     Font = consolas,
-                    Border = new SolidBrush(entity == member ? Color.IndianRed : Color.DarkGoldenrod),
+                    Border = new SolidBrush(Entity == member ? Color.IndianRed : Color.DarkGoldenrod),
                     BorderThickness = new Myra.Graphics2D.Thickness(1),
                     Height = squadcellsize,
                     Width = squadcellsize
@@ -237,7 +237,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             };
             abilities.Widgets.Add(abilslabel);
 
-            foreach (var abil in entity.Abilities)
+            foreach (var abil in Entity.Abilities)
             {
                 var abillabel = new Label()
                 {
@@ -284,26 +284,34 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
         public override void Update(GameTime gameTime)
         {
+            if(Entity==null)
+                return;
+
             var strings = Game.Strings["Roguelike"];
 
-            name.Text = entity.Name ?? strings[entity["name"].String];
-            raceclass.Text = $"{strings[entity["race"].String]} - {strings[entity["class"].String]}";
-            level.Text = $"{strings["level"]}: {entity["level"]}";
-            exp.Text = $"{strings["exp"]}: {entity["exp"]}/10";
-            health.Text = $"{strings["health"]}: {entity["hp"]}/{entity["mhp"]}";
-            resource.Text = $"{strings[entity["res"].String]}: {entity.Func("resstring").String}";
-            damage.Text = $"{strings["damage"]}: {entity["mindmg"]}-{entity["maxdmg"]}";
-            ad.Text = $"{strings["ad"]}: {entity["ad"]}";
-            ap.Text = $"{strings["ap"]}: {entity["ap"]}";
-            def.Text = $"{strings["def"]}: {entity["def"]}";
-            mdef.Text = $"{strings["mdef"]}: {entity["mdef"]}";
-            gold.Text = $"{strings["gold"]}: {entity["gold"]}";
+            name.Text = Entity.Name ?? strings[Entity["name"].String];
+            raceclass.Text = $"{strings[Entity["race"].String]} - {strings[Entity["class"].String]}";
+            level.Text = $"{strings["level"]}: {Entity["level"]}";
+            exp.Text = $"{strings["exp"]}: {Entity["exp"]}/10";
+            health.Text = $"{strings["health"]}: {Entity["hp"]}/{Entity["mhp"]}";
+            resource.Text = $"{strings[Entity["res"].String]}: {Entity.Func("resstring").String}";
+            damage.Text = $"{strings["damage"]}: {Entity["mindmg"]}-{Entity["maxdmg"]}";
+            ad.Text = $"{strings["ad"]}: {Entity["ad"]}";
+            ap.Text = $"{strings["ap"]}: {Entity["ap"]}";
+            def.Text = $"{strings["def"]}: {Entity["def"]}";
+            mdef.Text = $"{strings["mdef"]}: {Entity["mdef"]}";
+            gold.Text = $"{strings["gold"]}: {Entity["gold"]}";
         }
 
         public override void OnAfterAddedWidget(Widget widget)
         {
             widget.Left = ((int)Position.X);
             widget.Top = ((int)Position.Y);
+        }
+
+        public override void Dispose()
+        {
+            Entity = null;
         }
     }
 }

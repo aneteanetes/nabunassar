@@ -16,9 +16,9 @@ namespace ioi.Systems.Roguelike
             Game = game;
         }
 
-        public GameEntity CreateCharacter(string race, string @class)
+        public GameEntity SpawnCharacter(string race, string @class)
         {
-            var entity = new GameEntity(Game.Lua, 
+            var entity = new GameEntity(Game.Lua,null,
                 "Templates.Base.Object",
                 "Templates.Base.Player",
                 $"Templates.Races.{race}", 
@@ -30,24 +30,37 @@ namespace ioi.Systems.Roguelike
             entity["icon"] = DynValue.NewString("@");
             entity.Color("color", Color.Red);
 
-            Lua.Call(entity["refresh"],entity.Data);
+            entity.Func("refresh");
 
             return entity;
         }
 
-        public GameEntity CreateEnemy(string id, string race, string @class)
+        public GameEntity SpawnObject(string id, string type, Table props)
         {
-            var entity = new GameEntity(Game.Lua,
-                "Templates.Base.Object",
-                "Templates.Base.Enemy",
-                $"Templates.Races.{race}", 
-                $"Templates.Classes.{@class}",
-                $"Templates.Base.Moveable",
-                $"Templates.Enemies.{id}");
-
-            Lua.Call(entity["refresh"], entity.Data);
+            var entity = new GameEntity(Game.Lua, props, "Templates.Base.Object", $"Templates.{type}.{id}");
 
             return entity;
+        }
+
+        public ObjectMap SpawnObjectMap(string type, string id, Table props, int x, int y, string tileset, int tileId)
+        {
+            var entity = new GameEntity(Game.Lua, props, "Templates.Base.Object", $"Templates.{type}.{id}");
+
+            var obj = new ObjectMap(Game, $"{type}.{id}.{Guid.NewGuid().ToString().Substring(0,5)}")
+            {
+                Sprite = Game.GameState.Map.Tilesets[tileset].CreateSprite(tileId),
+                Color = entity.Color("color"),
+                IsBounds = entity["isBounds"].Boolean,
+                Coords = new Microsoft.Xna.Framework.Point(x,y),
+                Size = Game.CellSize.ToVector2()
+            };
+
+            obj.Position = obj.GetPositionFromCoords();
+            obj.BindEntity(entity);
+
+            Game.GameState.Map.Add(obj);
+
+            return obj;
         }
     }
 }

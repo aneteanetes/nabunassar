@@ -19,7 +19,7 @@ namespace ioi.Content
         private readonly string ModuleName = "BaseGame";
 
         private LiteDatabase _dataBase;
-        private LiteDatabase Database
+        internal LiteDatabase Database
         {
             get
             {

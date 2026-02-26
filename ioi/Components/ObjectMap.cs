@@ -146,6 +146,7 @@ namespace ioi.Components
         public void BindEntity(GameEntity entity)
         {
             Entity = entity;
+            entity.MapObject = this;
             if (entity.Components.Contains("Templates.Base.Moveable"))
             {
                 this.IsUpdatable = true;
@@ -195,10 +196,16 @@ namespace ioi.Components
                 if (collision == this)
                     continue;
 
-                var colliderFunc = Entity?["collide"];
-                if(colliderFunc.IsNotNil())
+                var hostCollideFunc = Entity?["collide"];
+                if(hostCollideFunc.IsNotNil())
                 {
-                    Entity.Func("collide", Game.GameWorld,this, collision);
+                    Entity.Func("collide", this.Entity, this, collision);
+                }
+
+                var otherCollideFunc = collision?.Entity?["collide"];
+                if (otherCollideFunc.IsNotNil())
+                {
+                    collision.Entity.Func("collide", collision.Entity, collision, this);
                 }
             }
         }

@@ -1,8 +1,21 @@
-Templates.Enemies.Rat = {
+Templates.enemy.rat = {
     -- ids
     id="moveable",
     
-    init = function (obj)
+    init = function (obj,props)
+        local components = obj["_components"];
+
+        table.insert(components,"Templates.Base.Enemy");        
+        table.insert(components,"Templates.Races.animal");
+
+        if props.class ~= nil then
+            table.insert(components,"Templates.Classes."..props.class);
+        else
+            table.insert(components,"Templates.Classes.bruiser");
+        end
+
+        table.insert(components,"Templates.Base.Moveable");
+        
         obj.name="rat_enemy";
         obj.type="enemy";
 	    obj.speed = 0.15;
@@ -17,6 +30,8 @@ Templates.Enemies.Rat = {
             w=19,
             h=9
         };
+
+        obj.exp=1;
 
         obj.ad=5;
         obj.def=3;

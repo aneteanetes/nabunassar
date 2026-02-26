@@ -13,16 +13,13 @@ namespace ioi.Scripting
 
         public Script ScriptHost;
 
+#if DEBUG
         private FileSystemWatcher _watcher;
         private bool _needsReload;
         private string _changedFile;
+#endif
 
         public Table Globals => ScriptHost.Globals;
-
-        public DynValue Execute(string scriptText)
-        {
-            return ScriptHost.DoString(scriptText);
-        }
 
         internal LuaScripts(GameHost game)
         {
@@ -50,57 +47,13 @@ namespace ioi.Scripting
 
         }
 
-        public DynValue Call(DynValue function, params object[] args)
-        {
-            try
-            {
-                return ScriptHost.Call(function, args);
-            }
-            catch (InterpreterException ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Lua: {ex.DecoratedMessage ?? ex.Message}");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine($"Lua unhandled: {ex}");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
-            return DynValue.Nil;
-        }
-
-        public Table MergeTables(Table t1, Table t2)
-        {
-            var func = ScriptHost.Globals.Get("Core").Table.Get("mergeTables");
-            return ScriptHost.Call(func, t1, t2).Table;
-        }
-
-        public Table CreateTable(params string[] templates)
-        {
-            var table = new Table(ScriptHost);
-
-            Table sources = new Table(ScriptHost);
-            foreach (var template in templates)
-            {
-                sources.Append(DynValue.NewString(template));
-            }
-
-            table["_components"] = sources;
-            table.MetaTable = LuaMeta;
-
-            table.Init();
-
-            return table;
-        }
-
         public void Init()
         {
             UserData.RegisterType<GameEntity>();
 
             if (Game.Settings.IsDebug)
             {
+#if DEBUG
                 var scriptsPath = Path.Combine(Game.Settings.PathProject, "Resources\\BaseGame\\Data\\Scripts");
 
                 _watcher = new FileSystemWatcher(scriptsPath, "*.lua")
@@ -128,6 +81,7 @@ namespace ioi.Scripting
                 {
                     LoadFile(file);
                 }
+#endif
             }
             else
             {
@@ -139,16 +93,68 @@ namespace ioi.Scripting
             }
         }
 
+        public DynValue Call(DynValue function, params object[] args)
+        {
+            try
+            {
+                return ScriptHost.Call(function, args);
+            }
+            catch (InterpreterException ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Lua: {ex.DecoratedMessage ?? ex.Message}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($"Lua unhandled: {ex}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            return DynValue.Nil;
+        }
+
+        public DynValue Execute(string scriptText)
+        {
+            return ScriptHost.DoString(scriptText);
+        }
+        public Table MergeTables(Table t1, Table t2)
+        {
+            var func = ScriptHost.Globals.Get("Core").Table.Get("mergeTables");
+            return ScriptHost.Call(func, t1, t2).Table;
+        }
+
+        public Table CreateTable(Table initProps, params string[] templates)
+        {
+            var table = new Table(ScriptHost);
+
+            Table sources = new Table(ScriptHost);
+            foreach (var template in templates)
+            {
+                sources.Append(DynValue.NewString(template));
+            }
+
+            table["_components"] = sources;
+            table.MetaTable = LuaMeta;
+
+            table.Init(initProps);
+
+            return table;
+        }
+
         public void Update(GameTime gameTime)
         {
+#if DEBUG
             if (_needsReload)
             {
                 Console.WriteLine($"Updated Lua script: {_changedFile}");
                 LoadFile(_changedFile);
                 _needsReload = false;
             }
+#endif
         }
 
+#if DEBUG
         private void LoadFile(string file)
         {
             try
@@ -164,5 +170,6 @@ namespace ioi.Scripting
                 Console.ForegroundColor = ConsoleColor.White;
             }
         }
+#endif
     }
 }

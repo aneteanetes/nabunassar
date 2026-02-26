@@ -1,5 +1,4 @@
 ﻿using Geranium.Reflection;
-using ioi.Entities.Base;
 
 namespace ioi.Tiled.Map
 {

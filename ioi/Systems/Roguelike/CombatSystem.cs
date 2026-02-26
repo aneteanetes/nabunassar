@@ -5,7 +5,6 @@ using MonoGame.Extended.Input;
 using MoonSharp.Interpreter;
 using Myra.Graphics2D.UI;
 using System.Collections;
-using System.Diagnostics;
 
 namespace ioi.Systems.Roguelike
 {
@@ -19,6 +18,8 @@ namespace ioi.Systems.Roguelike
         private Panel headerPanel;
         private Label combatHeader;
         private CombatLogWidget log;
+        private bool _endOfBattle;
+        private object battleScreenLock = new();
 
         internal CombatSystem(GameHost game)
         {
@@ -57,6 +58,12 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
+            if (_endOfBattle)
+            {
+                if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1), battleScreenLock))
+                    EndCombat();
+            }
+
             var key = KeyboardExtended.GetState();
             if(key.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter))
             {
@@ -95,13 +102,17 @@ namespace ioi.Systems.Roguelike
 
         public void EndCombat()
         {
+            _endOfBattle = false;
             IEnumerator loading()
             {
+                log.Visible = false;
+                log.Clear();
                 headerPanel.Visible = false;
                 Game.GameWorld.BorderLayersSystem["LeftPanel"] = false;
                 Game.GameWorld.BorderLayersSystem["Center"] = false;
                 Game.GameWorld.MapSystem.Resume();
                 Game.GameWorld.PlayerControlSystem.Map();
+                enemyWidget.Entity.Destroy();
                 Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
                 yield return 0;
             }
@@ -109,6 +120,7 @@ namespace ioi.Systems.Roguelike
             IEnumerator afterLoad()
             {
                 Game.GameWorld.PlayerControlSystem.ControlsMainScreenPreset();
+                Game.GameWorld.PlayerControlSystem.Enable();
                 yield return 0;
             }
 
@@ -128,6 +140,19 @@ namespace ioi.Systems.Roguelike
         public void Dispose()
         {
             Game.MyraDesktopIngame.Widgets.Remove(headerPanel);
+        }
+
+        public void Kill(GameEntity entity)
+        {
+            if (Game.GameState.Player.Entity == entity)
+            {
+                //if player dies, stopping game
+            }
+            else // пока что бой только 1 на 1
+            {
+                Game.GameWorld.PlayerControlSystem.Disable();
+                _endOfBattle = true;
+            }
         }
     }
 }

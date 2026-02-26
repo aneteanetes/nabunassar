@@ -2,7 +2,7 @@ Templates.Classes.Warrior = {
 
     class='Warrior',
 
-    init = function(obj)
+    init = function(obj,props)
     
         -- сюда придём после всех предыдущих init
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="90" height="23" tilewidth="16" tileheight="34" infinite="0" nextlayerid="4" nextobjectid="14">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="90" height="23" tilewidth="16" tileheight="34" infinite="0" nextlayerid="4" nextobjectid="16">
  <properties>
   <property name="NameToken" value="MapMraumir"/>
  </properties>
@@ -63,8 +63,17 @@
   <object id="13" gid="82" x="144" y="136" width="16" height="34">
    <properties>
     <property name="Color" type="color" value="#ffab7138"/>
-    <property name="idobj" value="Rat"/>
+    <property name="class" value="bruiser"/>
+    <property name="idobj" value="rat"/>
+    <property name="race" value="animal"/>
     <property name="type" value="enemy"/>
+   </properties>
+  </object>
+  <object id="15" gid="380" x="624" y="272" width="16" height="34">
+   <properties>
+    <property name="Color" type="color" value="#ffde20ff"/>
+    <property name="idobj" value="rat"/>
+    <property name="type" value="spawner"/>
    </properties>
   </object>
  </objectgroup>

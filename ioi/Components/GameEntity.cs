@@ -10,6 +10,24 @@ namespace ioi.Components
         private LuaScripts _script;
         public Table Data;
 
+        public string Name { get; set; }
+
+        public List<GameEntity> Squad { get; private set; } = new();
+
+        internal ObjectMap MapObject { get; set; }
+
+        public IEnumerable<GameEntity> Abilities
+        {
+            get
+            {
+                var abils = this["abilities"];
+                if(abils.IsNil())
+                    return [];
+
+                return abils.Table.Values.Select(x => x.ToObject<GameEntity>());
+            }
+        }
+
         public IEnumerable<string> Components
         {
             get
@@ -24,26 +42,12 @@ namespace ioi.Components
             }
         }
 
-        public string Name { get; set; }
-
-        public List<GameEntity> Squad { get; } = new();
-
-        public IEnumerable<GameEntity> Abilities
-        {
-            get
-            {
-                var abils = this["abilities"];
-                if(abils.IsNil())
-                    return [];
-
-                return abils.Table.Values.Select(x => x.ToObject<GameEntity>());
-            }
-        }
-
-        public GameEntity(LuaScripts script, params string[] templates)
+        public GameEntity(LuaScripts script,Table initProps=null, params string[] templates)
         {
             _script = script;
-            Data = script.CreateTable(templates);
+            Data = script.CreateTable(initProps, templates);
+            Data["Destroy"] = (Action)Destroy;
+            Data["entity"] = this;
             Squad.Add(this);
         }
 
@@ -156,6 +160,19 @@ namespace ioi.Components
                 return Data.GetSmart(key);
             }
             set => Data.Set(key, value);
+        }
+
+        public void Destroy()
+        {
+            Func("destroy");
+
+            if (this.MapObject != null)
+                _script.Game.GameWorld.MapSystem.Remove(this.MapObject);
+
+            MapObject = null;
+            Data = null;
+            _script = null;
+            Squad = null;
         }
     }
 }

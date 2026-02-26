@@ -1,7 +1,8 @@
-﻿using ioi.Components;
-using ioi.Entities.Base;
+﻿using Geranium.Reflection;
+using ioi.Components;
 using ioi.Entities.Map;
 using ioi.Entities.Struct;
+using ioi.Scripting;
 using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
@@ -56,6 +57,8 @@ namespace ioi.Systems.Roguelike
                 var glowTexture = GlowEffect.CreateGlow(texture, Color.Yellow, glowWidth, intensity, spread, totalGlowMultiplier, hideTexture);
                 var _glowAtlas = Texture2DAtlas.Create(tileset.name + "_glow", glowTexture, tileset.tilewidth, tileset.tileheight, margin: 50);
                 tileset.TextureAtlasGlow = _glowAtlas;
+
+                Game.GameState.Map.Tilesets[tileset.name] = tileset.TextureAtlas;
 
                 yield return 0;
             }
@@ -114,20 +117,22 @@ namespace ioi.Systems.Roguelike
                 };
                 obj.Sprite.Color = GetColorFromTile(poly);
 
-                if (poly.GetPropertyValue<string>("type") == "player")
+                var type = poly.GetPropertyValue<string>("type");
+                if (type == "player")
                 {
                     obj.IsIdle = true;
                     obj.IsUpdatable = true;
 
                     Game.GameState.Player = obj;
-                    var playerEntity = Game.GameWorld.SpawnSystem.CreateCharacter("Human", "Warrior");
+                    var playerEntity = Game.GameWorld.SpawnSystem.SpawnCharacter("Human", "Warrior");
                     playerEntity["type"] = DynValue.NewString("player");
                     Game.GameState.Player.BindEntity(playerEntity);
                 }
 
-                if (poly.GetPropertyValue<string>("type") == "enemy")
+                if (type.IsNotEmpty() && idobj.IsNotEmpty() && type!="player")
                 {
-                    var entity = Game.GameWorld.SpawnSystem.CreateEnemy(idobj, $"Animal", $"Bruiser");
+                    //var entity = Game.GameWorld.SpawnSystem.CreateEnemy(idobj, $"Animal", $"Bruiser");
+                    var entity = Game.GameWorld.SpawnSystem.SpawnObject(idobj, type, poly.ToTable(Game.Lua));
                     obj.BindEntity(entity);
                 }
 
@@ -223,6 +228,7 @@ namespace ioi.Systems.Roguelike
                 {
                     continue;
                 }
+                objMap.Sprite.Color = objMap.Color;
                 //objMap.Sprite.Effect = objMap.Side == Struct.Side.Right ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 objMap.Sprite.Draw(sb, objMap.DrawPosition.HasValue ? objMap.DrawPosition.Value : objMap.Position, 0, Vector2.One);
             }
@@ -245,6 +251,11 @@ namespace ioi.Systems.Roguelike
         {
             Game.GameWorld.BorderLayersSystem["Map"] = true;
             IsPaused = false;
+        }
+
+        internal void Remove(ObjectMap mapObject)
+        {
+            Game.GameState.Map.Remove(mapObject);
         }
     }
 }

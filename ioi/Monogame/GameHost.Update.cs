@@ -2,8 +2,6 @@
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
 using Myra;
-using ioi.Entities.Struct;
-using ioi.Extensions.Texture2DExtensions;
 
 namespace ioi
 {
@@ -13,6 +11,11 @@ namespace ioi
         {
             if (!IsActive)
                 return;
+
+#if DEBUG
+            DebugUpdate(gameTime);
+            UpdateResources();
+#endif
 
             Lua.Update(gameTime);
 
@@ -33,9 +36,6 @@ namespace ioi
                     }
                 }
             }
-#if DEBUG
-            DebugUpdate(gameTime);
-#endif
 
             MouseExtended.Update();
             KeyboardExtended.Update();
