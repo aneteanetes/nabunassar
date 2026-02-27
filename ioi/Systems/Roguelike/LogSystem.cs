@@ -21,6 +21,16 @@ namespace ioi.Systems.Roguelike
             Widget.SetText(text);
         }
 
+        public void Log(string text)
+        {
+            Widget.SetText(DrawText.Create(text));
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            Widget.Update(gameTime);
+        }
+
         public void Dispose()
         {
             Widget?.Dispose();

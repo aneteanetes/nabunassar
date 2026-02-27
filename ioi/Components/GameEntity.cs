@@ -1,6 +1,7 @@
 ﻿using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Scripting;
+using MonoGame.Extended.ECS;
 using MoonSharp.Interpreter;
 
 namespace ioi.Components
@@ -96,8 +97,8 @@ namespace ioi.Components
 
         public static Color ColorFromTable(Table table)
         {
-            var fromstring = Convert.ToByte(table["r"]);
-            if (fromstring != 0)
+            var isrgb =table.Keys.Any(x => x.String == "r");
+            if (isrgb)
             {
                 var r = Convert.ToByte(table["r"]);
                 var g = Convert.ToByte(table["g"]);

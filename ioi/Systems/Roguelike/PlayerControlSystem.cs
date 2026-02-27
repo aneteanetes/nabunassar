@@ -79,11 +79,19 @@ namespace ioi.Systems.Roguelike
             if (key.WasKeyPressed(Keys.A))
             {
                 Game.GameWorld.CombatSystem.Attack(player, enemy);
+                player.Func("tick");
             }
 
             if (key.WasKeyPressed(Keys.D))
             {
+                player.Func("defence", enemy.Data);
+                player.Func("tick");
+            }
 
+            if(key.WasKeyPressed(Keys.S))
+            {
+                player.Func("flee", enemy.Data);
+                player.Func("tick");
             }
 
             if (key.WasKeyPressed(Keys.F))

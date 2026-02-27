@@ -8,6 +8,7 @@ Templates.Perks.Human = {
     
     mods = {
         {
+            id = "humanperk_mhp",
             type=Templates.Base.Mod.Type.Flat,
             value=5,
             stat="mhp"

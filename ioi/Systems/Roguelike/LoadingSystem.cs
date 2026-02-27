@@ -36,13 +36,16 @@ namespace ioi.Systems.Roguelike
 
         public event Action OnLoaded;
 
-        public void LoadCenter(IEnumerator loadingProcess, IEnumerator afterLoad=default)
+        public void LoadCenter(IEnumerator loadingProcess,int ms, IEnumerator afterLoad=default)
         {
+            if (ms == 0)
+                ms = 100;
+
             loading.X = Game.MapViewport.X;
             loading.Y = Game.MapViewport.Y;
             loading.Width= Game.MapViewport.Width;
             loading.Height= Game.MapViewport.Height;
-            loading.Load(loadingProcess,TimeSpan.FromMilliseconds(200), afterLoad);
+            loading.Load(loadingProcess,TimeSpan.FromMilliseconds(ms), afterLoad);
         }
 
         public void Dispose()

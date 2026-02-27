@@ -17,8 +17,8 @@
 
     desc="description",
 
+    mana=0,
     manamax=0,
-    mana_tpl="{mana}/{manamax}",   
         
     -- base
     ap=0,
@@ -35,12 +35,39 @@
     mindmg=1,
     maxdmg=1,
 
+    stats_upd = {
+        mana=0,
+        manamax=0,  
+        ap=0,
+        ad=0,
+        def=0,
+        mdef=0,
+        mhp=1,
+        mindmg=1,
+        maxdmg=1
+    },
+
+    mods={},
+
     resstring = function (obj)
         return (obj.mana or '')..'/'..(obj.manamax or '');
     end,
 
+    getName = function (self)
+        local name = "";
+        if (self.name == nil or self.name == "") then
+            name = self.namevalue;
+        else
+            name = loco(self.name);
+        end
+        return name;
+    end,
+
     collide = function(self,selfentity,objmap,collision)
 	end,
+
+    combatturn = function(self,target)
+    end,
 
     strike = function (self,target)
         
@@ -51,8 +78,63 @@
         ctx.attacked = math.floor(dmg);
 
         dmg = target.applydmg(target,dmg,self,ctx);
+        
+        ctx:log();
 
-        ctx.attacker="/c[#00FFFF]"..(self.name or "player");
+        if(ctx.died==true) then
+            world.CombatSystem:Kill(target.entity);
+        else
+            target.combatturn(target,self);
+        end
+    end,
+
+    defence = function (self,target)
+
+        table.insert(self.mods, {
+            id="defenceinbattle_def",    
+            type=Templates.Base.Mod.Type.Flat,
+            value= self.def == 0 and 1 or self.def,
+            stat="def",
+            turns=1
+        });
+
+        table.insert(self.mods, {
+            id="defenceinbattle_mdef",    
+            type=Templates.Base.Mod.Type.Flat,
+            value=self.mdef == 0 and 1 or self.mdef,
+            stat="mdef",
+            turns=1
+        });
+
+        self.refresh(self);
+        
+        local targetColor = toHexString(self.color);
+        local name = "/c["..targetColor.."]"..self:getName();
+
+        world.CombatSystem.LogCombat(name.." /cd"..loco("defstand").."!");
+
+        target.combatturn(target,self);
+    end,
+
+    flee = function (self,target)
+        
+        local targetColor = toHexString(self.color);
+        local name = "/c["..targetColor.."]"..self:getName();
+
+        world.CombatSystem.LogCombat(name.." /cd"..loco("tryflee"));
+
+        if math.random(100) <= (50+self.ap) then
+            
+            if(self.type=="player") then
+                world.LogSystem.Log(loco("youm").." "..loco("successflee").."!");
+            end
+
+            world.CombatSystem.LogCombat(name.." /cd"..loco("successflee").."!");
+            world.CombatSystem.EndCombat();
+        else
+            target.combatturn(target,self);
+        end
+
     end,
 
     applydmg = function (self,dmg,attacker,ctx)
@@ -76,7 +158,7 @@
 
         ctx.dmg=mitigated;
 
-        self.hp = self.hp-math.floor(dmg);
+        self.hp = self.hp-mitigated;
 
         if(self.hp<=0) then
             self.die(self,attacker,ctx);
@@ -84,9 +166,8 @@
         end
         
         local targetColor = toHexString(self.color);
-        ctx.target="/c["..targetColor.."]"..loco(self.name);
 
-        ctx:log();
+        ctx.target="/c["..targetColor.."]"..self:getName();
     end,
 
     beforedmg=function (self,dmg,attacker,ctx)
@@ -101,7 +182,7 @@
 
     die=function (self,killer,ctx)
 	    ctx.died=true;
-        world.CombatSystem:Kill(self.entity);
+        self.died=true;
     end,
 
     kill=function (self,target,ctx)
@@ -119,9 +200,35 @@
         obj.perks={}
     end,
 
+    tick = function (obj)
+
+        if(obj.mods ~= nil) then
+            local fordel = {}
+
+            for key, mod in pairs(obj.mods) do
+                mod.turns = mod.turns - 1;
+                if(mod.turns==0) then
+                    table.insert(fordel,key);
+                end
+            end
+
+            for key, mod in pairs(fordel) do
+                obj.mods[key] = nil;
+            end
+        end
+
+        obj.refresh(obj);
+    end,
+
     refresh = function(obj)
-        
+
         local mods={}
+        
+	    if(obj.mods ~= nil) then
+            for _, mod in pairs(obj.mods) do
+                table.insert(mods,mod)
+            end
+        end
         
 	    if(obj.perks ~= nil) then
             for perkname, perk in pairs(obj.perks) do
@@ -133,23 +240,23 @@
 
         local modsByStat = Core.groupby(mods,function(m) return m.stat end)
 
-        for statKey, oneStatTable in pairs(modsByStat) do
-
+        for statKey,v in pairs(obj.stats_upd) do
             local flatMods={}
             local percentMods={}
             local multipleMods={}
 
-            for _,mod in pairs(oneStatTable) do
-                obj.addmod(mod,flatMods,percentMods,multipleMods)
+            local allstatmods = modsByStat[statKey];
+
+            if allstatmods ~= nil then
+                for _,mod in pairs(allstatmods) do
+                    obj.addmod(mod,flatMods,percentMods,multipleMods)
+                end
             end
 
             local base = tonumber(obj['base'..statKey]);
 
-            obj[statKey] = obj.calculateStat(base, flatMods,percentMods,multipleMods)
+            obj[statKey] = obj.calculateStat(base, flatMods, percentMods, multipleMods,statKey);
         end
-
-        obj.hp=obj.mhp;
-
     end,
 
     addmod = function (mod,flatMods,percentMods,multipleMods)
@@ -162,7 +269,7 @@
         end
     end,
 
-    calculateStat = function (base,flatMods,percentMods,multipleMods)
+    calculateStat = function (base,flatMods,percentMods,multipleMods,statkey)
         
         if(base==nil) then
             base=0
@@ -182,7 +289,12 @@
         for _,mod in pairs(multipleMods) do
             multi=multi*mod.value
         end
-        return (base+flat) * percent * multi
+
+        local value = (base+flat) * percent * multi;
+
+        --print(statkey.." : (base+flat) * percent * multi = "..value.." ("..base.." + "..flat..") * "..percent.." * "..multi)
+
+        return value;
     end,
 
 }

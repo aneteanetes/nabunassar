@@ -202,11 +202,17 @@ namespace ioi.Components
                     Entity.Func("collide", this.Entity, this, collision);
                 }
 
+                if (Game.GameWorld.CombatSystem.IsInCombat)
+                    break;
+
                 var otherCollideFunc = collision?.Entity?["collide"];
                 if (otherCollideFunc.IsNotNil())
                 {
                     collision.Entity.Func("collide", collision.Entity, collision, this);
                 }
+
+                if (Game.GameWorld.CombatSystem.IsInCombat)
+                    break;
             }
         }
 

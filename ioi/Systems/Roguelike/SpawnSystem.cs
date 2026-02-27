@@ -28,8 +28,8 @@ namespace ioi.Systems.Roguelike
             };
 
             entity["icon"] = DynValue.NewString("@");
-            entity.Color("color", Color.Red);
-
+            entity.Color("color", Color.Cyan);
+            entity["namevalue"] = DynValue.NewString(entity.Name);
             entity.Func("refresh");
 
             return entity;
@@ -44,14 +44,14 @@ namespace ioi.Systems.Roguelike
 
         public ObjectMap SpawnObjectMap(string type, string id, Table props, int x, int y, string tileset, int tileId)
         {
-            var entity = new GameEntity(Game.Lua, props, "Templates.Base.Object", $"Templates.{type}.{id}");
+            var entity = SpawnObject(id, type, props);
 
             var obj = new ObjectMap(Game, $"{type}.{id}.{Guid.NewGuid().ToString().Substring(0,5)}")
             {
                 Sprite = Game.GameState.Map.Tilesets[tileset].CreateSprite(tileId),
                 Color = entity.Color("color"),
                 IsBounds = entity["isBounds"].Boolean,
-                Coords = new Microsoft.Xna.Framework.Point(x,y),
+                Coords = new Point(x,y),
                 Size = Game.CellSize.ToVector2()
             };
 

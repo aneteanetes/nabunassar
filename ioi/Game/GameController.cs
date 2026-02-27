@@ -91,7 +91,7 @@ namespace ioi
                 LogSystem = new LogSystem(Game),
                 BorderLayersSystem = new BorderLayersSystem(Game),
                 CombatSystem = new CombatSystem(Game),
-                LoadingSystem= new LoadingSystem(Game)
+                LoadingSystem= new LoadingSystem(Game),
             };
 
             Game.Lua.Globals["world"] = Game.GameWorld;

@@ -102,6 +102,8 @@ namespace ioi.Entities.Map
             obj.IsMoving = true;
             obj.TargetPosition = obj.GetPositionFromCoords();
 
+            obj.Entity.Func("tick");
+
             return true;
         }
     }

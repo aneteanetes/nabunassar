@@ -9,6 +9,10 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
     {
         private DynamicSpriteFont consolas;
         private Label _label;
+        float _alpha = 1.0f;
+        float _fadeSpeed = 0.0005f;
+        bool _sticked = false;
+        private object objlock;
 
         public LogWidget(GameHost game) : base(game)
         {
@@ -42,6 +46,31 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
         public void SetText(DrawText text)
         {
             _label.Text = text.ToString();
+            _label.TextColor = Color.DarkGray;
+            _alpha = 1.0f;
+            _sticked = false;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (!_sticked && this.CanUpdate(gameTime, TimeSpan.FromSeconds(20),objlock))
+                _sticked = true;
+
+            if (_sticked)
+            {
+                float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                // Постепенно уменьшаем alpha до нуля
+                if (_alpha > 0)
+                {
+                    _alpha -= _fadeSpeed * deltaTime;
+
+                    if (_alpha < 0)
+                        _alpha = 0;
+                }
+            }
+
+            _label.TextColor *= _alpha;
         }
 
         public override void OnAfterAddedWidget(Widget widget)

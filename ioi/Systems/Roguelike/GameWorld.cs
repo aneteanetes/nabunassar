@@ -49,6 +49,7 @@ namespace ioi.Systems.Roguelike
             MapSystem?.Update(gameTime);
             CombatSystem?.Update(gameTime);
             LoadingSystem?.Update(gameTime);
+            LogSystem?.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)

@@ -43,8 +43,8 @@ Templates.enemy.rat = {
         obj.hp=10;
 
         -- damage
-        obj.mindmg=1;
-        obj.maxdmg=2;
+        obj.basemindmg=1;
+        obj.basemaxdmg=2;
 
         obj.icon='r';
         obj.color={173,113,56};

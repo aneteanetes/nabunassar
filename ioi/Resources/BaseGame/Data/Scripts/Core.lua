@@ -9,7 +9,8 @@ Core = {
             table.insert(grouped[key], item)
         end
         return grouped
-    end
+    end,
+    combatDelayMS=800
 }
 Templates={
     Base={},

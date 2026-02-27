@@ -7,11 +7,13 @@ Templates.Classes.Warrior = {
         -- сюда придём после всех предыдущих init
 
         obj.rage=0;
+        obj.stats_upd.rage=0;
+
         obj.basemhp=100;
         obj.mhp=100;
         obj.hp=100;
-        obj.mindmg=7
-        obj.maxdmg=11
+        obj.basemindmg=2;
+        obj.basemaxdmg=4
 
         obj.res='rage';
         obj.rescolor={255,0,0,255};

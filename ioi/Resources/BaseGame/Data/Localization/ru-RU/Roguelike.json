@@ -34,11 +34,18 @@
   "dowait": "Ждать",
   "deals": "нанесено",
   "defeddmg": "заблокировано",
+  "glancingblow": "скользящий удар",
 
   //combat
   "getting": "получает",
+  "notgetting": "не получает",
   "dmgplural": "урона",
   "diedcombat": "умирает",
+  "defstand": "принимает защитную стойку",
+  "attackyou": "атакует вас",
+  "tryflee": "пытается сбежать...",
+  "successflee": "удалось сбежать",
+  "youm": "Вам",
 
   //races
   "Human": "Человек",

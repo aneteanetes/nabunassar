@@ -1,4 +1,5 @@
 ﻿using FontStashSharp;
+using Geranium.Reflection;
 using ioi.Components;
 using ioi.Widgets.UserInterfaces.Roguelike;
 using MonoGame.Extended.Input;
@@ -12,6 +13,7 @@ namespace ioi.Systems.Roguelike
     public class CombatSystem : IDisposable
     {
         private GameHost Game { get; }
+        public bool IsInCombat { get; internal set; }
 
         EntityWidget enemyWidget;
         private FontSystem consolas;
@@ -61,24 +63,20 @@ namespace ioi.Systems.Roguelike
             if (_endOfBattle)
             {
                 if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1), battleScreenLock))
-                    EndCombat();
-            }
-
-            var key = KeyboardExtended.GetState();
-            if(key.WasKeyPressed(Microsoft.Xna.Framework.Input.Keys.Enter))
-            {
-                EndCombat();
+                    CloseCombat();
             }
         }
 
         public void StartCombat(GameEntity enemy)
         {
+            Game.GameWorld.MapSystem.Pause();
+            IsInCombat = true;
+
             IEnumerator loading()
             {
                 var str = Game.Strings["Roguelike"];
                 headerPanel.Visible = true;
                 combatHeader.Text = $"{str[enemy["name"].String]} VS {Game.GameState.Player.Entity.Name}";
-                Game.GameWorld.MapSystem.Pause();
                 Game.GameWorld.BorderLayersSystem["Map"] = true;
                 Game.GameWorld.PlayerControlSystem.Combat();
                 enemyWidget = Game.AddDesktopWidget(new EntityWidget(Game, enemy, Struct.Side.Left), Game.MyraDesktopIngame);
@@ -97,10 +95,16 @@ namespace ioi.Systems.Roguelike
                 yield return 0;
             }
 
-            Game.GameWorld.LoadingSystem.LoadCenter(loading(), changeScreenBack());
+            Game.GameWorld.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), changeScreenBack());
         }
 
-        public void EndCombat()
+        private int GetLoadDelay()
+        {
+            var delay = Game.Lua.Globals["Core"].As<Table>()["combatDelayMS"].As<double>();
+            return ((int)delay);
+        }
+
+        public void CloseCombat()
         {
             _endOfBattle = false;
             IEnumerator loading()
@@ -110,9 +114,12 @@ namespace ioi.Systems.Roguelike
                 headerPanel.Visible = false;
                 Game.GameWorld.BorderLayersSystem["LeftPanel"] = false;
                 Game.GameWorld.BorderLayersSystem["Center"] = false;
-                Game.GameWorld.MapSystem.Resume();
+                Game.GameWorld.BorderLayersSystem["Map"] = true;
                 Game.GameWorld.PlayerControlSystem.Map();
-                enemyWidget.Entity.Destroy();
+
+                if (enemyWidget.Entity["hp"].Number <= 0)
+                    enemyWidget.Entity.Destroy();
+
                 Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
                 yield return 0;
             }
@@ -121,10 +128,12 @@ namespace ioi.Systems.Roguelike
             {
                 Game.GameWorld.PlayerControlSystem.ControlsMainScreenPreset();
                 Game.GameWorld.PlayerControlSystem.Enable();
+                IsInCombat = false;
+                Game.GameWorld.MapSystem.Resume();
                 yield return 0;
             }
 
-            Game.GameWorld.LoadingSystem.LoadCenter(loading(), afterLoad());
+            Game.GameWorld.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), afterLoad());
         }
 
         public void Attack(GameEntity you, GameEntity enemy)
@@ -142,6 +151,12 @@ namespace ioi.Systems.Roguelike
             Game.MyraDesktopIngame.Widgets.Remove(headerPanel);
         }
 
+        public void EndCombat()
+        {
+            Game.GameWorld.PlayerControlSystem.Disable();
+            _endOfBattle = true;
+        }
+
         public void Kill(GameEntity entity)
         {
             if (Game.GameState.Player.Entity == entity)
@@ -150,8 +165,7 @@ namespace ioi.Systems.Roguelike
             }
             else // пока что бой только 1 на 1
             {
-                Game.GameWorld.PlayerControlSystem.Disable();
-                _endOfBattle = true;
+                EndCombat();
             }
         }
     }
