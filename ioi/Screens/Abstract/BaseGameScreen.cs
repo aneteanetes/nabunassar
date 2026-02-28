@@ -24,7 +24,7 @@ namespace ioi.Screens.Abstract
 
             Game.MyraDesktopIngame.Render();
 
-            Game.GameWorld?.LoadingSystem?.Draw(gameTime);
+            Game.World?.LoadingSystem?.Draw(gameTime);
 
             var postProcessShaders = Game.ActivePostProcessShaders.ToArray();
 

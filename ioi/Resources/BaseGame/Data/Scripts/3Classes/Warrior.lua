@@ -2,25 +2,24 @@ Templates.Classes.Warrior = {
 
     class='Warrior',
 
+    rage=0,
+
+    basemhp=100,
+    mhp=100,
+    hp=50,
+    basemindmg=2,
+    basemaxdmg=4,
+
+    res='rage',
+    rescolor={255,0,0,255},
+    resstring = function (obj)
+        return tostring(obj.rage);
+    end,
+
     init = function(obj,props)
     
-        -- сюда придём после всех предыдущих init
-
-        obj.rage=0;
         obj.stats_upd.rage=0;
 
-        obj.basemhp=100;
-        obj.mhp=100;
-        obj.hp=100;
-        obj.basemindmg=2;
-        obj.basemaxdmg=4
-
-        obj.res='rage';
-        obj.rescolor={255,0,0,255};
-        obj.resstring = function (obj)
-            return tostring(obj.rage);
-        end
-        
         if(obj.perks==nil) then
             obj.perks={};
         end

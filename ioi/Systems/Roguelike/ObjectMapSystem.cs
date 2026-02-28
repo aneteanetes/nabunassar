@@ -16,6 +16,7 @@ namespace ioi.Systems.Roguelike
     internal class ObjectMapSystem : IDisposable
     {
         public GameHost Game { get; private set; }
+
         public Effect Celshading { get; internal set; }
 
         public bool IsPaused { get; set; }
@@ -124,15 +125,19 @@ namespace ioi.Systems.Roguelike
                     obj.IsUpdatable = true;
 
                     Game.GameState.Player = obj;
-                    var playerEntity = Game.GameWorld.SpawnSystem.SpawnCharacter("Human", "Warrior");
+                    var playerEntity = Game.World.SpawnSystem.SpawnCharacter("Странник","Human", "Warrior");
                     playerEntity["type"] = DynValue.NewString("player");
                     Game.GameState.Player.BindEntity(playerEntity);
+
+                    var other = Game.World.SpawnSystem.SpawnCharacter("Пуля", "Human", "Warrior");
+                    other.Heal(1000);
+                    playerEntity.Squad.Add(other);
                 }
 
                 if (type.IsNotEmpty() && idobj.IsNotEmpty() && type!="player")
                 {
                     //var entity = Game.GameWorld.SpawnSystem.CreateEnemy(idobj, $"Animal", $"Bruiser");
-                    var entity = Game.GameWorld.SpawnSystem.SpawnObject(idobj, type, poly.ToTable(Game.Lua));
+                    var entity = Game.World.SpawnSystem.SpawnObject(idobj, type, poly.ToTable(Game.Lua));
                     obj.BindEntity(entity);
                 }
 
@@ -140,7 +145,7 @@ namespace ioi.Systems.Roguelike
             });
 
 
-            Game.GameWorld.PathfindSystem = new PathfindSystem(Game.GameState.Map);
+            Game.World.PathfindSystem = new PathfindSystem(Game.GameState.Map);
 
             UpdateArea();
 
@@ -165,7 +170,7 @@ namespace ioi.Systems.Roguelike
             if (map.CurrentArea != null)
                 txt.Append(" - "+str[map.CurrentArea.NameToken]);
 
-            Game.GameWorld.LogSystem.Log(txt.Append("."));
+            Game.World.LogSystem.Log(txt.Append("."));
         }
 
         private static Color GetColorFromTile(Propertied _object)
@@ -243,19 +248,69 @@ namespace ioi.Systems.Roguelike
         internal void Pause()
         {
             Game.GameState.Temp.ClickPosition = null;
-            Game.GameWorld.BorderLayersSystem["Map"] = false;
+            Game.World.BorderLayersSystem["Map"] = false;
             IsPaused = true;
         }
 
         internal void Resume()
         {
-            Game.GameWorld.BorderLayersSystem["Map"] = true;
+            Game.World.BorderLayersSystem["Map"] = true;
             IsPaused = false;
         }
 
         internal void Remove(ObjectMap mapObject)
         {
             Game.GameState.Map.Remove(mapObject);
+        }
+
+        internal IEnumerable<GameEntity> CollectNearest(GameEntity enemy)
+        {
+            var radiusValue = enemy["assemblySquadRadius"];
+            if (radiusValue.IsNil() || radiusValue.Type != DataType.Number)
+                return [];
+
+            var radius = (int)Math.Round(radiusValue.Number);
+
+            var map = Game.GameState.Map;
+            var cell = map.Updatable.FirstOrDefault(x => x.Entity == enemy);
+            var coords = cell.Coords;
+
+            var xStart = Math.Clamp(coords.X - radius, 0, map.Width-1);
+            var xEnd = Math.Clamp(coords.X + radius, 0, map.Width-1);
+
+            var yStart = Math.Clamp(coords.Y - radius, 0, map.Height - 1);
+            var yEnd = Math.Clamp(coords.Y + radius, 0, map.Height - 1);
+
+            List<GameEntity> collected = new();
+
+            for (int x = xStart; x <= xEnd; x++)
+            {
+                for (int y = yStart; y <= yEnd; y++)
+                {
+                    if (x == coords.X && y == coords.Y)
+                        continue; //center
+
+                    var inRadiusCell = map.ObjectMap[x, y];
+
+                    foreach (var obj in inRadiusCell.Objects)
+                    {
+                        if (obj.Entity == null)
+                            continue;
+
+                        var typeValue = obj.Entity["type"];
+                        if (typeValue.IsNil())
+                            continue;
+
+                        var type = typeValue.String;
+                        if (type != "enemy")
+                            continue;
+
+                        collected.Add(obj.Entity);
+                    }
+                }
+            }
+
+            return collected;
         }
     }
 }

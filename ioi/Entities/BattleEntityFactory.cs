@@ -6,7 +6,7 @@ using ioi.Entities.Game;
 
 namespace ioi.Entities
 {
-    internal class BattleEntityFactory(GameHost game) : BaseEntityFactory(game, game.WorldBattle)
+    internal class BattleEntityFactory(GameHost game) : BaseEntityFactory(game, game.OldECSBattle)
     {
         public void FullfillEncounter(Encounter encounter)
         {

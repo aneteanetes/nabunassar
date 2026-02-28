@@ -40,7 +40,7 @@ namespace ioi.Entities.Map
 
         public void Add(ObjectMap obj)
         {
-            var key = obj.KeyCoords();
+            var key = obj.Coords;
 
             var cell = ObjectMap[key.X, key.Y];
             cell.Objects.Add(obj);

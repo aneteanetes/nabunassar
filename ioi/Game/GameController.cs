@@ -83,7 +83,7 @@ namespace ioi
             Game.InitGameWorld();
             Game.InitializeGameState();
 
-            Game.GameWorld = new GameWorld(Game)
+            Game.World = new GameWorld(Game)
             {
                 MapSystem = new ObjectMapSystem(Game),
                 SpawnSystem = new SpawnSystem(Game),
@@ -94,10 +94,13 @@ namespace ioi
                 LoadingSystem= new LoadingSystem(Game),
             };
 
-            Game.Lua.Globals["world"] = Game.GameWorld;
+            Game.Lua.Globals["world"] = Game.World;
 
-            yield return Game.GameWorld.LoadContent();
-            yield return Game.GameWorld.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");
+            yield return Game.World.LoadContent();
+            yield return Game.World.MapSystem.LoadMap("Assets/Maps/maraumir3.tmx");
+
+            Game.IsGameActive = true;
+            yield return 0;
         }
 
         private static IEnumerator LoadNewGame(GameHost game)

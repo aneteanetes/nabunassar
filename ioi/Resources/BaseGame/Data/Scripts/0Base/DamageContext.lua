@@ -8,7 +8,8 @@ function DamageContext:new()
         attacked=0,
         dmg = 0,
         defed=0,
-        died=false
+        died=false,
+        action="strike"
     }
     setmetatable(obj, self)
     return obj

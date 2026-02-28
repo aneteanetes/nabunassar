@@ -2,6 +2,7 @@
 using Geranium.Reflection;
 using ioi.Components;
 using ioi.Widgets.UserInterfaces.Roguelike;
+using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MoonSharp.Interpreter;
 using Myra.Graphics2D.UI;
@@ -65,43 +66,54 @@ namespace ioi.Systems.Roguelike
                 if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1), battleScreenLock))
                     CloseCombat();
             }
+            else if (enemyWidget != default)
+            {
+                var enemy = enemyWidget.EntityFetcher?.Invoke();
+                if (enemy == null)
+                    return;
+
+                var currentPlayer = Game.GameState.Player.Entity.Squad.FirstAlive();
+                combatHeader.Text = $"{enemy["hp"]}/{enemy["mhp"]} {enemy.GetName()} VS {currentPlayer.GetName()} {currentPlayer["hp"]}/{currentPlayer["mhp"]}";
+            }
         }
 
         public void StartCombat(GameEntity enemy)
         {
-            Game.GameWorld.MapSystem.Pause();
+            Game.World.MapSystem.Pause();
             IsInCombat = true;
+
+            AssemblySquad(enemy);
 
             IEnumerator loading()
             {
                 var str = Game.Strings["Roguelike"];
                 headerPanel.Visible = true;
                 combatHeader.Text = $"{str[enemy["name"].String]} VS {Game.GameState.Player.Entity.Name}";
-                Game.GameWorld.BorderLayersSystem["Map"] = true;
-                Game.GameWorld.PlayerControlSystem.Combat();
-                enemyWidget = Game.AddDesktopWidget(new EntityWidget(Game, enemy, Struct.Side.Left), Game.MyraDesktopIngame);
+                Game.World.BorderLayersSystem["Map"] = true;
+                Game.World.PlayerControlSystem.Combat();
                 yield return 0;
 
-                Game.GameState.Enemy = enemy;
+                BindCurrentEnemy(enemy);
+
                 yield return 1;
             }
 
             IEnumerator changeScreenBack()
             {
-                Game.GameWorld.BorderLayersSystem["Map"] = false;
-                Game.GameWorld.BorderLayersSystem["LeftPanel"] = true;
-                Game.GameWorld.BorderLayersSystem["Center"] = true;
-                Game.GameWorld.PlayerControlSystem.ControlsCombatPreset();
+                Game.World.BorderLayersSystem["Map"] = false;
+                Game.World.BorderLayersSystem["LeftPanel"] = true;
+                Game.World.BorderLayersSystem["Center"] = true;
+                Game.World.PlayerControlSystem.ControlsCombatPreset();
                 yield return 0;
             }
 
-            Game.GameWorld.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), changeScreenBack());
+            Game.World.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), changeScreenBack());
         }
 
-        private int GetLoadDelay()
+        public void EndCombat()
         {
-            var delay = Game.Lua.Globals["Core"].As<Table>()["combatDelayMS"].As<double>();
-            return ((int)delay);
+            Game.World.PlayerControlSystem.Disable();
+            _endOfBattle = true;
         }
 
         public void CloseCombat()
@@ -112,13 +124,13 @@ namespace ioi.Systems.Roguelike
                 log.Visible = false;
                 log.Clear();
                 headerPanel.Visible = false;
-                Game.GameWorld.BorderLayersSystem["LeftPanel"] = false;
-                Game.GameWorld.BorderLayersSystem["Center"] = false;
-                Game.GameWorld.BorderLayersSystem["Map"] = true;
-                Game.GameWorld.PlayerControlSystem.Map();
+                Game.World.BorderLayersSystem["LeftPanel"] = false;
+                Game.World.BorderLayersSystem["Center"] = false;
+                Game.World.BorderLayersSystem["Map"] = true;
+                Game.World.PlayerControlSystem.Map();
 
-                if (enemyWidget.Entity["hp"].Number <= 0)
-                    enemyWidget.Entity.Destroy();
+                //if (enemyWidget.Entity["hp"].Number <= 0)
+                //    enemyWidget.Entity.Destroy();
 
                 Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
                 yield return 0;
@@ -126,19 +138,39 @@ namespace ioi.Systems.Roguelike
 
             IEnumerator afterLoad()
             {
-                Game.GameWorld.PlayerControlSystem.ControlsMainScreenPreset();
-                Game.GameWorld.PlayerControlSystem.Enable();
+                Game.World.PlayerControlSystem.ControlsMainScreenPreset();
+                Game.World.PlayerControlSystem.Enable();
                 IsInCombat = false;
-                Game.GameWorld.MapSystem.Resume();
+                Game.World.MapSystem.Resume();
                 yield return 0;
             }
 
-            Game.GameWorld.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), afterLoad());
+            Game.World.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), afterLoad());
         }
 
-        public void Attack(GameEntity you, GameEntity enemy)
+        private void AssemblySquad(GameEntity enemy)
         {
-            you.Func("strike", enemy.Data);
+            var nearest = Game.World.MapSystem.CollectNearest(enemy);
+            foreach (var near in nearest)
+            {
+                near.Squad.Destroy();
+                enemy.Squad.Add(near);
+            }
+        }
+
+        private void BindCurrentEnemy(GameEntity enemy)
+        {
+            if (enemyWidget != null)
+                Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
+
+            Game.GameState.Enemy = enemy;
+            enemyWidget = Game.AddDesktopWidget(new EntityWidget(Game, null, Struct.Side.Left,enemy), Game.MyraDesktopIngame);
+        }
+
+        private int GetLoadDelay()
+        {
+            var delay = Game.Lua.Globals["Core"].As<Table>()["combatDelayMS"].As<double>();
+            return ((int)delay);
         }
 
         public void LogCombat(string text)
@@ -149,24 +181,74 @@ namespace ioi.Systems.Roguelike
         public void Dispose()
         {
             Game.MyraDesktopIngame.Widgets.Remove(headerPanel);
+            Game.RemoveDesktopWidget(log, Game.MyraDesktopIngame);
+            Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
         }
 
-        public void EndCombat()
-        {
-            Game.GameWorld.PlayerControlSystem.Disable();
-            _endOfBattle = true;
-        }
-
+        private bool isGameOver = false;
         public void Kill(GameEntity entity)
         {
-            if (Game.GameState.Player.Entity == entity)
+            var player = Game.GameState.Player;
+            if (entity["type"].String== "player")
             {
-                //if player dies, stopping game
+                player.Entity.Unconscious();
+                if (player.Entity.Squad.IsAnybodyAlive())
+                {
+                    player.Entity.Squad.MoveNextAlive();
+                    player.BindEntity(player.Entity.Squad.Current);
+                }
+                else
+                {
+                    isGameOver = true;
+                }
             }
-            else // пока что бой только 1 на 1
+            else
             {
-                EndCombat();
+                var squad = entity.Squad;
+                squad.Remove(entity);
+
+                if(squad.IsEmpty())
+                {
+                    EndCombat();
+                }
+                else
+                {
+                    squad.MoveNext();
+                    BindCurrentEnemy(squad.Current);
+                }
             }
+        }
+
+        public void Turn(GameEntity player, GameEntity enemy)
+        {
+            enemy.Squad?.CombatTurn(player);
+
+            if (isGameOver)
+            {
+                Game.GameOver();
+                return;
+            }
+
+            player.Squad.MoveNextAlive();
+            Game.GameState.Player.BindEntity(player.Squad.Current);
+        }
+
+        internal void Strike(GameEntity player, GameEntity enemy)
+        {
+            player.Func("strike", enemy);
+            Turn(player.Squad.Leader, enemy);
+        }
+
+        internal void Defence(GameEntity player, GameEntity enemy)
+        {
+            player.Func("defence", enemy);
+            Turn(player.Squad.Leader, enemy);
+        }
+
+        internal void Flee(GameEntity player, GameEntity enemy)
+        {
+            player.Func("flee", enemy);
+            Turn(player.Squad.Leader, enemy);
         }
     }
 }

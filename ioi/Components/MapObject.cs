@@ -352,7 +352,7 @@ namespace ioi.Components
         {
             OnDestroy?.Invoke();
 
-            Game.WorldMap.DestroyEntity(Entity);
+            Game.OldECSMoveSystem.DestroyEntity(Entity);
             if (!_isDestroyedPhysically)
                 DestroyPhysical();
 
@@ -378,7 +378,7 @@ namespace ioi.Components
         {
             Parent = null;
 
-            Game.WorldMap.DestroyEntity(Entity);
+            Game.OldECSMoveSystem.DestroyEntity(Entity);
             Entity = null;
 
             _onCollistion = null;

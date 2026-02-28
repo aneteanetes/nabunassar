@@ -11,7 +11,6 @@ using ioi.Entities.Map;
 using ioi.Entities.Struct;
 using ioi.Struct;
 using ioi.Widgets.UserInterfaces;
-using Monogame.Extended;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ioi.Entities.Data

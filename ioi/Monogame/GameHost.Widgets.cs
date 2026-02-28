@@ -1,8 +1,10 @@
 ﻿using Geranium.Reflection;
-using Myra.Graphics2D.UI;
-using ioi.Widgets.Base;
-using ioi.Systems.Roguelike;
+using ioi.Screens;
+using ioi.Screens.Game;
 using ioi.Scripting;
+using ioi.Systems.Roguelike;
+using ioi.Widgets.Base;
+using Myra.Graphics2D.UI;
 
 namespace ioi
 {
@@ -133,6 +135,9 @@ namespace ioi
 
         public void RemoveDesktopWidget(ScreenWidget widget, Desktop desktop=null)
         {
+            if (widget == null)
+                return;
+
             if (desktop == null)
                 desktop = Game.MyraDesktop;
 
@@ -164,6 +169,12 @@ namespace ioi
                 var specificScreenWidget = specifiedScreenWidgets[i];
                 RemoveDesktopWidget(specificScreenWidget);
             }
+        }
+
+        internal void GameOver()
+        {
+            IsGameActive = false;
+            Game.SwitchScreen<MainMenuScreen>(GameController.UnloadGame());
         }
     }
 }

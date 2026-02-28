@@ -63,14 +63,25 @@
         return name;
     end,
 
+    coloredText = function(obj)
+        return "/c["..toHexString(obj.color).."]";	    
+    end,
+
+    coloredName = function(obj)
+        return "/c["..toHexString(obj.color).."]"..obj:getName();	    
+    end,
+
+
     collide = function(self,selfentity,objmap,collision)
 	end,
 
     combatturn = function(self,target)
     end,
 
-    strike = function (self,target)
+    strike = function (self,targetEntity)
         
+        local target = targetEntity.Data;
+
         local ctx = DamageContext:new();
 
         local dmg = math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
@@ -81,14 +92,12 @@
         
         ctx:log();
 
-        if(ctx.died==true) then
-            world.CombatSystem:Kill(target.entity);
-        else
-            target.combatturn(target,self);
+        if (ctx.died == true) then
+            world.CombatSystem:Kill(targetEntity);
         end
     end,
 
-    defence = function (self,target)
+    defence = function (self,targetEntity)
 
         table.insert(self.mods, {
             id="defenceinbattle_def",    
@@ -108,20 +117,12 @@
 
         self.refresh(self);
         
-        local targetColor = toHexString(self.color);
-        local name = "/c["..targetColor.."]"..self:getName();
-
-        world.CombatSystem.LogCombat(name.." /cd"..loco("defstand").."!");
-
-        target.combatturn(target,self);
+        world.CombatSystem.LogCombat(self:coloredName().." /cd"..loco("defstand").."!");
     end,
 
-    flee = function (self,target)
+    flee = function (self,targetEntity)
         
-        local targetColor = toHexString(self.color);
-        local name = "/c["..targetColor.."]"..self:getName();
-
-        world.CombatSystem.LogCombat(name.." /cd"..loco("tryflee"));
+        world.CombatSystem.LogCombat(self:coloredName().." /cd"..loco("tryflee"));
 
         if math.random(100) <= (50+self.ap) then
             
@@ -131,8 +132,6 @@
 
             world.CombatSystem.LogCombat(name.." /cd"..loco("successflee").."!");
             world.CombatSystem.EndCombat();
-        else
-            target.combatturn(target,self);
         end
 
     end,
@@ -164,10 +163,35 @@
             self.die(self,attacker,ctx);
             attacker.kill(attacker,self,ctx);
         end
-        
-        local targetColor = toHexString(self.color);
 
-        ctx.target="/c["..targetColor.."]"..self:getName();
+        ctx.target= self:coloredName();
+    end,
+
+     -- WIP
+    applyheal = function (self,heal,healer,ctx)
+
+        -- before
+        beforehealed = self.beforeheal(self,heal,healer,ctx);
+        
+        local healround = math.floor(beforehealed);
+
+        --after calucaltion
+        mitigated = self.afterheal(self,healround,healer,ctx);
+        
+        -- round damage
+        mitigated = math.floor(mitigated);
+
+        self.hp = self.hp+mitigated;
+
+        if(self.hp<=0) then
+            self.die(self,attacker,ctx);
+            attacker.kill(attacker,self,ctx);
+        end
+
+        if(self.hp>self.mhp) then
+            self.hp=self.mhp;
+        end
+
     end,
 
     beforedmg=function (self,dmg,attacker,ctx)
@@ -175,9 +199,19 @@
         return dmg;
     end,
 
+    beforeheal=function (self,heal,healer,ctx)
+	    -- поголщение хила
+        return heal;
+    end,
+
     afterdmg=function (self,dmg,attacker,ctx)
 	    -- отражение урона
         return dmg;
+    end,
+
+    afterheal=function (self,heal,healer,ctx)
+	    -- хз что
+        return heal;
     end,
 
     die=function (self,killer,ctx)

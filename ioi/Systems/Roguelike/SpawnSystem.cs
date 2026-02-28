@@ -16,7 +16,7 @@ namespace ioi.Systems.Roguelike
             Game = game;
         }
 
-        public GameEntity SpawnCharacter(string race, string @class)
+        public GameEntity SpawnCharacter(string name, string race, string @class)
         {
             var entity = new GameEntity(Game.Lua,null,
                 "Templates.Base.Object",
@@ -24,10 +24,11 @@ namespace ioi.Systems.Roguelike
                 $"Templates.Races.{race}", 
                 $"Templates.Classes.{@class}")
             {
-                Name = "Странник",
+                Name = name,
             };
 
             entity["icon"] = DynValue.NewString("@");
+            entity["type"] = DynValue.NewString("player");
             entity.Color("color", Color.Cyan);
             entity["namevalue"] = DynValue.NewString(entity.Name);
             entity.Func("refresh");

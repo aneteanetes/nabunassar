@@ -18,7 +18,7 @@ using Penumbra;
 
 namespace ioi.Entities
 {
-    internal class MapEntityFactory(GameHost game) : BaseEntityFactory(game,game.WorldMap)
+    internal class MapEntityFactory(GameHost game) : BaseEntityFactory(game,game.OldECSMoveSystem)
     {
         public const float TileSizeMultiplier = 3.99f;
         public const float TileBoundsSizeMultiplier = 3.8f;

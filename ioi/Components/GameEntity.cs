@@ -13,7 +13,7 @@ namespace ioi.Components
 
         public string Name { get; set; }
 
-        public List<GameEntity> Squad { get; private set; } = new();
+        public GameEntitySquad Squad { get; internal set; }
 
         internal ObjectMap MapObject { get; set; }
 
@@ -49,7 +49,7 @@ namespace ioi.Components
             Data = script.CreateTable(initProps, templates);
             Data["Destroy"] = (Action)Destroy;
             Data["entity"] = this;
-            Squad.Add(this);
+            Squad = new GameEntitySquad(this);
         }
 
         /// <summary>
@@ -163,17 +163,51 @@ namespace ioi.Components
             set => Data.Set(key, value);
         }
 
+        public string GetName()
+        {
+            if(this.Name.IsNotEmpty())
+                return this.Name;
+
+            var nameValue = this["name"];
+            if (nameValue.IsNil())
+                return "#";
+
+            var nameToken = nameValue.String;
+
+            return _script.Game.Strings["Roguelike"][nameToken];
+        }
+
+        public void Heal(int heal, GameEntity healer = null)
+        {
+            this.Func("applyheal", heal, healer, null);
+        }
+
         public void Destroy()
         {
             Func("destroy");
 
             if (this.MapObject != null)
-                _script.Game.GameWorld.MapSystem.Remove(this.MapObject);
+                _script.Game.World.MapSystem.Remove(this.MapObject);
+
+            Squad?.Remove(this);
 
             MapObject = null;
             Data = null;
             _script = null;
             Squad = null;
         }
+
+        /// <summary>
+        /// Based on negative hp entity gets some condition: unconscious, dead, destroying
+        /// </summary>
+        internal void Unconscious()
+        {
+            IsUnconscious = true;
+        }
+
+        /// <summary>
+        /// Is entity is unconscious, than player can't control it
+        /// </summary>
+        public bool IsUnconscious { get; set; }
     }
 }

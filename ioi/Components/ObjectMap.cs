@@ -21,13 +21,6 @@ namespace ioi.Components
 
         private GameHost Game;
 
-        public ObjectMap(GameHost game, string id)
-        {
-            Game = game;
-            timeOffset = (float)new Random().NextDouble() * 10f;
-            Id = id;
-        }
-
         public bool IsUpdatable { get; set; }
 
         public bool IsIdle { get; set; }
@@ -41,6 +34,93 @@ namespace ioi.Components
         private object autoMoveLock = new();
 
         public Side Side { get; set; }
+
+        public Sprite Sprite { get; set; }
+
+        public Color Color { get; set; }
+
+        public bool IsBounds { get; set; }
+
+        private Vector2 _position;
+        public Vector2 Position
+        {
+            get => _position;
+            set
+            {
+                _position = value;
+                RecalculateBounds();
+            }
+        }
+
+        public Queue<Point> MovePath { get; set; }
+
+        public bool MoveStopRequest { get; set; }
+
+        public Vector2? DrawPosition { get; set; }
+
+        [JsonIgnore]
+        public Vector2 TargetPosition { get; set; }
+
+        [JsonIgnore]
+        public bool IsMoving { get; set; }
+
+        public Point Coords { get; set; }
+
+        public ShaderEffect Effect { get; set; }
+
+        public Vector2 Size { get; set; }
+
+        public Rectangle VisualBounds { get; private set; }
+
+        public BoundingBox BoundingBox { get; private set; }
+
+        public BoundingBox BoundingBoxCamera { get; private set; }
+
+        public GameEntity Entity { get; private set; }
+
+        public ObjectMap(GameHost game, string id)
+        {
+            Game = game;
+            timeOffset = (float)new Random().NextDouble() * 10f;
+            Id = id;
+        }
+
+        public void BindEntity(GameEntity entity)
+        {
+            Entity = entity;
+            entity.MapObject = this;
+            BindMoveable(entity);
+        }
+
+        private void BindMoveable(GameEntity entity)
+        {
+            if (entity.Components.Contains("Templates.Base.Moveable"))
+            {
+                this.IsUpdatable = true;
+                this.IsMoveable = true;
+                this.Speed = Entity["speed"].Number;
+                this.idleSpeed = ((float)Entity["idleSpeed"].Number);
+                this.idleAmplitude = ((float)Entity["idleAmplitude"].Number);
+                this.stepSleepMS = ((float)Entity["stepSleepMS"].Number);
+                this.pathSleepMS = ((float)Entity["pathSleepMS"].Number);
+
+                var movearea = Entity["movearea"];
+                if (!movearea.IsNil())
+                {
+                    var movetable = movearea.Table;
+
+                    var x = ((int)movetable.Get("x").Number);
+                    var y = ((int)movetable.Get("y").Number);
+                    var w = ((int)movetable.Get("w").Number);
+                    var h = ((int)movetable.Get("h").Number);
+
+                    var location = new Point(((int)Coords.X) + x, ((int)Coords.Y) + y);
+                    var size = new Point(w, h);
+
+                    this.MoveArea = new Rectangle(location, size);
+                }
+            }
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -100,84 +180,10 @@ namespace ioi.Components
             return diff;
         }
 
-        public Sprite Sprite { get; set; }
-
-        public Color Color { get; set; }
-
-        public bool IsBounds { get; set; }
-
-        private Vector2 _position;
-        public Vector2 Position
+        public Vector2 GetPositionFromCoords()
         {
-            get => _position;
-            set
-            {
-                _position = value;
-                RecalculateBounds();
-            }
+            return new Vector2(Coords.X * GameHost.Game.CellSize.X, Coords.Y * GameHost.Game.CellSize.Y);
         }
-
-        public Queue<Point> MovePath { get; set; }
-
-        public bool MoveStopRequest { get; set; }
-
-        public Vector2? DrawPosition { get; set; }
-
-        [JsonIgnore]
-        public Vector2 TargetPosition { get; set; }
-
-        [JsonIgnore]
-        public bool IsMoving { get; set; }
-
-        public Point Coords { get; set; }
-
-        public ShaderEffect Effect { get; set; }
-
-        public Vector2 Size { get; set; }
-
-        public Rectangle VisualBounds { get; private set; }
-
-        public BoundingBox BoundingBox { get; private set; }
-
-        public BoundingBox BoundingBoxCamera { get; private set; }
-
-        public GameEntity Entity { get; private set; }
-
-        public void BindEntity(GameEntity entity)
-        {
-            Entity = entity;
-            entity.MapObject = this;
-            if (entity.Components.Contains("Templates.Base.Moveable"))
-            {
-                this.IsUpdatable = true;
-                this.IsMoveable = true;
-                this.Speed = Entity["speed"].Number;
-                this.idleSpeed = ((float)Entity["idleSpeed"].Number);
-                this.idleAmplitude = ((float)Entity["idleAmplitude"].Number);
-                this.stepSleepMS = ((float)Entity["stepSleepMS"].Number);
-                this.pathSleepMS = ((float)Entity["pathSleepMS"].Number);
-
-                var movearea = Entity["movearea"];
-                if (!movearea.IsNil())
-                {
-                    var movetable = movearea.Table;
-
-                    var x = ((int)movetable.Get("x").Number);
-                    var y = ((int)movetable.Get("y").Number);
-                    var w = ((int)movetable.Get("w").Number);
-                    var h = ((int)movetable.Get("h").Number);
-
-                    var location = new Point(((int)Coords.X) + x, ((int)Coords.Y) + y);
-                    var size = new Point(w, h);
-
-                    this.MoveArea = new Rectangle(location, size);
-                }
-            }
-        }
-
-        public Vector2 GetPositionFromCoords() => new Vector2(Coords.X * GameHost.Game.CellSize.X, Coords.Y * GameHost.Game.CellSize.Y);
-
-        public Point KeyCoords() => Coords;
 
         public void RecalculateBounds()
         {
@@ -202,7 +208,7 @@ namespace ioi.Components
                     Entity.Func("collide", this.Entity, this, collision);
                 }
 
-                if (Game.GameWorld.CombatSystem.IsInCombat)
+                if (Game.World.CombatSystem.IsInCombat)
                     break;
 
                 var otherCollideFunc = collision?.Entity?["collide"];
@@ -211,14 +217,14 @@ namespace ioi.Components
                     collision.Entity.Func("collide", collision.Entity, collision, this);
                 }
 
-                if (Game.GameWorld.CombatSystem.IsInCombat)
+                if (Game.World.CombatSystem.IsInCombat)
                     break;
             }
         }
 
         public Queue<Point> BindMovePath(Point target)
         {
-            var path = Game.GameWorld.PathfindSystem.FindPath(Coords, target);
+            var path = Game.World.PathfindSystem.FindPath(Coords, target);
 
             if (path != default)
             {

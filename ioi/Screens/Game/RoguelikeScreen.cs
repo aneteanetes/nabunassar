@@ -1,4 +1,6 @@
 ﻿using Geranium.Reflection;
+using ioi.Components;
+using ioi.Entities.Data;
 using ioi.Entities.Struct;
 using ioi.Screens.Abstract;
 using ioi.Widgets.UserInterfaces.Roguelike;
@@ -28,32 +30,33 @@ namespace ioi.Screens
             positionSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 32, 16, 16)) { Color= Color.AntiqueWhite };
             crossSprite = new Sprite(new Texture2DRegion(cursorTileset, 272, 0, 16, 16)) { Color = Color.Red, };
 
-            Game.AddDesktopWidget(new EntityWidget(Game,Game.GameState.Player.Entity, Struct.Side.Right),Game.MyraDesktopIngame);
-            Game.GameWorld.PlayerControlSystem.ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
-            Game.GameWorld.PlayerControlSystem.ControlsMainScreenPreset();
+            Func<GameEntity> fetcher = () => Game.GameState.Player.Entity;
+            Game.AddDesktopWidget(new EntityWidget(Game,fetcher, Struct.Side.Right),Game.MyraDesktopIngame);
+            Game.World.PlayerControlSystem.ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
+            Game.World.PlayerControlSystem.ControlsMainScreenPreset();
 
-            Game.GameWorld.LogSystem.Widget = Game.AddDesktopWidget(new LogWidget(Game), Game.MyraDesktopIngame);
-            Game.GameWorld.MapSystem.LogArea();
+            Game.World.LogSystem.Widget = Game.AddDesktopWidget(new LogWidget(Game), Game.MyraDesktopIngame);
+            Game.World.MapSystem.LogArea();
 
-            Game.GameWorld.MapSystem.Celshading = Celshading;
+            Game.World.MapSystem.Celshading = Celshading;
 
-            Game.GameWorld.BorderLayersSystem["Controls"] = true;
-            Game.GameWorld.BorderLayersSystem["Player"] = true;
-            Game.GameWorld.BorderLayersSystem["Skills"] = true;
-            Game.GameWorld.BorderLayersSystem["Map"] = true;
+            Game.World.BorderLayersSystem["Controls"] = true;
+            Game.World.BorderLayersSystem["Player"] = true;
+            Game.World.BorderLayersSystem["Skills"] = true;
+            Game.World.BorderLayersSystem["Map"] = true;
         }
 
         public override void Update(GameTime gameTime)
         {
             if (GameHost.IsMakingScreenShot == false && Game.LastScreenshot.IsNotEmpty())
             {
-                Game.GameWorld.LogSystem.Log(DrawText.Create(Game.Strings["Roguelike"]["screenshotsaved"], Color.DarkGray).AppendSpace().Append(Game.LastScreenshot));
+                Game.World.LogSystem.Log(DrawText.Create(Game.Strings["Roguelike"]["screenshotsaved"], Color.DarkGray).AppendSpace().Append(Game.LastScreenshot));
                 Game.LastScreenshot = default;
             }
 
             GameController.GlobalMenuWidget();
             
-            Game.GameWorld.Update(gameTime);
+            Game.World.Update(gameTime);
 
             var keystate = KeyboardExtended.GetState();
             if (keystate.IsControlDown() && keystate.WasKeyPressed(Keys.S))
@@ -71,7 +74,7 @@ namespace ioi.Screens
 
         protected override void DrawInternal(GameTime gameTime)
         {
-            Game.GameWorld.Draw(gameTime);
+            Game.World.Draw(gameTime);
 
             Game.SpriteBatch.End();
 
@@ -103,7 +106,7 @@ namespace ioi.Screens
 
         public override void Dispose()
         {
-            Game.GameWorld.Dispose();
+            Game.World.Dispose();
         }
     }
 }

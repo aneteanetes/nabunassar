@@ -96,11 +96,11 @@ namespace ioi
 
         public BattleEntityFactory EntityFactoryBattle { get; set; }
 
-        public World WorldMap { get; private set; }
+        public World OldECSMoveSystem { get; private set; }
 
-        public World WorldBattle { get; private set; }
+        public World OldECSBattle { get; private set; }
 
-        public GameWorld GameWorld { get; set; }
+        public GameWorld World { get; set; }
 
         public OrthographicCameraCustom CameraMain { get; private set; }
 

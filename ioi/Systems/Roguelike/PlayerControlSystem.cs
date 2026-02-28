@@ -19,8 +19,6 @@ namespace ioi.Systems.Roguelike
         public ControlsWidget ControlsWidget { get; internal set; }
         public bool Enabled { get; private set; } = true;
 
-        private TimeSpan _total;
-
         public PlayerControlSystem(GameHost game)
         {
             Game = game;
@@ -50,58 +48,63 @@ namespace ioi.Systems.Roguelike
 
             var player = Game.GameState.Player.Entity;
             var enemy = Game.GameState.Enemy;
-            
-            if (key.WasKeyPressed(Keys.D1))
+
+            bool isAction = false;
+            bool wasKeyPressed(Keys keys)
+            {
+                isAction = true;
+
+                return key.WasKeyPressed(keys);
+            }
+
+            if (wasKeyPressed(Keys.D1))
+            {
+            }
+
+            if (wasKeyPressed(Keys.D2))
+            {
+            }
+
+            if (wasKeyPressed(Keys.D3))
+            {
+            }
+
+            if (wasKeyPressed(Keys.D4))
+            {
+            }
+
+            if (wasKeyPressed(Keys.I))
+            {
+            }
+
+            if (wasKeyPressed(Keys.A))
+            {
+                Game.World.CombatSystem.Strike(player, enemy);
+            }
+
+            if (wasKeyPressed(Keys.D))
+            {
+                Game.World.CombatSystem.Defence(player, enemy);
+            }
+
+            if(wasKeyPressed(Keys.S))
+            {
+                Game.World.CombatSystem.Flee(player, enemy);
+            }
+
+            if (wasKeyPressed(Keys.F))
             {
 
             }
 
-            if (key.WasKeyPressed(Keys.D2))
+            if (wasKeyPressed(Keys.Q))
             {
 
             }
 
-            if (key.WasKeyPressed(Keys.D3))
+            if (isAction)
             {
-
-            }
-
-            if (key.WasKeyPressed(Keys.D4))
-            {
-
-            }
-
-            if (key.WasKeyPressed(Keys.I))
-            {
-
-            }
-
-            if (key.WasKeyPressed(Keys.A))
-            {
-                Game.GameWorld.CombatSystem.Attack(player, enemy);
                 player.Func("tick");
-            }
-
-            if (key.WasKeyPressed(Keys.D))
-            {
-                player.Func("defence", enemy.Data);
-                player.Func("tick");
-            }
-
-            if(key.WasKeyPressed(Keys.S))
-            {
-                player.Func("flee", enemy.Data);
-                player.Func("tick");
-            }
-
-            if (key.WasKeyPressed(Keys.F))
-            {
-
-            }
-
-            if (key.WasKeyPressed(Keys.Q))
-            {
-
             }
         }
 

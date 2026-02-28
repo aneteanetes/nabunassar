@@ -10,7 +10,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
     {
         private DynamicSpriteFont consolas;
 
-        public GameEntity Entity { get; private set; }
+        public Func<GameEntity> EntityFetcher { get; private set; }
 
         private Side side;
         private Label name;
@@ -25,11 +25,17 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
         private Label def;
         private Label mdef;
         private Label gold;
+        private EffectsGrid effectsGrid;
         private Label squad;
+        private SquadGrid squadgrid;
 
-        public EntityWidget(GameHost game, GameEntity entity, Side side) : base(game)
+        public EntityWidget(GameHost game, Func<GameEntity> entityFetcher, Side side, GameEntity staticEntity=null) : base(game)
         {
-            this.Entity = entity;
+            this.EntityFetcher = entityFetcher;
+            if (staticEntity != null)
+            {
+                EntityFetcher = () => staticEntity;
+            }
 
             this.side = side;
 
@@ -99,7 +105,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Myra.Graphics2D.Thickness(0, 10, 10, largeBottomMargin/2),
-                TextColor = Entity.Color("rescolor"),
+                TextColor = EntityFetcher().Color("rescolor"),
                 Font = consolas
             };
 
@@ -151,37 +157,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                 Font = consolas
             };
 
-            var squadcellsize = 60;
-
-            var effectsGrid = new Grid
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Padding=new Myra.Graphics2D.Thickness(4,0,0,0),
-                Margin=new Myra.Graphics2D.Thickness(0,5)
-            };
-
-            for (int i = 0; i < 1; i++)
-            {
-                for (int j = 0; j < 12; j++)
-                {
-                    var cell = new Label
-                    {
-                        Text = "",
-                        TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center,
-                        //Padding = new Myra.Graphics2D.Thickness(0, 15),
-                        //Margin = new Myra.Graphics2D.Thickness(5),
-                        TextColor = Color.LightSeaGreen,
-                        Font = consolas,
-                        Height = squadcellsize/2,
-                        Width = squadcellsize/2
-                    };
-                    effectsGrid.Widgets.Add(cell);
-                    Grid.SetRow(cell, i);
-                    Grid.SetColumn(cell, j);
-                }
-            }
-
-            effectsGrid.Width = squadcellsize * 6 + 30;
+            effectsGrid = new EffectsGrid(EntityFetcher, consolas);
 
             squad = new Label
             {
@@ -192,37 +168,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                 Font = consolas
             };
 
-            var squadgrid = new Grid
-            {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                //Border = new SolidBrush(Color.IndianRed),
-                //BorderThickness = new Myra.Graphics2D.Thickness(1)
-            };
-            var c = 0;
-            foreach (var member in Entity.Squad)
-            {
-                var cell = new Label
-                {
-                    Text = member["icon"].String,
-                    TextColor = member.Color("color"),
-                    TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Padding = new Myra.Graphics2D.Thickness(0, 10),
-                    Margin = new Myra.Graphics2D.Thickness(5),
-                    Font = consolas,
-                    Border = new SolidBrush(Entity == member ? Color.IndianRed : Color.DarkGoldenrod),
-                    BorderThickness = new Myra.Graphics2D.Thickness(1),
-                    Height = squadcellsize,
-                    Width = squadcellsize
-                };
-
-                squadgrid.Widgets.Add(cell);
-                Grid.SetColumn(cell, c);
-
-                c++;
-            }
-
-            squadgrid.Width = squadcellsize * 6 + 30;
+            squadgrid = new SquadGrid(EntityFetcher, consolas);
 
             #region enemy abilities
 
@@ -237,7 +183,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             };
             abilities.Widgets.Add(abilslabel);
 
-            foreach (var abil in Entity.Abilities)
+            foreach (var abil in EntityFetcher().Abilities)
             {
                 var abillabel = new Label()
                 {
@@ -284,23 +230,28 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
         public override void Update(GameTime gameTime)
         {
-            if(Entity==null)
+            if (EntityFetcher == null)
                 return;
 
             var strings = Game.Strings["Roguelike"];
 
-            name.Text = Entity.Name ?? strings[Entity["name"].String];
-            raceclass.Text = $"{strings[Entity["race"].String]} - {strings[Entity["class"].String]}";
-            level.Text = $"{strings["level"]}: {Entity["level"]}";
-            exp.Text = $"{strings["exp"]}: {Entity["exp"]}/10";
-            health.Text = $"{strings["health"]}: {Entity["hp"]}/{Entity["mhp"]}";
-            resource.Text = $"{strings[Entity["res"].String]}: {Entity.Func("resstring").String}";
-            damage.Text = $"{strings["damage"]}: {Entity["mindmg"]}-{Entity["maxdmg"]}";
-            ad.Text = $"{strings["ad"]}: {Entity["ad"]}";
-            ap.Text = $"{strings["ap"]}: {Entity["ap"]}";
-            def.Text = $"{strings["def"]}: {Entity["def"]}";
-            mdef.Text = $"{strings["mdef"]}: {Entity["mdef"]}";
-            gold.Text = $"{strings["gold"]}: {Entity["gold"]}";
+            var entity = EntityFetcher();
+
+            name.Text = entity.Name ?? strings[entity["name"].String];
+            raceclass.Text = $"{strings[entity["race"].String]} - {strings[entity["class"].String]}";
+            level.Text = $"{strings["level"]}: {entity["level"]}";
+            exp.Text = $"{strings["exp"]}: {entity["exp"]}/10";
+            health.Text = $"{strings["health"]}: {entity["hp"]}/{entity["mhp"]}";
+            resource.Text = $"{strings[entity["res"].String]}: {entity.Func("resstring").String}";
+            damage.Text = $"{strings["damage"]}: {entity["mindmg"]}-{entity["maxdmg"]}";
+            ad.Text = $"{strings["ad"]}: {entity["ad"]}";
+            ap.Text = $"{strings["ap"]}: {entity["ap"]}";
+            def.Text = $"{strings["def"]}: {entity["def"]}";
+            mdef.Text = $"{strings["mdef"]}: {entity["mdef"]}";
+            gold.Text = $"{strings["gold"]}: {entity["gold"]}";
+            
+            effectsGrid.Update(gameTime);
+            squadgrid.Update(gameTime);
         }
 
         public override void OnAfterAddedWidget(Widget widget)
@@ -311,7 +262,8 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
         public override void Dispose()
         {
-            Entity = null;
+            EntityFetcher?.Invoke()?.Destroy();
+            EntityFetcher = null;
         }
     }
 }

@@ -92,7 +92,7 @@ namespace ioi.Screens.Game
             if (!Game.IsGameActive)
                 return;
 
-            Game.WorldBattle?.Update(gameTime);
+            Game.OldECSBattle?.Update(gameTime);
         }
 
         protected override void DrawInternal(GameTime gameTime)
@@ -101,7 +101,7 @@ namespace ioi.Screens.Game
             //sb.Draw(_background, new Rectangle(Point.Zero, (Game.MainViewport.ToVector2() / Game.CameraMain.Zoom).ToPoint()), Color.White);
             //sb.End();
 
-            Game.WorldBattle?.Draw(gameTime);
+            Game.OldECSBattle?.Draw(gameTime);
 
             Game.SpriteBatch.End();
         }

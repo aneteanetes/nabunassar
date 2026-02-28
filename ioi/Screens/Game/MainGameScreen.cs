@@ -41,14 +41,14 @@ namespace ioi.Screens.Game
                 return;
 
             Game.CollisionComponent?.Update(gameTime);
-            Game.WorldMap?.Update(gameTime);
+            Game.OldECSMoveSystem?.Update(gameTime);
 
             GlobalMapGameControls();
         }
 
         protected override void DrawInternal(GameTime gameTime)
         {
-            Game.WorldMap.Draw(gameTime);
+            Game.OldECSMoveSystem.Draw(gameTime);
 
             Game.SpriteBatch.End();
 

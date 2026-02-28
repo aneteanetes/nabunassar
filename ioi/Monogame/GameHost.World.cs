@@ -12,7 +12,7 @@ namespace ioi
         {
             Game.InitializeCollisions();
 
-            WorldMap = new WorldBuilderProxy(this)
+            OldECSMoveSystem = new WorldBuilderProxy(this)
                 .AddSystem(new MinimapSystem(this))
                 .AddSystem(new PlayerControllSystem(this))
                 .AddSystem(new CursorSystem(this))
@@ -29,7 +29,7 @@ namespace ioi
 
         public void InitBattleWorld()
         {
-            WorldBattle = new WorldBuilderProxy(this)
+            OldECSBattle = new WorldBuilderProxy(this)
                 .AddSystem(new SquadRenderSystem(this))
                 .Build();
 
@@ -38,15 +38,15 @@ namespace ioi
 
         public void DisposeBattleWorld()
         {
-            WorldBattle.IsEnabled = false;
+            OldECSBattle.IsEnabled = false;
             EntityFactoryBattle = null;
-            WorldBattle.Dispose();
+            OldECSBattle.Dispose();
         }
 
         public void DisposeGameWorld()
         {
-            Game.WorldMap.IsEnabled = false;
-            Game.WorldMap.Dispose();
+            Game.OldECSMoveSystem.IsEnabled = false;
+            Game.OldECSMoveSystem.Dispose();
             Game.DisposeCollisionComponent();
         }
 
@@ -56,7 +56,7 @@ namespace ioi
         public void DestoryEntity(Entity entity)
         {
             var collision = entity.Get<MapObject>();
-            this.WorldMap.DestroyEntity(entity);
+            this.OldECSMoveSystem.DestroyEntity(entity);
             CollisionComponent.Remove(collision);
         }
 
