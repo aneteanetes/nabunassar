@@ -35,6 +35,11 @@
     mindmg=1,
     maxdmg=1,
 
+    -- skillpoints
+    spoints=0,
+    -- profpoints
+    ppoints=0,
+
     stats_upd = {
         mana=0,
         manamax=0,  
@@ -138,6 +143,8 @@
 
     applydmg = function (self,dmg,attacker,ctx)
 
+        ctx.attacker = attacker.coloredName(attacker);
+
         -- before
         dmg = self.beforedmg(self,dmg,attacker,ctx);
         
@@ -162,6 +169,7 @@
         if(self.hp<=0) then
             self.die(self,attacker,ctx);
             attacker.kill(attacker,self,ctx);
+            ctx.killed=attacker:coloredName().." /cd"..loco("getting").." /c[#f5cb42]"..tostring(self.exp).." /cd"..loco("exps").." !";
         end
 
         ctx.target= self:coloredName();
@@ -219,8 +227,48 @@
         self.died=true;
     end,
 
-    kill=function (self,target,ctx)
-	    -- on kill
+    kill=function (self,target)	    
+        self.applyexp(self,target);
+    end,
+
+    mexp = function (obj)	    
+        local nextLevel = obj.level + 1;
+        return 100 * (nextLevel - 1) * ((nextLevel - 1) + 1) / 2;
+    end,
+
+    applyexp = function (obj,killed,ctx)
+	    local exp = killed.exp;
+
+        exp = obj:beforeexp(exp);
+        
+        obj.exp = obj.exp + exp;
+
+        local levelsGained = 0
+
+        while true do
+            local nextLevel = obj.level + 1
+
+            local expNeeded = obj:mexp();
+        
+            if obj.exp >= expNeeded then
+                obj.level = nextLevel
+                levelsGained = levelsGained + 1
+            else
+                break
+            end
+        end
+
+        for i=1,levelsGained do
+	        obj.levelup(obj);
+        end
+    end,
+
+    levelup = function (obj)
+	    
+    end,
+
+    beforeexp = function (obj,exp)
+	    return exp;
     end,
 
     destroy=function(self)
@@ -329,6 +377,10 @@
         --print(statkey.." : (base+flat) * percent * multi = "..value.." ("..base.." + "..flat..") * "..percent.." * "..multi)
 
         return value;
+    end,
+
+    add = function (obj,statName,addnum)
+        obj[statName]=obj[statName]+addnum;
     end,
 
 }

@@ -240,7 +240,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             name.Text = entity.Name ?? strings[entity["name"].String];
             raceclass.Text = $"{strings[entity["race"].String]} - {strings[entity["class"].String]}";
             level.Text = $"{strings["level"]}: {entity["level"]}";
-            exp.Text = $"{strings["exp"]}: {entity["exp"]}/10";
+            exp.Text = $"{strings["exp"]}: {entity["exp"]}/{entity.Func("mexp").Number}";
             health.Text = $"{strings["health"]}: {entity["hp"]}/{entity["mhp"]}";
             resource.Text = $"{strings[entity["res"].String]}: {entity.Func("resstring").String}";
             damage.Text = $"{strings["damage"]}: {entity["mindmg"]}-{entity["maxdmg"]}";

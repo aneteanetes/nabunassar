@@ -52,9 +52,13 @@ namespace ioi.Systems.Roguelike
             bool isAction = false;
             bool wasKeyPressed(Keys keys)
             {
-                isAction = true;
-
-                return key.WasKeyPressed(keys);
+                var isPressed = key.WasKeyPressed(keys);
+                if (isPressed)
+                {
+                    Game.World.CombatSystem.AppendRound();
+                    isAction = true;
+                }
+                return isPressed;
             }
 
             if (wasKeyPressed(Keys.D1))
@@ -310,11 +314,11 @@ namespace ioi.Systems.Roguelike
             ControlsWidget.BindButton(3, $"[3] - {entity.GetAbilityName(3)}");
             ControlsWidget.BindButton(4, $"[4] - {entity.GetAbilityName(4)}");
 
-            ControlsWidget.BindButton(5, $"[I] - {str["inventory"]}");
+            ControlsWidget.BindButton(5, $"[S] - {str["doflee"]}");
 
             ControlsWidget.BindButton(6, $"[A] - {str["doattack"]}");
             ControlsWidget.BindButton(7, $"[D] - {str["dodefence"]}");
-            ControlsWidget.BindButton(8, $"[S] - {str["doflee"]}");
+            ControlsWidget.BindButton(8, $"[I] - {str["inventory"]}");
 
             ControlsWidget.BindButton(9, $"[F] - {str["dowait"]}");
             ControlsWidget.BindButton(10, $"[Q] - {str["info"]}");

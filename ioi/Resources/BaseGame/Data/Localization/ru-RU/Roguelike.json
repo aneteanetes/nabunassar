@@ -37,7 +37,10 @@
   "glancingblow": "скользящий удар",
 
   //combat
+  "battleoverkeypress": "Бой окончен. Нажмите любую клавишу для продолжения...",
+  "round": "раунд",
   "getting": "получает",
+  "attacking": "атакует",
   "notgetting": "не получает",
   "dmgplural": "урона",
   "diedcombat": "умирает",
@@ -46,6 +49,10 @@
   "tryflee": "пытается сбежать...",
   "successflee": "удалось сбежать",
   "youm": "Вам",
+  "exps": "опыта",
+
+  //exp and lvlups
+  "leveledup": "получает уровень!",
 
   //races
   "Human": "Человек",
@@ -69,5 +76,7 @@
   "rage": "Ярость",
 
   //other
-  "rat_enemy": "Крыса"
+  "rat_enemy": "Крыса",
+
+  "GameOver": "Конец игры"
 }

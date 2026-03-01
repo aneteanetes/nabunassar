@@ -12,8 +12,11 @@ namespace ioi.Components
 
         public GameEntity Leader => FirstAlive();
 
+        internal GameHost Game { get; }
+
         public GameEntitySquad(GameEntity leader)
         {
+            Game = GameHost.Game;
             _members.Add(leader);
             Current = leader;
         }
@@ -34,12 +37,13 @@ namespace ioi.Components
             var i = 0;
             while (i < _members.Count)
             {
+                /// если враги убили всех персонажей, то в дальнейшем избиении смысла нет.
+                if (Game.World.CombatSystem.IsGameOver)
+                    break;
+
                 _members[i].Func("combatturn", target);
                 i++;
             }
-            //foreach (var member in _members)
-            //{
-            //}
         }
 
         public bool IsEmpty() => _members.IsEmpty();

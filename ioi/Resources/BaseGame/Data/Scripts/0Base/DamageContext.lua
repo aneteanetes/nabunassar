@@ -9,7 +9,8 @@ function DamageContext:new()
         dmg = 0,
         defed=0,
         died=false,
-        action="strike"
+        action="strike",
+        killed=nil,
     }
     setmetatable(obj, self)
     return obj
@@ -21,6 +22,9 @@ function DamageContext:log()
     local defcolor = " /c[#026300]";
 
     local log={}
+    
+    local attackheader = self.attacker.." /cd"..loco("attacking").." /cd"..self.target.."/cd!";
+    world.CombatSystem.LogCombat(attackheader);
 
     if self.dmg > 0 then
         table.insert(log,self.target.." /cd"..loco("getting")..orange..tostring(self.dmg).." /cd"..loco("dmgplural"));
@@ -46,4 +50,10 @@ function DamageContext:log()
     if(self.died==true) then
         world.CombatSystem.LogCombat(self.target.." /cd"..loco("diedcombat").."!");
     end
+
+    if(self.killed~=nil) then
+        world.CombatSystem.LogCombat(self.killed);
+    end
+
+    world.CombatSystem.LogCombatDelimiter();
 end

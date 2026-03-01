@@ -23,6 +23,8 @@ namespace ioi.Systems.Roguelike
         private CombatLogWidget log;
         private bool _endOfBattle;
         private object battleScreenLock = new();
+        private int _round;
+        private bool _delayAfterEnd;
 
         internal CombatSystem(GameHost game)
         {
@@ -64,7 +66,14 @@ namespace ioi.Systems.Roguelike
             if (_endOfBattle)
             {
                 if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1), battleScreenLock))
-                    CloseCombat();
+                    _delayAfterEnd = true;
+
+                if (_delayAfterEnd)
+                {
+                    var keyCount = KeyboardExtended.GetState().GetPressedKeyCount;
+                    if (keyCount > 0)
+                        CloseCombat();
+                }
             }
             else if (enemyWidget != default)
             {
@@ -73,7 +82,14 @@ namespace ioi.Systems.Roguelike
                     return;
 
                 var currentPlayer = Game.GameState.Player.Entity.Squad.FirstAlive();
-                combatHeader.Text = $"{enemy["hp"]}/{enemy["mhp"]} {enemy.GetName()} VS {currentPlayer.GetName()} {currentPlayer["hp"]}/{currentPlayer["mhp"]}";
+                if (currentPlayer == null)
+                {
+                    combatHeader.Text = Game.Strings["Roguelike"]["GameOver"];
+                }
+                else
+                {
+                    combatHeader.Text = $"{enemy["hp"]}/{enemy["mhp"]} {enemy.GetName()} VS {currentPlayer.GetName()} {currentPlayer["hp"]}/{currentPlayer["mhp"]}";
+                }
             }
         }
 
@@ -104,6 +120,7 @@ namespace ioi.Systems.Roguelike
                 Game.World.BorderLayersSystem["LeftPanel"] = true;
                 Game.World.BorderLayersSystem["Center"] = true;
                 Game.World.PlayerControlSystem.ControlsCombatPreset();
+                _round = 0;
                 yield return 0;
             }
 
@@ -114,11 +131,21 @@ namespace ioi.Systems.Roguelike
         {
             Game.World.PlayerControlSystem.Disable();
             _endOfBattle = true;
+
+            LogCombatDelimiter();
+            LogCombat(Game.Strings["Roguelike"]["battleoverkeypress"]);
         }
 
         public void CloseCombat()
         {
+            if (IsGameOver)
+            {
+                Game.GameOver();
+                return;
+            }
+
             _endOfBattle = false;
+            _delayAfterEnd = false;
             IEnumerator loading()
             {
                 log.Visible = false;
@@ -177,6 +204,10 @@ namespace ioi.Systems.Roguelike
         {
             log.AppendLine(text);
         }
+        public void LogCombatDelimiter()
+        {
+            log.AppendDelimiter();
+        }
 
         public void Dispose()
         {
@@ -185,12 +216,20 @@ namespace ioi.Systems.Roguelike
             Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
         }
 
-        private bool isGameOver = false;
+        public bool IsGameOver { get; private set; }
+
         public void Kill(GameEntity entity)
         {
             var player = Game.GameState.Player;
             if (entity["type"].String== "player")
             {
+                /// т.к. враги атакуют первого персонажа, он может быть уже мёртв когда его атакуют следующие
+                /// в таком случае мы уже сделали всё что нужно, и единственное что осталось это
+                /// уменьшить кол-во хп у персонажа которого атаковали, чтобы потом определить его
+                /// "степень невменяемости" на основе текущего хп
+                if (entity.IsUnconscious && player.Entity.Squad.Current != entity)
+                    return;
+
                 player.Entity.Unconscious();
                 if (player.Entity.Squad.IsAnybodyAlive())
                 {
@@ -199,7 +238,7 @@ namespace ioi.Systems.Roguelike
                 }
                 else
                 {
-                    isGameOver = true;
+                    IsGameOver = true;
                 }
             }
             else
@@ -223,9 +262,9 @@ namespace ioi.Systems.Roguelike
         {
             enemy.Squad?.CombatTurn(player);
 
-            if (isGameOver)
+            if (IsGameOver)
             {
-                Game.GameOver();
+                EndCombat();
                 return;
             }
 
@@ -249,6 +288,12 @@ namespace ioi.Systems.Roguelike
         {
             player.Func("flee", enemy);
             Turn(player.Squad.Leader, enemy);
+        }
+
+        public void AppendRound()
+        {
+            _round++;
+            log.AppendDelimiterLine(_round);
         }
     }
 }
