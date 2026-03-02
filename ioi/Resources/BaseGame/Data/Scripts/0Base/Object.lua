@@ -68,6 +68,10 @@
         return name;
     end,
 
+    getNameColored = function(obj)
+        return obj:coloredName();   
+    end,
+
     coloredText = function(obj)
         return "/c["..toHexString(obj.color).."]";	    
     end,
@@ -83,18 +87,24 @@
     combatturn = function(self,target)
     end,
 
+    defaultDamage = function (self)
+        local dmg = math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
+	    return math.floor(dmg+0.5);
+    end,
+
     strike = function (self,targetEntity)
         
         local target = targetEntity.Data;
 
         local ctx = DamageContext:new();
 
-        local dmg = math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
+        local dmg = self:defaultDamage();-- math.random(self.mindmg,self.maxdmg+1)+(0.25*self.ad);
 
         ctx.attacked = math.floor(dmg);
 
-        dmg = target.applydmg(target,dmg,self,ctx);
-        
+        dmg = target.applydmg(target,dmg,self,ctx,"physical");
+        ctx.elem="physical";
+
         ctx:log();
 
         if (ctx.died == true) then
@@ -135,13 +145,28 @@
                 world.LogSystem.Log(loco("youm").." "..loco("successflee").."!");
             end
 
-            world.CombatSystem.LogCombat(name.." /cd"..loco("successflee").."!");
+            world.CombatSystem.LogCombat(self:coloredName().." /cd"..loco("successflee").."!");
             world.CombatSystem.EndCombat();
         end
 
     end,
 
-    applydmg = function (self,dmg,attacker,ctx)
+    defdmg = function (self,elem)
+        
+        local def = 0;
+        
+        if(elem=="physical") then
+            def = self.def * 0.25;
+        elseif elem == "magical" then
+            def = self.mdef * 0.5;
+        elseif elem == "pure" then
+            def=0;
+        end
+        
+        return def;
+    end,
+
+    applydmg = function (self,dmg,attacker,ctx,element)
 
         ctx.attacker = attacker.coloredName(attacker);
 
@@ -149,7 +174,8 @@
         dmg = self.beforedmg(self,dmg,attacker,ctx);
         
         -- usual
-        local def = self.def * 0.75;
+
+        local def = self:defdmg(element);
 
         dmgdefed = math.clamp(dmg-def,0,dmg);
 
@@ -184,12 +210,16 @@
         local healround = math.floor(beforehealed);
 
         --after calucaltion
-        mitigated = self.afterheal(self,healround,healer,ctx);
+        local mitigated = self.afterheal(self,healround,healer,ctx);
         
         -- round damage
         mitigated = math.floor(mitigated);
 
         self.hp = self.hp+mitigated;
+        
+        if ctx~=nil then
+            ctx.healed=mitigated;
+        end
 
         if(self.hp<=0) then
             self.die(self,attacker,ctx);

@@ -9,6 +9,7 @@ Templates.Classes.Warrior = {
     hp=20,
     basemindmg=2,
     basemaxdmg=4,
+    ragegain=5,
 
     res='rage',
     rescolor={255,0,0,255},
@@ -17,8 +18,12 @@ Templates.Classes.Warrior = {
     end,
 
     init = function(obj,props)
+        local components = obj["_components"];
     
-        obj.stats_upd.rage=0;
+        obj.rage=0;
+
+        obj.level=15;
+
 
         if(obj.perks==nil) then
             obj.perks={};
@@ -26,7 +31,6 @@ Templates.Classes.Warrior = {
 
         table.insert(obj.perks,Templates.Perks.Experienced);
         table.insert(obj.perks,Templates.Perks.Human);
-
     end,
 
     levelup = function (obj)
@@ -41,4 +45,28 @@ Templates.Classes.Warrior = {
         world.LogSystem.Log(obj:coloredName().." /cd"..loco("leveledup")..": +1-3 DMG, +3HP, +1SP, +1PP!");
     end,
 
+    ability1 = function ()
+	    return Templates.Abilities.Warrior1Supress;
+    end,
+
+    ability2 = function ()
+	    return Templates.Abilities.Warrior2Regen;
+    end,
+
+    ability3 = function ()
+	    return Templates.Abilities.Warrior3Finisher;
+    end,
+
+    ability4 = function ()
+	    return Templates.Abilities.Warrior4Ferocity;
+    end,
+
+    afterdmg = function (self,dmg,attacker,ctx)
+        if self["rage"] < 100 then
+            ragegained = 5 + self.ability4().ratelvl * self.level-1;
+            self["rage"] = math.clamp(self["rage"]+ragegained,0,100);
+            table.insert(ctx.msgs,self:getNameColored().."/cd "..loco("getting").." /c[#ff0000]"..ragegained.." "..loco("rages")..'/cd!');
+        end
+        return dmg;
+    end,
 }

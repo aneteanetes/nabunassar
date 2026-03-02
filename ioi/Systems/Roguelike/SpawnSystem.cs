@@ -29,7 +29,7 @@ namespace ioi.Systems.Roguelike
 
             entity["icon"] = DynValue.NewString("@");
             entity["type"] = DynValue.NewString("player");
-            entity.Color("color", Color.Cyan);
+            entity.Color("color", new Color(117, 199, 198));
             entity["namevalue"] = DynValue.NewString(entity.Name);
             entity.Func("refresh");
 

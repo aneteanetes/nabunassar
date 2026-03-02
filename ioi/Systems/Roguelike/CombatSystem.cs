@@ -1,10 +1,12 @@
 ﻿using FontStashSharp;
+using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Components;
 using ioi.Widgets.UserInterfaces.Roguelike;
 using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MoonSharp.Interpreter;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using System.Collections;
 
@@ -21,7 +23,7 @@ namespace ioi.Systems.Roguelike
         private Panel headerPanel;
         private Label combatHeader;
         private CombatLogWidget log;
-        private bool _endOfBattle;
+        public bool IsEndOfBattle { get; private set;  }
         private object battleScreenLock = new();
         private int _round;
         private bool _delayAfterEnd;
@@ -63,7 +65,7 @@ namespace ioi.Systems.Roguelike
 
         public void Update(GameTime gameTime)
         {
-            if (_endOfBattle)
+            if (IsEndOfBattle)
             {
                 if (this.CanUpdate(gameTime, TimeSpan.FromSeconds(1), battleScreenLock))
                     _delayAfterEnd = true;
@@ -130,7 +132,7 @@ namespace ioi.Systems.Roguelike
         public void EndCombat()
         {
             Game.World.PlayerControlSystem.Disable();
-            _endOfBattle = true;
+            IsEndOfBattle = true;
 
             LogCombatDelimiter();
             LogCombat(Game.Strings["Roguelike"]["battleoverkeypress"]);
@@ -144,7 +146,7 @@ namespace ioi.Systems.Roguelike
                 return;
             }
 
-            _endOfBattle = false;
+            IsEndOfBattle = false;
             _delayAfterEnd = false;
             IEnumerator loading()
             {
@@ -178,9 +180,14 @@ namespace ioi.Systems.Roguelike
         private void AssemblySquad(GameEntity enemy)
         {
             var nearest = Game.World.MapSystem.CollectNearest(enemy);
+            if (enemy.Squad == null)
+            {
+                enemy.Squad=new GameEntitySquad(enemy);
+            }
             foreach (var near in nearest)
             {
-                near.Squad.Destroy();
+                if (near.Squad != default)
+                    near.Squad.Destroy();
                 enemy.Squad.Add(near);
             }
         }
@@ -230,11 +237,11 @@ namespace ioi.Systems.Roguelike
                 if (entity.IsUnconscious && player.Entity.Squad.Current != entity)
                     return;
 
-                player.Entity.Unconscious();
-                if (player.Entity.Squad.IsAnybodyAlive())
+                entity.Unconscious();
+                if (entity.Squad.IsAnybodyAlive())
                 {
-                    player.Entity.Squad.MoveNextAlive();
-                    player.BindEntity(player.Entity.Squad.Current);
+                    entity.Squad.MoveNextAlive();
+                    player.BindEntity(entity.Squad.Current);
                 }
                 else
                 {
@@ -274,18 +281,21 @@ namespace ioi.Systems.Roguelike
 
         internal void Strike(GameEntity player, GameEntity enemy)
         {
+            Game.World.CombatSystem.AppendRound();
             player.Func("strike", enemy);
             Turn(player.Squad.Leader, enemy);
         }
 
         internal void Defence(GameEntity player, GameEntity enemy)
         {
+            Game.World.CombatSystem.AppendRound();
             player.Func("defence", enemy);
             Turn(player.Squad.Leader, enemy);
         }
 
         internal void Flee(GameEntity player, GameEntity enemy)
         {
+            Game.World.CombatSystem.AppendRound();
             player.Func("flee", enemy);
             Turn(player.Squad.Leader, enemy);
         }
@@ -294,6 +304,39 @@ namespace ioi.Systems.Roguelike
         {
             _round++;
             log.AppendDelimiterLine(_round);
+        }
+
+        internal void Ability(GameEntity player, int slot, GameEntity enemy)
+        {
+            var ability = player.Func($"ability{slot}");
+
+            var abilcolor = $"/c[{ability.Color("color").ToHexString()}]";
+            var abtable = ability.Table;
+            var abname = Game.Strings["Roguelike"][abtable.Get("name").String];
+
+            if (abtable.Get("mode").String == "passive")
+            {
+                Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["passiveab"]} {Game.Strings["Roguelike"]["ability"].ToLower()} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuse"]}!");
+                return;
+            }
+
+            if (abtable.Get("location").String != "combat")
+            {
+                Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuseincombat"]}!");
+                return;
+            }
+
+            var canCast = ability.Func("canCast", player, enemy).Boolean;
+            if (canCast)
+            {
+                Game.World.CombatSystem.AppendRound();
+                ability.Func("cast", player, enemy);
+                Turn(player.Squad.Leader, enemy);
+            }
+            else
+            {
+                Game.World.LogSystem.Log($"{player.GetNameColored()} /cd{Game.Strings["Roguelike"]["cantuseabil"]} {abilcolor}{abname}/cd!");
+            }
         }
     }
 }

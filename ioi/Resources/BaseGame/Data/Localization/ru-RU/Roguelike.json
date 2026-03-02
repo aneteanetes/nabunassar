@@ -22,6 +22,8 @@
   "skills": "Умения",
   "abils": "Навыки",
   "abilities": "Способности",
+  "ability": "Способность",
+  "passiveab": "Пассивную",
   "charinfo": "Персонаж",
   "map": "Карта",
   "inventory": "Инвентарь",
@@ -35,6 +37,13 @@
   "deals": "нанесено",
   "defeddmg": "заблокировано",
   "glancingblow": "скользящий удар",
+  "inunconscous": "не в состоянии действовать самостоятельно",
+  "using": "использует",
+  "cantuseabil": "не может использовать способность",
+  "cantuseincombat": "невозможно использовать в бою",
+  "cantuse": "невозможно использовать",
+  "restores": "восстанавливает",
+  "hpes": "здоровья",
 
   //combat
   "battleoverkeypress": "Бой окончен. Нажмите любую клавишу для продолжения...",
@@ -42,7 +51,7 @@
   "getting": "получает",
   "attacking": "атакует",
   "notgetting": "не получает",
-  "dmgplural": "урона",
+  "dmgplural": "урон",
   "diedcombat": "умирает",
   "defstand": "принимает защитную стойку",
   "attackyou": "атакует вас",
@@ -50,6 +59,8 @@
   "successflee": "удалось сбежать",
   "youm": "Вам",
   "exps": "опыта",
+  "effective": "эффективно",
+  "not": "не",
 
   //exp and lvlups
   "leveledup": "получает уровень!",
@@ -72,8 +83,25 @@
   "def": "Защита Ф",
   "mdef": "Защита М",
 
+  //elements
+  "physical": "Физический",
+  "pure": "Натуральный",
+
   //resources
   "rage": "Ярость",
+  "rages": "Ярости",
+
+  //abilities
+
+  //warrior
+  "abil_war_supress": "Усмирение",
+  "abil_war_supress_desc": "Опыт война.\n\nОсобый прием.\n\nЕсли у врага полное здоровье\n-\nнаносит & урона.\nИначе 0.",
+  "abil_war_regen": "Регенерация",
+  "abil_war_regen_desc": "Жажда битвы.\n\nУмение.\n\nВосстанавливает ^ здоровья.",
+  "abil_war_finisher": "Добивание",
+  "abil_war_finisher_desc": "Опыт война.\n\nОсобый прием.\n\nЕсли здоровье врага меньше 25%\n-\nнаносит & урона.\nИначе 0.",
+  "abil_war_ferocity": "Свирепость",
+  "abil_war_ferocity_desc": "Опыт война.\n\nТранс.\n\nУвеличивает прирост ярости от удара на &.",
 
   //other
   "rat_enemy": "Крыса",

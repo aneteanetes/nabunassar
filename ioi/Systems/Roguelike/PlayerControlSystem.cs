@@ -55,7 +55,6 @@ namespace ioi.Systems.Roguelike
                 var isPressed = key.WasKeyPressed(keys);
                 if (isPressed)
                 {
-                    Game.World.CombatSystem.AppendRound();
                     isAction = true;
                 }
                 return isPressed;
@@ -63,18 +62,22 @@ namespace ioi.Systems.Roguelike
 
             if (wasKeyPressed(Keys.D1))
             {
+                Game.World.CombatSystem.Ability(player,1, enemy);
             }
 
             if (wasKeyPressed(Keys.D2))
             {
+                Game.World.CombatSystem.Ability(player, 2, enemy);
             }
 
             if (wasKeyPressed(Keys.D3))
             {
+                Game.World.CombatSystem.Ability(player, 3, enemy);
             }
 
             if (wasKeyPressed(Keys.D4))
             {
+                Game.World.CombatSystem.Ability(player, 4, enemy);
             }
 
             if (wasKeyPressed(Keys.I))
@@ -101,7 +104,7 @@ namespace ioi.Systems.Roguelike
 
             }
 
-            if (wasKeyPressed(Keys.Q))
+            if (key.WasKeyPressed(Keys.Q))
             {
 
             }
@@ -144,6 +147,31 @@ namespace ioi.Systems.Roguelike
                     Game.GameState.Temp.ClickPosition = null;
                 }
             }
+
+            var key = KeyboardExtended.GetState();
+
+            void wasPartySelectPressed(Keys fKey)
+            {
+                if (key.WasKeyPressed(fKey))
+                {
+                    var parsed = int.Parse(fKey.ToString().Substring(1));
+                    if (player.Entity.Squad.TrySetMember(parsed - 1, out var member))
+                    {
+                        player.BindEntity(member);
+                    }
+                    else if (member!=null)
+                    {
+                        Game.World.LogSystem.Log($"{member.GetNameColored()} /cd{Game.Strings["Roguelike"]["inunconscous"]}!");
+                    }
+                }
+            }
+
+            wasPartySelectPressed(Keys.F1);
+            wasPartySelectPressed(Keys.F2);
+            wasPartySelectPressed(Keys.F3);
+            wasPartySelectPressed(Keys.F4);
+            wasPartySelectPressed(Keys.F5);
+            wasPartySelectPressed(Keys.F6);
 
             if (!player.IsMoving)
                 KeyboardMoving(player);

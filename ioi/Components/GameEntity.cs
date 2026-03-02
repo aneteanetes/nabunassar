@@ -1,8 +1,10 @@
-﻿using FontStashSharp.RichText;
+﻿using FontStashSharp.Interfaces;
+using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Scripting;
 using MonoGame.Extended.ECS;
 using MoonSharp.Interpreter;
+using SharpFont;
 
 namespace ioi.Components
 {
@@ -91,39 +93,13 @@ namespace ioi.Components
                     return Microsoft.Xna.Framework.Color.White;
 
                 var table = value.Table;
-                return ColorFromTable(table);
-            }
-        }
-
-        public static Color ColorFromTable(Table table)
-        {
-            var isrgb =table.Keys.Any(x => x.String == "r");
-            if (isrgb)
-            {
-                var r = Convert.ToByte(table["r"]);
-                var g = Convert.ToByte(table["g"]);
-                var b = Convert.ToByte(table["b"]);
-                var a = Convert.ToByte(table["a"]);
-
-                return new Color(r, g, b, a);
-            }
-            else
-            {
-                var r = Convert.ToByte(table[1]);
-                var g = Convert.ToByte(table[2]);
-                var b = Convert.ToByte(table[3]);
-                var a = Convert.ToByte(table[4]);
-
-                if (a == 0)
-                    a = 255;
-
-                return new Color(r, g, b, a);
+                return TableLikeGameEntityExtensions.ColorFromTable(table);
             }
         }
 
         public static string ColorFromTableToHex(Table table)
         {
-            return ColorFromTable(table).ToHexString();
+            return TableLikeGameEntityExtensions.ColorFromTable(table).ToHexString();
         }
 
         /// <summary>
@@ -143,12 +119,21 @@ namespace ioi.Components
 
         internal string GetAbilityName(int idx)
         {
-            var ability = this[$"ability{idx}"];
+            var ability = this.Func($"ability{idx}");
 
             if (ability.IsNotNil())
             {
-                var token = ability.ToObject<GameEntity>()[$"ability{idx}"].String;
-                return _script.Game.Strings["Roguelike"][token];
+                var abtable = ability.Table;
+                var token = abtable.Get("name").String;
+                var rescolor = this.Color("rescolor").ToHexString();
+                var cost = abtable.Get("cost");
+
+                var costtext = $" /c[{rescolor}][{cost}]";
+
+                if (abtable.Get("mode").String == "passive")
+                    costtext = string.Empty;
+
+                return $"{_script.Game.Strings["Roguelike"][token]}{costtext}";
             }
 
             return "...";
@@ -175,6 +160,11 @@ namespace ioi.Components
             var nameToken = nameValue.String;
 
             return _script.Game.Strings["Roguelike"][nameToken];
+        }
+
+        public string GetNameColored()
+        {
+            return Func("coloredName").String;
         }
 
         public void Heal(int heal, GameEntity healer = null)
@@ -209,5 +199,60 @@ namespace ioi.Components
         /// Is entity is unconscious, than player can't control it
         /// </summary>
         public bool IsUnconscious { get; set; }
+    }
+
+    public static class TableLikeGameEntityExtensions
+    {
+        public static DynValue Func(this DynValue value, string name, params object[] args)
+        {
+            if (value.IsNil() || value.Type != DataType.Table)
+                return DynValue.Nil;
+
+            var table = value.Table;
+
+            var func = table.Get(name);
+
+            if (func.IsNil() || func.Type != DataType.Function)
+                return DynValue.Nil;
+
+            return GameHost.Game.Lua.Call(func, [table, .. args]);
+        }
+
+        public static Color Color(this DynValue dynVal, string key)
+        {
+            var table = dynVal.Table;
+
+            var value = table.Get(key);
+            if (value.IsNil() || value.Type != DataType.Table)
+                return Microsoft.Xna.Framework.Color.White;
+
+            return ColorFromTable(value.Table);
+        }
+
+        public static Color ColorFromTable(Table table)
+        {
+            var isrgb = table.Keys.Any(x => x.String == "r");
+            if (isrgb)
+            {
+                var r = Convert.ToByte(table["r"]);
+                var g = Convert.ToByte(table["g"]);
+                var b = Convert.ToByte(table["b"]);
+                var a = Convert.ToByte(table["a"]);
+
+                return new Color(r, g, b, a);
+            }
+            else
+            {
+                var r = Convert.ToByte(table[1]);
+                var g = Convert.ToByte(table[2]);
+                var b = Convert.ToByte(table[3]);
+                var a = Convert.ToByte(table[4]);
+
+                if (a == 0)
+                    a = 255;
+
+                return new Color(r, g, b, a);
+            }
+        }
     }
 }

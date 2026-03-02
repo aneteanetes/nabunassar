@@ -41,6 +41,10 @@ namespace ioi.Components
                 if (Game.World.CombatSystem.IsGameOver)
                     break;
 
+                /// если бой закончился пока мобы ходят
+                if (Game.World.CombatSystem.IsEndOfBattle)
+                    break;
+
                 _members[i].Func("combatturn", target);
                 i++;
             }
@@ -82,6 +86,21 @@ namespace ioi.Components
             {
                 MoveNextAlive(currentIdx);
             }
+        }
+
+        public bool TrySetMember(int idx, out GameEntity entity)
+        {
+            entity = _members.ElementAtOrDefault(idx);
+            if (entity==default)
+                return false;
+
+            if(entity.IsUnconscious)
+            {
+                return false;
+            }
+
+            Current = entity;
+            return true;
         }
 
         public GameEntity FirstAlive()

@@ -10,10 +10,24 @@ function DamageContext:new()
         defed=0,
         died=false,
         action="strike",
+        healed=0,
         killed=nil,
+        skipatk=false,
+        msgs={},
+        elem='physical'
     }
     setmetatable(obj, self)
     return obj
+end
+
+function DamageContext:elemColor(elem)
+    if elem=='physical' then
+        return '/c[#5c5c5c]';
+    elseif elem=='pure' then
+        return '/c[#f6ff00]';
+    end
+
+    return '/cd';
 end
 
 function DamageContext:log()
@@ -23,25 +37,41 @@ function DamageContext:log()
 
     local log={}
     
-    local attackheader = self.attacker.." /cd"..loco("attacking").." /cd"..self.target.."/cd!";
-    world.CombatSystem.LogCombat(attackheader);
+    if self.skipatk==false then
+        local attackheader = self.attacker.." /cd"..loco("attacking").." /cd"..self.target.."/cd!";
+        world.CombatSystem.LogCombat(attackheader);
+    end
 
-    if self.dmg > 0 then
-        table.insert(log,self.target.." /cd"..loco("getting")..orange..tostring(self.dmg).." /cd"..loco("dmgplural"));
+    if self.msgs ~= nil then
+        for _,v in pairs(self.msgs) do
+            world.CombatSystem.LogCombat(v);
+        end
+    end
+
+    if self.healed == 0 then
+
+        local elemColor = self:elemColor(self.elem);
+
+        if self.dmg > 0 then
+            table.insert(log,self.target.." /cd"..loco("getting")..orange..tostring(self.dmg).." "..elemColor..loco(self.elem)..' /cd'..loco("dmgplural"));
+        else
+            table.insert(log,self.target.." /cd"..loco("notgetting").." "..loco("dmgplural"));
+        end
+
+        if self.elem~='pure' or self.dmg > 0 then
+            table.insert(log,"/cd"..loco("deals")..white..tostring(self.attacked));
+        end
+
+        if self.defed > 0 then
+            table.insert(log,"/cd"..loco("defeddmg")..defcolor..tostring(self.defed));
+        end
+
+        if self.dmg ~= self.attacked then
+            table.insert(log,"/cd"..loco("glancingblow"));
+        end
     else
-        table.insert(log,self.target.." /cd"..loco("notgetting").." "..loco("dmgplural"));
-    end
 
-    if self.dmg > 0 then
-        table.insert(log,"/cd"..loco("deals")..white..tostring(self.attacked));
-    end
-
-    if self.defed > 0 then
-        table.insert(log,"/cd"..loco("defeddmg")..defcolor..tostring(self.defed));
-    end
-
-    if self.dmg ~= self.attacked then
-        table.insert(log,"/cd"..loco("glancingblow"));
+        table.insert(log,self.target.." /cd"..loco("restores").."/c[#00c90a] "..self.healed.." /cd"..loco("hpes"));
     end
 
     local msg = table.concat(log,"/cd, ");

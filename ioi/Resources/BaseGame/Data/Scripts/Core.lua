@@ -1,5 +1,9 @@
 math.randomseed(os.time());
 
+math.round = function(num)
+    return math.floor(num + 0.5)
+end
+
 Core = {
     groupby = function(data, key_selector)
         local grouped = {}
@@ -17,6 +21,7 @@ Templates={
     Perks={},
     Races={},
     Classes={},
+    Abilities={},
     enemy={},
     spawner={}
 }

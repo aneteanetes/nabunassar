@@ -9,7 +9,7 @@ Templates.Perks.Experienced = {
         {
             id="Experienced_ad",
             type=Templates.Base.Mod.Type.Flat,
-            value=1,
+            value=3,
             stat="ad"
         },
         {
