@@ -11,6 +11,13 @@ Templates.Classes.Warrior = {
     basemaxdmg=4,
     ragegain=5,
 
+    abilities = {
+        "Templates.Abilities.Warrior1Supress",
+        "Templates.Abilities.Warrior2Regen",
+        "Templates.Abilities.Warrior3Finisher",
+        "Templates.Abilities.Warrior4Ferocity",
+    },
+
     res='rage',
     rescolor={255,0,0,255},
     resstring = function (obj)
@@ -22,15 +29,14 @@ Templates.Classes.Warrior = {
     
         obj.rage=0;
 
-        obj.level=15;
-
-
         if(obj.perks==nil) then
             obj.perks={};
         end
 
         table.insert(obj.perks,Templates.Perks.Experienced);
         table.insert(obj.perks,Templates.Perks.Human);
+
+
     end,
 
     levelup = function (obj)
@@ -45,25 +51,9 @@ Templates.Classes.Warrior = {
         world.LogSystem.Log(obj:coloredName().." /cd"..loco("leveledup")..": +1-3 DMG, +3HP, +1SP, +1PP!");
     end,
 
-    ability1 = function ()
-	    return Templates.Abilities.Warrior1Supress;
-    end,
-
-    ability2 = function ()
-	    return Templates.Abilities.Warrior2Regen;
-    end,
-
-    ability3 = function ()
-	    return Templates.Abilities.Warrior3Finisher;
-    end,
-
-    ability4 = function ()
-	    return Templates.Abilities.Warrior4Ferocity;
-    end,
-
     afterdmg = function (self,dmg,attacker,ctx)
         if self["rage"] < 100 then
-            ragegained = 5 + self.ability4().ratelvl * self.level-1;
+            ragegained = 5 + self:getAbility(4)["ratelvl"] * self.level-1;
             self["rage"] = math.clamp(self["rage"]+ragegained,0,100);
             table.insert(ctx.msgs,self:getNameColored().."/cd "..loco("getting").." /c[#ff0000]"..ragegained.." "..loco("rages")..'/cd!');
         end

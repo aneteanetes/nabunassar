@@ -35,6 +35,8 @@ namespace ioi.Screens
             Game.World.PlayerControlSystem.ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
             Game.World.PlayerControlSystem.ControlsMainScreenPreset();
 
+            Game.AddDesktopWidget(new AbilityMainWidget(Game),Game.MyraDesktopIngame);
+
             Game.World.LogSystem.Widget = Game.AddDesktopWidget(new LogWidget(Game), Game.MyraDesktopIngame);
             Game.World.MapSystem.LogArea();
 

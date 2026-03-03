@@ -43,6 +43,13 @@ namespace ioi.Systems.Roguelike
             return entity;
         }
 
+        public GameEntity SpawnEntity(params string[] prototypes)
+        {
+            var entity = new GameEntity(Game.Lua, null, prototypes);
+
+            return entity;
+        }
+
         public ObjectMap SpawnObjectMap(string type, string id, Table props, int x, int y, string tileset, int tileId)
         {
             var entity = SpawnObject(id, type, props);

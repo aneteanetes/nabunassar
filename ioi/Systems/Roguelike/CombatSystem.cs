@@ -306,31 +306,37 @@ namespace ioi.Systems.Roguelike
             log.AppendDelimiterLine(_round);
         }
 
-        internal void Ability(GameEntity player, int slot, GameEntity enemy)
+        internal void UseAbility(GameEntity player, int slot, GameEntity enemy)
         {
+            var abilityVal = player.Func("getAbility", slot);
+
+            if (abilityVal.IsNil())
+                return;
+
+            var entity = abilityVal.UserData.Object.As<GameEntity>();
+
             var ability = player.Func($"ability{slot}");
 
-            var abilcolor = $"/c[{ability.Color("color").ToHexString()}]";
-            var abtable = ability.Table;
-            var abname = Game.Strings["Roguelike"][abtable.Get("name").String];
+            var abilcolor = $"/c[{entity.Color("color").ToHexString()}]";
+            var abname = entity.GetName();
 
-            if (abtable.Get("mode").String == "passive")
+            if (entity["mode"].String == "passive")
             {
                 Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["passiveab"]} {Game.Strings["Roguelike"]["ability"].ToLower()} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuse"]}!");
                 return;
             }
 
-            if (abtable.Get("location").String != "combat")
+            if (entity["location"].String != "combat")
             {
                 Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuseincombat"]}!");
                 return;
             }
 
-            var canCast = ability.Func("canCast", player, enemy).Boolean;
+            var canCast = entity.Func("canCast", player, enemy).Boolean;
             if (canCast)
             {
                 Game.World.CombatSystem.AppendRound();
-                ability.Func("cast", player, enemy);
+                entity.Func("cast", player, enemy);
                 Turn(player.Squad.Leader, enemy);
             }
             else

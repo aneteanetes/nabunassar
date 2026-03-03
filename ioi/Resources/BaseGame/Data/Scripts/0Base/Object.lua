@@ -54,6 +54,33 @@
 
     mods={},
 
+    abilities = {
+    },
+
+    getAbility = function (self,idx)
+        local prop = "ability"..idx;
+	    if self[prop] == nil then
+            if self["abilities"][idx] ~= nil then
+                self[prop] = world.SpawnSystem.SpawnEntity("Templates.Abilities.Base",self["abilities"][idx]);
+            else
+                return nil;
+            end
+        end
+
+        return self[prop];
+    end,
+
+    getAbilities = function (self)
+        
+        abils = {};
+
+        for i,v in pairs(self.abilities) do
+	        table.insert(abils,self:getAbility(i));
+        end
+
+        return abils;
+    end,
+
     resstring = function (obj)
         return (obj.mana or '')..'/'..(obj.manamax or '');
     end,

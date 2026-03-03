@@ -8,7 +8,7 @@ Templates.Abilities.Warrior1Supress = {
     cost=10,
     element = "physical",
     duration=0,
-    icon="╥",
+    icon="^", --╥
     color={84, 93, 222},
     location="combat",
 

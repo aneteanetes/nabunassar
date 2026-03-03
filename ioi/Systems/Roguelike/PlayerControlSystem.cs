@@ -1,4 +1,5 @@
-﻿using Geranium.Reflection;
+﻿using FontStashSharp.RichText;
+using Geranium.Reflection;
 using ioi.Components;
 using ioi.Struct;
 using ioi.Widgets.UserInterfaces.Roguelike;
@@ -6,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
 using MoonSharp.Interpreter;
+using Myra.Graphics2D.TextureAtlases;
 
 namespace ioi.Systems.Roguelike
 {
@@ -49,6 +51,8 @@ namespace ioi.Systems.Roguelike
             var player = Game.GameState.Player.Entity;
             var enemy = Game.GameState.Enemy;
 
+            UpdateAbilityPreset();
+
             bool isAction = false;
             bool wasKeyPressed(Keys keys)
             {
@@ -62,22 +66,22 @@ namespace ioi.Systems.Roguelike
 
             if (wasKeyPressed(Keys.D1))
             {
-                Game.World.CombatSystem.Ability(player,1, enemy);
+                Game.World.CombatSystem.UseAbility(player,1, enemy);
             }
 
             if (wasKeyPressed(Keys.D2))
             {
-                Game.World.CombatSystem.Ability(player, 2, enemy);
+                Game.World.CombatSystem.UseAbility(player, 2, enemy);
             }
 
             if (wasKeyPressed(Keys.D3))
             {
-                Game.World.CombatSystem.Ability(player, 3, enemy);
+                Game.World.CombatSystem.UseAbility(player, 3, enemy);
             }
 
             if (wasKeyPressed(Keys.D4))
             {
-                Game.World.CombatSystem.Ability(player, 4, enemy);
+                Game.World.CombatSystem.UseAbility(player, 4, enemy);
             }
 
             if (wasKeyPressed(Keys.I))
@@ -337,10 +341,8 @@ namespace ioi.Systems.Roguelike
             var entity = Game.GameState.Player.Entity;
 
             var str = Game.Strings["Roguelike"];
-            ControlsWidget.BindButton(1, $"[1] - {entity.GetAbilityName(1)}");
-            ControlsWidget.BindButton(2, $"[2] - {entity.GetAbilityName(2)}");
-            ControlsWidget.BindButton(3, $"[3] - {entity.GetAbilityName(3)}");
-            ControlsWidget.BindButton(4, $"[4] - {entity.GetAbilityName(4)}");
+
+            UpdateAbilityPreset();
 
             ControlsWidget.BindButton(5, $"[S] - {str["doflee"]}");
 
@@ -350,6 +352,39 @@ namespace ioi.Systems.Roguelike
 
             ControlsWidget.BindButton(9, $"[F] - {str["dowait"]}");
             ControlsWidget.BindButton(10, $"[Q] - {str["info"]}");
+        }
+
+        private void UpdateAbilityPreset()
+        {
+            var entity = Game.GameState.Player.Entity;
+
+            for (int i = 1; i <= 4; i++)
+            {
+                var abil = entity.GetAbility(i);
+                if (abil != null)
+                {
+                    var name = abil.GetName();
+                    var rescolor = entity.Color("rescolor").ToHexString();
+                    var cost = abil["cost"].Number;
+
+                    var costtext = $" /c[{rescolor}][{cost}]";
+
+                    if (abil["mode"].String == "passive")
+                        costtext = string.Empty;
+
+                    var nameRes = $"{name}{costtext}";
+
+                    var counter = $"[{i}] - ";
+                    if (abil["mode"].String == "passive")
+                        counter = string.Empty;
+
+                    ControlsWidget.BindButton(i, $"{counter}{nameRes}");
+                }
+                else
+                {
+                    ControlsWidget.BindButton(i, $" ");
+                }
+            }
         }
 
         public void Dispose()

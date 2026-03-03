@@ -5,11 +5,11 @@ Templates.Abilities.Warrior2Regen = {
     ratestat = "ap",
     ratelvl=0.21,
     rate=1.93,
-    cost=30,
+    cost=15,
     element = "physical",
     duration=0,
     icon="=",
-    color={255, 0, 0},
+    color={0, 255, 0},
     location="combat",
 
     canCast = function (self, objEntity, targetEntity)
