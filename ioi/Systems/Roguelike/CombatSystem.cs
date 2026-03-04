@@ -9,6 +9,7 @@ using MoonSharp.Interpreter;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using System.Collections;
+using static Assimp.Metadata;
 
 namespace ioi.Systems.Roguelike
 {
@@ -172,6 +173,8 @@ namespace ioi.Systems.Roguelike
                 IsInCombat = false;
                 Game.World.MapSystem.Resume();
                 yield return 0;
+                Game.GameState.Enemy = null;
+                yield return 0;
             }
 
             Game.World.LoadingSystem.LoadCenter(loading(), GetLoadDelay(), afterLoad());
@@ -308,41 +311,44 @@ namespace ioi.Systems.Roguelike
 
         internal void UseAbility(GameEntity player, int slot, GameEntity enemy)
         {
-            var abilityVal = player.Func("getAbility", slot);
-
-            if (abilityVal.IsNil())
-                return;
-
-            var entity = abilityVal.UserData.Object.As<GameEntity>();
-
-            var ability = player.Func($"ability{slot}");
-
-            var abilcolor = $"/c[{entity.Color("color").ToHexString()}]";
-            var abname = entity.GetName();
-
-            if (entity["mode"].String == "passive")
+            if (player.CastAbility(slot))
             {
-                Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["passiveab"]} {Game.Strings["Roguelike"]["ability"].ToLower()} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuse"]}!");
-                return;
-            }
-
-            if (entity["location"].String != "combat")
-            {
-                Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuseincombat"]}!");
-                return;
-            }
-
-            var canCast = entity.Func("canCast", player, enemy).Boolean;
-            if (canCast)
-            {
-                Game.World.CombatSystem.AppendRound();
-                entity.Func("cast", player, enemy);
                 Turn(player.Squad.Leader, enemy);
             }
-            else
-            {
-                Game.World.LogSystem.Log($"{player.GetNameColored()} /cd{Game.Strings["Roguelike"]["cantuseabil"]} {abilcolor}{abname}/cd!");
-            }
+
+            //var abilityVal = player.Func("getAbility", slot);
+
+            //if (abilityVal.IsNil())
+            //    return;
+
+            //var entity = abilityVal.UserData.Object.As<GameEntity>();
+
+            //var abilcolor = $"/c[{entity.Color("color").ToHexString()}]";
+            //var abname = entity.GetName();
+
+            //if (entity["mode"].String == "passive")
+            //{
+            //    Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["passiveab"]} {Game.Strings["Roguelike"]["ability"].ToLower()} '{abilcolor}{abname}' /cd{Game.Strings["Roguelike"]["cantuse"]}!");
+            //    return;
+            //}
+
+            //if (entity["location"].String != "combat")
+            //{
+            //    Game.World.LogSystem.Log($"{Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}/cd' {Game.Strings["Roguelike"]["cantuseincombat"]}!");
+            //    return;
+            //}
+
+            //var canCast = entity.Func("canCast", player, enemy).Boolean;
+            //if (canCast)
+            //{
+            //    Game.World.CombatSystem.AppendRound();
+            //    entity.Func("cast", player, enemy);
+            //    Turn(player.Squad.Leader, enemy);
+            //}
+            //else
+            //{
+            //    Game.World.LogSystem.Log($"{player.GetNameColored()} /cd{Game.Strings["Roguelike"]["cantuseabil"]} {abilcolor}{abname}/cd!");
+            //}
         }
     }
 }

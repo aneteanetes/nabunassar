@@ -8,7 +8,8 @@ Templates.Abilities.Warrior3Finisher = {
     cost=5,
     element = "physical",
     duration=0,
-    icon="%",
+    tileset="Consolas",
+    tileid=4,
     color={184, 42, 49},
     location="combat",
 

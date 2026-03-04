@@ -37,7 +37,8 @@ namespace ioi.Systems.Roguelike
         {
             Game.GameState.Map = new Entities.Map.RogueMap(map.width, map.height)
             {
-                NameToken = map.GetPropertyValue<string>(nameof(RogueMap.NameToken))
+                NameToken = map.GetPropertyValue<string>(nameof(RogueMap.NameToken)),
+                Color = map.GetPropertyValue<string>(nameof(RogueMap.Color)).AsColor()
             };
 
             foreach (var tileset in map.Tilesets)
@@ -95,7 +96,8 @@ namespace ioi.Systems.Roguelike
                     Game.GameState.Map.Areas.Add(new Entities.Map.Area()
                     {
                         Bounds = new RectangleF(((float)poly.x), ((float)poly.y), poly.width, poly.height),
-                        NameToken = poly.GetPropertyValue<string>("NameToken")
+                        NameToken = poly.GetPropertyValue<string>("NameToken"),
+                        Color = poly.GetPropertyValue<string>(nameof(Area.Color)).AsColor()
                     });
 
                     return;
@@ -165,10 +167,15 @@ namespace ioi.Systems.Roguelike
 
             var txt = DrawText.Create(str["comingtolocation"], Color.DarkGray)
                 .AppendSpace()
-                .Append(str[map.NameToken]);
+                .Color(map.Color)
+                .Append(str[map.NameToken])
+                .ResetColor();
 
             if (map.CurrentArea != null)
-                txt.Append(" - "+str[map.CurrentArea.NameToken]);
+                txt.Append(" - ")
+                    .Color(map.CurrentArea.Color)
+                    .Append(str[map.CurrentArea.NameToken])
+                    .ResetColor();
 
             Game.World.LogSystem.Log(txt.Append("."));
         }

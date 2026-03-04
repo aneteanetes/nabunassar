@@ -24,6 +24,7 @@ namespace ioi.Entities.Map
         public List<ObjectMap> Updatable { get; set; } = new();
 
         public List<ObjectMap> Drawable { get; set; } = new();
+        public Color Color { get; internal set; }
 
         public RogueMap(int width, int height)
         {

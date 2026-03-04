@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="left-up" width="90" height="23" tilewidth="16" tileheight="34" infinite="0" nextlayerid="6" nextobjectid="28">
  <properties>
+  <property name="Color" type="color" value="#ff4fecec"/>
   <property name="NameToken" value="MapMraumir"/>
  </properties>
  <tileset firstgid="1" name="Consolas" tilewidth="16" tileheight="34" tilecount="1110" columns="37">
@@ -77,9 +78,10 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="3" name="Areas" visible="0">
+ <objectgroup id="3" name="Areas">
   <object id="12" x="0" y="0" width="1440" height="782">
    <properties>
+    <property name="Color" type="color" value="#ffaa5500"/>
     <property name="NameToken" value="AreaMarket"/>
    </properties>
   </object>

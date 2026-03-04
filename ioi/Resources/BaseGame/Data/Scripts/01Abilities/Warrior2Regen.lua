@@ -8,6 +8,8 @@ Templates.Abilities.Warrior2Regen = {
     cost=15,
     element = "physical",
     duration=0,
+    tileset="Consolas",
+    tileid=28,
     icon="=",
     color={0, 255, 0},
     location="combat",

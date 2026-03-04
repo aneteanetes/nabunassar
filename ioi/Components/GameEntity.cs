@@ -5,6 +5,7 @@ using ioi.Scripting;
 using MonoGame.Extended.ECS;
 using MoonSharp.Interpreter;
 using SharpFont;
+using static Assimp.Metadata;
 
 namespace ioi.Components
 {
@@ -164,6 +165,53 @@ namespace ioi.Components
             }
 
             return "...";
+        }
+
+        public bool CastAbility(int slot)
+        {
+            var abilityVal = this.Func("getAbility", slot);
+            if (abilityVal.IsNil())
+                return false;
+
+            var entity = abilityVal.UserData.Object.As<GameEntity>();
+
+            var abilcolor = $"/c[{entity.Color("color").ToHexString()}]";
+            var abname = entity.GetName();
+
+            if (entity["mode"].String == "passive")
+            {
+                _script.Game.World.LogSystem.Log($"{_script.Game.Strings["Roguelike"]["passiveab"]} {_script.Game.Strings["Roguelike"]["ability"].ToLower()} '{abilcolor}{abname}' /cd{_script.Game.Strings["Roguelike"]["cantuse"]}!");
+                return false;
+            }
+
+            var enemy = _script.Game.GameState.Enemy;
+
+            var location = entity["location"].String;
+            if (enemy != null && location != "combat")
+            {
+                _script.Game.World.LogSystem.Log($"{_script.Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}/cd' {_script.Game.Strings["Roguelike"]["cantuseincombat"]}!");
+                return false;
+
+            }
+
+            if (enemy == null && location != "world")
+            {
+                _script.Game.World.LogSystem.Log($"{_script.Game.Strings["Roguelike"]["ability"]} '{abilcolor}{abname}/cd' {_script.Game.Strings["Roguelike"]["cantuseinworld"]}!");
+                return false;
+            }
+
+            var canCast = entity.Func("canCast", this, enemy).Boolean;
+            if (canCast)
+            {
+                entity.Func("cast", this, enemy);
+                return true;
+            }
+            else
+            {
+                _script.Game.World.LogSystem.Log($"{this.GetNameColored()} /cd{_script.Game.Strings["Roguelike"]["cantuseabil"]} {abilcolor}{abname}/cd!");
+            }
+
+            return false;
         }
 
         public DynValue this[string key]
