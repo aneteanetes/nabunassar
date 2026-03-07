@@ -79,6 +79,7 @@ namespace ioi.Monogame.Viewports
             _game._screenShotTarget = new RenderTarget2D(_game.GraphicsDevice, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height);
             _game._shareTarget = new RenderTarget2D(_game.GraphicsDevice, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height);
 
+            _game.GraphicsDevice.Clear(Color.Black);
 
             GameController.GlobalBlurShaderReset();
         }

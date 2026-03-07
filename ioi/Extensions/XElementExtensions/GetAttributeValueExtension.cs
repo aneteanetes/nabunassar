@@ -10,11 +10,15 @@ namespace ioi
         /// Integer attribute value
         /// </summary>
         /// <param name="xElement"></param>
-        /// <param name="attr"></param>
+        /// <param name="attrName"></param>
         /// <returns></returns>
-        public static int GetTagAttrInteger(this XElement xElement, string attr)
+        public static int GetTagAttrInteger(this XElement xElement, string attrName)
         {
-            int.TryParse(xElement.Attribute(attr).Value, out int value);
+            var attr = xElement.Attribute(attrName);
+            if (attr == null)
+                return default;
+
+            int.TryParse(attr.Value, out int value);
             return value;
         }
 

@@ -1,5 +1,6 @@
 ﻿using Geranium.Reflection;
 using ioi.Components;
+using ioi.Entities.Data.Loot;
 using ioi.Entities.Map;
 using ioi.Entities.Struct;
 using ioi.Scripting;
@@ -7,9 +8,11 @@ using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using MonoGame.Extended;
+using MonoGame.Extended.ECS;
 using MonoGame.Extended.Graphics;
 using MoonSharp.Interpreter;
 using System.Collections;
+using System.Diagnostics;
 
 namespace ioi.Systems.Roguelike
 {
@@ -35,10 +38,11 @@ namespace ioi.Systems.Roguelike
 
         public IEnumerator LoadMap(TiledMap map)
         {
-            Game.GameState.Map = new Entities.Map.RogueMap(map.width, map.height)
+            Game.GameState.Map = new Entities.Map.RogueMap(map.width, map.height,Game)
             {
                 NameToken = map.GetPropertyValue<string>(nameof(RogueMap.NameToken)),
-                Color = map.GetPropertyValue<string>(nameof(RogueMap.Color)).AsColor()
+                Color = map.GetPropertyValue<string>(nameof(RogueMap.Color)).AsColor(),
+                LootTableName = map.GetPropertyValue<string>(nameof(RogueMap.LootTableName))
             };
 
             foreach (var tileset in map.Tilesets)
@@ -47,7 +51,7 @@ namespace ioi.Systems.Roguelike
                     continue;
 
                 var texture = Game.Content.Load<Texture2D>(tileset.image);
-                var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
+                var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight,spacing:tileset.spacing);
                 tileset.TextureAtlas = _atlas;
 
                 // glow
@@ -60,7 +64,7 @@ namespace ioi.Systems.Roguelike
                 var _glowAtlas = Texture2DAtlas.Create(tileset.name + "_glow", glowTexture, tileset.tilewidth, tileset.tileheight, margin: 50);
                 tileset.TextureAtlasGlow = _glowAtlas;
 
-                Game.GameState.Map.Tilesets[tileset.name] = tileset.TextureAtlas;
+                Game.GameState.Tilesets[tileset.name] = Game.GameState.Map.Tilesets[tileset.name] = tileset.TextureAtlas;
 
                 yield return 0;
             }
@@ -69,7 +73,9 @@ namespace ioi.Systems.Roguelike
                 .Where(poly => poly.Gid > 0)
                 .ForEach(poly =>
                 {
-                    var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.Gid - 1);
+                    //if (poly.Tileset.name == "Consolas1")
+                    //    Debugger.Break();
+                    var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.Tileset.GetAtlasId(poly.Gid));
                     var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
                     var position = poly.Position;
 
@@ -91,19 +97,30 @@ namespace ioi.Systems.Roguelike
 
             map.Objects.ForEach((poly,i) =>
             {
-                if (poly.gid == 0)
+                if (poly.GetPropertyValue<string>("type") == "region")
                 {
-                    Game.GameState.Map.Areas.Add(new Entities.Map.Area()
+                    Game.GameState.Map.Regions.Add(new Area()
                     {
                         Bounds = new RectangleF(((float)poly.x), ((float)poly.y), poly.width, poly.height),
-                        NameToken = poly.GetPropertyValue<string>("NameToken"),
+                        NameToken = poly.GetPropertyValue<string>("NameToken") ?? poly.GetPropertyValue<string>("name"),
+                        Color = poly.GetPropertyValue<string>(nameof(Area.Color)).AsColor()
+                    });
+
+                    return;
+                }
+                if (poly.GetPropertyValue<string>("type") == "area")
+                {
+                    Game.GameState.Map.Areas.Add(new Area()
+                    {
+                        Bounds = new RectangleF(((float)poly.x), ((float)poly.y), poly.width, poly.height),
+                        NameToken = poly.GetPropertyValue<string>("NameToken") ?? poly.GetPropertyValue<string>("name"),
                         Color = poly.GetPropertyValue<string>(nameof(Area.Color)).AsColor()
                     });
 
                     return;
                 }
 
-                var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.gid - 1);
+                var _sprite = poly.Tileset.TextureAtlas.CreateSprite(poly.Tileset.GetAtlasId(poly.gid));
                 var size = new Vector2(_sprite.TextureRegion.Width, _sprite.TextureRegion.Height);
                 var position = poly.Position;
 
@@ -146,6 +163,7 @@ namespace ioi.Systems.Roguelike
                 Game.GameState.Map.Add(obj);
             });
 
+            Game.GameState.Map.Init();
 
             Game.World.PathfindSystem = new PathfindSystem(Game.GameState.Map);
 
@@ -157,25 +175,59 @@ namespace ioi.Systems.Roguelike
         [Obsolete("Potential performance hit")]
         public void UpdateArea()
         {
+            var region = Game.GameState.Map.CurrentRegion;
+            var area = Game.GameState.Map.CurrentArea;
+
+            Game.GameState.Map.CurrentRegion = Game.GameState.Map.Regions.FirstOrDefault(x => x.Bounds.Contains(Game.GameState.Player.Position));
             Game.GameState.Map.CurrentArea = Game.GameState.Map.Areas.FirstOrDefault(x => x.Bounds.Contains(Game.GameState.Player.Position));
+
+            if (region != Game.GameState.Map.CurrentRegion || area != Game.GameState.Map.CurrentArea)
+            {
+                if (Game.GameState.Map.CurrentArea == null && region == Game.GameState.Map.CurrentRegion)
+                    return;
+
+                LogArea(false);
+            }
         }
 
-        public void LogArea()
+        public void LogArea(bool isLogMap=true)
         {
             var str = Game.Strings["roguelike"];
             var map = Game.GameState.Map;
+            var regionExists = false;
 
-            var txt = DrawText.Create(str["comingtolocation"], Color.DarkGray)
-                .AppendSpace()
-                .Color(map.Color)
-                .Append(str[map.NameToken])
-                .ResetColor();
+            DrawText txt = DrawText.Create(str["comingtolocation"], Color.DarkGray)
+                    .AppendSpace();
+
+            if (isLogMap)
+            {
+                txt.Color(map.Color)
+                    .Append(str[map.NameToken])
+                    .ResetColor();
+            }
+
+            if (map.CurrentRegion != null)
+            {
+                regionExists = true;
+                if (isLogMap)
+                {
+                    txt.Append(" - ");
+                }
+                txt.Color(map.CurrentRegion.Color)
+                    .Append(str[map.CurrentRegion.NameToken])
+                    .ResetColor();
+            }
 
             if (map.CurrentArea != null)
-                txt.Append(" - ")
-                    .Color(map.CurrentArea.Color)
+            {
+                if (regionExists)
+                {
+                    txt.Append(" - ");
+                }
+                txt.Color(map.CurrentArea.Color)
                     .Append(str[map.CurrentArea.NameToken])
                     .ResetColor();
+            }
 
             Game.World.LogSystem.Log(txt.Append("."));
         }
@@ -240,6 +292,9 @@ namespace ioi.Systems.Roguelike
                 {
                     continue;
                 }
+
+                var region = objMap.Sprite.TextureRegion;
+
                 objMap.Sprite.Color = objMap.Color;
                 //objMap.Sprite.Effect = objMap.Side == Struct.Side.Right ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
                 objMap.Sprite.Draw(sb, objMap.DrawPosition.HasValue ? objMap.DrawPosition.Value : objMap.Position, 0, Vector2.One);
@@ -255,13 +310,13 @@ namespace ioi.Systems.Roguelike
         internal void Pause()
         {
             Game.GameState.Temp.ClickPosition = null;
-            Game.World.BorderLayersSystem["Map"] = false;
+            Game.World.BorderSystem["Map"] = false;
             IsPaused = true;
         }
 
         internal void Resume()
         {
-            Game.World.BorderLayersSystem["Map"] = true;
+            Game.World.BorderSystem["Map"] = true;
             IsPaused = false;
         }
 
@@ -318,6 +373,61 @@ namespace ioi.Systems.Roguelike
             }
 
             return collected;
+        }
+
+        public void AddObjectMap(GameEntity entity, Point coords)
+        {
+            var tileset = entity["tileset"].String;
+            var tileId = ((int)entity["tileid"].Number);
+
+            var obj = new ObjectMap(Game, $"{Guid.NewGuid().ToString().Substring(0, 5)}")
+            {
+                Sprite = Game.GameState.Map.Tilesets[tileset].CreateSprite(tileId),
+                Color = entity.Color("color"),
+                IsBounds = entity["isBounds"].Boolean,
+                Coords = coords,
+                Size = Game.CellSize.ToVector2()
+            };
+
+            obj.Position = obj.GetPositionFromCoords();
+            obj.BindEntity(entity);
+
+            Game.GameState.Map.Add(obj);
+        }
+
+        internal void AddLoot(GameEntity entity)
+        {
+            var player = Game.GameState.Player.Entity;
+            var coords = entity.MapObject.Coords;
+
+            var lootTableVal = entity["loottable"];
+
+            List<GameEntity> loots = new();
+
+            if (lootTableVal.IsNotNil())
+            {
+                var lootTable = new GameLootTable(lootTableVal, lootTableVal.Table.Get("loottablename").String);
+                loots = lootTable.Generate(player);
+            }
+            else
+            {
+                var mapLootTable = Game.GameState.Map.LootTable;
+                if (mapLootTable != default)
+                {
+                    loots = mapLootTable.Generate(player);
+                }
+            }
+
+
+            foreach (var loot in loots)
+            {
+                AddObjectMap(loot, coords);
+            }
+        }
+
+        public RogueMapCell GetCell(int x, int y)
+        {
+            return Game.GameState.Map.ObjectMap[x, y];
         }
     }
 }

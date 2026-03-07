@@ -8,8 +8,8 @@ Templates.Abilities.Warrior1Supress = {
     cost=10,
     element = "physical",
     duration=0,
-    tileset="Consolas",
-    tileid=621,
+    tileset="Consolas1",
+    tileid=111,
     color={84, 93, 222},
     location="combat",
 

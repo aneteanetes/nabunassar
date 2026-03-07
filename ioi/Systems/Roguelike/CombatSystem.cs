@@ -1,15 +1,11 @@
 ﻿using FontStashSharp;
-using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Components;
 using ioi.Widgets.UserInterfaces.Roguelike;
-using MonoGame.Extended.ECS;
 using MonoGame.Extended.Input;
 using MoonSharp.Interpreter;
-using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 using System.Collections;
-using static Assimp.Metadata;
 
 namespace ioi.Systems.Roguelike
 {
@@ -108,8 +104,8 @@ namespace ioi.Systems.Roguelike
                 var str = Game.Strings["Roguelike"];
                 headerPanel.Visible = true;
                 combatHeader.Text = $"{str[enemy["name"].String]} VS {Game.GameState.Player.Entity.Name}";
-                Game.World.BorderLayersSystem["Map"] = true;
-                Game.World.PlayerControlSystem.Combat();
+                Game.World.BorderSystem["Map"] = true;
+                Game.World.PlayerControlSystem.CombatMode();
                 yield return 0;
 
                 BindCurrentEnemy(enemy);
@@ -119,9 +115,9 @@ namespace ioi.Systems.Roguelike
 
             IEnumerator changeScreenBack()
             {
-                Game.World.BorderLayersSystem["Map"] = false;
-                Game.World.BorderLayersSystem["LeftPanel"] = true;
-                Game.World.BorderLayersSystem["Center"] = true;
+                Game.World.BorderSystem["Map"] = false;
+                Game.World.BorderSystem["LeftPanel"] = true;
+                Game.World.BorderSystem["Center"] = true;
                 Game.World.PlayerControlSystem.ControlsCombatPreset();
                 _round = 0;
                 yield return 0;
@@ -154,10 +150,10 @@ namespace ioi.Systems.Roguelike
                 log.Visible = false;
                 log.Clear();
                 headerPanel.Visible = false;
-                Game.World.BorderLayersSystem["LeftPanel"] = false;
-                Game.World.BorderLayersSystem["Center"] = false;
-                Game.World.BorderLayersSystem["Map"] = true;
-                Game.World.PlayerControlSystem.Map();
+                Game.World.BorderSystem["LeftPanel"] = false;
+                Game.World.BorderSystem["Center"] = false;
+                Game.World.BorderSystem["Map"] = true;
+                Game.World.PlayerControlSystem.MapMode();
 
                 //if (enemyWidget.Entity["hp"].Number <= 0)
                 //    enemyWidget.Entity.Destroy();
@@ -198,7 +194,7 @@ namespace ioi.Systems.Roguelike
         private void BindCurrentEnemy(GameEntity enemy)
         {
             if (enemyWidget != null)
-                Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame);
+                Game.RemoveDesktopWidget(enemyWidget, Game.MyraDesktopIngame); // here calls obj.Destroy()
 
             Game.GameState.Enemy = enemy;
             enemyWidget = Game.AddDesktopWidget(new EntityWidget(Game, null, Struct.Side.Left,enemy), Game.MyraDesktopIngame);
@@ -256,7 +252,9 @@ namespace ioi.Systems.Roguelike
                 var squad = entity.Squad;
                 squad.Remove(entity);
 
-                if(squad.IsEmpty())
+                Game.World.MapSystem.AddLoot(entity);
+
+                if (squad.IsEmpty())
                 {
                     EndCombat();
                 }

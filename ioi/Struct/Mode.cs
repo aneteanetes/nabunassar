@@ -3,6 +3,7 @@
     internal enum Mode
     {
         Map,
-        Combat
+        Combat,
+        Info
     }
 }

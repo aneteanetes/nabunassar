@@ -87,9 +87,6 @@ namespace ioi
                 Penumbra.Debug = !Penumbra.Debug;
             }
 
-            //move map camera
-            CameraMap.Move(GetMovementDirection(keyboardState));
-
             if (keyboardState.WasKeyPressed(Keys.OemPlus))
             {
                 EntityFactoryMap.PartyLight.Scale += new Vector2(50,50);
@@ -109,33 +106,6 @@ namespace ioi
             }
 
             AdjustZoom();
-        }
-
-        private Vector2 GetMovementDirection(KeyboardStateExtended state)
-        {
-            Vector2 movementDirection = Vector2.Zero;
-
-            if (state.IsKeyDown(Keys.Down))
-            {
-                movementDirection += Vector2.UnitY;
-            }
-
-            if (state.IsKeyDown(Keys.Up))
-            {
-                movementDirection -= Vector2.UnitY;
-            }
-
-            if (state.IsKeyDown(Keys.Left))
-            {
-                movementDirection -= Vector2.UnitX;
-            }
-
-            if (state.IsKeyDown(Keys.Right))
-            {
-                movementDirection += Vector2.UnitX;
-            }
-
-            return movementDirection * 15;
         }
     }
 }

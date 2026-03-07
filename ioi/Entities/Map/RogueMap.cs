@@ -1,4 +1,6 @@
-﻿using ioi.Components;
+﻿using Geranium.Reflection;
+using ioi.Components;
+using ioi.Entities.Data.Loot;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Graphics;
 using Myra.Graphics2D.UI;
@@ -9,15 +11,23 @@ namespace ioi.Entities.Map
     {
         public string NameToken { get; set; }
 
-        public RogueMapCell[,] ObjectMap { get; set; }
+        public string LootTableName { get; set; }
 
+        public GameLootTable LootTable { get; set; }
+
+        public RogueMapCell[,] ObjectMap { get; set; }
+        public GameHost Game { get; }
         public int Width { get; }
 
         public int Height { get; }
 
         public List<Area> Areas { get; set; } = new();
 
+        public List<Area> Regions { get; set; } = new();
+
         public Area CurrentArea { get; set; }
+
+        public Area CurrentRegion { get; set; }
 
         public Dictionary<string, Texture2DAtlas> Tilesets { get; internal set; } = new();
 
@@ -26,8 +36,9 @@ namespace ioi.Entities.Map
         public List<ObjectMap> Drawable { get; set; } = new();
         public Color Color { get; internal set; }
 
-        public RogueMap(int width, int height)
+        public RogueMap(int width, int height, GameHost game)
         {
+            Game = game;
             Width = width;
             Height = height;
 
@@ -106,6 +117,15 @@ namespace ioi.Entities.Map
             obj.Entity.Func("tick");
 
             return true;
+        }
+
+        internal void Init()
+        {
+            if (LootTableName.IsNotEmpty())
+            {
+                var lootTableEntity = Game.World.SpawnSystem.SpawnLootTable(LootTableName);
+                LootTable = new GameLootTable(lootTableEntity,LootTableName);
+            }
         }
     }
 }

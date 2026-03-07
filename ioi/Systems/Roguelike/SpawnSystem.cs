@@ -37,15 +37,18 @@ namespace ioi.Systems.Roguelike
         }
 
         public GameEntity SpawnObject(string id, string type, Table props)
-        {
-            var entity = new GameEntity(Game.Lua, props, "Templates.Base.Object", $"Templates.{type}.{id}");
-
-            return entity;
-        }
+            => SpawnEntity(props, "Templates.Base.Object", $"Templates.{type}.{id}");
 
         public GameEntity SpawnEntity(params string[] prototypes)
+            => SpawnEntity(null,prototypes);
+
+        public GameEntity SpawnLootTable(string name)
+            => SpawnEntity("Templates.loot.table", $"Templates.loot.table.{name}");
+
+        public GameEntity SpawnEntity(Table props, params string[] prototypes)
         {
-            var entity = new GameEntity(Game.Lua, null, prototypes);
+            var entity = new GameEntity(Game.Lua, props, prototypes);
+            entity["seed"] = DynValue.NewNumber(Game.World.ItemRandomSystem.GetSeed());
 
             return entity;
         }

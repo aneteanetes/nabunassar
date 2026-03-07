@@ -1,8 +1,7 @@
-﻿using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
-using ioi.Entities;
-using ioi.Entities.Data;
+﻿using ioi.Entities.Data;
 using ioi.Entities.Data.Abilities.WorldAbilities;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 
 namespace ioi
 {
@@ -10,6 +9,9 @@ namespace ioi
     {
         public void InitializeGameState()
         {
+            if (GameState != null)
+                GameState.Dispose();
+
             GameState = new GameState();
             GameState.Init();
             EntityFactoryMap.CreateCursor();

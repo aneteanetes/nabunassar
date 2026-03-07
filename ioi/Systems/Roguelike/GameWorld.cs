@@ -27,7 +27,9 @@ namespace ioi.Systems.Roguelike
 
         public LoadingSystem LoadingSystem { get; set; }
 
-        public BorderLayersSystem BorderLayersSystem { get; internal set; }
+        public ItemRandomSystem ItemRandomSystem { get; set; }
+
+        public BorderSystem BorderSystem { get; internal set; }
 
         internal IEnumerator LoadContent()
         {
@@ -37,7 +39,7 @@ namespace ioi.Systems.Roguelike
             CombatSystem.LoadContent();
             yield return 0;
 
-            yield return BorderLayersSystem.LoadContent();
+            yield return BorderSystem.LoadContent();
         }
 
         public void Update(GameTime gameTime)
@@ -56,7 +58,7 @@ namespace ioi.Systems.Roguelike
         {
             MapSystem?.Draw(gameTime);
             PlayerControlSystem?.Draw(gameTime);
-            BorderLayersSystem?.Draw(gameTime);
+            BorderSystem?.Draw(gameTime);
         }
 
         public void Dispose()

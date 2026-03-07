@@ -32,13 +32,16 @@ Templates.enemy.rat = {
     basemindmg=1,
     basemaxdmg=2,
 
+    loottablename=nil,
+    loottable=nil,
+
     icon='r',
     color={173,113,56},
     
     init = function (obj,props)
         local components = obj["_components"];
 
-        table.insert(components,2,"Templates.Base.Enemy");        
+        table.insert(components,2,"Templates.Base.Enemy");
         table.insert(components,1,"Templates.Races.animal");
 
         if props.class ~= nil then
@@ -49,12 +52,9 @@ Templates.enemy.rat = {
 
         table.insert(components,1,"Templates.Base.Moveable");
 
-        --[[
-        print("+++++++++++++++++++++++++++++");
-        for k,v in pairs(components) do
-	        print(v)
+        if obj.loottablename ~= nil then
+            obj.loottable = world.SpawnLootTable(obj.loottablename);
         end
-        --]]
 
     end
 

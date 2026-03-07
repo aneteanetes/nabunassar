@@ -66,6 +66,9 @@ namespace ioi
                 ? camera.GetViewMatrix()
                 : Matrix.Identity;
 
+            if (samplerState == null)
+                samplerState = SamplerState.PointClamp;
+
             this.SpriteBatch.Begin(transformMatrix);
 
             var sb = this.SpriteBatch.GetSpriteBatch(samplerState, sortMode, blendState, isTransformMatrix, effect);

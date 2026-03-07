@@ -1,6 +1,5 @@
 ﻿using Geranium.Reflection;
 using ioi.Components;
-using ioi.Entities.Data;
 using ioi.Entities.Struct;
 using ioi.Screens.Abstract;
 using ioi.Widgets.UserInterfaces.Roguelike;
@@ -42,10 +41,10 @@ namespace ioi.Screens
 
             Game.World.MapSystem.Celshading = Celshading;
 
-            Game.World.BorderLayersSystem["Controls"] = true;
-            Game.World.BorderLayersSystem["Player"] = true;
-            Game.World.BorderLayersSystem["Skills"] = true;
-            Game.World.BorderLayersSystem["Map"] = true;
+            Game.World.BorderSystem["Controls"] = true;
+            Game.World.BorderSystem["Player"] = true;
+            Game.World.BorderSystem["Skills"] = true;
+            Game.World.BorderSystem["Map"] = true;
         }
 
         public override void Update(GameTime gameTime)
@@ -55,8 +54,6 @@ namespace ioi.Screens
                 Game.World.LogSystem.Log(DrawText.Create(Game.Strings["Roguelike"]["screenshotsaved"], Color.DarkGray).AppendSpace().Append(Game.LastScreenshot));
                 Game.LastScreenshot = default;
             }
-
-            GameController.GlobalMenuWidget();
             
             Game.World.Update(gameTime);
 

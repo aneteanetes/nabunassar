@@ -10,7 +10,7 @@ float4 MainPS(float4 color : COLOR0, float2 texCoord : TEXCOORD0) : COLOR0
     float tileHeight = 34.0;
 
     // coords
-    float pixelY = texCoord.y * atlasHeight;
+    float pixelY = (texCoord.y + 1) * atlasHeight;
     float localY = (pixelY % tileHeight) / tileHeight;
     
     // gradient (gold/bronze)

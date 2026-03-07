@@ -41,6 +41,7 @@ namespace ioi.Tiled.Map
                     tilewidth = xmlTileSet.GetTagAttrInteger(nameof(TiledTileset.tilewidth)),
                     tileheight = xmlTileSet.GetTagAttrInteger(nameof(TiledTileset.tileheight)),
                     name = xmlTileSet.GetTagAttrString(nameof(TiledTileset.name)),
+                    spacing = xmlTileSet.GetTagAttrInteger(nameof(TiledTileset.spacing)),
                 };
 
                 tileSet.Tiles = xmlTileSet
@@ -151,7 +152,18 @@ namespace ioi.Tiled.Map
                         var attr = objtag.Attribute(prop.Name);
                         if (attr != null)
                         {
-                            tobj.SetPropValue(prop.Name, attr.Value.Replace(".", ","));
+                            var value = attr.Value.Replace(".", ",");
+                            var type = tobj.GetPropValue(prop.Name).GetType();
+                            var typeCode = Type.GetTypeCode(type);
+
+                            if (value.Contains(",") && typeCode.IsInteger())
+                            {
+                                tobj.SetPropValue(prop.Name, Math.Round(double.Parse(value)));
+                            }
+                            else
+                            {
+                                tobj.SetPropValue(prop.Name, value);
+                            }
                         }
                     }
 
@@ -164,7 +176,9 @@ namespace ioi.Tiled.Map
                     {
                         tobj.Tileset = tiledMap.GetTileset(tobj.gid);
 
-                        tobj.Tileset.GetTileProperties(tobj.gid - 1).ForEach(prop =>
+                        var localid = tobj.Tileset.GetAtlasId(tobj.gid);
+
+                        tobj.Tileset.GetTileProperties(localid).ForEach(prop =>
                         {
                             if (!tobj.Properties.ContainsKey(prop.Key))
                                 tobj.Properties.Add(prop.Key, prop.Value);
@@ -284,7 +298,7 @@ namespace ioi.Tiled.Map
 
                     if (gid != 0)
                     {
-                        polygon.Properties = polygon.Tileset.GetTileProperties(polygon.Gid - 1);
+                        polygon.Properties = polygon.Tileset.GetTileProperties(polygon.Tileset.GetAtlasId(polygon.Gid));
                         polygon.Position = new Vector2(iX * polygon.Tileset.tilewidth, iY * polygon.Tileset.tileheight);
                     }
 

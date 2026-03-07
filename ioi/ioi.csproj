@@ -70,6 +70,7 @@
 	  <Folder Include="Resources\BaseGame\Assets\Sprites\NPCs\" />
 	  <Folder Include="Resources\BaseGame\Data\Scripts\2Races\" />
 	  <Folder Include="Resources\BaseGame\Data\Scripts\6Enemies\" />
+	  <Folder Include="Resources\BaseGame\Data\Scripts\8Loot\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -2,7 +2,8 @@
 {
     internal enum LootChance
     {
-        Guaranteed,
-        Percent
+        guarant,
+        percent,
+        condition
     }
 }

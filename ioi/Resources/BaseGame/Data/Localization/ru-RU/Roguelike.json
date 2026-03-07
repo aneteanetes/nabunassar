@@ -12,7 +12,14 @@
 
   //maps and areas
   "MapMraumir": "Мраумир",
-  "AreaMarket": "Торговый квартал",
+  "RegionMarket": "Торговый квартал",
+  "AreaOldTemple": "Старый храм",
+  "AreaGuestMarket": "Рынок иноземцев",
+  "AreaMainSquare": "Главная площадь",
+  "AreaUpperCommerce": "Верхние торговые палаты",
+  "AreaLowerCommerce": "Нижние торговые палаты",
+  "AreaSmith": "Кузница",
+  "AreaChapel": "Часовня",
 
   //interface
   "controluse": "Использовать",
@@ -27,7 +34,7 @@
   "charinfo": "Персонаж",
   "map": "Карта",
   "inventory": "Инвентарь",
-  "charselectcontrol": "Слот",
+  "charselectcontrol": "Группа",
   "pause": "Пауза",
   "camera": "Камера",
   "doattack": "Атаковать",
@@ -45,6 +52,11 @@
   "cantuse": "невозможно использовать",
   "restores": "восстанавливает",
   "hpes": "здоровья",
+  "objects": "Объекты",
+
+  //cut stats
+  "ap_cut": "AP",
+  "ad_cut": "AD",
 
   //combat
   "battleoverkeypress": "Бой окончен. Нажмите любую клавишу для продолжения...",
@@ -103,6 +115,9 @@
   "abil_war_finisher_desc": "Опыт война.\n\nОсобый прием.\n\nЕсли здоровье врага меньше 25%\n-\nнаносит & урона.\nИначе 0.",
   "abil_war_ferocity": "Свирепость",
   "abil_war_ferocity_desc": "Опыт война.\n\nТранс.\n\nУвеличивает прирост ярости от удара на &.",
+
+  //item names
+  "trainingsword": "Тренировочный меч",
 
   //other
   "rat_enemy": "Крыса",

@@ -1,11 +1,14 @@
 ﻿using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Components;
+using ioi.Monogame.Settings;
 using ioi.Struct;
+using ioi.Systems.Roguelike.Controllings;
 using ioi.Widgets.UserInterfaces.Roguelike;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
+using MonoGame.Extended.Tiled;
 using MoonSharp.Interpreter;
 using Myra.Graphics2D.TextureAtlases;
 
@@ -39,13 +42,34 @@ namespace ioi.Systems.Roguelike
                 case Mode.Combat:
                     UpdateCombat(gameTime);
                     break;
+                case Mode.Info:
+                    UpdateInfo(gameTime);
+                    break;
                 default:
                     break;
             }
         }
 
+        public void UpdateInfo(GameTime gameTime)
+        {
+            var controls = GetControls();
+            if (controls.Back.WasPressed())
+            {
+                MapMode();
+                CloseInfo();
+            }
+        }
+
+        private void CloseInfo()
+        {
+            Game.World.BorderSystem["LeftPanel"] = false;
+            Game.RemoveDesktopWidgets<InfoWidget>(0, Game.MyraDesktopIngame);
+        }
+
         public void UpdateCombat(GameTime gameTime)
         {
+            GameController.GlobalMenuWidget();
+
             var key = KeyboardExtended.GetState();
 
             var player = Game.GameState.Player.Entity;
@@ -122,8 +146,15 @@ namespace ioi.Systems.Roguelike
         public void UpdateMap(GameTime gameTime)
         {
             var player = Game.GameState.Player;
+            var controls = GetControls();
 
-            MouseMoving(player);
+            GameController.GlobalMenuWidget();
+
+            Game.CameraMap.Move(GetMovementDirection());
+
+            #region moving
+
+            MouseMoving(player, controls);
 
             if (player.IsMoving)
             {
@@ -152,14 +183,13 @@ namespace ioi.Systems.Roguelike
                 }
             }
 
-            var key = KeyboardExtended.GetState();
+            #endregion
 
-            void wasPartySelectPressed(Keys fKey)
+            void wasPartySelectPressed(ControlSchemeKey fKey, int idx)
             {
-                if (key.WasKeyPressed(fKey))
+                if (fKey.WasPressed())
                 {
-                    var parsed = int.Parse(fKey.ToString().Substring(1));
-                    if (player.Entity.Squad.TrySetMember(parsed - 1, out var member))
+                    if (player.Entity.Squad.TrySetMember(idx - 1, out var member))
                     {
                         player.BindEntity(member);
                     }
@@ -170,24 +200,46 @@ namespace ioi.Systems.Roguelike
                 }
             }
 
-            wasPartySelectPressed(Keys.F1);
-            wasPartySelectPressed(Keys.F2);
-            wasPartySelectPressed(Keys.F3);
-            wasPartySelectPressed(Keys.F4);
-            wasPartySelectPressed(Keys.F5);
-            wasPartySelectPressed(Keys.F6);
+            wasPartySelectPressed(controls.Party1,1);
+            wasPartySelectPressed(controls.Party2,2);
+            wasPartySelectPressed(controls.Party3,3);
+            wasPartySelectPressed(controls.Party4,4);
+            wasPartySelectPressed(controls.Party5,5);
+            wasPartySelectPressed(controls.Party6,6);
+
+            if (controls.Info.WasPressed())
+            {
+                bool flowControl = OpenCellInfo(player);
+                if (!flowControl)
+                {
+                    return;
+                }
+            }
 
             if (!player.IsMoving)
-                KeyboardMoving(player);
+                KeyboardMoving(player,controls);
         }
 
-        private void MouseMoving(ObjectMap player)
+        private bool OpenCellInfo(ObjectMap obj)
         {
-            var state = MouseExtended.GetState();
-
-            if (state.WasButtonPressed(MouseButton.Left))
+            var cell = Game.World.MapSystem.GetCell(obj.Coords.X, obj.Coords.Y);
+            var objs = cell.Objects.Except([obj]).ToArray();
+            if (objs.Length > 0)
             {
-                var pos = state.Position;
+                this.InfoMode();
+                Game.World.BorderSystem["LeftPanel"] = true;
+                Game.AddDesktopWidget(new InfoWidget(Game, objs), Game.MyraDesktopIngame);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void MouseMoving(ObjectMap player, ControlScheme controls)
+        {
+            if (controls.MouseLeftButton.WasPressed())
+            {
+                var pos = MouseExtended.GetState().Position;
                 var clicked = Game.CameraMap.ScreenToWorld(pos.X, pos.Y);
                 var targetCoords = new Microsoft.Xna.Framework.Point(((int)Math.Floor(clicked.X / Game.CellSize.X)), ((int)Math.Floor(clicked.Y / Game.CellSize.Y)));
 
@@ -207,26 +259,24 @@ namespace ioi.Systems.Roguelike
             }
         }
 
-        private void KeyboardMoving(Components.ObjectMap player)
+        private void KeyboardMoving(ObjectMap player, ControlScheme controls)
         {
-            var keyboard = KeyboardExtended.GetState();
-
             int x = 0, y = 0;
 
-            if (keyboard.IsKeyDown(Keys.S))
+            if (controls.MoveDown.IsDown())
             {
                 y += 1;
             }
-            if (keyboard.IsKeyDown(Keys.W))
+            if (controls.MoveUp.IsDown())
             {
                 y -= 1;
             }
-            if (keyboard.IsKeyDown(Keys.A))
+            if (controls.MoveLeft.IsDown())
             {
                 x -= 1;
                 player.Side = Side.Left;
             }
-            if (keyboard.IsKeyDown(Keys.D))
+            if (controls.MoveRight.IsDown())
             {
                 x += 1;
                 player.Side = Side.Right;
@@ -242,7 +292,7 @@ namespace ioi.Systems.Roguelike
             Game.GameState.Map.Move(player, coords);
         }
 
-        private void CameraMoving(Components.ObjectMap player, Vector2 diffMove)
+        private void CameraMoving(ObjectMap player, Vector2 diffMove)
         {
             BoundingBox deadzoneBounds = GetDeadzoneBounds();
 
@@ -323,39 +373,66 @@ namespace ioi.Systems.Roguelike
 
         public void ControlsMainScreenPreset()
         {
+            ControlsWidget.Reset();
+
+            var controls = GetControls();
+
             var str = Game.Strings["Roguelike"];
-            ControlsWidget.BindButton(1, $"[Q/MRB] - {str["info"]}");
-            ControlsWidget.BindButton(2, $"[W,A,S,D/LMB] - {str["controlwasd"]}");
-            ControlsWidget.BindButton(3, $"[1,2,3,4] - {str["abils"]}");
-            ControlsWidget.BindButton(4, $"[E] - {str["controluse"]}");
-            ControlsWidget.BindButton(5, $"[5,6,7,8] - {str["skills"]}");
-            ControlsWidget.BindButton(6, $"[С] - {str["charinfo"]}");
-            ControlsWidget.BindButton(7, $"[M] - {str["map"]}");
-            ControlsWidget.BindButton(8, $"[I] - {str["inventory"]}");
-            ControlsWidget.BindButton(9, $"[F1-F6] - {str["charselectcontrol"]}");
-            ControlsWidget.BindButton(10, $"[<,^,>] - {str["camera"]}");
+
+            ControlsWidget.BindButtonKey(1, str["info"], "/", controls.Info, controls.MouseRightButton);
+            ControlsWidget.BindButtonKey(2, str["controlwasd"], ",", controls.MoveUp, controls.MoveLeft, controls.MoveDown, controls.MoveRight, controls.MouseLeftButton);
+            ControlsWidget.BindButtonKey(3, str["charselectcontrol"], "-", controls.Party1,controls.Party6);
+            ControlsWidget.BindButtonKey(4, str["controluse"], "-", controls.Use);
+            ControlsWidget.BindButtonKey(5, str["skills"], "-", controls.Ability1, controls.Skill4);
+            ControlsWidget.BindButtonKey(6, str["doattack"], null, controls.Attack);
+            ControlsWidget.BindButtonKey(7, str["charinfo"], null, controls.CharInfo);
+            ControlsWidget.BindButtonKey(8, str["inventory"], null, controls.Inventory);
+            ControlsWidget.BindButtonKey(9, str["map"], null, controls.Map);
+            ControlsWidget.BindButtonKey(10, str["camera"], null, controls.Camera);
         }
 
         public void ControlsCombatPreset()
         {
+            ControlsWidget.Reset();
+
+            var controls = GetControls();
             var entity = Game.GameState.Player.Entity;
 
             var str = Game.Strings["Roguelike"];
 
-            UpdateAbilityPreset();
+            
+            Dictionary<int, ControlSchemeKey> abils = new()
+            {
+                {1,controls.Ability1Combat },
+                {2,controls.Ability2Combat },
+                {3,controls.Ability3Combat },
+                {4,controls.Ability4Combat },
+            };
+            foreach (var abilitem in abils)
+            {
+                var abil = entity.GetAbility(abilitem.Key);
+                if (abil != null)
+                {
+                    var key = abilitem.Value;
 
-            ControlsWidget.BindButton(5, $"[S] - {str["doflee"]}");
+                    if (abil["mode"].String == "passive")
+                        key = null;
 
-            ControlsWidget.BindButton(6, $"[A] - {str["doattack"]}");
-            ControlsWidget.BindButton(7, $"[D] - {str["dodefence"]}");
-            ControlsWidget.BindButton(8, $"[I] - {str["inventory"]}");
+                    ControlsWidget.BindButtonKey(abilitem.Key, "", null, key);
+                }
+            }
 
-            ControlsWidget.BindButton(9, $"[F] - {str["dowait"]}");
-            ControlsWidget.BindButton(10, $"[Q] - {str["info"]}");
+            ControlsWidget.BindButtonKey(5, str["doflee"], null, controls.Flee);
+            ControlsWidget.BindButtonKey(6, str["doattack"], null, controls.Attack);
+            ControlsWidget.BindButtonKey(7, str["dodefence"], null, controls.Defence);
+            ControlsWidget.BindButtonKey(8, str["inventory"], null, controls.Inventory);
+            ControlsWidget.BindButtonKey(9, str["dowait"], null, controls.Waiting);
+            ControlsWidget.BindButtonKey(10, str["info"], null, controls.Info);
         }
 
         private void UpdateAbilityPreset()
         {
+            var controls = GetControls();
             var entity = Game.GameState.Player.Entity;
 
             for (int i = 1; i <= 4; i++)
@@ -374,11 +451,7 @@ namespace ioi.Systems.Roguelike
 
                     var nameRes = $"{name}{costtext}";
 
-                    var counter = $"[{i}] - ";
-                    if (abil["mode"].String == "passive")
-                        counter = string.Empty;
-
-                    ControlsWidget.BindButton(i, $"{counter}{nameRes}");
+                    ControlsWidget.UpdateText(i, nameRes);
                 }
                 else
                 {
@@ -398,14 +471,20 @@ namespace ioi.Systems.Roguelike
         {
         }
 
-        internal void Combat()
+        internal void CombatMode()
         {
             Mode = Mode.Combat;
+            CloseInfo();
         }
 
-        internal void Map()
+        internal void MapMode()
         {
             Mode = Mode.Map;
+        }
+
+        internal void InfoMode()
+        {
+            Mode = Mode.Info;
         }
 
         internal void Disable()
@@ -416,6 +495,47 @@ namespace ioi.Systems.Roguelike
         internal void Enable()
         {
             Enabled = true;
+        }
+
+        private Vector2 GetMovementDirection()
+        {
+            var controls = GetControls();
+            Vector2 movementDirection = Vector2.Zero;
+
+            if (controls.CameraDown.IsDown())
+            {
+                movementDirection += Vector2.UnitY;
+            }
+
+            if (controls.CameraUp.IsDown())
+            {
+                movementDirection -= Vector2.UnitY;
+            }
+
+            if (controls.CameraLeft.IsDown())
+            {
+                movementDirection -= Vector2.UnitX;
+            }
+
+            if (controls.CameraRight.IsDown())
+            {
+                movementDirection += Vector2.UnitX;
+            }
+
+            return movementDirection * 15;
+        }
+
+        public ControlScheme GetControls()
+        {
+            var schema = Game.Settings.ControlSchema;
+            var controls = Game.Settings.Controls.FirstOrDefault(c => c.Schema == schema);
+            if(controls == null)
+            {
+                controls = ControlScheme.Create(schema);
+                Game.Settings.Controls.Add(controls);
+            }
+
+            return controls;
         }
     }
 }

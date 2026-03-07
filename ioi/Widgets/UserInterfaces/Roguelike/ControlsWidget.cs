@@ -1,5 +1,7 @@
 ﻿using FontStashSharp;
+using ioi.Systems.Roguelike.Controllings;
 using ioi.Widgets.Base;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike
@@ -75,8 +77,58 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
         /// <param name="onClick"></param>
         public void BindButton(int index, string text, Action onClick=null)
         {
+            controls[index].Reset();
             controls[index].Text = text;
             controls[index].Click=onClick;
+        }
+
+        public void Reset()
+        {
+            foreach (var control in controls)
+            {
+                control.Value.Reset();
+            }
+        }
+
+        public void UpdateText(int index, string text)
+        {
+            controls[index].Text = text; 
+        }
+
+        public void BindButtonKey(int index, string text, string delimiter=null, params ControlSchemeKey[] controlKeys)
+        {
+            controls[index].Text = text;
+
+            var keys = controlKeys.Reverse().ToArray();
+
+            foreach (var key in keys)
+            {
+                if (key == null)
+                    continue;
+
+                controls[index].AddImage(key.GetRegion(Game).ToMyraRegion());
+
+                if (delimiter != null)
+                {
+                    var idx = Array.IndexOf(keys, key);
+                    if (idx != keys.Length - 1)
+                    {
+                        controls[index].AddDelimiter(delimiter);
+                    }
+                }
+            }
+        }
+
+        public void BindButtonImage(int index, string text, string tilesetName, int tileId)
+        {
+            controls[index].Reset();
+            controls[index].Text = text;
+
+            if (Game.GameState.Map.Tilesets.TryGetValue(tilesetName, out var tileset))
+            {
+                var region = tileset.GetRegion(tileId);
+                controls[index].AddImage(region.ToMyraRegion());
+            }
         }
     }
 }

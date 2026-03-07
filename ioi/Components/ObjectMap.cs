@@ -202,6 +202,9 @@ namespace ioi.Components
                 if (collision == this)
                     continue;
 
+                if(collision.Entity==null)
+                    continue;
+
                 var hostCollideFunc = Entity?["collide"];
                 if(hostCollideFunc.IsNotNil())
                 {

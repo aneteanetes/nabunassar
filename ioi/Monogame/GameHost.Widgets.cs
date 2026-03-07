@@ -157,7 +157,7 @@ namespace ioi
             widget.Dispose();
         }
 
-        public void RemoveDesktopWidgets<T>(int skip=0)
+        public void RemoveDesktopWidgets<T>(int skip=0, Desktop desktop = null)
         {
             var specifiedScreenWidgets = _screenWidgets.Where(x => x.GetType() == typeof(T)).ToArray();
 
@@ -167,7 +167,7 @@ namespace ioi
             for (int i = 0; i < specifiedScreenWidgets.Length-skip; i++)
             {
                 var specificScreenWidget = specifiedScreenWidgets[i];
-                RemoveDesktopWidget(specificScreenWidget);
+                RemoveDesktopWidget(specificScreenWidget, desktop);
             }
         }
 

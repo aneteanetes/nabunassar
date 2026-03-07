@@ -1,5 +1,8 @@
 ﻿using ioi.Entities.Data.Praying;
+using ioi.Systems.Roguelike.Controllings;
+using ioi.Tiled.Map;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Graphics;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
@@ -21,6 +24,10 @@ namespace ioi.Monogame.Settings
         public string GameTitle { get; set; } = "Inventaion of Imagination";
 
         public float DefaultFadeTransitionDurationInSeconds { get; set; } = 2f;
+
+        public ControlSchema ControlSchema { get; set; } = ControlSchema.Keyboard;
+
+        public List<ControlScheme> Controls { get; set; } = new();
 
         public string ModuleName { get; set; }
 

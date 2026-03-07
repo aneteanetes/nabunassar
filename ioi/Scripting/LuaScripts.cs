@@ -32,6 +32,7 @@ namespace ioi.Scripting
             UserData.RegisterType<GameEntity>();
             UserData.RegisterType<ObjectMap>();
             UserData.RegisterType<LocalizedStrings>();
+            UserData.RegisterType<Random>();
 
 
             Table mathTable = Globals.Get("math").Table;

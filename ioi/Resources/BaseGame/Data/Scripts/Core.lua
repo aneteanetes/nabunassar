@@ -23,5 +23,7 @@ Templates={
     Classes={},
     Abilities={},
     enemy={},
-    spawner={}
+    spawner={},
+    loot={},
+    items={},
 }

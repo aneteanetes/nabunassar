@@ -10,7 +10,9 @@ using ioi.Entities.Game.Calendars;
 using ioi.Entities.Map;
 using ioi.Entities.Struct;
 using ioi.Struct;
+using ioi.Tiled.Map;
 using ioi.Widgets.UserInterfaces;
+using MonoGame.Extended.Graphics;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ioi.Entities.Data
@@ -57,6 +59,8 @@ namespace ioi.Entities.Data
         [NotMapped]
         public TemporaryState Temp { get; set; } = new();
 
+        public Dictionary<string, Texture2DAtlas> Tilesets { get; internal set; } = new();
+
         public void Log(string message)
         {
             OnLog?.Invoke(message);
@@ -97,6 +101,11 @@ namespace ioi.Entities.Data
                 if (prayerAbil.AbilityRank.Value >= 3)
                     priest.Creature.IsPrayerAvailable = true;
             }
+        }
+
+        public void Dispose()
+        {
+            Tilesets.Clear();
         }
     }
 }

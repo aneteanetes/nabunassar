@@ -1,4 +1,7 @@
-﻿using ioi.Widgets.Base;
+﻿using ioi.Monogame.Settings;
+using ioi.Systems.Roguelike.Controllings;
+using ioi.Widgets.Base;
+using MonoGame.Extended.Tiled;
 using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
@@ -22,23 +25,26 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                 Height = 200
             };
 
+            var counter = 1;
 
             for (int i = 0; i < 4; i++)
             {
-                var abil = new AbilityIcon(Game, i);
+                var abil = new AbilityIcon(Game, counter);
                 grid.Widgets.Add(abil);
                 Grid.SetColumn(abil, i);
                 Grid.SetRow(abil, 0);
                 abilpanels.Add(abil);
+                counter++;
             }
 
             for (int i = 0; i < 4; i++)
             {
-                var abil = new AbilityIcon(Game, i, false);
+                var abil = new AbilityIcon(Game, counter, false);
                 grid.Widgets.Add(abil);
                 Grid.SetColumn(abil, i);
                 Grid.SetRow(abil, 1);
                 abilpanels.Add(abil);
+                counter++;
             }
 
             return grid;
@@ -71,14 +77,14 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             private int _idx;
             private Image image;
 
-            public AbilityIcon(GameHost game, int i, bool isSkill=true)
+            public AbilityIcon(GameHost game, int counter, bool isSkill=true)
             {
                 _isSkill = isSkill;
                 Game = game;
                 Width = WidthMax;
                 Height = HeightMax;
 
-                _idx = i+1;
+                _idx = counter;
 
                 btn = new Panel()
                 {
@@ -97,6 +103,17 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
                 {
                     VerticalAlignment= VerticalAlignment.Center,
                     HorizontalAlignment= HorizontalAlignment.Center,
+                    Height=((int)Math.Round(Game.CellSize.Y*1.5)),
+                    Width=((int)Math.Round(Game.CellSize.X * 1.5))
+                });
+
+                btn.Widgets.Add(controlimg = new Image()
+                {
+                    VerticalAlignment = VerticalAlignment.Top,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Height = 32,
+                    Width = 32,
+                    Color = Color.DarkGray//"#a7711e".AsColor()
                 });
 
                 this.Widgets.Add(btn);
@@ -131,6 +148,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
             string prevTileset = "";
             int prevTileid = 0;
+            private Image controlimg;
 
             public void Update(GameTime gameTime)
             {
@@ -157,8 +175,44 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
 
                         prevTileset = tileset;
                         prevTileid = tileId;
+
+                        var controls = Game.World.PlayerControlSystem.GetControls();
+                        var controlrender = GetControlImage(controls, _idx);
+                        if (controlrender != null)
+                        {
+                            controlimg.Renderable = controlrender;
+                        }
                     }
                 }
+            }
+
+            private TextureRegion GetControlImage(ControlScheme scheme, int idx)
+            {
+                ControlSchemeKey keyScheme = null;
+
+                if (idx == 1)
+                {
+                    keyScheme = scheme.Ability1;
+                }
+                if (idx == 2)
+                {
+                    keyScheme = scheme.Ability2;
+                }
+                if (idx == 3)
+                {
+                    keyScheme = scheme.Ability3;
+                }
+                if (idx == 4)
+                {
+                    keyScheme = scheme.Ability4;
+                }
+
+                if (keyScheme == null)
+                    return null;
+
+                var renderable = keyScheme.GetRegion(Game).ToMyraRegion();
+
+                return renderable;
             }
         }
     }

@@ -1,10 +1,8 @@
-﻿using ioi.Entities.Data;
-using ioi.Entities.Game;
+﻿using ioi.Entities.Game;
 using ioi.Screens;
 using ioi.Screens.Game;
 using ioi.Shaders.PostProceessing;
 using ioi.Struct;
-using ioi.Systems;
 using ioi.Systems.Roguelike;
 using ioi.Tiled.Map;
 using ioi.Widgets.Views.IconButtons;
@@ -12,7 +10,6 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame;
 using MonoGame.Extended.Graphics;
 using MonoGame.Extended.Input;
-using MonoGame.Extended.Shapes;
 using System.Collections;
 
 namespace ioi
@@ -89,9 +86,10 @@ namespace ioi
                 SpawnSystem = new SpawnSystem(Game),
                 PlayerControlSystem = new PlayerControlSystem(Game),
                 LogSystem = new LogSystem(Game),
-                BorderLayersSystem = new BorderLayersSystem(Game),
+                BorderSystem = new BorderSystem(Game),
                 CombatSystem = new CombatSystem(Game),
                 LoadingSystem= new LoadingSystem(Game),
+                ItemRandomSystem = new ItemRandomSystem(Game),
             };
 
             Game.Lua.Globals["world"] = Game.World;

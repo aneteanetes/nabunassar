@@ -19,6 +19,8 @@ namespace ioi.Tiled.Map
 
         public string image { get; set; }
 
+        public int spacing { get; set; }
+
         /// <summary>
         /// Тайлы получают свой id по рассчёту ширины, высоты и размера
         /// </summary>
@@ -84,6 +86,7 @@ namespace ioi.Tiled.Map
         }
 
         private List<int> _tileIndexes;
+
         public int GetAtlasId(int gid)
         {
             if (_tileIndexes == null)

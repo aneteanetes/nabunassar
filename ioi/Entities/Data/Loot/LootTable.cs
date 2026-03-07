@@ -21,13 +21,13 @@ namespace ioi.Entities.Data.Loot
 
             foreach (var row in Rows)
             {
-                if (row.Type == LootChance.Guaranteed)
+                if (row.Type == LootChance.guarant)
                 {
                     AddItem(row);
                     continue;
                 }
 
-                if (row.Type == LootChance.Percent)
+                if (row.Type == LootChance.percent)
                 {
                     var isRolled = game.Random.Chance(row.Value);
                     if (isRolled)

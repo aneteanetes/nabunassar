@@ -1,11 +1,8 @@
-﻿using FontStashSharp.Interfaces;
-using FontStashSharp.RichText;
+﻿using FontStashSharp.RichText;
 using Geranium.Reflection;
 using ioi.Scripting;
-using MonoGame.Extended.ECS;
+using MonoGame.Extended.Graphics;
 using MoonSharp.Interpreter;
-using SharpFont;
-using static Assimp.Metadata;
 
 namespace ioi.Components
 {
@@ -245,6 +242,14 @@ namespace ioi.Components
         public void Heal(int heal, GameEntity healer = null)
         {
             this.Func("applyheal", heal, healer, null);
+        }
+
+        public Texture2DRegion GetTilesetRegion()
+        {
+            var tileset = this["tileset"].String;
+            var tileId = ((int)this["tileid"].Number);
+
+            return _script.Game.GameState.Tilesets[tileset].GetRegion(tileId);
         }
 
         public void Destroy()

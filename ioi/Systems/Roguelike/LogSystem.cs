@@ -18,12 +18,12 @@ namespace ioi.Systems.Roguelike
 
         public void Log(DrawText text)
         {
-            Widget.SetText(text);
+            Widget?.SetText(text);
         }
 
         public void Log(string text)
         {
-            Widget.SetText(DrawText.Create(text));
+            Widget?.SetText(DrawText.Create(text));
         }
 
         public void Update(GameTime gameTime)

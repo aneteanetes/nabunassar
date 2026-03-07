@@ -52,6 +52,11 @@
         maxdmg=1
     },
 
+	rarity='poor', -- 0-7, 8,9,10 - special
+	seed=0,
+    loottablename=nil,
+    loottable=nil,
+
     mods={},
 
     abilities = {

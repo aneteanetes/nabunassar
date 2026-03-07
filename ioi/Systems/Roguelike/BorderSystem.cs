@@ -7,7 +7,7 @@ using System.Collections;
 namespace ioi.Systems.Roguelike
 {
     [MoonSharpUserData]
-    internal class BorderLayersSystem
+    internal class BorderSystem
     {
         public GameHost Game { get; }
 
@@ -16,7 +16,7 @@ namespace ioi.Systems.Roguelike
         private List<PolyTile> interfaceSprites;
         public Effect CelshadingGlobal { get; private set; }
 
-        public BorderLayersSystem(GameHost game)
+        public BorderSystem(GameHost game)
         {
             Game = game;
         }
@@ -42,6 +42,7 @@ namespace ioi.Systems.Roguelike
                 var texture = Game.Content.Load<Texture2D>(tileset.image);
                 var _atlas = Texture2DAtlas.Create(tileset.name, texture, tileset.tilewidth, tileset.tileheight);
                 tileset.TextureAtlas = _atlas;
+                Game.GameState.Tilesets[tileset.name] = _atlas;
             }
 
             var gray = Color.Wheat;
