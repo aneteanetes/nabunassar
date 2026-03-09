@@ -4,16 +4,12 @@ using ioi.Entities.Struct;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 
-namespace ioi.Widgets.UserInterfaces.Roguelike.Misc
+namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 {
-    internal class ItemRow : HorizontalStackPanel
+    internal class ItemRow : ObjectInfoRow
     {
-        public GameHost Game { get; }
-
-        public ItemRow(GameHost game, GameEntity entity, DynamicSpriteFont font)
+        public ItemRow(InfoWidget infoWidget, GameHost game, GameEntity entity, DynamicSpriteFont font) : base(infoWidget,game, entity, font)
         {
-            Game = game;
-
             var strings = Game.Strings["Roguelike"];
             var goldenrod = new SolidBrush(Color.Goldenrod);
             var imgH = ((int)Math.Round(game.CellSize.Y * 1.5));
@@ -40,7 +36,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.Misc
                 HorizontalAlignment = HorizontalAlignment.Center
             };
             iconContainer.Widgets.Add(icon);
-            
+
 
             this.Widgets.Add(iconContainer);
 
@@ -52,14 +48,14 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.Misc
             {
                 Text = entity.GetNameColored(),
                 TextColor = entity.Color("color"),
-                Font = font
+                Font = Font
             };
             vbox.Widgets.Add(name);
 
             var statslabel = new Label()
             {
                 TextColor = Color.DarkGray,
-                Font = font,
+                Font = Font,
             };
 
             DrawText statsText = DrawText.Create(" ");

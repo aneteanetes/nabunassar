@@ -34,25 +34,6 @@ namespace ioi.Systems.Roguelike
         {
             consolas = Game.Content.LoadFont(Fonts.Consolas);
 
-            headerPanel = new Panel()
-            {
-                Width = 964,
-                Height = 52,
-                Left = 478,
-                Top = 24,
-                Visible = false
-            };
-            combatHeader = new Label()
-            {
-                TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Font = consolas.GetFont(26),
-                TextColor = Color.Gray,
-            };
-            headerPanel.Widgets.Add(combatHeader);
-            Game.MyraDesktopIngame.Widgets.Add(headerPanel);
-
             log = new CombatLogWidget(Game)
             {
                 Visible = false
@@ -94,6 +75,7 @@ namespace ioi.Systems.Roguelike
 
         public void StartCombat(GameEntity enemy)
         {
+            (headerPanel, combatHeader) = Game.World.BorderSystem.AddCenterHeader();
             Game.World.MapSystem.Pause();
             IsInCombat = true;
 
@@ -118,7 +100,7 @@ namespace ioi.Systems.Roguelike
                 Game.World.BorderSystem["Map"] = false;
                 Game.World.BorderSystem["LeftPanel"] = true;
                 Game.World.BorderSystem["Center"] = true;
-                Game.World.PlayerControlSystem.ControlsCombatPreset();
+                Game.World.PlayerControlSystem.PresetCombat();
                 _round = 0;
                 yield return 0;
             }
@@ -164,7 +146,7 @@ namespace ioi.Systems.Roguelike
 
             IEnumerator afterLoad()
             {
-                Game.World.PlayerControlSystem.ControlsMainScreenPreset();
+                Game.World.PlayerControlSystem.PresetMap();
                 Game.World.PlayerControlSystem.Enable();
                 IsInCombat = false;
                 Game.World.MapSystem.Resume();

@@ -244,5 +244,10 @@ namespace ioi.Components
             TargetPosition = Position;
             MoveStopRequest = true;
         }
+
+        internal void RemoveFromMap()
+        {
+            Game.GameState.Map.Remove(this);
+        }
     }
 }

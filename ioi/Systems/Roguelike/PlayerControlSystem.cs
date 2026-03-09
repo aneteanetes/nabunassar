@@ -5,6 +5,8 @@ using ioi.Monogame.Settings;
 using ioi.Struct;
 using ioi.Systems.Roguelike.Controllings;
 using ioi.Widgets.UserInterfaces.Roguelike;
+using ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo;
+using ioi.Widgets.UserInterfaces.Roguelike.InfoList;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Input;
@@ -17,6 +19,8 @@ namespace ioi.Systems.Roguelike
     [MoonSharpUserData]
     internal class PlayerControlSystem : IDisposable
     {
+        private InfoWidget infoList;
+
         public GameHost Game { get; private set; }
 
         public Mode Mode { get; set; }
@@ -45,25 +49,71 @@ namespace ioi.Systems.Roguelike
                 case Mode.Info:
                     UpdateInfo(gameTime);
                     break;
+                case Mode.Inventory:
+                    UpdateInventory(gameTime);
+                    break;
                 default:
                     break;
             }
         }
 
-        public void UpdateInfo(GameTime gameTime)
+        public void UpdateInventory(GameTime gameTime)
         {
+            var playerMap = Game.GameState.Player;
+            var player = playerMap.Entity;
+
             var controls = GetControls();
             if (controls.Back.WasPressed())
             {
-                MapMode();
-                CloseInfo();
+                CloseInventory();
             }
         }
 
-        private void CloseInfo()
+        public void UpdateInfo(GameTime gameTime)
         {
-            Game.World.BorderSystem["LeftPanel"] = false;
-            Game.RemoveDesktopWidgets<InfoWidget>(0, Game.MyraDesktopIngame);
+            var playerMap = Game.GameState.Player;
+            var player = playerMap.Entity;
+
+            var controls = GetControls();
+            if (controls.Back.WasPressed())
+            {
+                CloseInfoList();
+                MapMode();
+            }
+
+            if (controls.ListUp.WasPressed())
+            {
+                infoList.Up();
+            }
+
+            if (controls.ListDown.WasPressed())
+            {
+                infoList.Down();
+            }
+
+            if (controls.ListTakeAll.WasPressed())
+            {
+                var coords = Game.GameState.Player.Coords;
+                var cell = Game.GameState.Map[coords];
+
+                var itemMaps = cell.Objects
+                    .Where(obj => (obj.Entity?["type"]?.String ?? "") == "item")
+                    .ToArray();
+
+                foreach (var itemMap in itemMaps)
+                {
+                    itemMap.RemoveFromMap();
+                    player.TakeItems(itemMap.Entity);
+                }
+
+                infoList.Refresh(cell.Objects);
+
+                if (infoList.IsEmpty())
+                {
+                    CloseInfoList();
+                    MapMode();
+                }
+            }
         }
 
         public void UpdateCombat(GameTime gameTime)
@@ -209,11 +259,16 @@ namespace ioi.Systems.Roguelike
 
             if (controls.Info.WasPressed())
             {
-                bool flowControl = OpenCellInfo(player);
-                if (!flowControl)
+                bool isOpened = OpenCellInfo(player);
+                if (isOpened)
                 {
                     return;
                 }
+            }
+
+            if (controls.Inventory.WasPressed())
+            {
+                InventoryMode();
             }
 
             if (!player.IsMoving)
@@ -228,11 +283,20 @@ namespace ioi.Systems.Roguelike
             {
                 this.InfoMode();
                 Game.World.BorderSystem["LeftPanel"] = true;
-                Game.AddDesktopWidget(new InfoWidget(Game, objs), Game.MyraDesktopIngame);
-                return false;
+                infoList = Game.AddDesktopWidget(new InfoWidget(Game, objs), Game.MyraDesktopIngame);
+
+                PresetInfoList();
+
+                return true;
             }
 
-            return true;
+            return false;
+        }
+
+        private void CloseInfoList()
+        {
+            Game.World.BorderSystem["LeftPanel"] = false;
+            Game.RemoveDesktopWidgets<InfoWidget>(0, Game.MyraDesktopIngame);
         }
 
         private void MouseMoving(ObjectMap player, ControlScheme controls)
@@ -371,7 +435,7 @@ namespace ioi.Systems.Roguelike
             sb.End();
         }
 
-        public void ControlsMainScreenPreset()
+        public void PresetMap()
         {
             ControlsWidget.Reset();
 
@@ -391,7 +455,7 @@ namespace ioi.Systems.Roguelike
             ControlsWidget.BindButtonKey(10, str["camera"], null, controls.Camera);
         }
 
-        public void ControlsCombatPreset()
+        public void PresetCombat()
         {
             ControlsWidget.Reset();
 
@@ -428,6 +492,44 @@ namespace ioi.Systems.Roguelike
             ControlsWidget.BindButtonKey(8, str["inventory"], null, controls.Inventory);
             ControlsWidget.BindButtonKey(9, str["dowait"], null, controls.Waiting);
             ControlsWidget.BindButtonKey(10, str["info"], null, controls.Info);
+        }
+
+        public void PresetInfoList()
+        {
+            ControlsWidget.Reset();
+
+            var controls = GetControls();
+
+            var str = Game.Strings["Roguelike"];
+
+            ControlsWidget.BindButtonKey(1, str["info"], null, controls.Info);
+            ControlsWidget.BindButtonKey(2, str["up"], null, controls.ListUp);
+            ControlsWidget.BindButtonKey(3, str["down"], null, controls.ListDown);
+            ControlsWidget.BindButtonKey(4, str["options"], "/", controls.ListOptions, controls.MouseRightButton);
+            ControlsWidget.BindButtonKey(5, str["close"], null, controls.CloseInfoList);
+
+            ControlsWidget.BindButtonKey(6, str["doattack"], null, controls.Attack);
+            ControlsWidget.BindButtonKey(7, $"{str["usage"]}", "/", controls.ListAction, controls.MouseLeftButton);
+            ControlsWidget.BindButtonKey(8, str["takeall"], null, controls.ListTakeAll);
+        }
+
+        private void PresetInventory()
+        {
+            ControlsWidget.Reset();
+
+            var controls = GetControls();
+
+            var str = Game.Strings["Roguelike"];
+
+            ControlsWidget.BindButtonKey(1, str["left"], null, controls.MenuLB);
+            ControlsWidget.BindButtonKey(2, str["right"], null, controls.MenuRB);
+            //ControlsWidget.BindButtonKey(3, str["down"], null, controls.ListDown);
+            //ControlsWidget.BindButtonKey(4, str["options"], "/", controls.ListOptions, controls.MouseRightButton);
+            ControlsWidget.BindButtonKey(5, str["close"], null, controls.CloseInfoList);
+
+            //ControlsWidget.BindButtonKey(6, str["doattack"], null, controls.Attack);
+            //ControlsWidget.BindButtonKey(7, $"{str["usage"]}", "/", controls.ListAction, controls.MouseLeftButton);
+            //ControlsWidget.BindButtonKey(8, str["takeall"], null, controls.ListTakeAll);
         }
 
         private void UpdateAbilityPreset()
@@ -474,17 +576,47 @@ namespace ioi.Systems.Roguelike
         internal void CombatMode()
         {
             Mode = Mode.Combat;
-            CloseInfo();
+            CloseInfoList();
         }
 
         internal void MapMode()
         {
             Mode = Mode.Map;
+            this.PresetMap();
         }
 
         internal void InfoMode()
         {
             Mode = Mode.Info;
+        }
+
+        private void InventoryMode()
+        {
+            Game.World.MapSystem.Pause();
+            Mode = Mode.Inventory;
+            PresetInventory();
+
+            Game.World.BorderSystem["Map"] = false;
+            Game.World.BorderSystem["LeftPanel"] = true;
+            Game.World.BorderSystem["Center"] = true;
+
+            Game.AddDesktopWidget(new InventoryWidget(Game, Game.GameState.Player.Entity), Game.MyraDesktopIngame);
+
+            var (header,label) = Game.World.BorderSystem.AddCenterHeader("Инвентарь");
+            header.Visible = true;
+        }
+
+        public void CloseInventory()
+        {
+            Game.RemoveDesktopWidgets<InventoryWidget>(0, Game.MyraDesktopIngame);
+
+            Game.World.BorderSystem.RemoveCenterHeader();
+            Game.World.BorderSystem["LeftPanel"] = false;
+            Game.World.BorderSystem["Center"] = false;
+
+            Game.World.MapSystem.Resume();
+            Game.World.BorderSystem["Map"] = true;
+            Game.World.PlayerControlSystem.MapMode();
         }
 
         internal void Disable()

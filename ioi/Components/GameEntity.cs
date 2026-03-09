@@ -1,5 +1,6 @@
 ﻿using FontStashSharp.RichText;
 using Geranium.Reflection;
+using ioi.Entities.Struct;
 using ioi.Scripting;
 using MonoGame.Extended.Graphics;
 using MoonSharp.Interpreter;
@@ -273,6 +274,37 @@ namespace ioi.Components
         internal void Unconscious()
         {
             IsUnconscious = true;
+        }
+
+        internal void TakeItems(params GameEntity[] entities)
+        {
+            foreach (var item in entities)
+            {
+                TakeItem(item);
+            }
+        }
+
+        private void TakeItem(GameEntity item)
+        {
+            var data = UserData.Create(item);
+            this["inventory"].Table.Append(data);
+
+            var game = _script.Game;
+            var world = game.World;
+
+            if (this == game.GameState.Player.Entity)
+            {
+                var str = game.Strings["Roguelike"];
+
+                var text = DrawText.Create(this.GetNameColored())
+                    .AppendSpace().ResetColor()
+                    .Append(str["getting"])
+                    .AppendSpace()
+                    .Append(item.GetNameColored())
+                    .ResetColor().Append("!");
+
+                world.LogSystem.Log(text);
+            }
         }
 
         /// <summary>

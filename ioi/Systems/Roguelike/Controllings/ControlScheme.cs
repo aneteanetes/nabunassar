@@ -7,6 +7,7 @@ namespace ioi.Systems.Roguelike.Controllings
 {
     public class ControlScheme
     {
+
         public ControlSchema Schema { get; internal set; }
 
         public KeyToTilesetMap TilesetMap { get; set; }
@@ -88,6 +89,16 @@ namespace ioi.Systems.Roguelike.Controllings
             scheme.CameraDown = scheme.Bind(Keys.Down);
             scheme.CameraLeft = scheme.Bind(Keys.Left);
             scheme.CameraRight = scheme.Bind(Keys.Right);
+            scheme.CloseInfoList = scheme.Bind(Keys.Escape);
+            scheme.ListUp = scheme.Bind(Keys.W);
+            scheme.ListDown = scheme.Bind(Keys.S);
+            scheme.ListOptions = scheme.Bind(Keys.D);
+            scheme.ListAction = scheme.Bind(Keys.E);
+            scheme.ListTakeAll = scheme.Bind(Keys.F);
+            scheme.MenuLB = scheme.Bind(Keys.Q);
+            scheme.MenuRB = scheme.Bind(Keys.E);
+            scheme.MenuLT = scheme.Bind(Keys.Z);
+            scheme.MenuRT = scheme.Bind(Keys.X);
 
             return scheme;
         }
@@ -190,5 +201,24 @@ namespace ioi.Systems.Roguelike.Controllings
 
         public ControlSchemeKey Flee { get; set; }
 
+        public ControlSchemeKey CloseInfoList { get; set; }
+
+        public ControlSchemeKey ListUp { get; internal set; }
+
+        public ControlSchemeKey ListDown { get; internal set; }
+
+        public ControlSchemeKey ListOptions { get; internal set; }
+
+        public ControlSchemeKey ListAction { get; internal set; }
+
+        public ControlSchemeKey ListTakeAll { get; internal set; }
+
+        public ControlSchemeKey MenuLB { get; internal set; }
+
+        public ControlSchemeKey MenuRB { get; internal set; }
+
+        public ControlSchemeKey MenuLT { get; internal set; }
+
+        public ControlSchemeKey MenuRT { get; internal set; }
     }
 }

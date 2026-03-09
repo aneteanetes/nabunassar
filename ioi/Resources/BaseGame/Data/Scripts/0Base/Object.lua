@@ -59,6 +59,8 @@
 
     mods={},
 
+    inventory={},
+
     abilities = {
     },
 

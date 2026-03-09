@@ -1,7 +1,9 @@
-﻿using ioi.Tiled.Map;
+﻿using FontStashSharp;
+using ioi.Tiled.Map;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 using MoonSharp.Interpreter;
+using Myra.Graphics2D.UI;
 using System.Collections;
 
 namespace ioi.Systems.Roguelike
@@ -14,6 +16,10 @@ namespace ioi.Systems.Roguelike
         private Dictionary<string, Layer> layers = new();
 
         private List<PolyTile> interfaceSprites;
+        private FontSystem consolas;
+        private Panel headerPanel;
+        private Label headerLabel;
+
         public Effect CelshadingGlobal { get; private set; }
 
         public BorderSystem(GameHost game)
@@ -31,6 +37,7 @@ namespace ioi.Systems.Roguelike
         {
             CelshadingGlobal = Game.Content.Load<Effect>("Assets/Shaders/CelshadingGlobal.fx");
             var @interface = Game.Content.Load<TiledMap>("Assets/Maps/interface2.tmx");
+            consolas = Game.Content.LoadFont(Fonts.Consolas);
             LoadTiled(@interface);
             yield return 0;
         }
@@ -118,6 +125,41 @@ namespace ioi.Systems.Roguelike
             {
                 sprite.Sprite.Draw(sb, sprite.Position /*- offset*/, 0, Vector2.One);
             }
+        }
+
+        public (Panel,Label) AddCenterHeader(string text=null)
+        {
+            headerPanel = new Panel()
+            {
+                Width = 964,
+                Height = 52,
+                Left = 478,
+                Top = 24,
+                Visible = false
+            };
+            headerLabel = new Label()
+            {
+                TextAlign = FontStashSharp.RichText.TextHorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Font = consolas.GetFont(26),
+                TextColor = Color.Goldenrod,
+                Text = text
+            };
+            headerPanel.Widgets.Add(headerLabel);
+
+            Game.MyraDesktopIngame.Widgets.Add(headerPanel);
+
+            return (headerPanel,headerLabel);
+        }
+
+        public void RemoveCenterHeader()
+        {
+            Game.MyraDesktopIngame.Widgets.Remove(headerPanel);
+            Game.MyraDesktopIngame.Widgets.Remove(headerLabel);
+
+            headerPanel = null;
+            headerLabel = null;
         }
 
         private class Layer

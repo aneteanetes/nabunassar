@@ -49,6 +49,8 @@ namespace ioi.Widgets.UserInterfaces.Roguelike
             _label.TextColor = Color.DarkGray;
             _alpha = 1.0f;
             _sticked = false;
+
+            this.CanUpdateReset(objlock);
         }
 
         public override void Update(GameTime gameTime)

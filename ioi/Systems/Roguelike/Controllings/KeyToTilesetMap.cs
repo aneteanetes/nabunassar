@@ -98,6 +98,9 @@ namespace ioi.Systems.Roguelike.Controllings
             map.Add(Keys.Left, ktile, 220);
             map.Add(Keys.Right, ktile, 223);
 
+            map.Add(Keys.Z, ktile, 47);
+            map.Add(Keys.X, ktile, 43);
+
             return map;
         }
 

@@ -59,5 +59,18 @@ namespace ioi
             updatesCache[obj] = 0;
             return true;
         }
+
+        public static void CanUpdateReset(this object obj, object @lock=null)
+        {
+            if (@lock != default)
+                obj = @lock;
+
+            if (!updatesCache.ContainsKey(obj))
+            {
+                updatesCache.Add(obj, 0);
+            }
+
+            updatesCache[obj] = 0;
+        }
     }
 }

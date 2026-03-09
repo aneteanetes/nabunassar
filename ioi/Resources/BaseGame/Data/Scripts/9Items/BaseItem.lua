@@ -11,6 +11,8 @@ Templates.items.BaseItem = {
 	type="item",
 
 	color = {0, 112, 221},
+
+	itemlevel=0,
 	--[[
 	Серый (Хлам): #9d9d9d
 Белый (Обычное): #ffffff
@@ -23,7 +25,6 @@ Templates.items.BaseItem = {
 	--]]
 
 	fulfill = function (newitem,obj)
-		print(newitem.seed)
 		local rng = world.ItemRandomSystem.GetGenerator(newitem.seed);
 
 		for k,v in pairs(newitem.itemstats) do

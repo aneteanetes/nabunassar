@@ -21,6 +21,11 @@ namespace ioi.Entities.Map
 
         public int Height { get; }
 
+        public RogueMapCell this[Point coords]
+        {
+            get => ObjectMap[coords.X, coords.Y];
+        }
+
         public List<Area> Areas { get; set; } = new();
 
         public List<Area> Regions { get; set; } = new();

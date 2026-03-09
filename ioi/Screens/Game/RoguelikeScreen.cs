@@ -32,7 +32,7 @@ namespace ioi.Screens
             Func<GameEntity> fetcher = () => Game.GameState.Player.Entity;
             Game.AddDesktopWidget(new EntityWidget(Game,fetcher, Struct.Side.Right),Game.MyraDesktopIngame);
             Game.World.PlayerControlSystem.ControlsWidget = Game.AddDesktopWidget(new ControlsWidget(Game),Game.MyraDesktopIngame);
-            Game.World.PlayerControlSystem.ControlsMainScreenPreset();
+            Game.World.PlayerControlSystem.PresetMap();
 
             Game.AddDesktopWidget(new AbilityMainWidget(Game),Game.MyraDesktopIngame);
 

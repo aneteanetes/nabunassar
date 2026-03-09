@@ -4,6 +4,7 @@
     {
         Map,
         Combat,
-        Info
+        Info,
+        Inventory
     }
 }
