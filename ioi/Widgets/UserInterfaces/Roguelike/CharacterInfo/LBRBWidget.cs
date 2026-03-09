@@ -1,4 +1,6 @@
 ﻿using Geranium.Reflection;
+using ioi.Entities.Data.Items;
+using Myra.Graphics2D.TextureAtlases;
 using Myra.Graphics2D.UI;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
@@ -24,8 +26,13 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
 
             var size = game.CellSize.Scale(1.5);
 
+            var region = Game.GameState.Tilesets["Consolas"].GetRegion(603).ToMyraRegion();
+            region.Color = Color.Goldenrod;
+            this.Border = region;
+            this.BorderThickness = new Myra.Graphics2D.Thickness(0, 0, 0, 34);
+
             this.Width = width;
-            this.Height = size.Y;
+            this.Height = size.Y+size.Y;
 
             gold = new SolidBrush(Color.Goldenrod);
             red =new SolidBrush(Color.IndianRed);

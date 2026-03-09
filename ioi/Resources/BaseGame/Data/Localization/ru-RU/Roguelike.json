@@ -65,6 +65,10 @@
   "categories": "Категории",
   "left": "Влево",
   "right": "Вправо",
+  "equiped": "Экипировано",
+  "gearscore": "Уровень предметов",
+  "skillpoints": "Очки навыков",
+  "profpoints": "Очки профессии",
 
   //cut stats
   "ap_cut": "AP",

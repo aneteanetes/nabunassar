@@ -1,5 +1,7 @@
 ﻿using ioi.Components;
+using ioi.Entities.Struct;
 using ioi.Widgets.Base;
+using ioi.Widgets.UserInterfaces.Roguelike.InfoList;
 using Myra.Graphics2D.UI;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
@@ -7,6 +9,9 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
     internal class InventoryWidget : ScreenWidget
     {
         private LBRBWidget sort;
+        private ObjectList inventoryList;
+        private EquipmentWidget equip;
+        private ObjectList equipList;
 
         public GameEntity Entity { get; }
 
@@ -47,6 +52,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
             panel.Widgets.Add(scroll);
 
 
+
             return panel;
         }
 
@@ -59,11 +65,34 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
         {
             widget.Left = 480;
             widget.Top = 94;
+
+            var strings = Game.Strings["Roguelike"];
+            var equiped = Game.GameState.Player.Entity.GetEquiped();
+
+            equipList = new ObjectList(Game, equiped, 700,422, DrawText.Create($"{strings["equiped"]}:", Color.White));
+            Game.AddDesktopWidget(equipList, Game.MyraDesktopIngame);
+
+            var inv = Game.GameState.Player.Entity.GetInventory();
+            inventoryList = new ObjectList(Game, inv, 655,960, DrawText.Create(""));
+            inventoryList.Position = new Vector2(widget.Left, widget.Top + Game.CellSize.Y * 2);
+            Game.AddDesktopWidget(inventoryList, Game.MyraDesktopIngame);
+            inventoryList.UIWidget.Margin = new Myra.Graphics2D.Thickness(0, Game.CellSize.Y, 0, 0);
+
+            equip = new EquipmentWidget(Game);
+            Game.AddDesktopWidget(equip, Game.MyraDesktopIngame);
         }
 
         public override void Update(GameTime gameTime)
         {
             sort.Update(gameTime);
+        }
+
+        public override void Dispose()
+        {
+            equip?.Dispose();
+            equipList?.Dispose();
+            inventoryList?.Dispose();
+            base.Dispose();
         }
     }
 }

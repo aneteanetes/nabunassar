@@ -138,11 +138,14 @@ namespace ioi
             if (widget == null)
                 return;
 
-            if (desktop == null)
-                desktop = Game.MyraDesktop;
-
             if (widget == default && !widget.IsRemoved)
                 return;
+
+            if (desktop == null)
+            {
+                desktop = Game.MyraDesktop;
+                RemoveDesktopWidget(widget, Game.MyraDesktopIngame);
+            }
 
             var uiWidget = widget.GetWidgetReference();
 

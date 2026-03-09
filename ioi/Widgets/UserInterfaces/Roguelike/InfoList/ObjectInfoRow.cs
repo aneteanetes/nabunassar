@@ -6,7 +6,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 {
     internal class ObjectInfoRow : HorizontalStackPanel
     {
-        public InfoWidget Info { get; }
+        public ObjectList Info { get; }
 
         public GameHost Game { get; }
 
@@ -14,7 +14,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 
         public DynamicSpriteFont Font { get; }
 
-        public ObjectInfoRow(InfoWidget info, GameHost game, GameEntity entity, DynamicSpriteFont font)
+        public ObjectInfoRow(ObjectList info, GameHost game, GameEntity entity, DynamicSpriteFont font)
         {
             Info = info;
             Game = game;

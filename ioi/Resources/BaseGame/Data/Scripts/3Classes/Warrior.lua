@@ -43,8 +43,8 @@ Templates.Classes.Warrior = {
         obj:add("basemindmg",1);
         obj:add("basemaxdmg",3);
         obj:add("basemhp",3);
-        obj:add("spoints",1);
-        obj:add("ppoints",1);
+        obj:add("sp",1);
+        obj:add("pp",1);
 
         obj:applyheal(obj.basemhp);
 

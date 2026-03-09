@@ -36,9 +36,9 @@
     maxdmg=1,
 
     -- skillpoints
-    spoints=0,
+    sp=0,
     -- profpoints
-    ppoints=0,
+    pp=0,
 
     stats_upd = {
         mana=0,
@@ -59,7 +59,10 @@
 
     mods={},
 
+    --items
     inventory={},
+    equiped={},
+    gs=0, --gear score
 
     abilities = {
     },

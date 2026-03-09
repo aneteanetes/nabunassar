@@ -19,7 +19,7 @@ namespace ioi.Systems.Roguelike
     [MoonSharpUserData]
     internal class PlayerControlSystem : IDisposable
     {
-        private InfoWidget infoList;
+        private ObjectList infoList;
 
         public GameHost Game { get; private set; }
 
@@ -106,7 +106,7 @@ namespace ioi.Systems.Roguelike
                     player.TakeItems(itemMap.Entity);
                 }
 
-                infoList.Refresh(cell.Objects);
+                infoList.Refresh(cell.Objects.Select(x=>x.Entity));
 
                 if (infoList.IsEmpty())
                 {
@@ -278,12 +278,12 @@ namespace ioi.Systems.Roguelike
         private bool OpenCellInfo(ObjectMap obj)
         {
             var cell = Game.World.MapSystem.GetCell(obj.Coords.X, obj.Coords.Y);
-            var objs = cell.Objects.Except([obj]).ToArray();
+            var objs = cell.Objects.Except([obj]).Select(x=>x.Entity).ToArray();
             if (objs.Length > 0)
             {
                 this.InfoMode();
                 Game.World.BorderSystem["LeftPanel"] = true;
-                infoList = Game.AddDesktopWidget(new InfoWidget(Game, objs), Game.MyraDesktopIngame);
+                infoList = Game.AddDesktopWidget(new ObjectList(Game, objs), Game.MyraDesktopIngame);
 
                 PresetInfoList();
 
@@ -296,7 +296,7 @@ namespace ioi.Systems.Roguelike
         private void CloseInfoList()
         {
             Game.World.BorderSystem["LeftPanel"] = false;
-            Game.RemoveDesktopWidgets<InfoWidget>(0, Game.MyraDesktopIngame);
+            Game.RemoveDesktopWidgets<ObjectList>(0, Game.MyraDesktopIngame);
         }
 
         private void MouseMoving(ObjectMap player, ControlScheme controls)

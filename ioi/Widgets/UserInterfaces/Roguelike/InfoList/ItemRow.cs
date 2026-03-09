@@ -8,7 +8,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 {
     internal class ItemRow : ObjectInfoRow
     {
-        public ItemRow(InfoWidget infoWidget, GameHost game, GameEntity entity, DynamicSpriteFont font) : base(infoWidget,game, entity, font)
+        public ItemRow(ObjectList infoWidget, GameHost game, GameEntity entity, DynamicSpriteFont font) : base(infoWidget,game, entity, font)
         {
             var strings = Game.Strings["Roguelike"];
             var goldenrod = new SolidBrush(Color.Goldenrod);

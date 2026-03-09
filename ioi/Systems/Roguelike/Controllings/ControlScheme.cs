@@ -95,10 +95,10 @@ namespace ioi.Systems.Roguelike.Controllings
             scheme.ListOptions = scheme.Bind(Keys.D);
             scheme.ListAction = scheme.Bind(Keys.E);
             scheme.ListTakeAll = scheme.Bind(Keys.F);
-            scheme.MenuLB = scheme.Bind(Keys.Q);
-            scheme.MenuRB = scheme.Bind(Keys.E);
-            scheme.MenuLT = scheme.Bind(Keys.Z);
-            scheme.MenuRT = scheme.Bind(Keys.X);
+            scheme.MenuLB = scheme.Bind(Keys.A);
+            scheme.MenuRB = scheme.Bind(Keys.D);
+            scheme.MenuLT = scheme.Bind(Keys.Q);
+            scheme.MenuRT = scheme.Bind(Keys.E);
 
             return scheme;
         }

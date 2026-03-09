@@ -1,20 +1,28 @@
 ﻿using FontStashSharp;
+using Geranium.Reflection;
 using ioi.Components;
+using ioi.Entities.Struct;
 using ioi.Widgets.Base;
 using Myra.Graphics2D.UI;
 
 namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 {
-    internal class InfoWidget : ScreenWidget
+    internal class ObjectList : ScreenWidget
     {
         private DynamicSpriteFont consolas;
-        private ObjectMap[] _objects;
+        private DrawText _title;
+        private int _width;
+        private int _height;
+        private GameEntity[] _objects;
         private List<ObjectInfoRow> rows = new();
         private int currentRowIdx = 0;
         private VerticalStackPanel panel;
 
-        public InfoWidget(GameHost game, ObjectMap[] objs) : base(game)
+        public ObjectList(GameHost game, GameEntity[] objs, int height = 800,int width=422, DrawText title = default) : base(game)
         {
+            _title = title;
+            _width = width;
+            _height = height;
             _objects = objs;
             Position = new Vector2(14, 24);
         }
@@ -28,18 +36,25 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
 
         protected override Widget CreateWidget()
         {
+            var scroll = new ScrollViewer()
+            {
+                Width = _width,
+                Height = _height,
+                Background = new SolidBrush(Color.Black)
+            };
             panel = new VerticalStackPanel
             {
-                Width = 422,
-                Height = 800,
-                Background = new SolidBrush(Color.Black)
+                Width = _width,
+                //Height = _height,
+                //Background = new SolidBrush(Color.Black)
             };
 
             Refresh(_objects);
 
             rows.FirstOrDefault()?.Select();
 
-            return panel;
+            scroll.Content = panel;
+            return scroll;
         }
 
         private ObjectInfoRow AddRow(GameEntity gameEntity)
@@ -62,10 +77,6 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
         {
             widget.Left = ((int)Position.X);
             widget.Top = ((int)Position.Y);
-        }
-
-        public override void Dispose()
-        {
         }
 
         public void Up()
@@ -109,7 +120,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
             }
         }
 
-        internal void Refresh(IEnumerable<ObjectMap> objects)
+        internal void Refresh(IEnumerable<GameEntity> objects)
         {
             rows.Clear();
             panel.Widgets.Clear();
@@ -117,22 +128,29 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.InfoList
             var strings = Game.Strings["Roguelike"];
             var largeBottomMargin = 20;
 
-            var title = new Label
+            bool drawTitle = true;
+            if (_title != default && _title.ToString().IsEmpty())
+                drawTitle = false;
+
+            if (drawTitle)
             {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Myra.Graphics2D.Thickness(0, 15, 10, largeBottomMargin),
-                TextColor = Color.Cyan,
-                Text = $"{strings["objects"]}:",
-                Font = consolas
-            };
-            panel.Widgets.Add(title);
+                var title = new Label
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Myra.Graphics2D.Thickness(0, 15, 10, largeBottomMargin),
+                    TextColor = Color.Cyan,
+                    Text = _title == default ? $"{strings["objects"]}:" : _title.ToString(),
+                    Font = consolas
+                };
+                panel.Widgets.Add(title);
+            }
 
             foreach (var obj in objects)
             {
-                if (obj == Game.GameState.Player)
+                if (obj == Game.GameState.Player.Entity)
                     continue;
 
-                panel.Widgets.Add(AddRow(obj.Entity));
+                panel.Widgets.Add(AddRow(obj));
             }
         }
     }

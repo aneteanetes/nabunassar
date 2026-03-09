@@ -4,6 +4,7 @@ using ioi.Entities.Struct;
 using ioi.Scripting;
 using MonoGame.Extended.Graphics;
 using MoonSharp.Interpreter;
+using System.Net.WebSockets;
 
 namespace ioi.Components
 {
@@ -305,6 +306,16 @@ namespace ioi.Components
 
                 world.LogSystem.Log(text);
             }
+        }
+
+        public GameEntity[] GetEquiped()
+        {
+            return this["equiped"].Table.Values.Select(v => v.UserData.Object.As<GameEntity>()).ToArray();
+        }
+
+        public GameEntity[] GetInventory()
+        {
+            return this["inventory"].Table.Values.Select(v => v.UserData.Object.As<GameEntity>()).ToArray();
         }
 
         /// <summary>
