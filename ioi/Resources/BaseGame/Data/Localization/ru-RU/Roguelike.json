@@ -12,6 +12,7 @@
 
   //maps and areas
   "MapMraumir": "Мраумир",
+  //
   "RegionMarket": "Торговый квартал",
   "AreaOldTemple": "Старый храм",
   "AreaGuestMarket": "Рынок иноземцев",
@@ -20,6 +21,15 @@
   "AreaLowerCommerce": "Нижние торговые палаты",
   "AreaSmith": "Кузница",
   "AreaChapel": "Часовня",
+  //
+  "RegionMageQuarter": "Квартал магии",
+  "LearningTunnel": "Зал учеников",
+  "MagePantryArea": "Кладовая реагентов",
+  "MageResidents": "Резиденция верховного мага",
+  "MageSquare": "Площадь магии",
+  "MageMarket": "Магазин волшебных вещей",
+  "MageDarking": "Тёмные закоулки",
+  "MageUnivercity": "Университет магии",
 
   //interface
   "controluse": "Использовать",

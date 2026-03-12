@@ -70,8 +70,12 @@ Templates.loot.table = {
 	generateItem = function (generatorId,obj)
 		local itemEntity = world.SpawnSystem.SpawnEntity('Templates.Base.Object','Templates.items.BaseItem',generatorId)
 		local entity = itemEntity.Data;
-		entity.fulfill(entity,obj);
+		local isFilled = entity.fulfill(entity,obj);
 
-		return itemEntity;
+		if isFilled==false then
+			return nil;
+		else
+			return itemEntity;
+		end
 	end,
 }

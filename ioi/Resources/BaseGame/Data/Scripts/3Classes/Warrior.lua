@@ -53,7 +53,7 @@ Templates.Classes.Warrior = {
 
     afterdmg = function (self,dmg,attacker,ctx)
         if self["rage"] < 100 then
-            ragegained = 5 + self:getAbility(4)["ratelvl"] * self.level-1;
+            local ragegained = 5 + self:getAbility(4)["ratelvl"] * self.level-1;
             self["rage"] = math.clamp(self["rage"]+ragegained,0,100);
             table.insert(ctx.msgs,self:getNameColored().."/cd "..loco("getting").." /c[#ff0000]"..ragegained.." "..loco("rages")..'/cd!');
         end

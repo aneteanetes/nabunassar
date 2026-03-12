@@ -31,7 +31,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
             panel = new VerticalStackPanel
             {
                 Width = 415,
-                Height = 200
+                Height = 150
             };
 
             var strings = Game.Strings["Roguelike"];
@@ -41,7 +41,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
             gearscore = new Label
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Myra.Graphics2D.Thickness(0,15,10,0),
+                Margin = new Myra.Graphics2D.Thickness(0,25,10,0),
                 TextColor = "#b32e2e".AsColor(),
                 Font = consolas,
                 Text = $"{strings["gearscore"]}:"

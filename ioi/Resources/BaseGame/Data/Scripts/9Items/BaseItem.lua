@@ -25,14 +25,17 @@ Templates.items.BaseItem = {
 	--]]
 
 	fulfill = function (newitem,obj)
+		local withstats = false;
 		local rng = world.ItemRandomSystem.GetGenerator(newitem.seed);
 
 		for k,v in pairs(newitem.itemstats) do
 			local val = rng:Next(0,v+1);
 			if val > 0 then
+				withstats = true;
 				newitem[k]=val;
 			end
 		end
 
+		return withstats;
 	end
 }

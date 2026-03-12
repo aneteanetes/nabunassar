@@ -39,7 +39,7 @@ namespace ioi
 
         private bool _screenLoaded = false;
 
-        public RenderTarget2D _backBuffer;
+        public RenderTarget2D _backBuffer { get; set; }
 
         public LocalizedStrings Strings { get; set; }
 

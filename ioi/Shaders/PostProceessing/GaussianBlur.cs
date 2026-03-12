@@ -20,6 +20,7 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
+using ioi.Extensions.Texture2DExtensions;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ioi.Shaders.PostProceessing
@@ -265,8 +266,15 @@ namespace ioi.Shaders.PostProceessing
 
             var result = PerformGaussianBlur(backBuffer, _renderTarget1, _renderTarget2, sb);
 
+            var x = 0;
+            if (x > 0)
+            {
+                backBuffer.SaveAsScreenshot();
+                result.SaveAsScreenshot();
+            }
+
             sb.Begin();
-            sb.Draw(result, Game.MainViewport.Bounds, Color.White);
+            sb.Draw(result,Vector2.Zero, Color.White);
             sb.End();
 
             base.Draw(gameTime,isLast);

@@ -67,9 +67,17 @@ namespace ioi.Shaders.PostProceessing
                 Game.GraphicsDevice.SetRenderTarget(_bufferOfBuffers);
             }
 
+            Viewport current = Game.GraphicsDevice.Viewport;
+            if (isLast)
+            {
+                Game.GraphicsDevice.Viewport = Game.MainViewport;
+            }
+
             var sb = Game.BeginDraw(false, effect: Effect);            
             sb.Draw(backBuffer, Vector2.Zero, Color.White);
             sb.End();
+
+            Game.GraphicsDevice.Viewport = current;
 
             if (!isLast)
             {

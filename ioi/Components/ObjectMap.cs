@@ -21,6 +21,8 @@ namespace ioi.Components
 
         private GameHost Game;
 
+        public bool IsUpdateOutOfCamera { get; set; } = true;
+
         public bool IsUpdatable { get; set; }
 
         public bool IsIdle { get; set; }
@@ -96,6 +98,7 @@ namespace ioi.Components
         {
             if (entity.Components.Contains("Templates.Base.Moveable"))
             {
+                this.IsUpdateOutOfCamera = false;
                 this.IsUpdatable = true;
                 this.IsMoveable = true;
                 this.Speed = Entity["speed"].Number;
@@ -195,6 +198,9 @@ namespace ioi.Components
         public void ProcessCollision(List<ObjectMap> collided)
         {
             if (collided.Count == 0)
+                return;
+
+            if (collided.Count == 1 && collided[0] == this)
                 return;
 
             foreach (var collision in collided)

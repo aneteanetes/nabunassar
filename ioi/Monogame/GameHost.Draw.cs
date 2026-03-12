@@ -27,14 +27,14 @@ namespace ioi
             {
                 GraphicsDevice.SetRenderTarget(target);
             }
-
-            GraphicsDevice.Viewport = MainViewport;
         }
 
         public void ClearRenderTarget(Color color)
         {
             GraphicsDevice.Clear(color);
         }
+
+        public bool IsBackBufferActive() => _backRenderTarget != null;
 
         public RenderTarget2D GetBackBuffer()
         {

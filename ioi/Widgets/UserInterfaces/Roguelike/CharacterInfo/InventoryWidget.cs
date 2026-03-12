@@ -69,7 +69,7 @@ namespace ioi.Widgets.UserInterfaces.Roguelike.CharacterInfo
             var strings = Game.Strings["Roguelike"];
             var equiped = Game.GameState.Player.Entity.GetEquiped();
 
-            equipList = new ObjectList(Game, equiped, 700,422, DrawText.Create($"{strings["equiped"]}:", Color.White));
+            equipList = new ObjectList(Game, equiped, 650,422, DrawText.Create($"{strings["equiped"]}:", Color.White));
             Game.AddDesktopWidget(equipList, Game.MyraDesktopIngame);
 
             var inv = Game.GameState.Player.Entity.GetInventory();

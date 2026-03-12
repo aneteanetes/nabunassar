@@ -151,6 +151,8 @@ namespace ioi.Systems.Roguelike
                     var other = Game.World.SpawnSystem.SpawnCharacter("Пуля", "Human", "Warrior");
                     other.Heal(1000);
                     playerEntity.Squad.Add(other);
+
+                    Game.CameraMap.LookAt(obj.Position);
                 }
 
                 if (type.IsNotEmpty() && idobj.IsNotEmpty() && type!="player")
@@ -252,6 +254,11 @@ namespace ioi.Systems.Roguelike
 
             foreach (var updatable in Game.GameState.Map.Updatable)
             {
+                if (Game.CameraMap.Contains(updatable.VisualBounds) == ContainmentType.Disjoint)
+                {
+                    if (!updatable.IsUpdateOutOfCamera)
+                        continue;
+                }
                 updatable.Update(gameTime);
             }
 
@@ -265,7 +272,22 @@ namespace ioi.Systems.Roguelike
 
             var mainViewport = Game.GraphicsDevice.Viewport;
 
-            Game.GraphicsDevice.Viewport = Game.MapViewport;
+            if (Game.IsBackBufferActive())
+            {
+                /// if backbuffer is active, then we need recalculate offset, cuz main viewport have letterboxing:
+                /// 1. main viewport offset must be ignored
+                /// 2. map viewport offset is 'logical', so we need keep it
+                /// 3. for implement it we need to substract main viewport offset from map viewport offset (cuz main offset affected by scale)
+
+                var mapViewport = Game.MapViewport;
+                var currentOffset = new Point(mapViewport.X,mapViewport.Y);
+                currentOffset -= new Point(Game.MainViewport.X, Game.MainViewport.Y);
+                Game.GraphicsDevice.Viewport = new Viewport(currentOffset.X, currentOffset.Y, mapViewport.Width, mapViewport.Height);
+            }
+            else
+            {
+                Game.GraphicsDevice.Viewport = Game.MapViewport;
+            }
 
             var defaultObjs = Game.GameState.Map.Drawable.Where(x => x.Effect == default);
 

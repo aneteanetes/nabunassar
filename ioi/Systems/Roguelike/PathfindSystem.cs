@@ -43,6 +43,9 @@ internal class PathfindSystem : IDisposable
         {
             var current = openQueue.Dequeue();
 
+            // Если мы уже обработали эту позицию с лучшим результатом, игнорируем дубликат из очереди
+            if (closedSet.Contains(current.Position)) continue;
+
             if (current.Position == target)
                 return RetracePath(current);
 
@@ -107,7 +110,8 @@ internal class PathfindSystem : IDisposable
 
     private bool IsWalkable(Point p)
     {
-        var key = new Vector2(p.X, p.Y);
+        if (p.X < 0 || p.X >= _map.Width || p.Y < 0 || p.Y >= _map.Height)
+            return false;
 
         var boundsExists = _map.ObjectMap[p.X, p.Y].Objects.Any(x => x.IsBounds);
 

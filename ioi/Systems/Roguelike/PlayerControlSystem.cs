@@ -395,8 +395,10 @@ namespace ioi.Systems.Roguelike
         {
             var viewport = Game.CameraMap.BoundingRectangle;
 
-            float deadzoneWidth = viewport.Width * 0.75f;
-            float deadzoneHeight = viewport.Height * 0.75f;
+            var multipler = 0.55f; //0.75f
+
+            float deadzoneWidth = viewport.Width * 0.45f;
+            float deadzoneHeight = viewport.Height * 0.35f;
 
             var diff = new Vector2(viewport.Width - deadzoneWidth, viewport.Height - deadzoneHeight) / 2;
 
